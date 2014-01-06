@@ -1,0 +1,370 @@
+FORMAT: 1A
+HOST: http://www.google.com
+
+# Paperless App API
+API to support a mobile application that can be used to manage drivers’ deliveries, ensuring that the correct supporting documentation is captured for each type of delivery, with details being transmitted to the database for real time visibility of delivery status. 
+Images, including documentation, will be batch uploaded from the branch.
+
+## Authentication
+This API uses **still-need-to-decide** Authorization. E.g. If it was OAuth you'd need to create a new (or acquire existing) OAuth token using Basic Authentication. After you have acquired your token you can use it to access other resources within token' scope.
+
+
+## Media Types
+This API uses JSON media-type to represent resources states. Requests with a message-body are using plain JSON to set or update resource states.
+
+## Error States
+The common [HTTP Response Status Codes](https://github.com/for-GET/know-your-http-well/blob/master/status-codes.md) are used.
+
+# Group Access Authorization and Control 
+Related resources for authenticating with the app and determining available permissions
+
+## Authentication [/v1/users/{id}{?pin}]
+
+# Group Administration
+Related resources for configuring the app installation on mobile devices.
+
+## Device Collection [/v1/devices{?imei, cellNumber, hubCode}]
+Collection of all Devices.
+
+### Retrieve All Devices [GET]
++ Response 200 (application/json)
+
+        {
+            "meta": {
+                "code": 200,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "currentPageNumber": 1,
+                "itemsPerPage": 10,
+                "pageCount": 1,
+                "devices": [
+                    {
+                        "id": 1,
+                        "imei": 490154203237518,
+                        "cellNumber":"+27821235437",
+                        "countryCode":"ZA",
+                        "operator":"MTN",
+                        "hubCode": "SAN",
+                        "hubName": "MrD Sandton"
+                    },
+                    {
+                        "id": 2,
+                        "imei": 530152313237522,
+                        "cellNumber":"+27827772093",
+                        "countryCode":"ZA",
+                        "operator":"MTN",
+                        "hubCode": "RON",
+                        "hubName": "MrD Rondebosch"
+                    }, 
+                    {
+                        "id": 3,
+                        "imei": 520112315537682,
+                        "cellNumber":"+27827774711",
+                        "countryCode":"ZA",
+                        "operator":"MTN",
+                        "hubCode": "RON",
+                        "hubName": "MrD Rondebosch"
+                    }
+                ]
+            }
+        }
+        
+        
++ Parameters
+    + hubCode (optional,string) ... Allows you to retrieve registered devices for a specific hub as opposed to all hubs. These hubs include MrD Dispatches and last mile branches (E.g Rondebosch)
+
+### Register a Device [POST]
++ Request (application/json)
+
+        {
+            "imei": 490154203237518, 
+            "cellNumber":"+277232935434",
+            "country":"ZA",
+            "operator":"MTN",
+            "hubCode": "SAN"
+        }
+        
++ Parameters
+    + imei (required,string) ... The IMEI number of the device which is unique
+    + cellNumber (required, string) ... The full international number of the sim card in the device
+    + hubCode (required, string) ... The 3 digit hub code that the device should be assigned to (E.g. "SAN" for MrD Sandton). **Note:** a device can only be assigned to a single hub. 
+
++ Response 201 (application/json)
+
+        {
+            "meta": {
+                "code": 201,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "device": {
+                        "id": 1,
+                        "imei": 490154203237518,
+                        "cellNumber":"+27821235437",
+                        "country":"ZA",
+                        "operator":"MTN",
+                        "hubCode": "SAN",
+                        "hubName": "MrD Sandton"
+                    }
+                }
+            }
+        }
+
+## Device [/v1/devices/{id}]
+A single device. 
+
+### Retrieve a Single Device [GET]
++ Response 200 (application/json)
+
+        {
+            "id": 1,
+            "imei": 490154203237518,
+            "cellNumber":"+27821235437",
+            "hubCode": "SAN"
+            "hubName": "MrD Sandton"
+        }        
+        
+### Update Device [PUT]
++ Request (application/json)
+
+        {
+            "operator":"Vodacom",
+        }
+
++ Response 200 (application/json)
+
+        {
+            "meta": {
+                "code": 200,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "device": {
+                        "id": 1,
+                        "imei": 490154203237518,
+                        "cellNumber":"+27821235437",
+                        "country":"ZA",
+                        "operator":"Vodacom",
+                        "hubCode": "SAN",
+                        "hubName": "MrD Sandton"
+                    }
+                }
+            }
+        }       
+
+### Remove a Device [DELETE]
++ Response 204
+
+## Users Collection [/v1/users{?role, hubcode}]
+Collection of all Devices.
+
+### Retrieve All Users [GET]
++ Response 200 (application/json)
+
+        {
+            "meta": {
+                "code": 200,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "currentPageNumber": 1,
+                "itemsPerPage": 10,
+                "pageCount": 1,
+                "devices": [
+                    {
+                        "id": 12,
+                        "firstname": "Bob",
+                        "lastname": "Blanker",
+                        "roles": ["milkrundriver","lastmiledriver"],
+                        "scopes": ["reportDelay", "reportDelayWithTimes", "scanOutMilkRun", "scanInMilkrunAtHub", "scanOutDelivery"],
+                        "hubs": ["cpt", "RON"]
+                    },
+                    {
+                        "id": 13,
+                        "firstname": "Ryan",
+                        "lastname": "Treedon",
+                        "roles": ["lastmiledriver"],
+                        "scopes": ["reportDelay", "reportDelayWithTimes", "scanOutDelivery", "pickupParcel", "completeDelivery"],
+                        "hubs": ["RON"]
+                    } 
+                ]
+            }
+        }
+
+
+## User [/v1/users/{?}]
+An individual device user.
+
+### Retrieve a Single User [GET]
++ Response 200 (application/json)
+
+        {
+            "meta": {
+                "code": 200,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "user": {
+                    "id": 12,
+                    "firstname": "Bob",
+                    "lastname": "Blanker",
+                    "roles": ["milkrundriver","lastmiledriver"],
+                    "scopes": ["reportDelay", "reportDelayWithTimes", "scanOutMilkRun", "scanInMilkrunAtHub", "scanOutDelivery"],
+                    "hubs": ["cpt", "RON"]
+                    "status":"
+                }
+            }
+        }
+        
+### Update User [PUT]
++ Request (application/json)
+
+        {
+            "firstname":"Bobby"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "meta": {
+                "code": 200,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "user": {
+                    "id": 12,
+                    "firstname": "Bobby",
+                    "lastname": "Blanker",
+                    "roles": ["milkrundriver","lastmiledriver"],
+                    "scopes": ["reportDelay", "reportDelayWithTimes", "scanOutMilkRun", "scanInMilkrunAtHub", "scanOutDelivery"],
+                    "hubs": ["cpt", "RON"]
+                }
+            }
+        }
+        
+### Remove a User [DELETE]
++ Response 204
+
+# Group Milkruns
+Related resources for initiating and completing milkruns between MrD Dispatches and Last Mile MrD Hubs.
+
+## Milkruns Collection [/v1/milkruns{?userId}]
+### List All Milkruns [GET]
++ Response 200 (application/json)
+ 
+        {
+            "meta": {
+                "code": 200,
+                "errorType": "",
+                "errorDetail": [ ],
+                "errorMessage": ""
+            },
+            "response": {
+                "id": 1,
+                "driver": 123,
+                "consignments": [
+                    {
+                        "bagId": 26435,
+                        "destinationHub": "RON",
+                        "dispatched" : 1386447297,
+                        "events": [
+                            {
+                                "type":"scan",
+                                "event":"milkrunDriverReceiving",
+                                "time" : 1386447545
+                            },
+                            {
+                                "type":"geofence",
+                                "event":"hubGeofenceEntered",
+                                "time" : 138644923
+                            },  
+                        ],
+                        "parcels": [
+                            {
+                                "id" : 1561230,
+                                "waybillId" : "000080092313",
+                                "clientCode" : "FNB",
+                                "total": 1,
+                                "sequence": 1
+                            },
+                            {
+                                "id" : 1561282,
+                                "waybillId" : "000080092382",
+                                "clientCode" : "FNB",
+                                "total": 1,
+                                "sequence": 1
+                            },
+                            {
+                                "id" : 1561299,
+                                "waybillId" : "000080092429",
+                                "clientCode" : "FNB",
+                                "total": 1,
+                                "sequence": 1
+                            }
+                        ]               
+                    },
+                    {
+                        "bagId": 26437,
+                        "destinationHub": "KEN",
+                        "dispatched" : "1386447297",
+                        "events": [
+                            {
+                                "type":"scan",
+                                "event":"milkrunDriverReceiving",
+                                "time" : 1386447545
+                            }  
+                        ],
+                        "parcels": [
+                            {
+                                "id" : 1561532,
+                                "waybillId" : "1284880",
+                                "clientCode" : "TAL",
+                                "sequence": 1,
+                                "total": 2,
+                                "handoverTime": null 
+                            },
+                            {
+                                "id" : 1561532,
+                                "waybillId" : "1284880",
+                                "clientCode" : "TAL",
+                                "sequence": 2,
+                                "total": 2,
+                                "handoverTime": null
+                            },
+                            {
+                                "id" : 1561282,
+                                "waybillId" : "1284256",
+                                "clientCode" : "TAL",
+                                "total": 1,
+                                "sequence": 1,
+                                "handoverTime": null
+                            },
+                            {
+                                "id" : 1561299,
+                                "waybillId" : "000080092301",
+                                "clientCode" : "FNB",
+                                "total": 1,
+                                "sequence": 1,
+                                "handoverTime": null
+                            }
+                        ]               
+                    }
+                ]
+            }
+        }
+
++ Parameters
+    + userId (optional,number) ... You can specify a Milkrun Driver's `userId` to only return the assigned milkrun for that driver
