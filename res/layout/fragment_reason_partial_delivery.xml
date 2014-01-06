@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/reason_partial_delivery_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_background" >
+
+    <TextView
+        android:id="@+id/reason_partial_delivery_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/margin_text_NS"
+        android:layout_marginLeft="@dimen/margin_text_WE"
+        android:layout_marginRight="@dimen/margin_text_WE"
+        android:layout_marginTop="@dimen/margin_text_NS"
+        android:text="@string/text_reason_partial_delivery_heading" />
+
+    <ListView
+        android:id="@+id/reason_partial_delivery_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/reason_partial_button"
+        android:layout_below="@+id/reason_partial_delivery_text"
+        android:layout_centerHorizontal="true" >
+
+    </ListView>
+
+    <Button
+        android:id="@+id/reason_partial_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/margin_button_NS"
+        android:layout_marginLeft="@dimen/margin_button_WE"
+        android:layout_marginRight="@dimen/margin_button_WE"
+        android:layout_marginTop="@dimen/margin_button_NS"
+        android:text="@string/button_continue" />
+
+</RelativeLayout>

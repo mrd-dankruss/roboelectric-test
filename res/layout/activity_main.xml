@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toast_create_pin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_white"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/ImageView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_mainmenu_start_milkrun"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="@dimen/mainmenu_padding_logo_bottom"
+        android:paddingLeft="@dimen/mainmenu_padding_logo_side"
+        android:paddingRight="@dimen/mainmenu_padding_logo_side"
+        android:paddingTop="@dimen/mainmenu_padding_logo_top"
+        android:src="@drawable/mrd_logo_large" />
+
+    <Button
+        android:id="@+id/button_mainmenu_start_milkrun"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_mainmenu_training_run"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/margin_button_WE"
+        android:layout_marginRight="@dimen/margin_button_WE"      
+        android:background="@drawable/button_custom"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:text="@string/button_start_milkrun" />
+
+    <Button
+        android:id="@+id/button_mainmenu_training_run"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="@dimen/margin_mainmenu_bottom"
+        android:layout_marginLeft="@dimen/margin_button_WE"
+        android:layout_marginRight="@dimen/margin_button_WE"
+        android:layout_marginTop="@dimen/margin_mainmenu_button_gap"
+        android:background="@drawable/button_custom_grey"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:text="@string/button_start_trainingrun" />
+
+</RelativeLayout>

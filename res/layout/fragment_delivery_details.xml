@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/delivery_details_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_background" >
+
+    <RelativeLayout
+        android:id="@+id/delivery_details_layout_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/margin_delivery_details_NS"
+        android:layout_marginLeft="@dimen/margin_delivery_details_WE"
+        android:layout_marginRight="@dimen/margin_delivery_details_WE"
+        android:layout_marginTop="@dimen/margin_delivery_details_NS"
+        android:background="@drawable/layout_custom_bg" >
+
+        <RelativeLayout
+            android:id="@+id/delivery_details_heading_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="@dimen/margin_delivery_details_NS"
+            android:layout_marginLeft="@dimen/margin_delivery_details_panel"
+            android:layout_marginRight="@dimen/margin_delivery_details_panel"
+            android:layout_marginTop="@dimen/margin_delivery_details_NS" >
+
+            <ImageView
+                android:id="@+id/delivery_details_type_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView
+                android:id="@+id/delivery_details_serial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_delivery_details_WE"
+                android:layout_toRightOf="@+id/delivery_details_type_icon"
+                android:text="#04" />
+
+            <View
+                android:id="@+id/delivery_details_line1"
+                android:layout_width="@dimen/delivery_details_title_line_vertical_thickness"
+                android:layout_height="@dimen/delivery_details_title_line_vertical_length"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/delivery_details_title_line_vertical_space"
+                android:layout_marginRight="@dimen/delivery_details_title_line_vertical_space"
+                android:layout_toRightOf="@+id/delivery_details_serial"
+                android:background="@color/delivery_details_title_line_vertical_color" />
+
+            <TextView
+                android:id="@+id/delivery_details_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_toRightOf="@id/delivery_details_line1"
+                android:text="@string/text_food_delivery" />
+
+            <ImageView
+                android:id="@+id/delivery_details_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_launcher" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/delivery_details_line2"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/delivery_details_title_line_horizontal_thickness"
+            android:layout_below="@id/delivery_details_heading_panel"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/margin_delivery_details_panel"
+            android:layout_marginRight="@dimen/margin_delivery_details_panel"
+            android:background="@color/delivery_details_title_line_vertical_color" />
+        
+        <TextView
+            android:id="@+id/delivery_details_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/delivery_details_line2"
+            android:layout_marginBottom="@dimen/margin_delivery_details_panel"
+            android:layout_marginLeft="@dimen/margin_delivery_details_panel"
+            android:layout_marginRight="@dimen/margin_delivery_details_panel"
+            android:layout_marginTop="@dimen/margin_delivery_details_panel"
+            android:text="TextView" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/delivery_details_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/margin_delivery_details_panel"
+            android:layout_marginLeft="@dimen/margin_delivery_details_panel"
+            android:layout_marginRight="@dimen/margin_delivery_details_panel"
+            android:layout_marginTop="@dimen/margin_delivery_details_panel"
+            android:paddingBottom="@dimen/margin_delivery_details_panel" >
+
+            <Button
+                android:id="@+id/delivery_details_button_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/margin_delivery_details_panel"
+                android:layout_weight=".40"
+                android:background="@drawable/button_custom"
+                android:text="@string/button_update_status" />
+
+            <Button
+                android:id="@+id/delivery_details_button_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_custom"
+                android:text="@string/button_more" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

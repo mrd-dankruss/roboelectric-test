@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_driverlist"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/margin_driverlist_listview_WE"
+    android:background="@color/colour_darkgrey" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_manifest_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colour_background" >
+
+        <SearchView
+            android:id="@+id/searchView_driverlist"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/driverlist_searchview_height"
+            android:layout_marginBottom="@dimen/margin_driverlist_searchview_NS"
+            android:layout_marginLeft="@dimen/margin_driverlist_searchview_WE"
+            android:layout_marginRight="@dimen/margin_driverlist_searchview_WE"
+            android:layout_marginTop="@dimen/margin_driverlist_searchview_NS"
+            android:background="@color/colour_white"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:queryHint="@string/title_search" >
+
+        </SearchView>
+
+        <View
+            android:id="@+id/driverlist_line1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_driverlist_line_thickness"
+            android:layout_below="@id/searchView_driverlist"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colour_line_driverlist_searchview" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/framelayout_driverlist_bottomframe"
+        android:layout_below="@+id/relativeLayout_manifest_panel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/margin_driverlist_listview_WE"
+        android:layout_marginRight="@dimen/margin_driverlist_listview_WE"
+        android:layout_marginTop="@dimen/margin_driverlist_listview_WE"
+        android:background="@drawable/layout_bg_rounded" >
+
+        <ListView
+            android:id="@+id/android:list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/colour_row_divider"
+            android:drawSelectorOnTop="true" >
+
+        </ListView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/framelayout_driverlist_bottomframe"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/image_bottomgrey_shadow_block" >
+
+        <Button
+            android:id="@+id/button_driverlist_cancel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="@dimen/margin_standard"
+            android:background="@drawable/button_custom_grey"
+            android:text="@string/button_cancel"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+</RelativeLayout>

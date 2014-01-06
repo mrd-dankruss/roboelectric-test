@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="fi.gfarr.mrd"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="16" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/mrd_logo_small"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Mrdstyle" >
+        <activity
+            android:name="fi.gfarr.mrd.MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.zxing.client.android.SCAN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ScanActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.ScanActivity"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleTop"
+            android:label="@string/title_activity_scan"
+            android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.DriverListActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.DriverListActivity"
+            android:label="@string/title_activity_driver_list"
+            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.MainActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.SignatureActivity"
+            android:label="@string/title_activity_signature"
+            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.MainActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.CreatePinActivity"
+            android:label="@string/title_activity_create_pin"
+            android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.DriverListActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.EnterPinActivity"
+            android:label="@string/title_activity_enter_pin"
+            android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.DriverListActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.MapActivity"
+            android:label="@string/title_activity_map"
+            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.MainActivity" />
+        </activity>
+
+        <!-- Remember to change to RELEASE API key when releasing app -->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/key_googlemaps_api_debug" />
+
+        <activity
+            android:name="fi.gfarr.mrd.ViewBagManifestActivity"
+            android:label="@string/title_activity_view_bag_manifest"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:launchMode="singleTop"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ScanActivity" />
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MrD Paperless App</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Actionbar titles -->
+    <string name="title_actionbar_mainmenu">Home</string>
+    <string name="title_actionbar_driverlist_select_name">Please select your name</string>
+    <string name="title_actionbar_signature">Processing Collection</string>
+    <string name="title_actionbar_create_pin">Create Pin</string>
+    <string name="title_actionbar_enter_pin">Enter Pin</string>
+    <string name="title_actionbar_map">Map</string>
+    <string name="title_actionbar_manifest">Consignment details</string>
+
+    <!-- Button texts -->
+    <string name="button_start_milkrun">Start new milkrun</string>
+    <string name="button_start_trainingrun">Start trainrun</string>
+    <string name="button_update_status">Update Status</string>
+    <string name="button_more">More</string>
+    <string name="button_login">Login</string>
+    <string name="button_complete_collection">Complete Collection</string>
+    <string name="button_continue">Continue</string>
+    <string name="button_navigate_here">Navigate here</string>
+    <string name="button_create">Create</string>
+    <string name="button_change_driver">Change driver</string>
+
+    <!-- Screen titles -->
+    <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
+    <string name="title_exchange">EXCHANGE</string>
+    <string name="title_more">More</string>
+    <string name="title_view_map">View Map</string>
+    <string name="title_report_delay">Report Delay</string>
+    <string name="title_call">Call</string>
+    <string name="title_search">Search</string>
+    <string name="title_message">Message</string>
+    <string name="title_your_consignments">YOUR CONSIGNMENTS</string>
+    <string name="title_next_delivery_food">YOUR NEXT FOOD DELIVERY</string>
+    <string name="title_deliveries">Deliveries</string>
+    <string name="title_signature">COLLECT PROOF OF COLLECTION</string>
+    <string name="title_scan_consignments">Scan Consignments</string>
+    <string name="title_activity_scan">ScanActivity</string>
+    <string name="title_reason_partial_deliveries">Reasons for Partial Deliveries</string>
+    <string name="title_set_as_next_delivery">Set as next delivery</string>
+    <string name="title_return">RETURN</string>
+
+    <!-- Tab titles -->
+    <string name="tab_completed">COMPLETED</string>
+    <string name="tab_todo">TO DO</string>
+    <string name="tab_unsuccessful">UNSUCCESSFUL</string>
+
+    <!-- Texts -->
+    <string name="text_reason_partial_delivery_heading">The following parcel(s) were not scanned. Please select a reason for non-delivery:</string>
+    <string name="text_food_delivery">FOOD DELIVERY</string>
+    <string name="text_addressee">Addressee</string>
+    <string name="text_tel_no">Tel nr</string>
+    <string name="text_scheduled_for">Scheduled for</string>
+    <string name="text_packages_to_be_delivered">Package(s) to be delivered</string>
+    <string name="text_step">STEP</string>
+    <string name="text_of">OF</string>
+    <string name="text_create_pin_mismatch">PIN codes do not match. Please try again.</string>
+    <string name="text_create_pin_enter">Tap here to enter your 4-digit PIN</string>
+    <string name="text_craete_pin_confirm">Tap here to confirm your PIN</string>
+    <string name="text_create_pin_toast_too_short">PIN has to be 4 digits. Please try again</string>
+    <string name="text_create_pin">PIN code not created. Please enter a new PIN code to continue:</string>
+    <string name="text_enter_pin_incorrect">Incorrect PIN. Please try again.</string>
+    <string name="text_enter_pin_invalid">Invalid PIN. Please try again.</string>
+    <string name="text_search_hint">Search</string>
+    <string name="text_consignment">Consignment</string>
+    <string name="text_destination_branch">Destination branch:</string>
+    <string name="app_label">MrD</string>
+
+    <!-- Abbreviations -->
+    <string name="TAL">TAKEALOT</string>
+    <string name="title_activity_driver_list">DriverListActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_signature">SignatureActivity</string>
+    <string name="title_activity_create_pin">CreatePinActivity</string>
+    <string name="title_activity_enter_pin">EnterPinActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_scan_list">ScanListActivity</string>
+
+    <!-- Google Maps API keys -->
+    <string name="key_googlemaps_api_debug">AIzaSyD256nSwz9k03cTC2QaN-pEpmZ0hfz8Ej4</string>
+    <string name="key_googlemaps_api_release">AIzaSyCdXJWisT8lPyKasiqKnXSnXhsHvQzSZ6E</string>
+    <string name="title_activity_view_bag_manifest">ViewBagManifestActivity</string>
+    
+    <!-- Manifest -->
+     <string name="text_manifest_waybill">Waybill:</string>
+     <string name="text_manifest_number">X of:</string>
+     <string name="text_manifest_number_of">of</string>
+     <string name="text_manifest_volumetrics">Volumetrics:</string>
+     <string name="text_manifest">Manifest</string>
+
+</resources>

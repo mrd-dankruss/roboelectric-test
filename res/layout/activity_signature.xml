@@ -1,0 +1,100 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".SignatureActivity" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_manifest_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="7dp"
+        android:layout_marginLeft="@dimen/margin_delivery_details_icon_W" >
+
+        <ImageView
+            android:id="@+id/icon_job_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin_delivery_details_icon_E"
+            android:src="@drawable/icon_delivery" />
+
+        <TextView
+            android:id="@+id/textView_signature_step"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/icon_job_type"
+            android:text="TextView" />
+
+        <View
+            android:id="@+id/signature_line1"
+            android:layout_width="@dimen/delivery_details_title_line_vertical_thickness"
+            android:layout_height="@dimen/delivery_details_title_line_vertical_length"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/delivery_details_title_line_vertical_space"
+            android:layout_marginRight="@dimen/delivery_details_title_line_vertical_space"
+            android:layout_toRightOf="@id/textView_signature_step"
+            android:background="@color/delivery_details_title_line_vertical_color" />
+
+        <TextView
+            android:id="@+id/textView_signature_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/signature_line1"
+            android:text="@string/title_signature" />
+
+        <ImageView
+            android:id="@+id/imageView_row_scan_tick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_takealot" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/signature_line_2"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/activity_driverlist_line_thickness"
+        android:layout_below="@+id/relativeLayout_manifest_panel"
+        android:layout_centerHorizontal="true"
+        
+        android:background="@android:color/black" />
+
+    <View
+        android:id="@+id/signature_line_3"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/activity_driverlist_line_thickness"
+        android:layout_above="@+id/button_signature_complete"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:background="@android:color/black" />
+
+    <Button
+        android:id="@+id/button_signature_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/button_custom"
+        android:text="@string/button_complete_collection" />
+
+    <fi.gfarr.mrd.SignatureView
+        android:id="@+id/signatureView"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/signature_line_3"
+        android:layout_below="@+id/signature_line_2"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
