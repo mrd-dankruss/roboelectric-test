@@ -1,7 +1,11 @@
 package fi.gfarr.mrd;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -11,6 +15,9 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.db.Driver;
+import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
 import fi.gfarr.mrd.widget.Toaster;
 
@@ -38,11 +45,14 @@ public class CreatePinActivity extends Activity {
 
 				// Check if pin is valid then login
 				if (checkPin()) {
-					Intent intent = new Intent(getApplicationContext(),
-							ScanActivity.class);
+					new CreatePINTask().execute();
 
-					DbHandler.getInstance(getApplicationContext());
-					startActivity(intent);
+					// Intent intent = new Intent(getApplicationContext(),
+					// ScanActivity.class);
+					//
+					// DbHandler.getInstance(getApplicationContext());
+					// startActivity(intent);
+
 				}
 			}
 		});
@@ -53,6 +63,56 @@ public class CreatePinActivity extends Activity {
 			}
 		});
 
+	}
+
+	/**
+	 * Retrieves the list of drivers from server to populate login list.
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class CreatePINTask extends AsyncTask<Void, Void, String> {
+		/**
+		 * The system calls this to perform work in a worker thread and delivers
+		 * it the parameters given to AsyncTask.execute()
+		 */
+		@Override
+		protected String doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			return ServerInterface
+					.updatePIN(
+							getIntent().getStringExtra(
+									VariableManager.EXTRA_DRIVER_ID),
+							holder.editText_pin1.getText().toString());
+		}
+
+		/**
+		 * The system calls this to perform work in the UI thread and delivers
+		 * the result from doInBackground()
+		 */
+		@Override
+		protected void onPostExecute(String result) {
+
+			try {
+				// PIN creation returns from server as successful
+				if (result.equals("success")) {
+					Intent intent = new Intent(getApplicationContext(),
+							ScanActivity.class);
+
+					DbHandler.getInstance(getApplicationContext());
+
+					intent.putExtra(
+							VariableManager.EXTRA_DRIVER_ID,
+							getIntent().getStringExtra(
+									VariableManager.EXTRA_DRIVER_ID));
+
+					startActivity(intent);
+				}
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private boolean checkPin() {

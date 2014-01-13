@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -16,7 +18,8 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.db.DbHandler;
-import fi.gfarr.mrd.objects.VariableManager;
+import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
 import fi.gfarr.mrd.widget.Toaster;
 
@@ -78,10 +81,11 @@ public class EnterPinActivity extends Activity {
 				if (holder.editText_pin.getText().toString().equals("")) {
 					holder.button_login
 							.setBackgroundResource(R.drawable.button_custom_grey);
-					holder.button_login.setTextColor(getResources().getColor(R.color.colour_text_lightgrey));
+					holder.button_login.setTextColor(getResources().getColor(
+							R.color.colour_text_lightgrey));
 				} else {
 					holder.button_login
-					.setBackgroundResource(R.drawable.button_custom);
+							.setBackgroundResource(R.drawable.button_custom);
 					holder.button_login.setTextColor(Color.BLACK);
 				}
 			}
@@ -100,33 +104,76 @@ public class EnterPinActivity extends Activity {
 	}
 
 	/**
-	 * perform log in procedure
+	 * Perform log in procedure. First check validity of PIN, then wait for API call to finish and start next activity.
 	 */
 	public void login() {
-		if (checkPin()) {
-			Intent intent = new Intent(getApplicationContext(),
-					ScanActivity.class);
 
-			DbHandler.getInstance(getApplicationContext());
-			// Pass driver name on
-			intent.putExtra(VariableManager.EXTRA_DRIVER, getIntent()
-					.getStringExtra(VariableManager.EXTRA_DRIVER));
-			startActivity(intent);
+		if (checkPin()) {
+
+			final Handler handler = new Handler() {
+
+				public void handleMessage(Message msg) {
+
+					if (msg.what == 0) {
+						Intent intent = new Intent(getApplicationContext(),
+								ScanActivity.class);
+
+						DbHandler.getInstance(getApplicationContext());
+						// Pass driver name on
+						intent.putExtra(
+								VariableManager.EXTRA_DRIVER,
+								getIntent().getStringExtra(
+										VariableManager.EXTRA_DRIVER));
+						
+						intent.putExtra(
+								VariableManager.EXTRA_DRIVER_ID,
+								getIntent().getStringExtra(
+										VariableManager.EXTRA_DRIVER_ID));
+											
+						startActivity(intent);
+					}
+				}
+			};
+
+			Thread t = new Thread() {
+				@Override
+				public void run() {
+
+					String hash = PinManager.toMD5(holder.editText_pin
+							.getText().toString());
+
+					String status = ServerInterface.authDriver(hash);
+
+					if (status.equals("success")) {
+						handler.sendEmptyMessage(0);
+					} else {
+						handler.sendEmptyMessage(1);
+					}
+				}
+			};
+			t.start();
 		}
+		/*
+		 * if (holder.editText_pin.getText().toString().equals("1111")) { return
+		 * true; } else {
+		 * displayToast(getString(R.string.text_enter_pin_incorrect)); return
+		 * false; }
+		 */
+
 	}
 
+	/**
+	 * Check PIN's validity (data validation)
+	 * @return True is valid.
+	 */
 	private boolean checkPin() {
 
 		// Check for 4-digit format
 		String msg = PinManager.checkPin(holder.editText_pin.getText()
 				.toString(), this);
 		if (msg.equals("OK")) {
-			if (holder.editText_pin.getText().toString().equals("1111")) {
-				return true;
-			} else {
-				displayToast(getString(R.string.text_enter_pin_incorrect));
-				return false;
-			}
+
+			return true;
 		} else {
 			displayToast(msg);
 			return false;

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
 import fi.gfarr.mrd.db.DbHandler;
-import fi.gfarr.mrd.objects.VariableManager;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class ViewBagManifestActivity extends ListActivity implements
 		LoaderCallbacks<Cursor> {
@@ -27,9 +27,9 @@ public class ViewBagManifestActivity extends ListActivity implements
 
 	private SimpleCursorAdapter cursor_adapter;
 
-	static final String[] FROM = { DbHandler.C_BAG_WAYBILL,
-			DbHandler.C_BAG_CONSIGNMENT_NUMBER, DbHandler.C_BAG_WEIGHT,
-			DbHandler.C_BAG_VOLUME, DbHandler.C_BAG_NUMBER };
+	static final String[] FROM = { DbHandler.C_WAYBILL_ID,
+			DbHandler.C_BAG_ID, DbHandler.C_WAYBILL_WEIGHT,
+			DbHandler.C_WAYBILL_DIMEN, DbHandler.C_BAG_ID };
 	static final int[] TO = { R.id.textView_manifest_waybill,
 			R.id.textView_manifest_consignment_number,
 			R.id.textView_manifest_weight, R.id.textView_manifest_volume,
@@ -71,8 +71,8 @@ public class ViewBagManifestActivity extends ListActivity implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		DbHandler.getInstance(this);
-		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAG + " ORDER BY "
-				+ DbHandler.C_BAG_CONSIGNMENT_NUMBER + " ASC";
+		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS + " ORDER BY "
+				+ DbHandler.C_BAG_ID + " ASC";
 
 		SQLiteCursorLoader loader = new SQLiteCursorLoader(
 				getApplicationContext(),

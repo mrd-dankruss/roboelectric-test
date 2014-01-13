@@ -1,5 +1,8 @@
 package fi.gfarr.mrd;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListActivity;
@@ -7,6 +10,8 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -25,7 +30,8 @@ import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.db.Driver;
-import fi.gfarr.mrd.objects.VariableManager;
+import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.ServerInterface;
 
 public class DriverListActivity extends ListActivity implements
 		LoaderCallbacks<Cursor>, OnQueryTextListener {
@@ -39,11 +45,11 @@ public class DriverListActivity extends ListActivity implements
 	static final String[] FROM = { DbHandler.C_NAME };
 	static final int[] TO = { R.id.textView_row_driverlist };
 	private String filter = ""; // Filter used in SQL query
-	private boolean pin_exists = true; // does driver have a pin
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_driver_list);
 		initViewHolder(); // Inflate ViewHolder static instance
 
@@ -65,6 +71,7 @@ public class DriverListActivity extends ListActivity implements
 
 		getLoaderManager().initLoader(URL_LOADER, null, this);
 
+		//Test data
 		String[] names = { "Bruce Springsteen", "Eric Clapton",
 				"Keith Richards", "Angus Young", "Mark Knopfler",
 				"John Fogerty", "Tom Petty", "Jethro Tull", "Brian May",
@@ -73,9 +80,10 @@ public class DriverListActivity extends ListActivity implements
 				"Stevie Ray Vaugn", "Chuck Berry", "Ozzy Osborne",
 				"Alice Cooper" };
 
-		for (int i = 0; i < names.length; i++) {
-			DbHandler.getInstance(this).addDriver(new Driver(i, names[i]));
-		}
+		// for (int i = 0; i < names.length; i++) {
+		// DbHandler.getInstance(this).addDriver(new Driver(i, names[i]));
+		// }
+		// System.out.println(drivers_jArray.length());
 
 		// Search function
 		setupSearchView();
@@ -92,7 +100,8 @@ public class DriverListActivity extends ListActivity implements
 					Intent intent;
 
 					// Check if PIN already exists for this driver
-					if (pin_exists) {
+					if (!c.getString(c.getColumnIndex(DbHandler.C_PIN)).equals(
+							"")) {
 						intent = new Intent(getApplicationContext(),
 								EnterPinActivity.class);
 					} else {
@@ -104,6 +113,9 @@ public class DriverListActivity extends ListActivity implements
 					intent.putExtra(VariableManager.EXTRA_DRIVER, String
 							.valueOf(c.getString(c
 									.getColumnIndex(DbHandler.C_NAME))));
+					intent.putExtra(VariableManager.EXTRA_DRIVER_ID, String
+							.valueOf(c.getString(c
+									.getColumnIndex(DbHandler.C_ID))));
 					startActivity(intent);
 				}
 			}
