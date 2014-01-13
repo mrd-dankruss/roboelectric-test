@@ -24,13 +24,14 @@ public class DbHandler extends SQLiteOpenHelper {
 	// Tables
 	public static final String TABLE_DRIVERS = "Drivers";
 	public static final String TABLE_BAGS = "Bag"; // Consignments
-															// going to
-															// various
-															// dilivery
-															// points
-	public static final String TABLE_WAYBILLS = "Waybill"; // Cargo containing items
-														// belonging to
-														// consignments
+													// going to
+													// various
+													// dilivery
+													// points
+	public static final String TABLE_WAYBILLS = "Waybill"; // Cargo containing
+															// items
+															// belonging to
+															// consignments
 
 	// ------------ Fields - Drivers ---------
 	public static final String C_ID = "_id"; // Primary key
@@ -83,6 +84,9 @@ public class DbHandler extends SQLiteOpenHelper {
 	// number of items in waybill. to be passed to ScanSimpleCursorAdapter
 	public static final String C_WAYBILL_PARCELCOUNT = "waybill_parcelcount";
 
+	// X of whatever
+	public static final String C_wAYBILL_PARCEL_SEQUENCE = "waybill_parcel_seq";
+
 	public DbHandler(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		// TODO Auto-generated constructor stub
@@ -119,9 +123,10 @@ public class DbHandler extends SQLiteOpenHelper {
 					+ " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
 					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_WEIGHT + " TEXT,"
 					+ C_WAYBILL_DEST + " TEXT," + C_WAYBILL_TEL + " TEXT,"
+					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
 					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_EMAIL
-					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES "
-					+ TABLE_BAGS + "(" + C_BAG_ID + "))";
+					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
+					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 
 			db.setTransactionSuccessful();
@@ -206,6 +211,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
 		values.put(C_WAYBILL_ID, item.getWaybill()); // PK
 		values.put(C_WAYBILL_PARCELCOUNT, item.getParcelCount());
+		values.put(C_wAYBILL_PARCEL_SEQUENCE, item.getParcelSeq() + " of "
+				+ item.getParcelCount());
 		values.put(C_WAYBILL_DIMEN, item.getDimensions());
 		values.put(C_WAYBILL_TEL, item.getTelephone());
 		values.put(C_WAYBILL_EMAIL, item.getEmail());

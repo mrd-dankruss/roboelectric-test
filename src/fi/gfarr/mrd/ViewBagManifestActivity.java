@@ -27,9 +27,9 @@ public class ViewBagManifestActivity extends ListActivity implements
 
 	private SimpleCursorAdapter cursor_adapter;
 
-	static final String[] FROM = { DbHandler.C_WAYBILL_ID,
-			DbHandler.C_BAG_ID, DbHandler.C_WAYBILL_WEIGHT,
-			DbHandler.C_WAYBILL_DIMEN, DbHandler.C_BAG_ID };
+	static final String[] FROM = { DbHandler.C_WAYBILL_ID, DbHandler.C_BAG_ID,
+			DbHandler.C_WAYBILL_WEIGHT, DbHandler.C_WAYBILL_DIMEN,
+			DbHandler.C_wAYBILL_PARCEL_SEQUENCE };
 	static final int[] TO = { R.id.textView_manifest_waybill,
 			R.id.textView_manifest_consignment_number,
 			R.id.textView_manifest_weight, R.id.textView_manifest_volume,
@@ -45,7 +45,7 @@ public class ViewBagManifestActivity extends ListActivity implements
 
 		// Inflate views
 		initViewHolder();
-		
+
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// Initiate database
@@ -57,11 +57,20 @@ public class ViewBagManifestActivity extends ListActivity implements
 		holder.text_view_consignment_number.setIncludeFontPadding(false);
 
 		// Set titles
-		holder.text_view_consignment_number.setText(getString(R.string.text_consignment)+" #"+getIntent()
-				.getStringExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER)+ " ("+ getIntent()
-				.getStringExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS)+ " items)");
-		holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch)+" "+getIntent().getStringExtra(
-				VariableManager.EXTRA_CONSIGNMENT_DESTINATION));
+		holder.text_view_consignment_number
+				.setText(getString(R.string.text_consignment)
+						+ " #"
+						+ getIntent().getStringExtra(
+								VariableManager.EXTRA_CONSIGNMENT_NUMBER)
+						+ " ("
+						+ getIntent().getStringExtra(
+								VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS)
+						+ " items)");
+		holder.text_view_consignment_destination
+				.setText(getString(R.string.text_destination_branch)
+						+ " "
+						+ getIntent().getStringExtra(
+								VariableManager.EXTRA_CONSIGNMENT_DESTINATION));
 	}
 
 	/**
@@ -71,8 +80,8 @@ public class ViewBagManifestActivity extends ListActivity implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		DbHandler.getInstance(this);
-		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS + " ORDER BY "
-				+ DbHandler.C_BAG_ID + " ASC";
+		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS
+				+ " ORDER BY " + DbHandler.C_WAYBILL_ID + " ASC";
 
 		SQLiteCursorLoader loader = new SQLiteCursorLoader(
 				getApplicationContext(),
@@ -127,16 +136,16 @@ public class ViewBagManifestActivity extends ListActivity implements
 		getMenuInflater().inflate(R.menu.view_bag_manifest, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // Respond to the action bar's Up/Home button
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		// Respond to the action bar's Up/Home button
+		case android.R.id.home:
+			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void initViewHolder() {

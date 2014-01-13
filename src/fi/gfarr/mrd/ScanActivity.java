@@ -1,7 +1,7 @@
 package fi.gfarr.mrd;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import org.json.JSONArray;
@@ -151,9 +151,13 @@ public class ScanActivity extends CaptureActivity implements
 							VariableManager.EXTRA_CONSIGNMENT_DESTINATION,
 							String.valueOf(c.getString(c
 									.getColumnIndex(DbHandler.C_BAG_DEST_BRANCH))));
+					// intent.putExtra(
+					// VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
+					// String.valueOf(manifest_number_items));
 					intent.putExtra(
 							VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
-							String.valueOf(manifest_number_items));
+							String.valueOf(c.getString(c
+									.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
 
 					startActivity(intent);
 				}
@@ -187,6 +191,12 @@ public class ScanActivity extends CaptureActivity implements
 			// MUST STILL SORT OUT CONSIGNMENT & WAYBILL SIDE OF DB!!!
 
 			if (result != null) {
+
+				// Stores waybill IDs as they are loaded.
+				// Used to count the number of occurences
+				// For counting multiple packages.
+				Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+
 				for (int i = 0; i < result.length(); i++) {
 					try {
 						// ID
@@ -208,6 +218,9 @@ public class ScanActivity extends CaptureActivity implements
 						int num_items = result.getJSONObject(i).getInt(
 								"noitems");
 
+						// Go through temp array to find number of times the
+						// current waybill ID occurs.
+
 						// Add bag to DB
 						Bag bag = new Bag(id, dest_branch);
 						bag.setAssigned(assigned);
@@ -227,8 +240,16 @@ public class ScanActivity extends CaptureActivity implements
 							// Tel
 							String tel = waybills.getJSONObject(j).getString(
 									"telephone");
+							
+							//Weight
+							String weight = waybills.getJSONObject(j).getString(
+									"weight");
+							
+							//Dimensions
+							String dimen = waybills.getJSONObject(j).getString(
+									"dimensions");
 
-							String waybill_id = waybills.getJSONObject(i)
+							String waybill_id = waybills.getJSONObject(j)
 									.getString("id");
 
 							// email
@@ -243,11 +264,28 @@ public class ScanActivity extends CaptureActivity implements
 							int parcel_count = waybills.getJSONObject(j)
 									.getInt("parcelcount");
 
+							// Create Waybill object and add values
 							Waybill waybill = new Waybill(id, waybill_id);
 							waybill.setTelephone(tel);
 							waybill.setEmail(email);
 							waybill.setComLog(comlog);
+							waybill.setWeight(weight);
+							waybill.setDimensions(dimen);
 							waybill.setParcelCount(parcel_count);
+
+							// Add ID to hashtable
+							Integer current_count = waybill_IDs.get(waybill_id);
+
+							if (current_count != null) {
+								// Increment occurence count of the waybill
+								waybill_IDs.put(waybill_id, current_count + 1);
+
+								// nth occurance of this waybill
+								waybill.setParcelSeq(current_count + 1);
+							} else {
+								// First occurance of this waybill
+								waybill.setParcelSeq(1);
+							}
 
 							DbHandler.getInstance(getApplicationContext())
 									.addWaybill(waybill);

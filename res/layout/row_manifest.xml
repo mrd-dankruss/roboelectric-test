@@ -59,21 +59,22 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textView_manifest_waybill"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView_manifest_number"
-        android:layout_centerHorizontal="true"
-        android:text="TextView" />
-
-    <TextView
         android:id="@+id/textView_manifest_weight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/textView_manifest_volume"
         android:layout_alignBottom="@+id/textView_manifest_volume"
-        android:layout_marginLeft="18dp"
+        android:layout_marginLeft="14dp"
         android:layout_toRightOf="@+id/textView_manifest_volume"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView_manifest_waybill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/textView5"
         android:text="TextView" />
 
 </RelativeLayout>

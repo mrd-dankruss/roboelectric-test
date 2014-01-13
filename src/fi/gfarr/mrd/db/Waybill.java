@@ -32,6 +32,9 @@ public class Waybill {
 	// Parcel count
 	private int parcel_count;
 
+	// Parcel sequence number
+	private int parcel_seq;
+
 	public Waybill(String bag, String wayb) {
 		setWaybillNumber(wayb);
 		setBagNumber(bag);
@@ -41,6 +44,7 @@ public class Waybill {
 		setTelephone("000 000 0000");
 		setComLog("Empty");
 		setParcelCount(0);
+		setParcelSeq(0);
 		setCustomerName("Unknown Customer");
 		setDestination("Unknown destination");
 	}
@@ -63,6 +67,16 @@ public class Waybill {
 	 */
 	public void setParcelCount(int count) {
 		parcel_count = count;
+	}
+
+	/**
+	 * Set the sequence number of the package. E.g. Package number 1 of 2.
+	 * 
+	 * @param number
+	 *            Order in sequence of packages.
+	 */
+	public void setParcelSeq(int number) {
+		parcel_seq = number;
 	}
 
 	/**
@@ -156,6 +170,13 @@ public class Waybill {
 	 */
 	public int getParcelCount() {
 		return parcel_count;
+	}
+
+	/**
+	 * Return the sequence number of the package. E.g. Package number 1 of 2.
+	 */
+	public int getParcelSeq() {
+		return parcel_seq;
 	}
 
 	/**
