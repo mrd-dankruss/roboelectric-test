@@ -2,20 +2,21 @@ package fi.gfarr.mrd.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import fi.gfarr.mrd.ManagerAuthIncompleteScanActivity;
 import fi.gfarr.mrd.R;
 
-public class IncompleteScanDialog extends Dialog implements android.view.View.OnClickListener
+public class IncompleteScanDialog extends Dialog //implements android.view.View.OnClickListener
 {
 
 	private final String TAG = "IncompleteScanDialog";
 	private Activity context;
 	private Dialog dialog;
-	private Button button_scan, button_continue;
+	private Button button_scan, button_continue;	
 
 	public IncompleteScanDialog(Activity a)
 	{
@@ -34,10 +35,11 @@ public class IncompleteScanDialog extends Dialog implements android.view.View.On
 		button_scan = (Button) findViewById(R.id.button_incomplete_scan_scan);
 		button_continue = (Button) findViewById(R.id.button_incomplete_scan_continue);
 
-		button_scan.setOnClickListener(this);
-		button_continue.setOnClickListener(this);
+//		button_scan.setOnClickListener(this);
+//		button_continue.setOnClickListener(this);
 	}
-
+	
+/*
 	@Override
 	public void onClick(View v)
 	{
@@ -49,11 +51,14 @@ public class IncompleteScanDialog extends Dialog implements android.view.View.On
 			break;
 		case R.id.button_incomplete_scan_continue:
 			// Log.d(TAG, "Continue anyway");
-
+			// Require manager authorization.		
+			Intent intent = new Intent(context, ManagerAuthIncompleteScanActivity.class);
+			
 			break;
 		default:
 			break;
 		}
 		dismiss();
 	}
+	*/
 }

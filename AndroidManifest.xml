@@ -60,8 +60,8 @@
         <activity
             android:name="fi.gfarr.mrd.ScanActivity"
             android:alwaysRetainTaskState="true"
-            android:launchMode="singleTop"
             android:label="@string/title_activity_scan"
+            android:launchMode="singleTop"
             android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
             android:screenOrientation="portrait" >
             <meta-data
@@ -77,6 +77,24 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.MainActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.ManagerListActivity"
+            android:label="@string/title_activity_manager_list"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ScanActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -130,10 +148,19 @@
 
         <activity
             android:name="fi.gfarr.mrd.ViewBagManifestActivity"
-            android:label="@string/title_activity_view_bag_manifest"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
-            android:launchMode="singleTop"
             android:alwaysRetainTaskState="true"
+            android:label="@string/title_activity_view_bag_manifest"
+            android:launchMode="singleTop"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ScanActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.ManagerAuthIncompleteScanActivity"
+            android:label="@string/title_activity_manager_auth_incomplete_scan"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -11,7 +11,9 @@
     <string name="title_actionbar_create_pin">Create Pin</string>
     <string name="title_actionbar_enter_pin">Enter Pin</string>
     <string name="title_actionbar_map">Map</string>
+    <string name="title_actionbar_select_manager">Select manager</string>
     <string name="title_actionbar_manifest">Consignment details</string>
+    <string name="title_actionbar_manager_auth">Manager authorization required</string>
 
     <!-- Button texts -->
     <string name="button_start_milkrun">Start new milkrun</string>
@@ -24,6 +26,9 @@
     <string name="button_navigate_here">Navigate here</string>
     <string name="button_create">Create</string>
     <string name="button_change_driver">Change driver</string>
+    <string name="button_change_manager">Change Manager</string>
+    <string name="button_incomplete_scan_scan">Scan them</string>
+    <string name="button_incomplete_scan_continue">Continue anyway</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
@@ -68,6 +73,10 @@
     <string name="text_search_hint">Search</string>
     <string name="text_consignment">Consignment</string>
     <string name="text_destination_branch">Destination branch:</string>
+    <string name="text_incomplete_scan_message">You have not scanned all of your consignments!</string>
+    <string name="text_incomplete_scan_title">Warning!</string>
+    <string name="text_manAuth_heading">The following consignments have not been scanned:</string>
+    <string name="text_manAuth_enter_pin">Please enter your PIN to authorize:</string>
     <string name="app_label">MrD</string>
 
     <!-- Abbreviations -->
@@ -76,6 +85,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_signature">SignatureActivity</string>
     <string name="title_activity_create_pin">CreatePinActivity</string>
+    <string name="title_activity_manager_list">ManagerListActivity</string>
     <string name="title_activity_enter_pin">EnterPinActivity</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="title_activity_scan_list">ScanListActivity</string>
@@ -84,12 +94,13 @@
     <string name="key_googlemaps_api_debug">AIzaSyD256nSwz9k03cTC2QaN-pEpmZ0hfz8Ej4</string>
     <string name="key_googlemaps_api_release">AIzaSyCdXJWisT8lPyKasiqKnXSnXhsHvQzSZ6E</string>
     <string name="title_activity_view_bag_manifest">ViewBagManifestActivity</string>
-    
+
     <!-- Manifest -->
-     <string name="text_manifest_waybill">Waybill:</string>
-     <string name="text_manifest_number">X of:</string>
-     <string name="text_manifest_number_of">of</string>
-     <string name="text_manifest_volumetrics">Volumetrics:</string>
-     <string name="text_manifest">Manifest</string>
+    <string name="text_manifest_waybill">Waybill:</string>
+    <string name="text_manifest_number">X of:</string>
+    <string name="text_manifest_number_of">of</string>
+    <string name="text_manifest_volumetrics">Volumetrics:</string>
+    <string name="text_manifest">Manifest</string>
+    <string name="title_activity_manager_auth_incomplete_scan">ManagerAuthIncompleteScanActivity</string>
 
 </resources>

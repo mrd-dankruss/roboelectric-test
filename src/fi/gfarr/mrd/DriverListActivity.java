@@ -42,7 +42,7 @@ public class DriverListActivity extends ListActivity implements
 	private static final int URL_LOADER = 0;// Identifies a particular Loader
 											// being used in this component
 
-	static final String[] FROM = { DbHandler.C_NAME };
+	static final String[] FROM = { DbHandler.C_DRIVER_NAME };
 	static final int[] TO = { R.id.textView_row_driverlist };
 	private String filter = ""; // Filter used in SQL query
 
@@ -100,7 +100,7 @@ public class DriverListActivity extends ListActivity implements
 					Intent intent;
 
 					// Check if PIN already exists for this driver
-					if (!c.getString(c.getColumnIndex(DbHandler.C_PIN)).equals(
+					if (!c.getString(c.getColumnIndex(DbHandler.C_DRIVER_PIN)).equals(
 							"")) {
 						intent = new Intent(getApplicationContext(),
 								EnterPinActivity.class);
@@ -112,10 +112,10 @@ public class DriverListActivity extends ListActivity implements
 					DbHandler.getInstance(getApplicationContext());
 					intent.putExtra(VariableManager.EXTRA_DRIVER, String
 							.valueOf(c.getString(c
-									.getColumnIndex(DbHandler.C_NAME))));
+									.getColumnIndex(DbHandler.C_DRIVER_NAME))));
 					intent.putExtra(VariableManager.EXTRA_DRIVER_ID, String
 							.valueOf(c.getString(c
-									.getColumnIndex(DbHandler.C_ID))));
+									.getColumnIndex(DbHandler.C_DRIVER_ID))));
 					startActivity(intent);
 				}
 			}
@@ -154,8 +154,8 @@ public class DriverListActivity extends ListActivity implements
 
 		DbHandler.getInstance(this);
 		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_DRIVERS
-				+ " WHERE " + DbHandler.C_NAME + " LIKE " + " '%" + filter
-				+ "%'" + " ORDER BY " + DbHandler.C_NAME + " ASC";
+				+ " WHERE " + DbHandler.C_DRIVER_NAME + " LIKE " + " '%" + filter
+				+ "%'" + " ORDER BY " + DbHandler.C_DRIVER_NAME + " ASC";
 
 		SQLiteCursorLoader loader = new SQLiteCursorLoader(
 				getApplicationContext(),

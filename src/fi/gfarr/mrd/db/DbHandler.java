@@ -12,7 +12,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class DbHandler extends SQLiteOpenHelper {
+public class DbHandler extends SQLiteOpenHelper
+{
 
 	static final String TAG = "DbHandler";
 	private static DbHandler dbHandler;
@@ -23,20 +24,19 @@ public class DbHandler extends SQLiteOpenHelper {
 
 	// Tables
 	public static final String TABLE_DRIVERS = "Drivers";
-	public static final String TABLE_BAGS = "Bag"; // Consignments
-													// going to
-													// various
-													// dilivery
-													// points
-	public static final String TABLE_WAYBILLS = "Waybill"; // Cargo containing
-															// items
-															// belonging to
+	public static final String TABLE_MANAGERS = "Managers";
+	public static final String TABLE_BAGS = "Bag"; // Consignments going to various delivery points
+	public static final String TABLE_WAYBILLS = "Waybill"; // Cargo containing items belonging to
 															// consignments
 
 	// ------------ Fields - Drivers ---------
-	public static final String C_ID = "_id"; // Primary key
-	public static final String C_NAME = "dvr_name";
-	public static final String C_PIN = "dvr_pin";
+	public static final String C_DRIVER_ID = "_id"; // Primary key
+	public static final String C_DRIVER_NAME = "dvr_name";
+	public static final String C_DRIVER_PIN = "dvr_pin";
+
+	// ------------ Fields - Managers ---------
+	public static final String C_MANAGER_ID = "_id"; // Primary key
+	public static final String C_MANAGER_NAME = "man_name";
 
 	// ------------ Fields - Bags -------------
 	public static final String C_BAG_ID = "_id"; // Consignment number
@@ -87,56 +87,65 @@ public class DbHandler extends SQLiteOpenHelper {
 	// X of whatever
 	public static final String C_wAYBILL_PARCEL_SEQUENCE = "waybill_parcel_seq";
 
-	public DbHandler(Context context) {
+	public DbHandler(Context context)
+	{
 		super(context, DB_NAME, null, DB_VERSION);
 		// TODO Auto-generated constructor stub
 	}
 
 	// Return singleton instance of DbHandler
-	public static DbHandler getInstance(Context context) {
-		if (dbHandler == null) {
+	public static DbHandler getInstance(Context context)
+	{
+		if (dbHandler == null)
+		{
 			dbHandler = new DbHandler(context.getApplicationContext());
 		}
 		return dbHandler;
 	}
 
 	@Override
-	public void onCreate(SQLiteDatabase db) {
+	public void onCreate(SQLiteDatabase db)
+	{
 		// TODO Auto-generated method stub
-		try {
+		try
+		{
 			db.beginTransaction();
 
-			final String CREATE_TABLE_DRIVERS = "CREATE TABLE " + TABLE_DRIVERS
-					+ "(" + C_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-					+ C_NAME + " TEXT," + C_PIN + " TEXT)";
+			final String CREATE_TABLE_DRIVERS = "CREATE TABLE " + TABLE_DRIVERS + "(" + C_DRIVER_ID
+					+ " INTEGER PRIMARY KEY AUTOINCREMENT," + C_DRIVER_NAME + " TEXT," + " TEXT,"
+					+ C_DRIVER_PIN + " TEXT)";
 			createTable(db, TABLE_DRIVERS, CREATE_TABLE_DRIVERS);
 
-			final String CREATE_TABLE_BAGS = "CREATE TABLE " + TABLE_BAGS + "("
-					+ C_BAG_ID + " TEXT PRIMARY KEY," + C_BAG_SCANNED
-					+ " INTEGER," + C_BAG_ASSIGNED + " INTEGER,"
-					+ C_BAG_NUM_ITEMS + " INTEGER," + C_BAG_CREATION_TIME
-					+ " TEXT," + C_BAG_DEST_BRANCH + " TEXT)";
+			final String CREATE_TABLE_MANAGERS = "CREATE TABLE " + TABLE_MANAGERS + "("
+					+ C_MANAGER_ID + " INTEGER PRIMARY KEY," + " TEXT," + C_MANAGER_NAME + " TEXT)";
+			createTable(db, TABLE_MANAGERS, CREATE_TABLE_MANAGERS);
+
+			final String CREATE_TABLE_BAGS = "CREATE TABLE " + TABLE_BAGS + "(" + C_BAG_ID
+					+ " TEXT PRIMARY KEY," + C_BAG_SCANNED + " INTEGER," + C_BAG_ASSIGNED
+					+ " INTEGER," + C_BAG_NUM_ITEMS + " INTEGER," + C_BAG_CREATION_TIME + " TEXT,"
+					+ C_BAG_DEST_BRANCH + " TEXT)";
 			createTable(db, TABLE_BAGS, CREATE_TABLE_BAGS);
 
-			final String CREATE_TABLE_WAYBILL = "CREATE TABLE "
-					+ TABLE_WAYBILLS + "(" + C_WAYBILL_ID
-					+ " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
-					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_WEIGHT + " TEXT,"
-					+ C_WAYBILL_DEST + " TEXT," + C_WAYBILL_TEL + " TEXT,"
-					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
-					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_EMAIL
-					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
-					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
+			final String CREATE_TABLE_WAYBILL = "CREATE TABLE " + TABLE_WAYBILLS + "("
+					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
+					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST
+					+ " TEXT," + C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
+					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_EMAIL + " TEXT,"
+					+ "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS + "("
+					+ C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 
 			db.setTransactionSuccessful();
-		} catch (SQLiteException e) { // TODO Auto-generated catch
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
 			// block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, DbHandler.class.getName() + " - Error creating table: "
-					+ sw.toString());
-		} finally {
+			Log.d(TAG, DbHandler.class.getName() + " - Error creating table: " + sw.toString());
+		}
+		finally
+		{
 			db.endTransaction();
 		}
 
@@ -148,15 +157,18 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * @param table
 	 * @param raw_query
 	 */
-	private void createTable(SQLiteDatabase db, String table, String raw_query) {
+	private void createTable(SQLiteDatabase db, String table, String raw_query)
+	{
 		db.execSQL(raw_query);
 		Log.d(TAG, "created SQL table: " + table);
 	}
 
 	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+	{
 		// TODO Auto-generated method stub
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DRIVERS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANAGERS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BAGS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS);
 		onCreate(db);
@@ -169,14 +181,33 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * 
 	 * Returns boolean of whether the database transaction was successful
 	 */
-	public boolean addDriver(Driver driver) {
+	public boolean addDriver(Driver driver)
+	{
 		ContentValues values = new ContentValues();
 
-		values.put(C_ID, driver.getId());
-		values.put(C_NAME, driver.getName());
-		values.put(C_PIN, driver.getPin());
+		values.put(C_DRIVER_ID, driver.getId());
+		values.put(C_DRIVER_NAME, driver.getName());
+		values.put(C_DRIVER_PIN, driver.getPin());
 
 		return addRow(TABLE_DRIVERS, values);
+	}
+
+	/**
+	 * Add a manager to the DB.
+	 * 
+	 * @param id
+	 * @param first_name
+	 * @param last_name
+	 * @return Success. True or false.
+	 */
+	public boolean addManager(String id, String name)
+	{
+		ContentValues values = new ContentValues();
+
+		values.put(C_MANAGER_ID, id);
+		values.put(C_MANAGER_NAME, name);
+
+		return addRow(TABLE_MANAGERS, values);
 	}
 
 	/**
@@ -186,7 +217,8 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * 
 	 * Returns boolean of whether the database transaction was successful
 	 */
-	public boolean addBag(Bag bag) {
+	public boolean addBag(Bag bag)
+	{
 		ContentValues values = new ContentValues();
 
 		values.put(C_BAG_ID, bag.getBagNumber()); // PK
@@ -206,13 +238,13 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * 
 	 * Returns boolean of whether the database transaction was successful
 	 */
-	public boolean addWaybill(Waybill item) {
+	public boolean addWaybill(Waybill item)
+	{
 		ContentValues values = new ContentValues();
 
 		values.put(C_WAYBILL_ID, item.getWaybill()); // PK
 		values.put(C_WAYBILL_PARCELCOUNT, item.getParcelCount());
-		values.put(C_wAYBILL_PARCEL_SEQUENCE, item.getParcelSeq() + " of "
-				+ item.getParcelCount());
+		values.put(C_wAYBILL_PARCEL_SEQUENCE, item.getParcelSeq() + " of " + item.getParcelCount());
 		values.put(C_WAYBILL_DIMEN, item.getDimensions());
 		values.put(C_WAYBILL_TEL, item.getTelephone());
 		values.put(C_WAYBILL_EMAIL, item.getEmail());
@@ -229,28 +261,40 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * @param values
 	 * @return
 	 */
-	public boolean addRow(String table, ContentValues values) {
+	public boolean addRow(String table, ContentValues values)
+	{
 
 		SQLiteDatabase db = null;
-		try {
+		try
+		{
 
 			db = this.getWritableDatabase(); // Open db
 			// Write to db and return success status
 			return db.insertOrThrow(table, null, values) >= 0;
 
-		} catch (SQLiteException e) { // TODO Auto-generated catch
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
 			// block
-			try {
-				return db.insertWithOnConflict(table, null, values,
-						SQLiteDatabase.CONFLICT_REPLACE) >= 0;
-			} catch (Exception err) {
+			try
+			{
+				return db
+						.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE) >= 0;
+			}
+			catch (Exception err)
+			{
 				return false; // Db transaction failed
 			}
-		} catch (IllegalStateException err) {
+		}
+		catch (IllegalStateException err)
+		{
 			return false;
-		} finally {
+		}
+		finally
+		{
 
-			if (db != null) {
+			if (db != null)
+			{
 				if (db.isOpen()) // check if db is already open
 				{
 					db.close(); // close db
@@ -266,9 +310,11 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * @param cons_no
 	 * @param scanned
 	 */
-	public void setScanned(String cons_no, boolean scanned) {
+	public void setScanned(String cons_no, boolean scanned)
+	{
 		SQLiteDatabase db = null;
-		try {
+		try
+		{
 
 			db = this.getWritableDatabase(); // Open db
 
@@ -277,17 +323,24 @@ public class DbHandler extends SQLiteOpenHelper {
 
 			db.update(TABLE_BAGS, values, C_BAG_ID + "=" + cons_no, null);
 
-		} catch (SQLiteException e) { // TODO Auto-generated catch
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
-		} catch (IllegalStateException e) {
+		}
+		catch (IllegalStateException e)
+		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
-		} finally {
+		}
+		finally
+		{
 
-			if (db != null) {
+			if (db != null)
+			{
 				if (db.isOpen()) // check if db is already open
 				{
 					db.close(); // close db
@@ -303,9 +356,11 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * @param cons_no
 	 * @param scanned
 	 */
-	public void setScannedAll(boolean scanned) {
+	public void setScannedAll(boolean scanned)
+	{
 		SQLiteDatabase db = null;
-		try {
+		try
+		{
 
 			db = this.getWritableDatabase(); // Open db
 
@@ -314,17 +369,24 @@ public class DbHandler extends SQLiteOpenHelper {
 
 			db.update(TABLE_BAGS, values, null, null);
 
-		} catch (SQLiteException e) { // TODO Auto-generated catch
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
-		} catch (IllegalStateException e) {
+		}
+		catch (IllegalStateException e)
+		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
-		} finally {
+		}
+		finally
+		{
 
-			if (db != null) {
+			if (db != null)
+			{
 				if (db.isOpen()) // check if db is already open
 				{
 					db.close(); // close db
@@ -338,7 +400,8 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public static String getDbName() {
+	public static String getDbName()
+	{
 		return DB_NAME;
 	}
 
@@ -349,10 +412,14 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * @param bool
 	 * @return
 	 */
-	public int convertBoolToInt(boolean bool) {
-		if (bool) {
+	public int convertBoolToInt(boolean bool)
+	{
+		if (bool)
+		{
 			return 1;
-		} else {
+		}
+		else
+		{
 			return 0;
 		}
 	}
@@ -364,17 +431,23 @@ public class DbHandler extends SQLiteOpenHelper {
 	 * @param bool
 	 * @return
 	 */
-	public boolean convertIntToBool(int integer) {
-		if (integer == 1) {
+	public boolean convertIntToBool(int integer)
+	{
+		if (integer == 1)
+		{
 			return true;
-		} else {
+		}
+		else
+		{
 			return false;
 		}
 	}
 
-	public ArrayList<Bag> getConsignments() {
+	public ArrayList<Bag> getConsignments()
+	{
 		SQLiteDatabase db = null;
-		try {
+		try
+		{
 
 			db = this.getReadableDatabase(); // Open db
 
@@ -382,31 +455,39 @@ public class DbHandler extends SQLiteOpenHelper {
 			String sql = "SELECT * FROM " + TABLE_BAGS;
 			Cursor cursor = db.rawQuery(sql, null);
 
-			if (cursor != null && cursor.moveToFirst()) {
+			if (cursor != null && cursor.moveToFirst())
+			{
 				consignments = new ArrayList<Bag>();
 
-				while (!cursor.isAfterLast()) {
-					Bag consignment = new Bag(cursor.getString(cursor
-							.getColumnIndex(C_BAG_ID)), "");
+				while (!cursor.isAfterLast())
+				{
+					Bag consignment = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)), "");
 					consignments.add(consignment);
 				}
 
 			}
 
 			return consignments;
-		} catch (SQLiteException e) { // TODO Auto-generated catch
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
 			return null;
-		} catch (IllegalStateException e) {
+		}
+		catch (IllegalStateException e)
+		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
 			return null;
-		} finally {
+		}
+		finally
+		{
 
-			if (db != null) {
+			if (db != null)
+			{
 				if (db.isOpen()) // check if db is already open
 				{
 					db.close(); // close db

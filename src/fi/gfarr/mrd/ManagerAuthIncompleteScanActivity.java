@@ -45,7 +45,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	 */
 	private void initClickListeners()
 	{
-		// Click Start New Milkrun button
+		
 		holder.button_continue.setOnClickListener(new View.OnClickListener()
 		{
 			public void onClick(View v)
@@ -55,7 +55,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			}
 		});
 
-		// Click Start Trainingrun button
+		
 		holder.button_change_manager.setOnClickListener(new View.OnClickListener()
 		{
 			public void onClick(View v)

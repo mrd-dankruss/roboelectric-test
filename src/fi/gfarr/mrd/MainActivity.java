@@ -3,36 +3,35 @@ package fi.gfarr.mrd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import fi.gfarr.mrd.db.DbHandler;
-import fi.gfarr.mrd.db.Driver;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+{
 
 	private List<Fragment> fragments = new ArrayList<Fragment>(); // List of
 																	// screen
 																	// fragments
 	private ViewHolder holder;
 	private View root_view;
-	private final String TAG = "MainActivty";
+	private final String TAG = "MainActivity";
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -43,49 +42,50 @@ public class MainActivity extends Activity {
 
 		new RequestTokenTask().execute();
 
-		// Retrieve list of drivers from server
-		// JSONArray drivers_jArray = ServerInterface.getDrivers();
-		new RetrieveDriversTask().execute();
 		initClickListeners();
 	}
 
 	/**
 	 * Initiate click listeners for buttons.
 	 */
-	private void initClickListeners() {
+	private void initClickListeners()
+	{
 		// Click Start New Milkrun button
-		holder.button_start_milkrun
-				.setOnClickListener(new View.OnClickListener() {
-					public void onClick(View v) {
-						// Perform action on click
+		holder.button_start_milkrun.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Perform action on click
 
-						new Thread(new Runnable() {
-							public void run() {
-								Intent intent = new Intent(
-										getApplicationContext(),
-										DriverListActivity.class);
-								startActivity(intent);
-							}
-						}).start();
+				new Thread(new Runnable()
+				{
+					public void run()
+					{
+						Intent intent = new Intent(getApplicationContext(),
+								DriverListActivity.class);
+						startActivity(intent);
 					}
-				});
+				}).start();
+			}
+		});
 
 		// Click Start Trainingrun button
-		holder.button_start_trainingrun
-				.setOnClickListener(new View.OnClickListener() {
-					public void onClick(View v) {
-						// Perform action on click
+		holder.button_start_trainingrun.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Perform action on click
 
-						new Thread(new Runnable() {
-							public void run() {
-								Intent intent = new Intent(
-										getApplicationContext(),
-										ScanActivity.class);
-								startActivity(intent);
-							}
-						}).start();
+				new Thread(new Runnable()
+				{
+					public void run()
+					{
+						Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+						startActivity(intent);
 					}
-				});
+				}).start();
+			}
+		});
 	}
 
 	/**
@@ -94,10 +94,24 @@ public class MainActivity extends Activity {
 	 * @author greg
 	 * 
 	 */
-	private class RequestTokenTask extends AsyncTask<Void, Void, String> {
-		@Override
-		protected String doInBackground(Void... urls) {
+	private class RequestTokenTask extends AsyncTask<Void, Void, String>
+	{
 
+		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog.setMessage("Acquiring token");
+			this.dialog.show();
+		}
+
+		@Override
+		protected String doInBackground(Void... urls)
+		{
+			// Log.i(TAG, "Fetching token...");
 			String token = ServerInterface.requestToken();
 
 			SharedPreferences settings = PreferenceManager
@@ -108,76 +122,71 @@ public class MainActivity extends Activity {
 
 			VariableManager.token = token; // Security vulnerability?
 
+			// Log.i(TAG, "Token aquired.");
 			return token;
 		}
-	}
 
-	/**
-	 * Retrieves the list of drivers from server to populate login list.
-	 * 
-	 * @author greg
-	 * 
-	 */
-	private class RetrieveDriversTask extends AsyncTask<Void, Void, JSONArray> {
-		/**
-		 * The system calls this to perform work in a worker thread and delivers
-		 * it the parameters given to AsyncTask.execute()
-		 */
 		@Override
-		protected JSONArray doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-			return ServerInterface.getDrivers();
-		}
-
-		/**
-		 * The system calls this to perform work in the UI thread and delivers
-		 * the result from doInBackground()
-		 */
-		@Override
-		protected void onPostExecute(JSONArray result) {
-			for (int i = 0; i < result.length(); i++) {
-				try {
-					// ID
-					int id = Integer.parseInt(result.getJSONObject(i)
-							.getString(VariableManager.JSON_KEY_DRIVER_ID));
-
-					// Name
-					String name = result.getJSONObject(i)
-							.getString(VariableManager.JSON_KEY_DRIVER_FIRSTNAME)
-							+ " "
-							+ result.getJSONObject(i).getString(VariableManager.JSON_KEY_DRIVER_LASTNAME);
-
-					// PIN
-					String pin = result.getJSONObject(i).getString(VariableManager.JSON_KEY_DRIVER_PIN);
-
-					DbHandler.getInstance(getApplicationContext()).addDriver(
-							new Driver(id, name, pin));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		protected void onPostExecute(String result)
+		{
+			// Close progress spinner
+			if (dialog.isShowing())
+			{
+				dialog.dismiss();
 			}
+
+			// Progress spinner
+			final ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+			dialog.setMessage("Retrieving list of drivers");
+			dialog.show();
+
+			// Retrieve list of drivers from server, after token has been acquired
+			// JSONArray drivers_jArray = ServerInterface.getDrivers();
+
+			// Retrieve list of drivers in a thread
+			Runnable r = new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					// Log.i(TAG, "Fetching list of drivers");
+					ServerInterface.getDrivers(getApplicationContext());
+					// Log.i(TAG, "Driver list updated.");
+
+					runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							if (dialog.isShowing()) dialog.dismiss();
+						}
+					});
+				}
+			};
+
+			Thread thread = new Thread(r);
+			thread.start();
 		}
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
-	public void initViewHolder() {
+	public void initViewHolder()
+	{
 
-		if (root_view == null) {
+		if (root_view == null)
+		{
 
-			root_view = this.getWindow().getDecorView()
-					.findViewById(android.R.id.content);
+			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-			if (holder == null) {
+			if (holder == null)
+			{
 				holder = new ViewHolder();
 			}
 
@@ -189,20 +198,25 @@ public class MainActivity extends Activity {
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
-		} else {
+		}
+		else
+		{
 			holder = (ViewHolder) root_view.getTag();
 
-			if ((root_view.getParent() != null)
-					&& (root_view.getParent() instanceof ViewGroup)) {
+			if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
+			{
 				((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-			} else {
+			}
+			else
+			{
 			}
 		}
 	}
 
 	// ViewHolder stores static instances of views in order to reduce the number
 	// of times that findViewById is called, which affected listview performance
-	static class ViewHolder {
+	static class ViewHolder
+	{
 		Button button_start_milkrun;
 		Button button_start_trainingrun;
 	}

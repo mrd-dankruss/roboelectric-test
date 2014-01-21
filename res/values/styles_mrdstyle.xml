@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- File created by the Android Action Bar Style Generator
+<!--
+     File created by the Android Action Bar Style Generator
 
      Copyright (C) 2011 The Android Open Source Project
      Copyright (C) 2012 readyState Software Ltd
@@ -29,8 +30,6 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_mrdstyle</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_mrdstyle</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Mrdstyle</item>
-        
-        
     </style>
 
     <style name="ActionBar.Solid.Mrdstyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
@@ -46,7 +45,7 @@
     </style>
 
     <style name="PopupMenu.Mrdstyle" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_mrdstyle</item>	
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_mrdstyle</item>
     </style>
 
     <style name="DropDownListView.Mrdstyle" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
@@ -62,11 +61,11 @@
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_mrdstyle</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_mrdstyle</item>
     </style>
-    
+
     <style name="ProgressBar.Mrdstyle" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_mrdstyle</item>
     </style>
-    
+
     <style name="ActionButton.CloseMode.Mrdstyle" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
         <item name="android:background">@drawable/btn_cab_done_mrdstyle</item>
     </style>
@@ -75,6 +74,16 @@
     <style name="Theme.Mrdstyle.Widget" parent="@android:style/Theme.Holo">
         <item name="android:popupMenuStyle">@style/PopupMenu.Mrdstyle</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Mrdstyle</item>
+    </style>
+
+    <style name="DialogTextTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/colour_lightgrey</item>
+    </style>
+
+    <style name="DialogText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colour_text_darkgrey</item>
     </style>
 
 </resources>
