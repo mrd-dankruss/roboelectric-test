@@ -188,8 +188,6 @@ public class ScanActivity extends CaptureActivity implements
 		@Override
 		protected void onPostExecute(JSONArray result) {
 
-			// MUST STILL SORT OUT CONSIGNMENT & WAYBILL SIDE OF DB!!!
-
 			if (result != null) {
 
 				// Stores waybill IDs as they are loaded.
@@ -240,21 +238,22 @@ public class ScanActivity extends CaptureActivity implements
 							// Tel
 							String tel = waybills.getJSONObject(j).getString(
 									"telephone");
-							
-							//Weight
-							String weight = waybills.getJSONObject(j).getString(
-									"weight");
-							
-							//Dimensions
+
+							// Weight
+							String weight = waybills.getJSONObject(j)
+									.getString("weight");
+
+							// Dimensions
 							String dimen = waybills.getJSONObject(j).getString(
 									"dimensions");
 
+							// Waybill ID
 							String waybill_id = waybills.getJSONObject(j)
 									.getString("id");
 
 							// email
 							String email = waybills.getJSONObject(j).getString(
-									"email");
+									"email");						
 
 							// comlog
 							String comlog = waybills.getJSONObject(j)
@@ -265,7 +264,7 @@ public class ScanActivity extends CaptureActivity implements
 									.getInt("parcelcount");
 
 							// Create Waybill object and add values
-							Waybill waybill = new Waybill(id, waybill_id);
+							Waybill waybill = new Waybill(waybill_id, id);
 							waybill.setTelephone(tel);
 							waybill.setEmail(email);
 							waybill.setComLog(comlog);
@@ -276,6 +275,8 @@ public class ScanActivity extends CaptureActivity implements
 							// Add ID to hashtable
 							Integer current_count = waybill_IDs.get(waybill_id);
 
+							// Calculate how many times the current waybill ID
+							// has occurred already
 							if (current_count != null) {
 								// Increment occurence count of the waybill
 								waybill_IDs.put(waybill_id, current_count + 1);
@@ -432,67 +433,60 @@ public class ScanActivity extends CaptureActivity implements
 			ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
 			int i = 0;
 			for (View child : all_views_within_top_view) {
-				/*
-				 * Log.d(TAG, String.valueOf(cursor.getString(cursor
-				 * .getColumnIndex(DbHandler.C_CONSIGNMENT_NO))) +
-				 * " "+rawResult.getText());
-				 */
 
-				// if (cursor.getString(
-				// cursor.getColumnIndex(DbHandler.C_CONSIGNMENT_NO))
-				// .equals(rawResult.getText())) {
-				/*
-				 * Extract TextView from cursorAdapter
-				 */
+				while (!cursor.isAfterLast()) {
+					RelativeLayout row = (RelativeLayout) holder.list
+							.getChildAt(i);
 
-				RelativeLayout row = (RelativeLayout) holder.list.getChildAt(i);
+					if (child != null) {
+						TextView text_view = (TextView) child // row
+								.findViewById(R.id.textView_row_scan);
+						if (text_view != null) {
 
-				if (child != null) {
-					TextView text_view = (TextView) child // row
-							.findViewById(R.id.textView_row_scan);
-					if (text_view != null) {
+							String str = text_view.getText().toString();
+							StringTokenizer tokenizer = new StringTokenizer(str);
+							String cons_number = tokenizer.nextToken();
 
-						String str = text_view.getText().toString();
-						StringTokenizer tokenizer = new StringTokenizer(str);
-						String cons_number = tokenizer.nextToken();
+							if (cons_number.equals(rawResult.getText())) {
+								// Match found. Mark as selected.
+								text_view.setTextColor(getResources().getColor(
+										R.color.colour_green_scan)); // Change
+								// colour
 
-						if (cons_number.equals(rawResult.getText())) {
-							// Match found. Mark as selected.
-							text_view.setTextColor(getResources().getColor(
-									R.color.colour_green_scan)); // Change
-							// colour
+								// Make tick
+								ImageView image_view_tick = (ImageView) child
+										.findViewById(R.id.imageView_row_scan_tick);
+								if (image_view_tick != null) {
+									image_view_tick.setVisibility(View.VISIBLE);
+								}
+							} else {
 
-							// Make tick
-							ImageView image_view_tick = (ImageView) child
-									.findViewById(R.id.imageView_row_scan_tick);
-							if (image_view_tick != null) {
-								image_view_tick.setVisibility(View.VISIBLE);
+								Log.d(TAG, "handleDecode(): no match "
+										+ cons_number);
 							}
-						} else {
-
-							Log.d(TAG, "handleDecode(): no match "
-									+ cons_number);
 						}
+						// Add this index to a list
+						selected_items.add(String.valueOf(i));
 
+						/*
+						 * Update scanned status in db to reorder list
+						 */
+						DbHandler
+								.getInstance(getApplicationContext())
+								.setScanned(
+										cursor.getString(cursor
+												.getColumnIndex(DbHandler.C_BAG_ID)),
+										true);
+
+						// Refresh list
+						cursor_adapter.notifyDataSetChanged();
+					} else {
+						Log.d(TAG, "handleDecode(): row is null");
 					}
-					// Add this index to a list
-					selected_items.add(String.valueOf(i));
-
-					/*
-					 * Update scanned status in db to reorder list
-					 */
-					DbHandler.getInstance(getApplicationContext()).setScanned(
-							cursor.getString(cursor
-									.getColumnIndex(DbHandler.C_BAG_ID)), true);
-
-					// Refresh list
-					cursor_adapter.notifyDataSetChanged();
-				} else {
-					Log.d(TAG, "handleDecode(): row is null");
+					// }
+					cursor.moveToNext();
+					i++;
 				}
-				// }
-				cursor.moveToNext();
-				i++;
 			}
 		} else {
 			Log.d(TAG, "handleDecode(): cursor_adapter is null");

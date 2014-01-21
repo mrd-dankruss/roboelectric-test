@@ -1,9 +1,12 @@
 package fi.gfarr.mrd.db;
 
-import java.util.ArrayList;
+import android.util.Log;
+
 
 public class Waybill {
 
+	private final String TAG = "Waybill";
+	
 	// Serial number of item
 	private String waybill_no;
 
@@ -35,7 +38,7 @@ public class Waybill {
 	// Parcel sequence number
 	private int parcel_seq;
 
-	public Waybill(String bag, String wayb) {
+	public Waybill(String wayb, String bag) {
 		setWaybillNumber(wayb);
 		setBagNumber(bag);
 		setDimensions("0x0x0");

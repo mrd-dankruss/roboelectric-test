@@ -166,8 +166,8 @@ public class ViewBagManifestActivity extends ListActivity implements
 					.findViewById(R.id.textView_manifest_consignment_number);
 			holder.text_view_consignment_destination = (TextView) root_view
 					.findViewById(R.id.textView_manifest_consignment_destination);
-			holder.text_view_manifest_weight = (TextView) root_view
-					.findViewById(R.id.textView_manifest_weight);
+//			holder.text_view_manifest_weight = (TextView) root_view
+//					.findViewById(R.id.textView_manifest_weight);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -190,7 +190,7 @@ public class ViewBagManifestActivity extends ListActivity implements
 	static class ViewHolder {
 		TextView text_view_consignment_number;
 		TextView text_view_consignment_destination;
-		TextView text_view_manifest_weight;
+//		TextView text_view_manifest_weight;
 		ListView list;
 
 	}

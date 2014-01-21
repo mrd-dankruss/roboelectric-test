@@ -217,7 +217,7 @@ public class DbHandler extends SQLiteOpenHelper {
 		values.put(C_WAYBILL_TEL, item.getTelephone());
 		values.put(C_WAYBILL_EMAIL, item.getEmail());
 		values.put(C_WAYBILL_WEIGHT, item.getWeight());
-		values.put(C_BAG_ID, item.getBagNumber()); // FK
+		values.put(C_WAYBILL_BAG_ID, item.getBagNumber()); // FK
 
 		return addRow(TABLE_WAYBILLS, values);
 	}
@@ -388,6 +388,7 @@ public class DbHandler extends SQLiteOpenHelper {
 				while (!cursor.isAfterLast()) {
 					Bag consignment = new Bag(cursor.getString(cursor
 							.getColumnIndex(C_BAG_ID)), "");
+					consignments.add(consignment);
 				}
 
 			}

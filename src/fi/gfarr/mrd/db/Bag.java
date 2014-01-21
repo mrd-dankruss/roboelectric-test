@@ -1,9 +1,12 @@
 package fi.gfarr.mrd.db;
 
-import java.util.ArrayList;
+import android.util.Log;
+
 
 public class Bag {
 
+	private final String TAG = "Bag";
+	
 	// Serial number of consignment bag
 	private String bag_number;
 
