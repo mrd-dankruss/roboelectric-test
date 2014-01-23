@@ -19,4 +19,22 @@
 
 <resources>
     <color name="pressed_mrdstyle">#CCFCE100</color>
+    
+    <!-- Fragment Report Delay Colours -->
+    <color name="reportDelay_mainText">#2e2e2e</color>
+    <color name="reportDelay_subText">#777777</color>
+    
+    
+    <color name="seperator_grey">#d4d4d4</color>
+    <color name="grey">#B0B0AF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="yellow">#F5D909</color>
+    <color name="yellow_pressed">#dcc308</color>
+    <color name="button_border">#948809</color>
+    <color name="pressed_mrdstyle">#CCFCE100</color>
+    
+    <color name="background_grey">#E9E9E9</color>
+    <color name="border_grey">#CCC9C9</color>
+    <color name="light_grey">#F2F2F2</color>
 </resources>

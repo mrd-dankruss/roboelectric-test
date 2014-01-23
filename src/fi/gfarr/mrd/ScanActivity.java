@@ -191,6 +191,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
 				{
 					// Go to View Deliveries screen
+					Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+				    //EditText editText = (EditText) findViewById(R.id.edit_message);
+				    //String message = editText.getText().toString();
+				    //intent.putExtra(EXTRA_MESSAGE, message);
+				    startActivity(intent);
 				}
 				else
 				{

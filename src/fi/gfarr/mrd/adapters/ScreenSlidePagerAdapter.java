@@ -2,7 +2,8 @@ package fi.gfarr.mrd.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 import fi.gfarr.mrd.fragments.ViewDeliveriesFragment;
 
 
@@ -11,7 +12,7 @@ import fi.gfarr.mrd.fragments.ViewDeliveriesFragment;
  * A simple pager adapter that represents ViewDeliveriesFragment objects, in
  * sequence.
  */
-public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
 
 	/**
 	 * The number of pages (wizard steps) to show in this demo.
@@ -30,7 +31,14 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public Fragment getItem(int position) {
-		return new ViewDeliveriesFragment();
+		Log.d("fi.gfarr.mrd", "Position: " + position);
+		Fragment fragment = null;
+		switch (position) {
+            case 0:	fragment = new ViewDeliveriesFragment();
+            case 1: fragment = new ViewDeliveriesFragment();
+            case 2: fragment = new ViewDeliveriesFragment();
+        }
+		return fragment;
 	}
 
 	@Override

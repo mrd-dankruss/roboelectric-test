@@ -3,8 +3,11 @@ package fi.gfarr.mrd;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,9 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import fi.gfarr.mrd.adapters.ScreenSlidePagerAdapter;
+import fi.gfarr.mrd.fragments.CompletedDeliveriesFragment;
+import fi.gfarr.mrd.fragments.UnsuccessfulDeliveriesFragment;
+import fi.gfarr.mrd.fragments.ViewDeliveriesFragment;
 import fi.gfarr.mrd.widget.TabManager;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
@@ -68,7 +74,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 		setupTab(new TextView(this), getString(R.string.tab_unsuccessful));
 
 		// set tabhost to listen for tab changes
-		setCurrentPage(0);
+		setCurrentPage(1);
 		mTabHost.setOnTabChangedListener(this);
 	}
 
@@ -107,6 +113,53 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 	public void onTabChanged(String tag) {
 		final int pos = this.mTabHost.getCurrentTab();
 		setCurrentPage(pos);
+		FragmentManager fm =   getSupportFragmentManager();
+		
+		CompletedDeliveriesFragment completedDeliveriesFragment = (CompletedDeliveriesFragment) fm.findFragmentByTag("completed");
+        ViewDeliveriesFragment viewDeliveriesFragment = (ViewDeliveriesFragment) fm.findFragmentByTag("view");
+        UnsuccessfulDeliveriesFragment unsuccessfulDeliveriesFragment = (UnsuccessfulDeliveriesFragment) fm.findFragmentByTag("unsuccessful");
+        FragmentTransaction ft = fm.beginTransaction();
+
+        /** Detaches the androidfragment if exists */
+        if(viewDeliveriesFragment!=null)
+            ft.detach(viewDeliveriesFragment);
+
+        /** Detaches the applefragment if exists */
+        if(completedDeliveriesFragment!=null)
+            ft.detach(completedDeliveriesFragment);
+        
+        if(unsuccessfulDeliveriesFragment!=null)
+            ft.detach(unsuccessfulDeliveriesFragment);
+
+        /** If current tab is android */
+        if(pos == 0){
+
+            if(completedDeliveriesFragment==null){
+                /** Create AndroidFragment and adding to fragmenttransaction */
+                ft.add(R.id.realtabcontent,new CompletedDeliveriesFragment(), "completed");
+            }else{
+                /** Bring to the front, if already exists in the fragmenttransaction */
+                ft.attach(completedDeliveriesFragment);
+            }
+
+        } else if(pos == 1) {    /** If current tab is apple */
+            if(viewDeliveriesFragment==null){
+                /** Create AppleFragment and adding to fragmenttransaction */
+                ft.add(R.id.realtabcontent,new ViewDeliveriesFragment(), "view");
+             }else{
+                /** Bring to the front, if already exists in the fragmenttransaction */
+                ft.attach(viewDeliveriesFragment);
+            }
+        } else {    /** If current tab is apple */
+            if(unsuccessfulDeliveriesFragment==null){
+                /** Create AppleFragment and adding to fragmenttransaction */
+                ft.add(R.id.realtabcontent,new UnsuccessfulDeliveriesFragment(), "unsuccessful");
+             }else{
+                /** Bring to the front, if already exists in the fragmenttransaction */
+                ft.attach(unsuccessfulDeliveriesFragment);
+            }
+        }
+        ft.commit();
 	}
 
 	@Override
@@ -118,11 +171,13 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 	@Override
 	public void onPageScrolled(int arg0, float arg1, int arg2) {
 		// TODO Auto-generated method stub
+		//Log.d("fi.gfarr.mrd", "onPageScrolled" + arg0);
 	}
 
 	@Override
 	public void onPageSelected(int arg0) {
 		// TODO Auto-generated method stub
+		Log.d("fi.gfarr.mrd", "onPageSelected:" + arg0);
 		this.mTabHost.setCurrentTab(arg0);
 		currentPage = mPager.getCurrentItem();
 	}
