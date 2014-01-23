@@ -79,7 +79,6 @@ public class ManagerListActivity extends ListActivity implements LoaderCallbacks
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-
 				if (holder.list.getItemAtPosition(position) != null)
 				{
 					Cursor c = (Cursor) holder.list.getItemAtPosition(position);
@@ -92,6 +91,13 @@ public class ManagerListActivity extends ListActivity implements LoaderCallbacks
 							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_MANAGER_NAME))));
 					intent.putExtra(VariableManager.EXTRA_MANAGER_ID,
 							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_MANAGER_ID))));
+
+					// Pass driver name on
+					intent.putExtra(VariableManager.EXTRA_DRIVER,
+							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+
+					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 					startActivity(intent);
 				}

@@ -80,7 +80,7 @@ public class MainActivity extends Activity
 				{
 					public void run()
 					{
-						Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+						Intent intent = new Intent(getApplicationContext(), MapActivity.class);
 						startActivity(intent);
 					}
 				}).start();

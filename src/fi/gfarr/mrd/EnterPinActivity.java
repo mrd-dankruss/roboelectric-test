@@ -122,13 +122,13 @@ public class EnterPinActivity extends Activity
 	public void login()
 	{
 
-		// Progress spinner
-		final ProgressDialog dialog = new ProgressDialog(EnterPinActivity.this);
-		dialog.setMessage("Authenticating");
-		dialog.show();
-
 		if (checkPin())
 		{
+			// Progress spinner
+			final ProgressDialog dialog = new ProgressDialog(EnterPinActivity.this);
+			dialog.setMessage("Authenticating");
+			dialog.show();
+
 			/*
 			 * Make API call authenticating driver credentials in a thread. 
 			 * When finished, send msg to thread handler to start ScanActivity

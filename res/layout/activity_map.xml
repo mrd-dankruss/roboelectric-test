@@ -40,6 +40,34 @@
             android:ems="10" >
 
         </SearchView>
+        
+        <RelativeLayout
+        android:id="@+id/toast_map"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/toast_red"
+        android:paddingBottom="@dimen/margin_standard"
+        android:paddingTop="@dimen/margin_standard"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/textView_map_toast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_standard"
+            android:layout_marginRight="@dimen/margin_standard"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="@string/text_play_services"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
     
 
 </RelativeLayout>

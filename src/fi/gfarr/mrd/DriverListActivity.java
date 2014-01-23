@@ -1,8 +1,5 @@
 package fi.gfarr.mrd;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListActivity;
@@ -10,8 +7,6 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -29,9 +24,7 @@ import android.widget.SimpleCursorAdapter;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
 import fi.gfarr.mrd.db.DbHandler;
-import fi.gfarr.mrd.db.Driver;
 import fi.gfarr.mrd.helper.VariableManager;
-import fi.gfarr.mrd.net.ServerInterface;
 
 public class DriverListActivity extends ListActivity implements
 		LoaderCallbacks<Cursor>, OnQueryTextListener {

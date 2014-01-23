@@ -443,6 +443,11 @@ public class DbHandler extends SQLiteOpenHelper
 		}
 	}
 
+	/**
+	 * Get list of all consignments
+	 * 
+	 * @return ArrayList<Bag>
+	 */
 	public ArrayList<Bag> getConsignments()
 	{
 		SQLiteDatabase db = null;
@@ -463,6 +468,7 @@ public class DbHandler extends SQLiteOpenHelper
 				{
 					Bag consignment = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)), "");
 					consignments.add(consignment);
+					cursor.moveToNext();
 				}
 
 			}
@@ -482,6 +488,65 @@ public class DbHandler extends SQLiteOpenHelper
 			e.printStackTrace(new PrintWriter(sw));
 			Log.d(TAG, sw.toString());
 			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get list of consignments not yet scanned
+	 * 
+	 * @return String
+	 */
+	public String getConsignmentsNotScanned()
+	{
+		SQLiteDatabase db = null;
+		String list = "";
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_SCANNED + " <> 1";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				while (!cursor.isAfterLast())
+				{
+					// Log.d(TAG, "Not scanned: " +
+					// cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
+
+					// concat string of bag numbers with newline to be displayed in list format
+					list = list + cursor.getString(cursor.getColumnIndex(C_BAG_ID)) + "\n";
+					cursor.moveToNext();
+				}
+			}
+
+			return list;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return list;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return list;
 		}
 		finally
 		{

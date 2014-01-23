@@ -218,10 +218,10 @@ public class ServerInterface
 					String id = managers_jArray.getJSONObject(i).getString("id");
 
 					// First Name
-					String first_name = managers_jArray.getJSONObject(i).getString("firstname");
+					String first_name = managers_jArray.getJSONObject(i).getString("firstName");
 
 					// Last name
-					String last_name = managers_jArray.getJSONObject(i).getString("lastname");
+					String last_name = managers_jArray.getJSONObject(i).getString("lastName");
 
 					DbHandler.getInstance(context).addManager(id, first_name + " " + last_name);
 				}
@@ -250,6 +250,46 @@ public class ServerInterface
 		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei="
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&driverPIN="
 				+ PIN;
+
+		String response = getInputStreamFromUrl(url);
+
+		// System.out.println(response);
+
+		String status = "";
+
+		try
+		{
+			JSONObject jObject = new JSONObject(response);
+			status = jObject.getJSONObject("response").getJSONObject("auth").getString("status");
+
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+		}
+
+		if (VariableManager.DEBUG)
+		{
+			// Log.d(TAG, "token: " + token);
+		}
+
+		return status;
+	}
+
+	/**
+	 * Submit manager authentication request.
+	 * @param man_id
+	 * @param driver_id
+	 * @param PIN
+	 * @return
+	 */
+	public static String authManager(String man_id, String driver_id, String PIN)
+	{
+		String url = "http://paperlessapp.apiary.io/v1/auth/manager?imei="
+				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&managerPIN="
+				+ PIN + "&managerid=" + man_id + "&driverid=" + driver_id;
 
 		String response = getInputStreamFromUrl(url);
 

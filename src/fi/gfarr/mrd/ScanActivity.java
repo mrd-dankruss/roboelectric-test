@@ -3,18 +3,16 @@ package fi.gfarr.mrd;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import android.app.ProgressDialog;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
@@ -41,6 +38,7 @@ import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.fragments.IncompleteScanDialog;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
+import fi.gfarr.mrd.widget.Toaster;
 
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
 {
@@ -65,6 +63,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 	private IncompleteScanDialog dialog;
 
+	// Total number of bags
+	private int total_bags = 0;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -79,18 +80,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		context = this;
 
 		// Retrieve bags for current driver in a thread
-		Runnable r = new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				ServerInterface.getConsignments(context,
-						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-			}
-		};
-
-		Thread thread = new Thread(r);
-		thread.start();
+		new RetrieveConsignmentsTask().execute();
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -164,6 +154,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 
+				// View manifest
 				if (holder.list.getItemAtPosition(position) != null)
 				{
 					Cursor c = (Cursor) holder.list.getItemAtPosition(position);
@@ -208,6 +199,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					dialog.show();
 
 					LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+
 					final Button button_continue = (Button) dialog
 							.findViewById(R.id.button_incomplete_scan_continue);
 
@@ -217,6 +209,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 						public void onClick(View v)
 						{
 							new RetrieveManagersTask().execute();
+						}
+					});
+
+					final Button button_scan = (Button) dialog
+							.findViewById(R.id.button_incomplete_scan_scan);
+
+					button_scan.setOnClickListener(new OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							dialog.dismiss();
 						}
 					});
 				}
@@ -359,8 +363,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	@Override
 	public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
 	{
-		Toast.makeText(this.getApplicationContext(), "Scanned code " + rawResult.getText(),
-				Toast.LENGTH_LONG).show();
+		// Toast.makeText(this.getApplicationContext(), "Scanned code " + rawResult.getText(),
+		// Toast.LENGTH_LONG).show();
 
 		Cursor cursor = null;
 
@@ -381,6 +385,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			// for (int i = 0; i < cursor.getCount(); i++) {
 
 			ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
+
+			total_bags = all_views_within_top_view.size();
+			Log.d(TAG, "Total bags: " + String.valueOf(total_bags));
+
 			int i = 0;
 			for (View child : all_views_within_top_view)
 			{
@@ -414,6 +422,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								{
 									image_view_tick.setVisibility(View.VISIBLE);
 								}
+
+								// Make toast, with strawberry jam
+								if (selected_items.size() == total_bags) // All bags scanned
+								{
+									displayToast(getString(R.string.text_scan_successful));
+								}
+								else
+								// Another bag scanned, not everything yet.
+								{
+									displayToast(getString(R.string.text_scan_next));
+								}
 							}
 							else
 							{
@@ -425,7 +444,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 						selected_items.add(String.valueOf(i));
 
 						/*
-						 * Update scanned status in db to reorder list
+						 * Update scanned status in db to reorder list.						 
 						 */
 						DbHandler.getInstance(getApplicationContext()).setScanned(
 								cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
@@ -587,6 +606,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			holder.button_start_milkrun = (Button) root_view
 					.findViewById(R.id.scan_button_start_milkrun);
 
+			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_scan_toast);
+
+			holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_scan);
+
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
@@ -613,20 +636,38 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	{
 		ListView list;
 		Button button_start_milkrun;
+		TextView textView_toast;
+		RelativeLayout relativeLayout_toast;
 	}
 
+	/**
+	 * Display a toast using the custom Toaster class
+	 * 
+	 * @param msg
+	 */
+	private void displayToast(String msg)
+	{
+		Toaster.displayToast(msg, holder.textView_toast, holder.relativeLayout_toast, this);
+	}
+
+	/**
+	 * Retrieve list of managers from API in background
+	 * 
+	 * @author greg
+	 * 
+	 */
 	private class RetrieveManagersTask extends AsyncTask<Void, Void, Void>
 	{
 
-		private ProgressDialog dialog = new ProgressDialog(ScanActivity.this);
+		private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
 
 		/** progress dialog to show user that the backup is processing. */
 		/** application context. */
 		@Override
 		protected void onPreExecute()
 		{
-			this.dialog.setMessage("Retrieving list of managers");
-			this.dialog.show();
+			this.dialog_progress.setMessage("Retrieving list of managers");
+			this.dialog_progress.show();
 		}
 
 		@Override
@@ -642,9 +683,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		protected void onPostExecute(Void nothing)
 		{
 			// Close progress spinner
-			if (dialog.isShowing())
+			if (dialog_progress.isShowing())
 			{
-				dialog.dismiss();
+				dialog_progress.dismiss();
 			}
 
 			// Start manager authorization activity
@@ -658,6 +699,45 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 			startActivity(intent);
+		}
+	}
+
+	/**
+	 * Retrieve list of consignments from API in background
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class RetrieveConsignmentsTask extends AsyncTask<Void, Void, Void>
+	{
+
+		private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			ServerInterface.getConsignments(context,
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
 		}
 	}
 
