@@ -17,4 +17,9 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="MyDialog" parent="@android:style/Theme.Dialog">
+	    <!--  other attributes  -->
+	    <item name="android:backgroundDimEnabled">false</item>
+	</style>
+    
 </resources>

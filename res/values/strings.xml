@@ -29,6 +29,16 @@
     <string name="button_change_manager">Change Manager</string>
     <string name="button_incomplete_scan_scan">Scan them</string>
     <string name="button_incomplete_scan_continue">Continue anyway</string>
+    <string name="delivery_more_setAsNextDelivery">Set as next delivery</string>
+    <string name="delivery_more_viewMap">View Map</string>
+    <string name="delivery_more_reportDelay">Report Delay</string>
+    <string name="delivery_more_call">Call</string>
+    <string name="delivery_more_message">Message</string>
+    <string name="trafficDelay_5min">5 min</string>
+    <string name="trafficDelay_10min">10 min</string>
+    <string name="trafficDelay_20min">20 min</string>
+    <string name="trafficDelay_30min">30 min</string>
+    <string name="trafficDelay_1hour">1 hour</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
@@ -48,6 +58,10 @@
     <string name="title_reason_partial_deliveries">Reasons for Partial Deliveries</string>
     <string name="title_set_as_next_delivery">Set as next delivery</string>
     <string name="title_return">RETURN</string>
+    <string name="title_report_delay">Report delay</string>
+    <string name="title_call">Phone</string>
+    <string name="title_sms">SMS</string>
+    <string name="trafficDelay_title">Traffic</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>
@@ -102,5 +116,17 @@
     <string name="text_manifest_volumetrics">Volumetrics:</string>
     <string name="text_manifest">Manifest</string>
     <string name="title_activity_manager_auth_incomplete_scan">ManagerAuthIncompleteScanActivity</string>
+    
+    
+    <!-- Content Descriptors -->
+    <string name="contentDesc_imageView_deliveryType">Delivery Type Image</string>
+    
+    <!-- Filler Strings (To be removed) -->
+    <string name="delivery_no">#01</string>
+    <string name="delivery_title">Your Next Delivery</string>
+    <string name="delivery_address">Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526</string>
+    <string name="delivery_orderNo">00025420254 (6 items)</string>
+    <string name="delivery_button1">Update Status</string>
+    <string name="delivery_button2">More</string>
 
 </resources>

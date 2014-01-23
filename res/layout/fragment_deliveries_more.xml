@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyDialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:minWidth="300dp"
+    android:orientation="vertical"
+    android:padding="0dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:background="@drawable/ab_solid_mrdstyle"
+        android:padding="0dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="12dp"
+            android:text="More"
+            android:textColor="@color/black"
+            android:textSize="26sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:gravity="right" >
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/seperator_grey" />
+
+            <ImageButton
+                android:id="@+id/button_deliveriesMore_closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:background="@null"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:src="@drawable/icon_cancel_unselected" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_deliveriesMore_setAsNextDelivery"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@drawable/button_light_grey"
+        android:drawableLeft="@drawable/icon_reportdelay"
+        android:drawablePadding="22dp"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="20dp"
+        android:text="@string/delivery_more_setAsNextDelivery"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/seperator_deliveriesMore_nextDelivery"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator_grey"
+        android:visibility="gone" />
+    
+    <Button
+        android:id="@+id/button_deliveriesMore_viewMap"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@drawable/button_light_grey"
+        android:drawableLeft="@drawable/icon_map"
+        android:drawablePadding="22dp"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="20dp"
+        android:text="@string/delivery_more_viewMap" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator_grey" />
+
+    <Button
+        android:id="@+id/button_deliveriesMore_reportDelay"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@drawable/button_light_grey"
+        android:drawableLeft="@drawable/icon_report"
+        android:drawablePadding="20dp"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="17dp"
+        android:text="@string/delivery_more_reportDelay" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator_grey" />
+    
+    <Button
+        android:id="@+id/button_deliveriesMore_call"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@drawable/button_light_grey"
+        android:drawableLeft="@drawable/icon_phone"
+        android:drawablePadding="21dp"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="21dp"
+        android:text="@string/delivery_more_call" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator_grey" />
+    
+    <Button
+        android:id="@+id/button_deliveriesMore_message"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@drawable/button_light_grey"
+        android:drawableLeft="@drawable/icon_message"
+        android:drawablePadding="20dp"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="21dp"
+        android:text="@string/delivery_more_message" />
+
+</LinearLayout>

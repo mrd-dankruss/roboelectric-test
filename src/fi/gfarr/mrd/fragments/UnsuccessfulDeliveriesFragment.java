@@ -18,7 +18,7 @@ import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.DeliveryType;
 
 
 
-public class ViewDeliveriesFragment extends ListFragment {
+public class UnsuccessfulDeliveriesFragment extends ListFragment {
 	
 	private static final String TAG = "ViewDeliveriesFragment";
 	private ViewHolder holder;
@@ -28,22 +28,7 @@ public class ViewDeliveriesFragment extends ListFragment {
 	{
 		super.onCreate(icicle);
 		List<List<String>> values =  new ArrayList<List<String>>();
-		
-		List<String> temp1 = new ArrayList<String>();
-		temp1.add(DeliveryType.DELIVERY.toString());
-		temp1.add(Company.FNB.toString());
-		temp1.add("Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526");
-		temp1.add("00025420254 (6 items)");
-		values.add(temp1);
-		
-		List<String> temp2 = new ArrayList<String>();
-		temp2.add(DeliveryType.RETURN.toString());
-		temp2.add(Company.NONE.toString());
-		temp2.add("Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526");
-		temp2.add("00025420254 (6 items)");
-		values.add(temp2);
-		
-		
+				
 		// use your own layout
 		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), values);
 		setListAdapter(adapter);

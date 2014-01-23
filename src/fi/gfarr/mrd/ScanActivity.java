@@ -3,18 +3,16 @@ package fi.gfarr.mrd;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import android.app.ProgressDialog;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -200,6 +198,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
 				{
 					// Go to View Deliveries screen
+					Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+				    //EditText editText = (EditText) findViewById(R.id.edit_message);
+				    //String message = editText.getText().toString();
+				    //intent.putExtra(EXTRA_MESSAGE, message);
+				    startActivity(intent);
 				}
 				else
 				{
