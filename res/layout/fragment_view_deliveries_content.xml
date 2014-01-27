@@ -3,12 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
- 
+
     <FrameLayout
         android:id="@+id/fragment_viewDeliveries_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-    >
+        android:layout_height="match_parent" >
+
     </FrameLayout>
+
+    <Button
+        android:id="@+id/button_generic_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="7dp"
+        android:background="@drawable/button_custom"
+        android:text="@string/delivery_button1"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -39,6 +39,8 @@
     <string name="trafficDelay_20min">20 min</string>
     <string name="trafficDelay_30min">30 min</string>
     <string name="trafficDelay_1hour">1 hour</string>
+    <string name="button_report_delay">Report</string>
+    <string name="button_send_sms">Send</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>

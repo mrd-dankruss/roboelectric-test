@@ -1,77 +1,91 @@
 package fi.gfarr.mrd.fragments;
 
-import android.content.Context;
-import android.content.DialogInterface;
+import java.util.ArrayList;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import fi.gfarr.mrd.R;
+import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
+import fi.gfarr.mrd.datatype.DialogDataObject;
 
 public class SmsListFragment extends ListFragment
 {
 
+	DialogFragment newFragment;
+	TextView subText;
+	GenericDialogListAdapter adapter;
+	ArrayList<DialogDataObject> values;
+	private int parentItemPosition;
+
 	public void onCreate(Bundle icicle)
 	{
 		super.onCreate(icicle);
-		String[] values = getResources().getStringArray(R.array.sms_listItems);
+		values = new ArrayList<DialogDataObject>();
+		values.add(new DialogDataObject("Branch", "", "0834533156"));
+		values.add(new DialogDataObject("Call centre", "", "0834533156"));
+		values.add(new DialogDataObject("Chief operating Officer", "", "0834533156"));
 		
-		// use your own layout
-		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), values);
+		adapter = new GenericDialogListAdapter(getActivity(), values, false);
 		setListAdapter(adapter);
-
-		// getListView().setDivider(null);
-		// getListView().setDividerHeight(0);
 	}
 
 	public void onResume() {
 		super.onResume();
-		Log.d("fi.gfarr.mrd", "onResume");
 	}
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		String item = (String) getListAdapter().getItem(position);
-		Toast.makeText(getActivity(), item + " selected", Toast.LENGTH_LONG).show();
+		parentItemPosition = (Integer) getListAdapter().getItem(position);
 		
-		DialogFragment newFragment = TrafficTimeDelayDialog.newInstance(10);
-		newFragment.show(getActivity().getSupportFragmentManager(), "dialog");
+		FragmentManager fm = getActivity().getSupportFragmentManager();
+		GenericResultDialog editNameDialog = GenericResultDialog.newInstance(10);
+		editNameDialog.setTargetFragment(this, 1);
+        editNameDialog.show(fm, "SMSFragment");
 	}
-
-	class MySimpleArrayAdapter extends ArrayAdapter<String>
-	{
-		private final Context context;
-		private final String[] values;
-
-		public MySimpleArrayAdapter(Context context, String[] values)
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		values.get(parentItemPosition).setShortDisplayTime(data.getStringExtra(GenericResultDialog.DIALOG_TIME_STRING));
+		adapter.notifyDataSetChanged();
+	}
+	
+	public boolean hasMessageSentSuccessfully() {
+		//TODO: Implement sending of data here
+		sendMessage();
+		
+		return true;
+	}
+	
+	public void sendMessage() {
+		String numbersToReceiveMessage = "";
+		for (int i = 0; i < values.size(); i++)
 		{
-			super(context, R.layout.fragment_report_delay_row, values);
-			this.context = context;
-			this.values = values;
+			if (values.get(i).getShortDisplayTime().length() > 0)
+			{
+				numbersToReceiveMessage = numbersToReceiveMessage + values.get(i).getPhoneNumber() + ",";
+			}
 		}
+		try {
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(R.layout.fragment_report_delay_row, parent, false);
-			
-			TextView mainText = (TextView) rowView.findViewById(R.id.reportDelay_textView_mainText);
-			TextView subText = (TextView) rowView.findViewById(R.id.reportDelay_textView_subText);
-			
-			mainText.setText(values[position]);
-			
-			return rowView;
+			//TODO: Get message body from server
+			numbersToReceiveMessage = numbersToReceiveMessage.substring(0, numbersToReceiveMessage.length()-1);
+			Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+			sendIntent.putExtra("address", numbersToReceiveMessage);
+			sendIntent.putExtra("sms_body", "I am running late by");
+			sendIntent.setType("vnd.android-dir/mms-sms");
+			startActivity(sendIntent);
+
+		} catch (Exception e) {
+			Toast.makeText(getActivity(), "SMS faild, please try again later!", Toast.LENGTH_LONG).show();
+			e.printStackTrace();
 		}
 	}
-
+	
 }
