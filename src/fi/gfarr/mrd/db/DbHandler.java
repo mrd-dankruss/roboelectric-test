@@ -48,7 +48,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * Has bag been scanned? used to move consignments to bottom of list as they
 	 * are scanned.
 	 */
-	public static final String C_BAG_SCANNED = "cons_scanned";
+	public static final String C_BAG_SCANNED = "bag_scanned";
 
 	public static final String C_BAG_DEST_HUBNAME = "bag_hubname";
 	public static final String C_BAG_DEST_HUBCODE = "bag_hubcode";
@@ -63,7 +63,7 @@ public class DbHandler extends SQLiteOpenHelper
 	/*
 	 * ID of driver this bag belongs to
 	 */
-	public static final String C_BAG_DRIVER_ID = "cons_driver_id";
+	public static final String C_BAG_DRIVER_ID = "bag_driver_id";
 
 	/*
 	 * Is bag assigned?
@@ -146,11 +146,11 @@ public class DbHandler extends SQLiteOpenHelper
 
 			final String CREATE_TABLE_BAGS = "CREATE TABLE " + TABLE_BAGS + "(" + C_BAG_ID
 					+ " TEXT PRIMARY KEY," + C_BAG_SCANNED + " INTEGER," + C_BAG_ASSIGNED
-					+ " TEXT," + C_BAG_BARCODE + " TEXT," + " INTEGER," + C_BAG_NUM_ITEMS
-					+ " INTEGER," + C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT,"
-					+ C_BAG_DEST_TOWN + " TEXT," + " TEXT," + C_BAG_DEST_SUBURB + " TEXT,"
-					+ C_BAG_DEST_LONG + " TEXT," + C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME
-					+ " TEXT," + C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT,"
+					+ " TEXT," + C_BAG_BARCODE + " TEXT," + C_BAG_NUM_ITEMS + " INTEGER,"
+					+ C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT," + C_BAG_DEST_TOWN
+					+ " TEXT," + " TEXT," + C_BAG_DEST_SUBURB + " TEXT," + C_BAG_DEST_LONG
+					+ " TEXT," + C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME + " TEXT,"
+					+ C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT,"
 					+ C_BAG_DEST_ADDRESS + " TEXT)";
 			createTable(db, TABLE_BAGS, CREATE_TABLE_BAGS);
 
@@ -538,14 +538,14 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return null;
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return null;
 		}
 		finally

@@ -87,7 +87,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		{
 			Log.e(TAG, "bag null");
 		}
-		
+
 		// Store currently selected driver id globally
 		VariableManager.current_driver_id = getIntent().getStringExtra(
 				VariableManager.EXTRA_DRIVER_ID);
