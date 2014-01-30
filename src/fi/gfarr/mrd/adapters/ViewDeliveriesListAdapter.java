@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.fragments.MoreDialogFragment;
+import fi.gfarr.mrd.fragments.UpdateStatusDialog;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {
@@ -134,7 +135,8 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					// TODO Update Status Button Click
+					DialogFragment newFragment = UpdateStatusDialog.newInstance(10);
+					newFragment.show(activity.getSupportFragmentManager(), "dialog");
 				}
 			});
 
@@ -144,7 +146,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = MoreDialogFragment.newInstance(10);
+					DialogFragment newFragment = MoreDialogFragment.newInstance(false);
 					newFragment.show(activity.getSupportFragmentManager(), "dialog");
 				}
 			});

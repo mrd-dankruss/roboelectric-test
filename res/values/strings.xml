@@ -41,6 +41,7 @@
     <string name="trafficDelay_1hour">1 hour</string>
     <string name="button_report_delay">Report</string>
     <string name="button_send_sms">Send</string>
+    <string name="button_delivery_handover_complete">Complete handover to branch</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
@@ -64,6 +65,8 @@
     <string name="title_call">Phone</string>
     <string name="title_sms">SMS</string>
     <string name="trafficDelay_title">Traffic</string>
+    <string name="title_updateStatusDialog">SMS</string>
+    <string name="title_deliveryHandover">Delivery Handover</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>
@@ -133,5 +136,9 @@
     <string name="delivery_orderNo">00025420254 (6 items)</string>
     <string name="delivery_button1">Update Status</string>
     <string name="delivery_button2">More</string>
+    <string name="delivery_detail_addressee">Addressee: Mr D Somerset West\nTel nr: 083 857 4738</string>
+    <string name="delivery_detail_communicationTitle">Communication Log</string>
+    <string name="delivery_detail_communicationLog">SMS sent at 15/08/2013 at 15:13\nRunning 5 minutes late</string>
+    <string name="delivery_handover_subtitle">Please wait while the parcels are scanned in by the receiving branch manager.</string>
 
 </resources>

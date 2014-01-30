@@ -37,4 +37,7 @@
     <color name="background_grey">#E9E9E9</color>
     <color name="border_grey">#CCC9C9</color>
     <color name="light_grey">#F2F2F2</color>
+    <color name="textView_grey">#D2D2D2</color>
+    <color name="green_tick">#119C30</color>
+    
 </resources>

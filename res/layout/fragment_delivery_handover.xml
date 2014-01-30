@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_grey"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/deliveryHandover_textView_subTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/textView_grey"
+        android:paddingBottom="16dp"
+        android:paddingLeft="14dp"
+        android:paddingTop="16dp"
+        android:text="@string/delivery_handover_subtitle" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/border_grey" />
+
+    <ListView
+        android:id="@+id/deliveryHandover_listView_scannedParcels"
+        android:layout_width="match_parent"
+        android:layout_height="290dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:background="@color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/textView_grey"
+        android:orientation="vertical"
+        android:paddingTop="8dp" >
+
+        <Button
+            android:id="@+id/button_delivery_handover_complete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_custom"
+            android:text="@string/button_delivery_handover_complete"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -3,8 +3,6 @@ package fi.gfarr.mrd.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +13,23 @@ import fi.gfarr.mrd.CallActivity;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReportDelayActivity;
 import fi.gfarr.mrd.SmsActivity;
-import fi.gfarr.mrd.ViewDeliveriesFragmentActivity;
 
 
 public class MoreDialogFragment extends DialogFragment {
-    int mNum;
+    
+	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
+	private boolean isExtendedDialaog;
 
+    
     /**
-     * Create a new instance of MyDialogFragment, providing "num"
-     * as an argument.
+     * @param isExtendedDialog A boolean option for displaying the normal or extended more dialog box.
+     * @return Returns a new MoreDialogFragment (DialogFragment)
      */
-    public static MoreDialogFragment newInstance(int num) {
+    public static MoreDialogFragment newInstance(boolean isExtendedDialog) {
     	MoreDialogFragment f = new MoreDialogFragment();
 
-        // Supply num input as an argument.
         Bundle args = new Bundle();
-        args.putInt("num", num);
+        args.putBoolean(EXTENDED_DIALOG, isExtendedDialog);
         f.setArguments(args);
 
         return f;
@@ -48,12 +47,23 @@ public class MoreDialogFragment extends DialogFragment {
         
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         
+        Bundle args = getArguments();
+        
+        if (args != null) {
+        	isExtendedDialaog = args.getBoolean(EXTENDED_DIALOG); 
+		}
+        
         ImageButton closeDialogButton = (ImageButton) v.findViewById(R.id.button_deliveriesMore_closeButton);
         Button setAsNextDelivery = (Button) v.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
         Button viewMapButton = (Button) v.findViewById(R.id.button_deliveriesMore_viewMap);
         Button reportDelayButton = (Button) v.findViewById(R.id.button_deliveriesMore_reportDelay);
         Button callButton = (Button) v.findViewById(R.id.button_deliveriesMore_call);
         Button messageButton = (Button) v.findViewById(R.id.button_deliveriesMore_message);
+        
+        if (isExtendedDialaog == true)
+		{
+			setAsNextDelivery.setVisibility(View.VISIBLE);
+		}
         
         closeDialogButton.setOnClickListener(new View.OnClickListener()
 		{
