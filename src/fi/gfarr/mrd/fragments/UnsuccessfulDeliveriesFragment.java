@@ -15,26 +15,30 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.Company;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.DeliveryType;
+import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.VariableManager;
 
+public class UnsuccessfulDeliveriesFragment extends ListFragment
+{
 
-
-public class UnsuccessfulDeliveriesFragment extends ListFragment {
-	
-	private static final String TAG = "ViewDeliveriesFragment";
+	private static final String TAG = "UnsuccessfulDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
-	
+
 	public void onCreate(Bundle icicle)
 	{
 		super.onCreate(icicle);
-		List<List<String>> values =  new ArrayList<List<String>>();
-				
+		// List<List<String>> values = new ArrayList<List<String>>();
+
 		// use your own layout
-		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), values);
+		// ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), values);
+		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler
+				.getInstance(getActivity()).getBags(
+						getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)));
 		setListAdapter(adapter);
-		
-		//getListView().setDivider(null);
-		//getListView().setDividerHeight(0);
+
+		// getListView().setDivider(null);
+		// getListView().setDividerHeight(0);
 	}
 
 	@Override
@@ -44,38 +48,43 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment {
 		Toast.makeText(getActivity(), item + " selected", Toast.LENGTH_LONG).show();
 	}
 
+	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
+	{
 
-	
-	
-	public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
-
-		if (rootView == null) {
+		if (rootView == null)
+		{
 
 			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
 
-			if (holder == null) {
+			if (holder == null)
+			{
 				holder = new ViewHolder();
 			}
 
-			//holder.list = (ListView) rootView.findViewById(listId);			 
+			// holder.list = (ListView) rootView.findViewById(listId);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
 
-		} else {
+		}
+		else
+		{
 			holder = (ViewHolder) rootView.getTag();
 
-			if ((rootView.getParent() != null)
-					&& (rootView.getParent() instanceof ViewGroup)) {
+			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
+			{
 				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			} else {
+			}
+			else
+			{
 			}
 		}
 	}
-	
-	//Creates static instances of resources.
-	//Increases performance by only finding and inflating resources only once.
-	static class ViewHolder {
+
+	// Creates static instances of resources.
+	// Increases performance by only finding and inflating resources only once.
+	static class ViewHolder
+	{
 		TabHost mTabHost;
-	}		
+	}
 }

@@ -2,16 +2,29 @@ package fi.gfarr.mrd.db;
 
 import android.util.Log;
 
-
-public class Bag {
+public class Bag
+{
 
 	private final String TAG = "Bag";
-	
+
 	// Serial number of consignment bag
 	private String bag_number;
 
 	// Destination of consignment
-	private String destination;
+	private String dest_hubname;
+	private String dest_hubcode;
+	private String dest_address;
+	private String dest_suburb;
+	private String dest_town;
+	private String dest_contact;
+	private String dest_coords_lat;
+	private String dest_coords_long;
+
+	// Driver ID assigned to bag
+	private String driver_id;
+
+	// Barcode
+	private String barcode;
 
 	/*
 	 * Has bag been scanned? used to move consignments to bottom of list as they
@@ -25,21 +38,33 @@ public class Bag {
 	// Creation date/time
 	private String creation_time;
 
-	// number of items in consignment manifest
+	// number of items in consignment manifest (waybill count)
 	private int number_items;
 
 	/**
-	 * A bag, containing several waybills, belonging to a milkrun enroute to a branch. Also referred to as a 'consignment'.
-	 *  
-	 * @param num Bag number (Primary key)
-	 * @param dest Destination branch/hub.
+	 * A bag, containing several waybills, belonging to a milkrun enroute to a branch. Also referred
+	 * to as a 'consignment'.
+	 * 
+	 * @param num
+	 *            Bag number (Primary key)
+	 * @param dest
+	 *            Destination branch/hub.
 	 */
-	public Bag(String num, String dest) {
+	public Bag(String num)
+	{
 		setBagNumber(num);
-		setDestination(dest);
+		setDestinationAddress("");
+		setDestinationContact("");
+		setDestinationHubCode("");
+		setDestinationHubName("");
+		setDestinationLat("");
+		setDestinationLong("");
+		setDestinationSuburb("");
+		setDestinationTown("");
 		setScanned(false);
 		setAssigned(false);
 		setCreationTime("");
+		setDriverId("");
 		number_items = 0;
 	}
 
@@ -50,17 +75,20 @@ public class Bag {
 	 * 
 	 * @param number
 	 */
-	public void setBagNumber(String number) {
+	public void setBagNumber(String number)
+	{
 		bag_number = number;
 	}
 
 	/**
-	 * Set the destination of this consignment.
+	 * Set the Driver ID assigned to this bag.
 	 * 
-	 * @param dest
+	 * @param id
+	 *            Driver ID
 	 */
-	public void setDestination(String dest) {
-		destination = dest;
+	public void setDriverId(String id)
+	{
+		driver_id = id;
 	}
 
 	/**
@@ -68,7 +96,8 @@ public class Bag {
 	 * 
 	 * @param scan
 	 */
-	public void setScanned(boolean scan) {
+	public void setScanned(boolean scan)
+	{
 		scanned = scan;
 	}
 
@@ -77,7 +106,8 @@ public class Bag {
 	 * 
 	 * @param scan
 	 */
-	public void setAssigned(boolean ass) {
+	public void setAssigned(boolean ass)
+	{
 		assigned = ass; // Haha
 	}
 
@@ -87,7 +117,8 @@ public class Bag {
 	 * 
 	 * @param time
 	 */
-	public void setCreationTime(String time) {
+	public void setCreationTime(String time)
+	{
 		creation_time = time;
 	}
 
@@ -96,8 +127,19 @@ public class Bag {
 	 * 
 	 * @param i
 	 */
-	public void setNumberItems(int i) {
+	public void setNumberItems(int i)
+	{
 		number_items = i;
+	}
+
+	public String getDestinationHubName()
+	{
+		return dest_hubname;
+	}
+
+	public void setDestinationHubName(String dest_hubname)
+	{
+		this.dest_hubname = dest_hubname;
 	}
 
 	// Accessor methods
@@ -106,7 +148,8 @@ public class Bag {
 	 * 
 	 * @return
 	 */
-	public String getBagNumber() {
+	public String getBagNumber()
+	{
 		return bag_number;
 	}
 
@@ -115,8 +158,19 @@ public class Bag {
 	 * 
 	 * @return
 	 */
-	public String getDestination() {
-		return destination;
+	public String getDestination()
+	{
+		return dest_hubname;
+	}
+
+	/**
+	 * Return the ID of the driver assigned to this bag.
+	 * 
+	 * @return driver_id Driver's ID
+	 */
+	public String getDriverId()
+	{
+		return driver_id;
 	}
 
 	/**
@@ -124,7 +178,8 @@ public class Bag {
 	 * 
 	 * @return
 	 */
-	public int getNumberItems() {
+	public int getNumberItems()
+	{
 		return number_items;
 	}
 
@@ -133,7 +188,8 @@ public class Bag {
 	 * 
 	 * @return
 	 */
-	public boolean getScanned() {
+	public boolean getScanned()
+	{
 		return scanned;
 	}
 
@@ -142,7 +198,8 @@ public class Bag {
 	 * 
 	 * @return
 	 */
-	public boolean getAssigned() {
+	public boolean getAssigned()
+	{
 		return assigned;
 	}
 
@@ -150,8 +207,103 @@ public class Bag {
 	 * Returns creation date/time of consignment/bag in long date format. E.g.
 	 * 2014-04-14T02:15:15Z
 	 */
-	public String getCreationTime() {
+	public String getCreationTime()
+	{
 		return creation_time;
+	}
+
+	public String getDestinationHubCode()
+	{
+		return dest_hubcode;
+	}
+
+	public void setDestinationHubCode(String dest_hubcode)
+	{
+		this.dest_hubcode = dest_hubcode;
+	}
+
+	public String getDestinationAddress()
+	{
+		return dest_address;
+	}
+
+	public void setDestinationAddress(String dest_address)
+	{
+		this.dest_address = dest_address;
+	}
+
+	public String getDestinationSuburb()
+	{
+		return dest_suburb;
+	}
+
+	public void setDestinationSuburb(String dest_suburb)
+	{
+		this.dest_suburb = dest_suburb;
+	}
+
+	public String getDestinationTown()
+	{
+		return dest_town;
+	}
+
+	public void setDestinationTown(String dest_town)
+	{
+		this.dest_town = dest_town;
+	}
+
+	public String getDestinationContact()
+	{
+		return dest_contact;
+	}
+
+	public void setDestinationContact(String dest_contact)
+	{
+		this.dest_contact = dest_contact;
+	}
+
+	public String getDestinationLat()
+	{
+		return dest_coords_lat;
+	}
+
+	public void setDestinationLat(String dest_coords_lat)
+	{
+		this.dest_coords_lat = dest_coords_lat;
+	}
+
+	/**
+	 * @return the dest_coords_long
+	 */
+	public String getDestinationLong()
+	{
+		return dest_coords_long;
+	}
+
+	/**
+	 * @param dest_coords_long
+	 *            the dest_coords_long to set
+	 */
+	public void setDestinationLong(String dest_coords_long)
+	{
+		this.dest_coords_long = dest_coords_long;
+	}
+
+	/**
+	 * @return the barcode
+	 */
+	public String getBarcode()
+	{
+		return barcode;
+	}
+
+	/**
+	 * @param barcode
+	 *            the barcode to set
+	 */
+	public void setBarcode(String barcode)
+	{
+		this.barcode = barcode;
 	}
 
 }

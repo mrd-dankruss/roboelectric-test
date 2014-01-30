@@ -59,17 +59,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 	private ArrayList<String> selected_items;
 
-	private ScanActivity context;
-
 	private IncompleteScanDialog dialog;
-
-	// Total number of bags
-	private int total_bags = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
 		setContentView(fi.gfarr.mrd.R.layout.activity_scan);
 
 		// Start rerieving milkruns list from server
@@ -77,12 +73,24 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// new
 		// RetrieveBagsTask().execute(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
-		context = this;
-
-		// Retrieve bags for current driver in a thread
-		new RetrieveConsignmentsTask().execute();
-
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+
+		try
+		{
+			Log.d(TAG,
+					DbHandler
+							.getInstance(getApplicationContext())
+							.getBag(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+									"42").getDestination());
+		}
+		catch (NullPointerException e)
+		{
+			Log.e(TAG, "bag null");
+		}
+		
+		// Store currently selected driver id globally
+		VariableManager.current_driver_id = getIntent().getStringExtra(
+				VariableManager.EXTRA_DRIVER_ID);
 
 		initViewHolder();
 
@@ -99,52 +107,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			selected_items = new ArrayList<String>();
 			Log.d(TAG, "not restoring savedstate");
 		}
-
-		// Initiate database
-		getLoaderManager().initLoader(URL_LOADER, null, this);
-
-		// Test data
-
-		// // Adding consignments for debug
-		// String[] consignment_numbers = { "6009509309793", "5050582112184",
-		// "9780321719904", "9781415201435", "9780620336994",
-		// "9781920434366", "5099206011571" };
-		// String[] consignment_destinations = { "The best of go west",
-		// "The best of Knight Rider", "Undercover UX Design", "Byleveld",
-		// "Stripped - The King of Teaze", "Mobinomics", "Logitech" };
-		//
-		// // Adding items for debug
-		// String[] bag_waybills = { "000054120122", "000054120122",
-		// "00005540321", "079865448642", "00005540321", "00000445566",
-		// "91858128382", "156999548585" };
-		// manifest_number_items = bag_waybills.length;
-		//
-		// for (int i = 0; i < consignment_numbers.length; i++) {
-		// Bag consignment = new Bag(consignment_numbers[i],
-		// consignment_destinations[i]);
-		// consignment.setNumberItems(bag_waybills.length);
-		//
-		// // Commit to DB
-		// DbHandler.getInstance(this).addBag(consignment);
-		// }
-		//
-		// Random random = new Random();
-		//
-		// for (int o = 0; o < consignment_numbers.length; o++) {
-		// for (int i = 0; i < bag_waybills.length; i++) {
-		// Waybill item = new Waybill(consignment_numbers[o],
-		// bag_waybills[i]);
-		// item.setWeight(String.valueOf(Math.random()).substring(0, 4)
-		// + "KG");
-		// item.setDimensions(String.valueOf(random.nextInt(100)) + "x"
-		// + String.valueOf(random.nextInt(100)) + "x"
-		// + String.valueOf(random.nextInt(100)));
-		// item.setParcelCount(String.valueOf(random.nextInt(2) + 1)
-		// + " of " + String.valueOf(random.nextInt(2) + 1));
-		//
-		// DbHandler.getInstance(this).addWaybill(item);
-		// }
-		// }
 
 		// Set click listener for list items (selecting a driver)
 
@@ -168,7 +130,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					intent.putExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER,
 							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_BAG_ID))));
 					intent.putExtra(VariableManager.EXTRA_CONSIGNMENT_DESTINATION, String.valueOf(c
-							.getString(c.getColumnIndex(DbHandler.C_BAG_DEST_BRANCH))));
+							.getString(c.getColumnIndex(DbHandler.C_BAG_DEST_HUBNAME))));
 					// intent.putExtra(
 					// VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
 					// String.valueOf(manifest_number_items));
@@ -180,6 +142,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			}
 		});
 
+		// Start Milkrun
 		holder.button_start_milkrun.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -191,11 +154,14 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
 				{
 					// Go to View Deliveries screen
-					Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
-				    //EditText editText = (EditText) findViewById(R.id.edit_message);
-				    //String message = editText.getText().toString();
-				    //intent.putExtra(EXTRA_MESSAGE, message);
-				    startActivity(intent);
+					Intent intent = new Intent(getApplicationContext(),
+							ViewDeliveriesFragmentActivity.class);
+					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+					// EditText editText = (EditText) findViewById(R.id.edit_message);
+					// String message = editText.getText().toString();
+					// intent.putExtra(EXTRA_MESSAGE, message);
+					startActivity(intent);
 				}
 				else
 				{
@@ -231,6 +197,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				}
 			}
 		});
+
+		// Initiate database
+		getLoaderManager().initLoader(URL_LOADER, null, this);
 
 		// holder.list.setAdapter(AdapterUtils.createSectionAdapter(this));
 		holder.list.setAdapter(cursor_adapter);
@@ -333,33 +302,31 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		}
 	}
 
-	@Override
-	public void onResume()
+	/**
+	 * Search through list of scanned items to find if the current has been scanned already.
+	 * 
+	 * @param list
+	 *            The selected_items ArrayList
+	 * @param bag_id
+	 *            Currently selected driver ID
+	 * @return true is duplicate.
+	 */
+	private boolean checkSelectedBagDuplicate(ArrayList<String> list, String bag_id)
 	{
-		super.onResume();
-		if (selected_items != null)
+		// Log.d(TAG, "checkDupe bag: " + bag_id);
+		// Iterate through each element until a dupe is found.
+		for (int i = 0; i < list.size(); i++)
 		{
-			Log.d(TAG, "Items selected: " + String.valueOf(selected_items.size()));
-		}
-
-		// Close dialog if it is showing upon resuming screen.
-		// Or else it is still open when backing out of ManagerAuthIncompleteScanActivity
-		if (dialog != null)
-		{
-			if (dialog.isShowing())
+			// Log.d(TAG, "list: " + list.get(i));
+			if (DbHandler
+					.getInstance(getApplicationContext())
+					.getBagIdAtRow(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+							Integer.parseInt(list.get(i))).equals(bag_id))
 			{
-				dialog.dismiss();
+				return true;
 			}
 		}
-	}
-
-	@Override
-	public void onStop()
-	{
-		super.onStop();
-
-		// Set all consignments' scanned state to false
-		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+		return false;
 	}
 
 	/**
@@ -372,6 +339,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Toast.LENGTH_LONG).show();
 
 		Cursor cursor = null;
+		int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(
+				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 		if (cursor_adapter != null)
 		{
@@ -390,9 +359,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			// for (int i = 0; i < cursor.getCount(); i++) {
 
 			ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
-
-			total_bags = all_views_within_top_view.size();
-			Log.d(TAG, "Total bags: " + String.valueOf(total_bags));
 
 			int i = 0;
 			for (View child : all_views_within_top_view)
@@ -428,6 +394,15 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 									image_view_tick.setVisibility(View.VISIBLE);
 								}
 
+								// Check if selected item has already been added.
+								if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
+								{
+									// Add this index to a list
+									selected_items.add(String.valueOf(i));
+								}
+
+								// Log.d(TAG, selected_items.size() + "/" + total_bags);
+
 								// Make toast, with strawberry jam
 								if (selected_items.size() == total_bags) // All bags scanned
 								{
@@ -445,8 +420,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								Log.d(TAG, "handleDecode(): no match " + cons_number);
 							}
 						}
-						// Add this index to a list
-						selected_items.add(String.valueOf(i));
+						// // Add this index to a list
+						// selected_items.add(String.valueOf(i));
 
 						/*
 						 * Update scanned status in db to reorder list.						 
@@ -474,6 +449,35 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		// Restart barcode scanner to allow for 'semi-automatic firing'
 		restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		if (selected_items != null)
+		{
+			Log.d(TAG, "Items selected: " + String.valueOf(selected_items.size()));
+		}
+
+		// Close dialog if it is showing upon resuming screen.
+		// Or else it is still open when backing out of ManagerAuthIncompleteScanActivity
+		if (dialog != null)
+		{
+			if (dialog.isShowing())
+			{
+				dialog.dismiss();
+			}
+		}
+	}
+
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+
+		// Set all consignments' scanned state to false
+		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 	}
 
 	/**
@@ -538,7 +542,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	public Loader<Cursor> onCreateLoader(int id, Bundle args)
 	{
 		DbHandler.getInstance(this);
-		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " ORDER BY "
+		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
+				+ DbHandler.C_BAG_DRIVER_ID + " LIKE '"
+				+ getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID) + "'" + " ORDER BY "
 				+ DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_ID + " ASC";// +
 		// ","+
 		// DbHandler.C_CONSIGNMENT_NO;
@@ -704,45 +710,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 			startActivity(intent);
-		}
-	}
-
-	/**
-	 * Retrieve list of consignments from API in background
-	 * 
-	 * @author greg
-	 * 
-	 */
-	private class RetrieveConsignmentsTask extends AsyncTask<Void, Void, Void>
-	{
-
-		private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
-
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog_progress.setMessage("Retrieving consignments");
-			this.dialog_progress.show();
-		}
-
-		@Override
-		protected Void doInBackground(Void... urls)
-		{
-			ServerInterface.getConsignments(context,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void nothing)
-		{
-			// Close progress spinner
-			if (dialog_progress.isShowing())
-			{
-				dialog_progress.dismiss();
-			}
 		}
 	}
 

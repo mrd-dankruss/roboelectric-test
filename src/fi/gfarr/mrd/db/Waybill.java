@@ -2,32 +2,41 @@ package fi.gfarr.mrd.db;
 
 import android.util.Log;
 
-
-public class Waybill {
+public class Waybill
+{
 
 	private final String TAG = "Waybill";
-	
+
 	// Serial number of item
 	private String waybill_no;
 
 	// Bag number to which this item belongs
 	private String bag_number;
 
+	// Barcode
+	private String barcode;
+
 	// Nation of Desti
-	private String destination;
+	private String delivery_address;
+	private String delivery_suburb;
+	private String delivery_town;
+	private String delivery_coords_lat;
+	private String delivery_coords_long;
 
-	private String dimensions;// -----Volumetrics
+	// -----Volumetrics
+	private String dimensions;
 
-	private String weight; // Weight
+	// Weight
+	private String weight;
+
+	private String status;
 
 	// Name of customer/recipient
 	private String customer_name;
-
-	// Phone number of customer
-	private String telephone;
-
-	// Email of customer
-	private String email;
+	private String customer_id;
+	private String customer_contact1;
+	private String customer_contact2;
+	private String customer_email;
 
 	// Paragraph log
 	private String comlog;
@@ -38,18 +47,23 @@ public class Waybill {
 	// Parcel sequence number
 	private int parcel_seq;
 
-	public Waybill(String wayb, String bag) {
+	public Waybill(String wayb, String bag)
+	{
 		setWaybillNumber(wayb);
 		setBagNumber(bag);
-		setDimensions("0x0x0");
+		setBarcode("no barcode");
+		setDimensions("0");
+		setDeliveryLat("0");
+		setDeliveryLong("0");
 		setWeight("0KG");
 		setEmail("No e-mail address set");
-		setTelephone("000 000 0000");
+		setCustomerContact1("000 000 0000");
+		setCustomerContact2("000 000 0000");
 		setComLog("Empty");
 		setParcelCount(0);
 		setParcelSeq(0);
 		setCustomerName("Unknown Customer");
-		setDestination("Unknown destination");
+		setDeliveryAddress("Unknown destination");
 	}
 
 	// Mutator methods
@@ -59,7 +73,8 @@ public class Waybill {
 	 * 
 	 * @param way
 	 */
-	public void setWaybillNumber(String way) {
+	public void setWaybillNumber(String way)
+	{
 		waybill_no = way;
 	}
 
@@ -68,7 +83,8 @@ public class Waybill {
 	 * 
 	 * @param count
 	 */
-	public void setParcelCount(int count) {
+	public void setParcelCount(int count)
+	{
 		parcel_count = count;
 	}
 
@@ -78,7 +94,8 @@ public class Waybill {
 	 * @param number
 	 *            Order in sequence of packages.
 	 */
-	public void setParcelSeq(int number) {
+	public void setParcelSeq(int number)
+	{
 		parcel_seq = number;
 	}
 
@@ -88,17 +105,9 @@ public class Waybill {
 	 * @param dest
 	 *            Recipient's address
 	 */
-	public void setDestination(String dest) {
-		destination = dest;
-	}
-
-	/**
-	 * Set volumetric of item
-	 * 
-	 * @param width
-	 */
-	public void setDimensions(String vol) {
-		dimensions = vol;
+	public void setDeliveryAddress(String dest)
+	{
+		delivery_address = dest;
 	}
 
 	/**
@@ -106,7 +115,8 @@ public class Waybill {
 	 * 
 	 * @param w
 	 */
-	public void setWeight(String w) {
+	public void setWeight(String w)
+	{
 		weight = w;
 	}
 
@@ -115,8 +125,9 @@ public class Waybill {
 	 * 
 	 * @param eml
 	 */
-	public void setEmail(String eml) {
-		email = eml;
+	public void setEmail(String eml)
+	{
+		customer_email = eml;
 	}
 
 	/**
@@ -124,17 +135,9 @@ public class Waybill {
 	 * 
 	 * @param eml
 	 */
-	public void setCustomerName(String name) {
+	public void setCustomerName(String name)
+	{
 		customer_name = name;
-	}
-
-	/**
-	 * Set customer's telephone number
-	 * 
-	 * @param eml
-	 */
-	public void setTelephone(String tel) {
-		telephone = tel;
 	}
 
 	/**
@@ -142,7 +145,8 @@ public class Waybill {
 	 * 
 	 * @param eml
 	 */
-	public void setComLog(String log) {
+	public void setComLog(String log)
+	{
 		comlog = log;
 	}
 
@@ -151,7 +155,8 @@ public class Waybill {
 	 * 
 	 * @param w
 	 */
-	public void setBagNumber(String c) {
+	public void setBagNumber(String c)
+	{
 		bag_number = c;
 	}
 
@@ -162,7 +167,8 @@ public class Waybill {
 	 * 
 	 * @return
 	 */
-	public String getWaybill() {
+	public String getWaybill()
+	{
 		return waybill_no;
 	}
 
@@ -171,24 +177,17 @@ public class Waybill {
 	 * 
 	 * @return Parcel count
 	 */
-	public int getParcelCount() {
+	public int getParcelCount()
+	{
 		return parcel_count;
 	}
 
 	/**
 	 * Return the sequence number of the package. E.g. Package number 1 of 2.
 	 */
-	public int getParcelSeq() {
+	public int getParcelSeq()
+	{
 		return parcel_seq;
-	}
-
-	/**
-	 * Return volume of item.
-	 * 
-	 * @return
-	 */
-	public String getDimensions() {
-		return dimensions;
 	}
 
 	/**
@@ -196,8 +195,9 @@ public class Waybill {
 	 * 
 	 * @return destination Recipient's address.
 	 */
-	public String getDestination() {
-		return destination;
+	public String getDeliveryAddress()
+	{
+		return delivery_address;
 	}
 
 	/**
@@ -205,7 +205,8 @@ public class Waybill {
 	 * 
 	 * @return Customer's name.
 	 */
-	public String getCustomerName() {
+	public String getCustomerName()
+	{
 		return customer_name;
 	}
 
@@ -214,17 +215,9 @@ public class Waybill {
 	 * 
 	 * @return Customer's email address
 	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * Returns customer's telephone number
-	 * 
-	 * @return Customer's telephone number
-	 */
-	public String getTelephone() {
-		return telephone;
+	public String getEmail()
+	{
+		return customer_email;
 	}
 
 	/**
@@ -232,7 +225,8 @@ public class Waybill {
 	 * 
 	 * @return Waybill's comlog
 	 */
-	public String getComLog() {
+	public String getComLog()
+	{
 		return comlog;
 	}
 
@@ -241,7 +235,8 @@ public class Waybill {
 	 * 
 	 * @return
 	 */
-	public String getWeight() {
+	public String getWeight()
+	{
 		return weight;
 	}
 
@@ -250,8 +245,179 @@ public class Waybill {
 	 * 
 	 * @return
 	 */
-	public String getBagNumber() {
+	public String getBagNumber()
+	{
 		return bag_number;
+	}
+
+	/**
+	 * @return the barcode
+	 */
+	public String getBarcode()
+	{
+		return barcode;
+	}
+
+	/**
+	 * @param barcode
+	 *            the barcode to set
+	 */
+	public void setBarcode(String barcode)
+	{
+		this.barcode = barcode;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus()
+	{
+		return status;
+	}
+
+	/**
+	 * @param status
+	 *            the status to set
+	 */
+	public void setStatus(String status)
+	{
+		this.status = status;
+	}
+
+	/**
+	 * @return the delivery_suburb
+	 */
+	public String getDeliverySuburb()
+	{
+		return delivery_suburb;
+	}
+
+	/**
+	 * @param delivery_suburb
+	 *            the delivery_suburb to set
+	 */
+	public void setDeliverySuburb(String delivery_suburb)
+	{
+		this.delivery_suburb = delivery_suburb;
+	}
+
+	/**
+	 * @return the delivery_town
+	 */
+	public String getDeliveryTown()
+	{
+		return delivery_town;
+	}
+
+	/**
+	 * @param delivery_town
+	 *            the delivery_town to set
+	 */
+	public void setDeliveryTown(String delivery_town)
+	{
+		this.delivery_town = delivery_town;
+	}
+
+	/**
+	 * @return the delivery_coords_lat
+	 */
+	public String getDeliveryLat()
+	{
+		return delivery_coords_lat;
+	}
+
+	/**
+	 * @param delivery_coords_lat
+	 *            the delivery_coords_lat to set
+	 */
+	public void setDeliveryLat(String delivery_coords_lat)
+	{
+		this.delivery_coords_lat = delivery_coords_lat;
+	}
+
+	/**
+	 * @return the delivery_coords_long
+	 */
+	public String getDeliveryLong()
+	{
+		return delivery_coords_long;
+	}
+
+	/**
+	 * @param delivery_coords_long
+	 *            the delivery_coords_long to set
+	 */
+	public void setDeliveryLong(String delivery_coords_long)
+	{
+		this.delivery_coords_long = delivery_coords_long;
+	}
+
+	/**
+	 * @return the customer_id
+	 */
+	public String getCustomerID()
+	{
+		return customer_id;
+	}
+
+	/**
+	 * @param customer_id
+	 *            the customer_id to set
+	 */
+	public void setCustomerID(String customer_id)
+	{
+		this.customer_id = customer_id;
+	}
+
+	/**
+	 * @return the customer_contact1
+	 */
+	public String getCustomerContact1()
+	{
+		return customer_contact1;
+	}
+
+	/**
+	 * @param customer_contact1
+	 *            the customer_contact1 to set
+	 */
+	public void setCustomerContact1(String customer_contact1)
+	{
+		this.customer_contact1 = customer_contact1;
+	}
+
+	/**
+	 * @return the customer_contact2
+	 */
+	public String getCustomerContact2()
+	{
+		return customer_contact2;
+	}
+
+	/**
+	 * @param customer_contact2
+	 *            the customer_contact2 to set
+	 */
+	public void setCustomerContact2(String customer_contact2)
+	{
+		this.customer_contact2 = customer_contact2;
+	}
+
+	/**
+	 * @return the dimensions
+	 */
+	public String getDimensions()
+	{
+		return dimensions;
+	}
+
+	/**
+	 * @param dimensions
+	 *            the dimensions to set
+	 */
+	public void setDimensions(String dimensions)
+	{
+		this.dimensions = dimensions;
 	}
 
 }

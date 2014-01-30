@@ -22,7 +22,8 @@ import fi.gfarr.mrd.fragments.ViewDeliveriesFragment;
 import fi.gfarr.mrd.widget.TabManager;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
-		TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+		TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener
+{
 
 	private ViewHolder holder;
 	private View rootView;
@@ -47,7 +48,8 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 	private static final int NUM_PAGES = 3;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_view_deliveries);
@@ -59,8 +61,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 		// Set pager to listen for page changes
 		mPager.setOnPageChangeListener(this);
 
-		mPagerAdapter = new ScreenSlidePagerAdapter(
-				getSupportFragmentManager(), NUM_PAGES);
+		mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), NUM_PAGES);
 		mPager.setAdapter(mPagerAdapter);
 
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
@@ -79,14 +80,17 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 	}
 
 	// Add tab to tabhost
-	private void setupTab(final View view, final String tag) {
+	private void setupTab(final View view, final String tag)
+	{
 
 		View tabview = createTabView(mTabHost.getContext(), tag);
 
 		TabSpec setContent = mTabHost.newTabSpec(tag).setIndicator(tabview)
-				.setContent(new TabContentFactory() {
+				.setContent(new TabContentFactory()
+				{
 
-					public View createTabContent(String tag) {
+					public View createTabContent(String tag)
+					{
 						return view;
 					}
 				});
@@ -96,10 +100,10 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 	}
 
 	// Inflate custom tab (tabs_bg)
-	private static View createTabView(final Context context, final String text) {
+	private static View createTabView(final Context context, final String text)
+	{
 
-		View view = LayoutInflater.from(context)
-				.inflate(R.layout.tabs_bg, null);
+		View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
 
 		TextView tv = (TextView) view.findViewById(R.id.tabsText);
 
@@ -110,111 +114,139 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onTabChanged(String tag) {
+	public void onTabChanged(String tag)
+	{
 		final int pos = this.mTabHost.getCurrentTab();
 		setCurrentPage(pos);
-		FragmentManager fm =   getSupportFragmentManager();
-		
-		CompletedDeliveriesFragment completedDeliveriesFragment = (CompletedDeliveriesFragment) fm.findFragmentByTag("completed");
-        ViewDeliveriesFragment viewDeliveriesFragment = (ViewDeliveriesFragment) fm.findFragmentByTag("view");
-        UnsuccessfulDeliveriesFragment unsuccessfulDeliveriesFragment = (UnsuccessfulDeliveriesFragment) fm.findFragmentByTag("unsuccessful");
-        FragmentTransaction ft = fm.beginTransaction();
+		FragmentManager fm = getSupportFragmentManager();
 
-        /** Detaches the androidfragment if exists */
-        if(viewDeliveriesFragment!=null)
-            ft.detach(viewDeliveriesFragment);
+		CompletedDeliveriesFragment completedDeliveriesFragment = (CompletedDeliveriesFragment) fm
+				.findFragmentByTag("completed");
+		ViewDeliveriesFragment viewDeliveriesFragment = (ViewDeliveriesFragment) fm
+				.findFragmentByTag("view");
+		UnsuccessfulDeliveriesFragment unsuccessfulDeliveriesFragment = (UnsuccessfulDeliveriesFragment) fm
+				.findFragmentByTag("unsuccessful");
+		FragmentTransaction ft = fm.beginTransaction();
 
-        /** Detaches the applefragment if exists */
-        if(completedDeliveriesFragment!=null)
-            ft.detach(completedDeliveriesFragment);
-        
-        if(unsuccessfulDeliveriesFragment!=null)
-            ft.detach(unsuccessfulDeliveriesFragment);
+		/** Detaches the androidfragment if exists */
+		if (viewDeliveriesFragment != null) ft.detach(viewDeliveriesFragment);
 
-        /** If current tab is android */
-        if(pos == 0){
+		/** Detaches the applefragment if exists */
+		if (completedDeliveriesFragment != null) ft.detach(completedDeliveriesFragment);
 
-            if(completedDeliveriesFragment==null){
-                /** Create AndroidFragment and adding to fragmenttransaction */
-                ft.add(R.id.realtabcontent,new CompletedDeliveriesFragment(), "completed");
-            }else{
-                /** Bring to the front, if already exists in the fragmenttransaction */
-                ft.attach(completedDeliveriesFragment);
-            }
+		if (unsuccessfulDeliveriesFragment != null) ft.detach(unsuccessfulDeliveriesFragment);
 
-        } else if(pos == 1) {    /** If current tab is apple */
-            if(viewDeliveriesFragment==null){
-                /** Create AppleFragment and adding to fragmenttransaction */
-                ft.add(R.id.realtabcontent,new ViewDeliveriesFragment(), "view");
-             }else{
-                /** Bring to the front, if already exists in the fragmenttransaction */
-                ft.attach(viewDeliveriesFragment);
-            }
-        } else {    /** If current tab is apple */
-            if(unsuccessfulDeliveriesFragment==null){
-                /** Create AppleFragment and adding to fragmenttransaction */
-                ft.add(R.id.realtabcontent,new UnsuccessfulDeliveriesFragment(), "unsuccessful");
-             }else{
-                /** Bring to the front, if already exists in the fragmenttransaction */
-                ft.attach(unsuccessfulDeliveriesFragment);
-            }
-        }
-        ft.commit();
+		/** If current tab is android */
+		if (pos == 0)
+		{
+
+			if (completedDeliveriesFragment == null)
+			{
+				/** Create AndroidFragment and adding to fragmenttransaction */
+				ft.add(R.id.realtabcontent, new CompletedDeliveriesFragment(), "completed");
+			}
+			else
+			{
+				/** Bring to the front, if already exists in the fragmenttransaction */
+				ft.attach(completedDeliveriesFragment);
+			}
+
+		}
+		else if (pos == 1)
+		{
+			/** If current tab is apple */
+			if (viewDeliveriesFragment == null)
+			{
+				/** Create AppleFragment and adding to fragmenttransaction */
+				ft.add(R.id.realtabcontent, new ViewDeliveriesFragment(), "view");
+			}
+			else
+			{
+				/** Bring to the front, if already exists in the fragmenttransaction */
+				ft.attach(viewDeliveriesFragment);
+			}
+		}
+		else
+		{
+			/** If current tab is apple */
+			if (unsuccessfulDeliveriesFragment == null)
+			{
+				/** Create AppleFragment and adding to fragmenttransaction */
+				ft.add(R.id.realtabcontent, new UnsuccessfulDeliveriesFragment(), "unsuccessful");
+			}
+			else
+			{
+				/** Bring to the front, if already exists in the fragmenttransaction */
+				ft.attach(unsuccessfulDeliveriesFragment);
+			}
+		}
+		ft.commit();
 	}
 
 	@Override
-	public void onPageScrollStateChanged(int arg0) {
+	public void onPageScrollStateChanged(int arg0)
+	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onPageScrolled(int arg0, float arg1, int arg2) {
+	public void onPageScrolled(int arg0, float arg1, int arg2)
+	{
 		// TODO Auto-generated method stub
-		//Log.d("fi.gfarr.mrd", "onPageScrolled" + arg0);
+		// Log.d("fi.gfarr.mrd", "onPageScrolled" + arg0);
 	}
 
 	@Override
-	public void onPageSelected(int arg0) {
+	public void onPageSelected(int arg0)
+	{
 		// TODO Auto-generated method stub
 		Log.d("fi.gfarr.mrd", "onPageSelected:" + arg0);
 		this.mTabHost.setCurrentTab(arg0);
 		currentPage = mPager.getCurrentItem();
 	}
 
-	public void setCurrentPage(int i) {
+	public void setCurrentPage(int i)
+	{
 		currentPage = i;
 		mPager.setCurrentItem(currentPage);
 	}
 
-	public void initViewHolder() {
+	public void initViewHolder()
+	{
 
-		if (rootView == null) {
+		if (rootView == null)
+		{
 
-			rootView = this.getWindow().getDecorView()
-					.findViewById(android.R.id.content);
+			rootView = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-			if (holder == null) {
+			if (holder == null)
+			{
 				holder = new ViewHolder();
 			}
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
 
-		} else {
+		}
+		else
+		{
 			holder = (ViewHolder) rootView.getTag();
 
-			if ((rootView.getParent() != null)
-					&& (rootView.getParent() instanceof ViewGroup)) {
+			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
+			{
 				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			} else {
+			}
+			else
+			{
 			}
 		}
 	}
 
 	// Creates static instances of resources.
 	// Increases performance by only finding and inflating resources only once.
-	static class ViewHolder {
+	static class ViewHolder
+	{
 
 	}
 }

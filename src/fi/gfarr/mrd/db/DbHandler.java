@@ -3,7 +3,9 @@ package fi.gfarr.mrd.db;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import fi.gfarr.mrd.helper.VariableManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -41,13 +43,27 @@ public class DbHandler extends SQLiteOpenHelper
 	// ------------ Fields - Bags -------------
 	public static final String C_BAG_ID = "_id"; // Consignment number
 													// (PK)
-	public static final String C_BAG_DEST_BRANCH = "cons_dest"; // Destination
 
 	/*
 	 * Has bag been scanned? used to move consignments to bottom of list as they
 	 * are scanned.
 	 */
 	public static final String C_BAG_SCANNED = "cons_scanned";
+
+	public static final String C_BAG_DEST_HUBNAME = "bag_hubname";
+	public static final String C_BAG_DEST_HUBCODE = "bag_hubcode";
+	public static final String C_BAG_DEST_ADDRESS = "bag_destaddress";
+	public static final String C_BAG_DEST_SUBURB = "bag_suburb";
+	public static final String C_BAG_DEST_TOWN = "bag_town";
+	public static final String C_BAG_DEST_CONTACT = "bag_contact";
+	public static final String C_BAG_DEST_LAT = "bag_lat";
+	public static final String C_BAG_DEST_LONG = "bag_long";
+	public static final String C_BAG_BARCODE = "bag_barcode";
+
+	/*
+	 * ID of driver this bag belongs to
+	 */
+	public static final String C_BAG_DRIVER_ID = "cons_driver_id";
 
 	/*
 	 * Is bag assigned?
@@ -67,19 +83,27 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_WAYBILL_BAG_ID = "bag_id"; // FK
 
 	// Waybill dimensions (volumetrics)
-	public static final String C_WAYBILL_DIMEN = "waybill_dimensions";
+	public static final String C_WAYBILL_DIMEN = "waybill_dimen";
 
 	// Mass X gravitational force
 	public static final String C_WAYBILL_WEIGHT = "waybill_weight";
 
 	// Parcel's destination
-	public static final String C_WAYBILL_DEST = "waybill_destination";
+	public static final String C_WAYBILL_DEST_ADDRESS = "waybill_destination_address";
+	public static final String C_WAYBILL_DEST_SUBURB = "waybill_destination_suburb";
+	public static final String C_WAYBILL_DEST_TOWN = "waybill_destination_town";
+	public static final String C_WAYBILL_DEST_LAT = "waybill_destination_lat";
+	public static final String C_WAYBILL_DEST_LONG = "waybill_destination_long";
+
+	// Customer
+	public static final String C_WAYBILL_CUSTOMER_NAME = "waybill_customer_name";
+	public static final String C_WAYBILL_CUSTOMER_ID = "waybill_customer_id";
+	public static final String C_WAYBILL_CUSTOMER_CONTACT1 = "waybill_customer_contact1";
+	public static final String C_WAYBILL_CUSTOMER_CONTACT2 = "waybill_customer_contact2";
+	public static final String C_WAYBILL_CUSTOMER_EMAIL = "waybill_customer_email";
 
 	// Recipient's tel number
 	public static final String C_WAYBILL_TEL = "waybill_tel";
-
-	// Recipient's email address
-	public static final String C_WAYBILL_EMAIL = "waybill_email";
 
 	// number of items in waybill. to be passed to ScanSimpleCursorAdapter
 	public static final String C_WAYBILL_PARCELCOUNT = "waybill_parcelcount";
@@ -122,17 +146,25 @@ public class DbHandler extends SQLiteOpenHelper
 
 			final String CREATE_TABLE_BAGS = "CREATE TABLE " + TABLE_BAGS + "(" + C_BAG_ID
 					+ " TEXT PRIMARY KEY," + C_BAG_SCANNED + " INTEGER," + C_BAG_ASSIGNED
-					+ " INTEGER," + C_BAG_NUM_ITEMS + " INTEGER," + C_BAG_CREATION_TIME + " TEXT,"
-					+ C_BAG_DEST_BRANCH + " TEXT)";
+					+ " TEXT," + C_BAG_BARCODE + " TEXT," + " INTEGER," + C_BAG_NUM_ITEMS
+					+ " INTEGER," + C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT,"
+					+ C_BAG_DEST_TOWN + " TEXT," + " TEXT," + C_BAG_DEST_SUBURB + " TEXT,"
+					+ C_BAG_DEST_LONG + " TEXT," + C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME
+					+ " TEXT," + C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT,"
+					+ C_BAG_DEST_ADDRESS + " TEXT)";
 			createTable(db, TABLE_BAGS, CREATE_TABLE_BAGS);
 
 			final String CREATE_TABLE_WAYBILL = "CREATE TABLE " + TABLE_WAYBILLS + "("
 					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
-					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST
-					+ " TEXT," + C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
-					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_EMAIL + " TEXT,"
-					+ "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS + "("
-					+ C_BAG_ID + "))";
+					+ C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST_LONG + " TEXT,"
+					+ C_WAYBILL_DEST_LAT + " TEXT," + C_WAYBILL_DEST_TOWN + " TEXT,"
+					+ C_WAYBILL_DEST_SUBURB + " TEXT," + C_WAYBILL_DEST_ADDRESS + " TEXT,"
+					+ C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
+					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_PARCELCOUNT + " INTEGER,"
+					+ C_WAYBILL_CUSTOMER_ID + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_CONTACT1 + " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_EMAIL + " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
+					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 
 			db.setTransactionSuccessful();
@@ -222,11 +254,20 @@ public class DbHandler extends SQLiteOpenHelper
 		ContentValues values = new ContentValues();
 
 		values.put(C_BAG_ID, bag.getBagNumber()); // PK
-		values.put(C_BAG_DEST_BRANCH, bag.getDestination());
+		values.put(C_BAG_DEST_ADDRESS, bag.getDestinationAddress());
+		values.put(C_BAG_DEST_CONTACT, bag.getDestinationContact());
+		values.put(C_BAG_DEST_HUBCODE, bag.getDestinationHubCode());
+		values.put(C_BAG_DEST_HUBNAME, bag.getDestinationHubName());
+		values.put(C_BAG_DEST_LAT, bag.getDestinationLat());
+		values.put(C_BAG_DEST_LONG, bag.getDestinationLong());
+		values.put(C_BAG_DEST_SUBURB, bag.getDestinationSuburb());
+		values.put(C_BAG_DEST_TOWN, bag.getDestinationTown());
+		values.put(C_BAG_BARCODE, bag.getBarcode());
 		values.put(C_BAG_ASSIGNED, convertBoolToInt(bag.getAssigned()));
 		values.put(C_BAG_SCANNED, convertBoolToInt(bag.getScanned()));
 		values.put(C_BAG_CREATION_TIME, bag.getCreationTime());
 		values.put(C_BAG_NUM_ITEMS, bag.getNumberItems());
+		values.put(C_BAG_DRIVER_ID, bag.getDriverId());
 
 		return addRow(TABLE_BAGS, values);
 	}
@@ -246,8 +287,11 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_WAYBILL_PARCELCOUNT, item.getParcelCount());
 		values.put(C_wAYBILL_PARCEL_SEQUENCE, item.getParcelSeq() + " of " + item.getParcelCount());
 		values.put(C_WAYBILL_DIMEN, item.getDimensions());
-		values.put(C_WAYBILL_TEL, item.getTelephone());
-		values.put(C_WAYBILL_EMAIL, item.getEmail());
+		values.put(C_WAYBILL_CUSTOMER_CONTACT1, item.getCustomerContact1());
+		values.put(C_WAYBILL_CUSTOMER_CONTACT2, item.getCustomerContact2());
+		values.put(C_WAYBILL_CUSTOMER_NAME, item.getCustomerName());
+		values.put(C_WAYBILL_CUSTOMER_ID, item.getCustomerID());
+		values.put(C_WAYBILL_CUSTOMER_EMAIL, item.getEmail());
 		values.put(C_WAYBILL_WEIGHT, item.getWeight());
 		values.put(C_WAYBILL_BAG_ID, item.getBagNumber()); // FK
 
@@ -283,11 +327,17 @@ public class DbHandler extends SQLiteOpenHelper
 			}
 			catch (Exception err)
 			{
+				StringWriter sw = new StringWriter();
+				err.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
 				return false; // Db transaction failed
 			}
 		}
 		catch (IllegalStateException err)
 		{
+			StringWriter sw = new StringWriter();
+			err.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
 			return false;
 		}
 		finally
@@ -448,7 +498,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * 
 	 * @return ArrayList<Bag>
 	 */
-	public ArrayList<Bag> getConsignments()
+	public ArrayList<Bag> getBags(String driver_id)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -456,24 +506,33 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
-			ArrayList<Bag> consignments = null;
-			String sql = "SELECT * FROM " + TABLE_BAGS;
+			ArrayList<Bag> bags = null;
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
+					+ driver_id + "'";
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
 			{
-				consignments = new ArrayList<Bag>();
+				bags = new ArrayList<Bag>();
 
 				while (!cursor.isAfterLast())
 				{
-					Bag consignment = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)), "");
-					consignments.add(consignment);
+					Bag bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
+					bag.setDestinationAddress(cursor.getString(cursor
+							.getColumnIndex(C_BAG_DEST_ADDRESS)));
+					bag.setAssigned(convertIntToBool(cursor.getInt(cursor
+							.getColumnIndex(C_BAG_ASSIGNED))));
+					bag.setCreationTime(cursor.getString(cursor.getColumnIndex(C_BAG_CREATION_TIME)));
+					bag.setDriverId(cursor.getString(cursor.getColumnIndex(C_BAG_DRIVER_ID)));
+					bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
+							.getColumnIndex(C_BAG_NUM_ITEMS))));
+					Log.d(TAG, bag.getBagNumber());
+					bags.add(bag);
 					cursor.moveToNext();
 				}
-
 			}
 
-			return consignments;
+			return bags;
 		}
 		catch (SQLiteException e)
 		{ // TODO Auto-generated catch
@@ -503,11 +562,123 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * Return bag according to bag number
+	 * Should only be one.
+	 */
+	public Bag getBag(String driver_id, String bag_id)
+	{
+		SQLiteDatabase db = null;
+		Bag bag = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			// ArrayList<Bag> bags = null;
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
+					+ driver_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				// bags = new ArrayList<Bag>();
+
+				if (!cursor.isAfterLast())
+				{
+					bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
+
+					bag.setDestinationAddress(cursor.getString(cursor
+							.getColumnIndex(C_BAG_DEST_ADDRESS)));
+					bag.setAssigned(convertIntToBool(cursor.getInt(cursor
+							.getColumnIndex(C_BAG_ASSIGNED))));
+					bag.setCreationTime(cursor.getString(cursor.getColumnIndex(C_BAG_CREATION_TIME)));
+					bag.setDriverId(cursor.getString(cursor.getColumnIndex(C_BAG_DRIVER_ID)));
+					bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
+							.getColumnIndex(C_BAG_NUM_ITEMS))));
+					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
+					bag.setDestinationContact(cursor.getString(cursor
+							.getColumnIndex(C_BAG_DEST_CONTACT)));
+					bag.setDestinationHubCode(cursor.getString(cursor
+							.getColumnIndex(C_BAG_DEST_HUBCODE)));
+					bag.setDestinationHubName(cursor.getString(cursor
+							.getColumnIndex(C_BAG_DEST_HUBNAME)));
+					bag.setDestinationLat(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT)));
+					bag.setDestinationLong(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG)));
+					bag.setDestinationSuburb(cursor.getString(cursor
+							.getColumnIndex(C_BAG_DEST_SUBURB)));
+					bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
+
+					// bags.add(bag);
+					// cursor.moveToNext();
+				}
+			}
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+		return bag;
+	}
+
+	/**
+	 * Return number of consignments belonging to a driver
+	 * 
+	 * @return count
+	 */
+	public int getBagCount(String driver_id)
+	{
+		String countQuery = "SELECT  * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID
+				+ " like '" + driver_id + "'";
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+		int cnt = cursor.getCount();
+		cursor.close();
+		return cnt;
+	}
+
+	/**
+	 * Return ID of bag at the specified row index.
+	 * 
+	 * @return BagID at specified row
+	 */
+	public String getBagIdAtRow(String driver_id, int row)
+	{
+		String countQuery = "SELECT  * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID
+				+ " LIKE '" + driver_id + "'" + " LIMIT 1 OFFSET " + row;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+		cursor.moveToFirst();
+		String bagid = cursor.getString(cursor.getColumnIndex(C_BAG_ID));
+		cursor.close();
+		Log.d(TAG, "getBagIdAtRow(): " + bagid);
+		return bagid;
+	}
+
+	/**
 	 * Get list of consignments not yet scanned
 	 * 
 	 * @return String
 	 */
-	public String getConsignmentsNotScanned()
+	public String getConsignmentsNotScanned(String driver_id)
 	{
 		SQLiteDatabase db = null;
 		String list = "";
@@ -516,7 +687,8 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_SCANNED + " <> 1";
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_SCANNED + " <> 1 AND "
+					+ C_BAG_DRIVER_ID + " LIKE '" + driver_id + "'";
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
@@ -550,6 +722,80 @@ public class DbHandler extends SQLiteOpenHelper
 		}
 		finally
 		{
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns coords of all bags
+	 * 
+	 * @param driver_id
+	 * @return ArrayList of HashMaps
+	 */
+	public ArrayList<HashMap<String, String>> getBagCoords(String driver_id)
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<HashMap<String, String>> bags = null;
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
+					+ driver_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				bags = new ArrayList<HashMap<String, String>>();
+
+				while (!cursor.isAfterLast())
+				{
+					String address = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_ADDRESS));
+
+					String hubname = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_HUBNAME));
+
+					String lat = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT));
+
+					String lon = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG));
+
+					HashMap<String, String> bag = new HashMap<String, String>();
+					bag.put(VariableManager.EXTRA_BAG_ADDRESS, address);
+					bag.put(VariableManager.EXTRA_BAG_HUBNAME, hubname);
+					bag.put(VariableManager.EXTRA_BAG_LAT, lat);
+					bag.put(VariableManager.EXTRA_BAG_LON, lon);
+
+					Log.d(TAG, hubname + " " + lat + "," + lon);
+
+					bags.add(bag);
+					cursor.moveToNext();
+				}
+			}
+
+			return bags;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
 
 			if (db != null)
 			{
@@ -559,7 +805,6 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-
 	}
 
 }

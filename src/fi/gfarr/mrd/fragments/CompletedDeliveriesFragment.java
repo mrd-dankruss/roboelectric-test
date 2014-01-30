@@ -15,18 +15,21 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.Company;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.DeliveryType;
+import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.VariableManager;
 
+public class CompletedDeliveriesFragment extends ListFragment
+{
 
-
-public class CompletedDeliveriesFragment extends ListFragment {
-	
 	private static final String TAG = "ViewDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
-	
+
 	public void onCreate(Bundle icicle)
 	{
 		super.onCreate(icicle);
+
+		/*
 		List<List<String>> values =  new ArrayList<List<String>>();
 		
 		List<String> temp1 = new ArrayList<String>();
@@ -41,13 +44,19 @@ public class CompletedDeliveriesFragment extends ListFragment {
 		temp2.add(Company.NONE.toString());
 		temp2.add("Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526");
 		temp2.add("00025420254 (6 items)");
-		values.add(temp2);
+		values.add(temp2);*/
+
+		// List<HashMap<String, String>> values = new ArrayList<HashMap<String, String>>();
+		//
+		// HashMap<String, String> myMap = new HashMap<String, String>();
+
 		// use your own layout
-		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), values);
+		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler
+				.getInstance(getActivity()).getBags(VariableManager.current_driver_id));
 		setListAdapter(adapter);
-		
-		//getListView().setDivider(null);
-		//getListView().setDividerHeight(0);
+
+		// getListView().setDivider(null);
+		// getListView().setDividerHeight(0);
 	}
 
 	@Override
@@ -57,38 +66,43 @@ public class CompletedDeliveriesFragment extends ListFragment {
 		Toast.makeText(getActivity(), item + " selected", Toast.LENGTH_LONG).show();
 	}
 
+	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
+	{
 
-	
-	
-	public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
-
-		if (rootView == null) {
+		if (rootView == null)
+		{
 
 			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
 
-			if (holder == null) {
+			if (holder == null)
+			{
 				holder = new ViewHolder();
 			}
 
-			//holder.list = (ListView) rootView.findViewById(listId);			 
+			// holder.list = (ListView) rootView.findViewById(listId);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
 
-		} else {
+		}
+		else
+		{
 			holder = (ViewHolder) rootView.getTag();
 
-			if ((rootView.getParent() != null)
-					&& (rootView.getParent() instanceof ViewGroup)) {
+			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
+			{
 				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			} else {
+			}
+			else
+			{
 			}
 		}
 	}
-	
-	//Creates static instances of resources.
-	//Increases performance by only finding and inflating resources only once.
-	static class ViewHolder {
+
+	// Creates static instances of resources.
+	// Increases performance by only finding and inflating resources only once.
+	static class ViewHolder
+	{
 		TabHost mTabHost;
-	}		
+	}
 }

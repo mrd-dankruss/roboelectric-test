@@ -53,8 +53,7 @@
     <string name="title_next_delivery_food">YOUR NEXT FOOD DELIVERY</string>
     <string name="title_deliveries">Deliveries</string>
     <string name="title_signature">COLLECT PROOF OF COLLECTION</string>
-    <string name="title_scan_consignments">Scan Consignments</string>
-    <string name="title_activity_scan">ScanActivity</string>
+    <string name="title_scan_consignments">Scan Consignments</string>    
     <string name="title_reason_partial_deliveries">Reasons for Partial Deliveries</string>
     <string name="title_set_as_next_delivery">Set as next delivery</string>
     <string name="title_return">RETURN</string>
@@ -108,7 +107,7 @@
     <string name="title_activity_scan_list">ScanListActivity</string>
 
     <!-- Google Maps API keys -->
-    <string name="key_googlemaps_api_debug">AIzaSyD256nSwz9k03cTC2QaN-pEpmZ0hfz8Ej4</string>
+    <string name="key_googlemaps_api_debug">AIzaSyB7Rp0ex2YM7kywAWNxlBO30k0GlyZtQ4s</string>
     <string name="key_googlemaps_api_release">AIzaSyCdXJWisT8lPyKasiqKnXSnXhsHvQzSZ6E</string>
     <string name="title_activity_view_bag_manifest">ViewBagManifestActivity</string>
 

@@ -1,9 +1,7 @@
 package fi.gfarr.mrd;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,22 +13,25 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.db.DbHandler;
-import fi.gfarr.mrd.db.Driver;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
 import fi.gfarr.mrd.widget.Toaster;
 
-public class CreatePinActivity extends Activity {
+public class CreatePinActivity extends Activity
+{
 
 	private final String TAG = "CreatePinActivity";
 	private ViewHolder holder;
 	private View root_view;
+	private CreatePinActivity context;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_pin);
+		context = this;
 
 		// Change actionbar title
 		setTitle(R.string.title_actionbar_create_pin);
@@ -40,11 +41,14 @@ public class CreatePinActivity extends Activity {
 
 		// button click
 		// Click create button
-		holder.button_create.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
+		holder.button_create.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
 
 				// Check if pin is valid then login
-				if (checkPin()) {
+				if (checkPin())
+				{
 					new CreatePINTask().execute();
 
 					// Intent intent = new Intent(getApplicationContext(),
@@ -57,8 +61,10 @@ public class CreatePinActivity extends Activity {
 			}
 		});
 		// Click change driver button
-		holder.button_change.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
+		holder.button_change.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
 				finish();
 			}
 		});
@@ -71,19 +77,19 @@ public class CreatePinActivity extends Activity {
 	 * @author greg
 	 * 
 	 */
-	private class CreatePINTask extends AsyncTask<Void, Void, String> {
+	private class CreatePINTask extends AsyncTask<Void, Void, String>
+	{
 		/**
 		 * The system calls this to perform work in a worker thread and delivers
 		 * it the parameters given to AsyncTask.execute()
 		 */
 		@Override
-		protected String doInBackground(Void... params) {
+		protected String doInBackground(Void... params)
+		{
 			// TODO Auto-generated method stub
-			return ServerInterface
-					.updatePIN(
-							getIntent().getStringExtra(
-									VariableManager.EXTRA_DRIVER_ID),
-							holder.editText_pin1.getText().toString());
+			return ServerInterface.updatePIN(
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+					holder.editText_pin1.getText().toString());
 		}
 
 		/**
@@ -91,46 +97,48 @@ public class CreatePinActivity extends Activity {
 		 * the result from doInBackground()
 		 */
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(String result)
+		{
 
-			try {
+			try
+			{
 				// PIN creation returns from server as successful
-				if (result.equals("success")) {
-					Intent intent = new Intent(getApplicationContext(),
-							ScanActivity.class);
-
-					DbHandler.getInstance(getApplicationContext());
-
-					intent.putExtra(
-							VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(
-									VariableManager.EXTRA_DRIVER_ID));
-
-					startActivity(intent);
+				if (result.equals("success"))
+				{
+					// Retrieve bags for current driver in a thread
+					new RetrieveConsignmentsTask().execute();
 				}
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e)
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private boolean checkPin() {
+	private boolean checkPin()
+	{
 
 		// Check if two pins match
 		if (holder.editText_pin1.getText().toString()
-				.equals(holder.editText_pin2.getText().toString())) {
+				.equals(holder.editText_pin2.getText().toString()))
+		{
 
 			// Check for 4-digit format
-			String msg = PinManager.checkPin(holder.editText_pin1.getText()
-					.toString(), this);
-			if (msg.equals("OK")) {
+			String msg = PinManager.checkPin(holder.editText_pin1.getText().toString(), this);
+			if (msg.equals("OK"))
+			{
 				return true;
-			} else {
+			}
+			else
+			{
 				displayToast(msg);
 				return false;
 			}
-		} else {
+		}
+		else
+		{
 			// strings do not match
 			displayToast(getString(R.string.text_create_pin_mismatch));
 			return false;
@@ -142,37 +150,37 @@ public class CreatePinActivity extends Activity {
 	 * 
 	 * @param msg
 	 */
-	private void displayToast(String msg) {
-		Toaster.displayToast(msg, holder.textView_toast,
-				holder.relativeLayout_toast, this);
+	private void displayToast(String msg)
+	{
+		Toaster.displayToast(msg, holder.textView_toast, holder.relativeLayout_toast, this);
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.create_pin, menu);
 		return true;
 	}
 
-	public void initViewHolder() {
+	public void initViewHolder()
+	{
 
-		if (root_view == null) {
+		if (root_view == null)
+		{
 
-			root_view = this.getWindow().getDecorView()
-					.findViewById(android.R.id.content);
+			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-			if (holder == null) {
+			if (holder == null)
+			{
 				holder = new ViewHolder();
 			}
 
-			holder.button_create = (Button) root_view
-					.findViewById(R.id.button_create_pin_create);
+			holder.button_create = (Button) root_view.findViewById(R.id.button_create_pin_create);
 			holder.button_change = (Button) root_view
 					.findViewById(R.id.button_create_pin_change_driver);
-			holder.editText_pin1 = (EditText) root_view
-					.findViewById(R.id.editText_create_pin_1);
-			holder.editText_pin2 = (EditText) root_view
-					.findViewById(R.id.editText_create_pin_2);
+			holder.editText_pin1 = (EditText) root_view.findViewById(R.id.editText_create_pin_1);
+			holder.editText_pin2 = (EditText) root_view.findViewById(R.id.editText_create_pin_2);
 			holder.textView_toast = (TextView) root_view
 					.findViewById(R.id.textView_create_pin_toast);
 			holder.relativeLayout_toast = (RelativeLayout) root_view
@@ -181,26 +189,82 @@ public class CreatePinActivity extends Activity {
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
-		} else {
+		}
+		else
+		{
 			holder = (ViewHolder) root_view.getTag();
 
-			if ((root_view.getParent() != null)
-					&& (root_view.getParent() instanceof ViewGroup)) {
+			if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
+			{
 				((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-			} else {
+			}
+			else
+			{
 			}
 		}
 	}
 
 	// Creates static instances of resources.
 	// Increases performance by only finding and inflating resources only once.
-	static class ViewHolder {
+	static class ViewHolder
+	{
 		Button button_create;
 		Button button_change;
 		EditText editText_pin1;
 		EditText editText_pin2;
 		TextView textView_toast;
 		RelativeLayout relativeLayout_toast;
+	}
+
+	/**
+	 * Retrieve list of consignments from API in background
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class RetrieveConsignmentsTask extends AsyncTask<Void, Void, Void>
+	{
+
+		private ProgressDialog dialog_progress = new ProgressDialog(CreatePinActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			ServerInterface.downloadBags(getApplicationContext(),
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
+
+			Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+
+			DbHandler.getInstance(getApplicationContext());
+			// Pass driver name on
+			intent.putExtra(VariableManager.EXTRA_DRIVER,
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+
+			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+			startActivity(intent);
+		}
 	}
 
 }
