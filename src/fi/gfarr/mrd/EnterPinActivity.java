@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,12 +33,15 @@ public class EnterPinActivity extends Activity
 	private final String TAG = "EnterPinActivity";
 	private ViewHolder holder;
 	private View root_view;
+	private EnterPinActivity context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_enter_pin);
+
+		context = this;
 
 		// Change actionbar title
 		setTitle(R.string.title_actionbar_enter_pin);
@@ -296,6 +300,48 @@ public class EnterPinActivity extends Activity
 
 		if (msg.what == 0)
 		{
+			// Retrieve bags for current driver in a thread
+			new RetrieveBagsTask().execute();
+
+		}
+	}
+
+	/**
+	 * Retrieve list of bags from API in background
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class RetrieveBagsTask extends AsyncTask<Void, Void, Void>
+	{
+
+		private ProgressDialog dialog_progress = new ProgressDialog(EnterPinActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			ServerInterface.downloadBags(getApplicationContext(),getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
+
 			Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
 
 			DbHandler.getInstance(getApplicationContext());
@@ -305,16 +351,6 @@ public class EnterPinActivity extends Activity
 
 			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-
-			// Close progress spinner
-			runOnUiThread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					// if (dialog.isShowing()) dialog.dismiss();
-				}
-			});
 
 			startActivity(intent);
 		}

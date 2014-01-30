@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,7 +77,8 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned();
+			list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned(
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 			System.out.println("list: " + list);
 			return null;
 		}
@@ -249,19 +251,13 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 
 		if (msg.what == 0)
 		{
-			/*
-			Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
-
-			DbHandler.getInstance(getApplicationContext());
-			// Pass driver name on
-			intent.putExtra(VariableManager.EXTRA_DRIVER,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
-
+			Intent intent = new Intent(getApplicationContext(),
+					ViewDeliveriesFragmentActivity.class);
+			// intent.putExtra(EXTRA_MESSAGE, message);
 			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			startActivity(intent);
 
-			*/
-			
 			// Close progress spinner
 			runOnUiThread(new Runnable()
 			{

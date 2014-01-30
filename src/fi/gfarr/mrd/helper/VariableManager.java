@@ -11,6 +11,12 @@ public class VariableManager
 	public static final String EXTRA_CONSIGNMENT_NUMBER_ITEMS = "cons_number_items";
 	public static final String EXTRA_CONSIGNMENT_NUMBER = "cons_no";
 	public static final String EXTRA_CONSIGNMENT_DESTINATION = "cons_sdest";
+	public static final String EXTRA_BAG_LAT = "bag_lat";
+	public static final String EXTRA_BAG_LON = "bag_lon";
+	public static final String EXTRA_BAG_ADDRESS = "bag_address";
+	public static final String EXTRA_BAG_HUBNAME = "bag_hubname";
+	public static final String EXTRA_BAG_DELIVERY_TYPE = "bag_deliverytype";
+	public static final String EXTRA_BAG_DELIVERY_TYPE_MILKRUN = "bag_deliverytypemilkrun";
 	public static final int URL_LOADER_BAG_MANIFEST = 2;
 
 	// JSON keys
@@ -26,6 +32,7 @@ public class VariableManager
 	public static final String IMEI_TEST = "490154203237518";
 
 	public static String token = "";
+	public static String current_driver_id = ""; // Stores currently selected driver for global use
 
 	// Debug mode
 	public static final boolean DEBUG = true;

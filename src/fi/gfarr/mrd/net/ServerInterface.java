@@ -38,7 +38,7 @@ public class ServerInterface
 
 	private final static String TAG = "ServerInterface";
 
-	private static Context context;
+	// private static Context context;
 
 	/**
 	 * Makes API call to request a new session token.
@@ -50,7 +50,7 @@ public class ServerInterface
 	{
 		String url = "http://paperlessapp.apiary.io/v1/auth/auth?imei=" + VariableManager.IMEI_TEST;
 		String response = getInputStreamFromUrl(url);
-
+		// Log.d(TAG, "requestToken(): " + response);
 		String token = "";
 
 		try
@@ -280,6 +280,7 @@ public class ServerInterface
 
 	/**
 	 * Submit manager authentication request.
+	 * 
 	 * @param man_id
 	 * @param driver_id
 	 * @param PIN
@@ -321,13 +322,13 @@ public class ServerInterface
 	/**
 	 * Retrieves consignments (bags), for the specified driver ID and adds to DB
 	 * 
-	 * @param userid
+	 * @param driver_id
 	 *            of driver.
 	 * @return
 	 */
-	public static void getConsignments(Context c, String userid)
+	public static void downloadBags(Context context, String driver_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/bags/driver?id=" + userid + "&mrdToken="
+		String url = "http://paperlessapp.apiary.io/v1/bags/driver?id=" + driver_id + "&mrdToken="
 				+ VariableManager.token;
 
 		Log.i(TAG, "Fetching " + url);
@@ -358,8 +359,11 @@ public class ServerInterface
 						// Destination branch (bag)
 						String dest_branch = result.getJSONObject(i).getString("destbranch");
 
+						// barcode
+						String barcode = result.getJSONObject(i).getString("barcode");
+
 						// Assigned?
-						Boolean assigned = result.getJSONObject(i).getBoolean("assigned");
+						boolean assigned = result.getJSONObject(i).getBoolean("assigned");
 
 						// Time Created
 						String created_time = result.getJSONObject(i).getString("created");
@@ -371,11 +375,21 @@ public class ServerInterface
 						// current waybill ID occurs.
 
 						// Add bag to DB
-						Bag bag = new Bag(id, dest_branch);
+						Bag bag = new Bag(id);
+						bag.setDestinationAddress(dest_branch);
 						bag.setAssigned(assigned);
+						bag.setBarcode(barcode);
 						bag.setCreationTime(created_time);
+						bag.setDriverId(driver_id);
 						bag.setNumberItems(num_items);
-						DbHandler.getInstance(context).addBag(bag);
+
+						// Add bag to DB returning success status
+						// Log.d(TAG, "Bag " + id + " added: "
+						// + DbHandler.getInstance(context).addBag(bag));
+
+						// Download more details
+						System.out.println(id);
+						downloadBag(context, id);
 
 						// --- Waybills ---
 
@@ -408,7 +422,7 @@ public class ServerInterface
 
 							// Create Waybill object and add values
 							Waybill waybill = new Waybill(waybill_id, id);
-							waybill.setTelephone(tel);
+							waybill.setCustomerContact1(tel);
 							waybill.setEmail(email);
 							waybill.setComLog(comlog);
 							waybill.setWeight(weight);
@@ -434,7 +448,227 @@ public class ServerInterface
 								waybill.setParcelSeq(1);
 							}
 
-							DbHandler.getInstance(context).addWaybill(waybill);
+							// Log.d(TAG, "Waybill " + waybill_id + " added: " +
+							// DbHandler.getInstance(context).addWaybill(waybill));
+							Log.i(TAG, "Bag list fetched.");
+						}
+					}
+					catch (NumberFormatException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+	}
+
+	/**
+	 * Retrieve a single bag object
+	 * 
+	 * @param c
+	 * @param bag_id
+	 */
+	public static void downloadBag(Context context, String bag_id)
+	{
+		String url = "http://paperlessapp.apiary.io/v1/bag/bag?id=" + bag_id + "&mrdToken="
+				+ VariableManager.token;
+
+		Log.i(TAG, "Fetching " + url);
+
+		try
+		{
+			String response = getInputStreamFromUrl(url);
+
+			JSONObject jObject = new JSONObject(response);
+
+			JSONObject result = jObject.getJSONObject("response").getJSONObject("bag");
+
+			if (result != null)
+			{
+
+				// Stores waybill IDs as they are loaded.
+				// Used to count the number of occurences
+				// For counting multiple packages.
+				Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+
+				for (int i = 0; i < result.length(); i++)
+				{
+					try
+					{
+						// ID
+						String id = result.getString("id");
+
+						// Barcode
+						String barcode = result.getString("barcode");
+
+						// Waybill count
+						int waybill_count = result.getInt("waybillcount");
+
+						// scanned?
+						boolean scanned = result.getBoolean("scanned");
+
+						// ---- Destination
+						// Address
+						String dest_hubname = result.getJSONObject("destination").getString(
+								"hubname");
+						String dest_hubcode = result.getJSONObject("destination").getString(
+								"hubcode");
+						String dest_address = result.getJSONObject("destination")
+								.getJSONObject("address").getString("address");
+						String dest_suburb = result.getJSONObject("destination")
+								.getJSONObject("address").getString("suburb");
+						String dest_town = result.getJSONObject("destination")
+								.getJSONObject("address").getString("town");
+						String dest_contact1 = result.getJSONObject("destination")
+								.getJSONObject("address").getString("contact1");
+						String dest_lat = result.getJSONObject("destination")
+								.getJSONObject("address").getJSONObject("coords").getString("lat");
+						String dest_long = result.getJSONObject("destination")
+								.getJSONObject("address").getJSONObject("coords").getString("lon");
+
+						// Go through temp array to find number of times the
+						// current waybill ID occurs.
+
+						// Add bag to DB
+						Bag bag = new Bag(id);
+						bag.setBarcode(barcode);
+						bag.setDestinationHubCode(dest_hubcode);
+						bag.setDestinationHubName(dest_hubname);
+						bag.setDestinationAddress(dest_address);
+						bag.setDestinationSuburb(dest_suburb);
+						bag.setDestinationTown(dest_town);
+						bag.setDestinationLat(dest_lat);
+						bag.setDestinationLong(dest_long);
+						bag.setDestinationContact(dest_contact1);
+						bag.setScanned(scanned);
+						bag.setNumberItems(waybill_count);
+
+						Log.d(TAG, "Bag " + id + " added: "
+								+ DbHandler.getInstance(context).addBag(bag));
+
+						// --- Waybills ---
+
+						JSONArray waybills = result.getJSONArray("waybills");
+
+						// Load each waybill in bag
+						for (int j = 0; j < waybills.length(); j++)
+						{
+
+							// Tel
+							// String tel = waybills.getJSONObject(j).getString("telephone");
+
+							// Weight
+							String weight = waybills.getJSONObject(j).getJSONObject("dimensions")
+									.getString("weight");
+
+							// Dimensions
+							String dimen = waybills.getJSONObject(j).getString("dimensions");
+
+							// Waybill ID
+							String waybill_id = waybills.getJSONObject(j).getString("id");
+
+							// barcode
+							String waybill_barcode = waybills.getJSONObject(j).getString("barcode");
+
+							// Dimensions
+							String dimensions = waybills.getJSONObject(j)
+									.getJSONObject("dimensions").getString("width")
+									+ "mmX"
+									+ waybills.getJSONObject(j).getJSONObject("dimensions")
+											.getString("height")
+									+ "mmX"
+									+ waybills.getJSONObject(j).getJSONObject("dimensions")
+											.getString("length") + "mm";
+
+							// status
+							String status = waybills.getJSONObject(j).getString("status");
+
+							// ---- Delivery address
+							// Address
+							String address = waybills.getJSONObject(j)
+									.getJSONObject("deliveryaddress").getString("address");
+							String suburb = waybills.getJSONObject(j)
+									.getJSONObject("deliveryaddress").getString("suburb");
+							String town = waybills.getJSONObject(j)
+									.getJSONObject("deliveryaddress").getString("town");
+							String lat = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
+									.getJSONObject("coords").getString("lat");
+							String lon = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
+									.getJSONObject("coords").getString("lon");
+
+							// --- Customer
+							String name = waybills.getJSONObject(j).getJSONObject("customer")
+									.getString("name");
+							String idnumber = waybills.getJSONObject(j).getJSONObject("customer")
+									.getString("idnumber");
+							String contact1 = waybills.getJSONObject(j).getJSONObject("customer")
+									.getString("contact1");
+							String contact2 = waybills.getJSONObject(j).getJSONObject("customer")
+									.getString("contact2");
+							String email = waybills.getJSONObject(j).getJSONObject("customer")
+									.getString("email");
+
+							// comlog
+							// comlog is a JSONArray ***
+							// String comlog = waybills.getJSONObject(j).getString("comlog");
+
+							// parcel count
+							int parcel_count = waybills.getJSONObject(j).getInt("parcelcount");
+
+							// Create Waybill object and add values
+							Waybill waybill = new Waybill(waybill_id, id);
+							waybill.setEmail(email);
+							waybill.setBarcode(waybill_barcode);
+							waybill.setDimensions(dimensions);
+							waybill.setStatus(status);
+							waybill.setDeliveryTown(town);
+							waybill.setDeliverySuburb(suburb);
+							waybill.setDeliveryAddress(address);
+							waybill.setDeliveryLat(lat);
+							waybill.setDeliveryLong(lon);
+							waybill.setCustomerContact1(contact1);
+							waybill.setCustomerContact2(contact2);
+							waybill.setCustomerID(idnumber);
+							waybill.setCustomerName(name);
+							// waybill.setComLog(comlog);
+							waybill.setWeight(weight);
+							waybill.setDimensions(dimen);
+							waybill.setParcelCount(parcel_count);
+
+							// Add ID to hashtable
+							Integer current_count = waybill_IDs.get(waybill_id);
+
+							// Calculate how many times the current waybill ID
+							// has occurred already
+							if (current_count != null)
+							{
+								// Increment occurence count of the waybill
+								waybill_IDs.put(waybill_id, current_count + 1);
+
+								// nth occurance of this waybill
+								waybill.setParcelSeq(current_count + 1);
+							}
+							else
+							{
+								// First occurance of this waybill
+								waybill.setParcelSeq(1);
+							}
+
+							Log.d(TAG, "Waybill " + waybill_id + " added: "
+									+ DbHandler.getInstance(context).addWaybill(waybill));
+
 							Log.i(TAG, "Bag list fetched.");
 						}
 					}

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import fi.gfarr.mrd.adapters.TabsPagerAdapter;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements TabListener
+
 {
 
 	private ViewHolder holder;
@@ -45,9 +46,8 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_deliveries);
 
-		String[] tabs = { getResources().getString(R.string.tab_completed), 
-				getResources().getString(R.string.tab_todo), getResources().getString(R.string.tab_unsuccessful) };
-		
+		String[] tabs = { getResources().getString(R.string.tab_completed), getResources().getString(R.string.tab_todo), getResources().getString(R.string.tab_unsuccessful) };
+
 		// Initilization
 		mPager = (ViewPager) findViewById(R.id.view_deliveries_pager);
 		actionBar = getActionBar();
@@ -90,18 +90,21 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 	}
 
 	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+	public void onTabReselected(Tab tab, FragmentTransaction ft)
+	{
 	}
 
 	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+	public void onTabSelected(Tab tab, FragmentTransaction ft)
+	{
 		// on tab selected
 		// show respected fragment view
 		mPager.setCurrentItem(tab.getPosition());
 	}
 
 	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+	public void onTabUnselected(Tab tab, FragmentTransaction ft)
+	{
 	}
 
 	public void initViewHolder()

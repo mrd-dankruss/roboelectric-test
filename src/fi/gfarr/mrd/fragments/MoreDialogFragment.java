@@ -10,10 +10,11 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import fi.gfarr.mrd.CallActivity;
+import fi.gfarr.mrd.MapActivity;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReportDelayActivity;
 import fi.gfarr.mrd.SmsActivity;
-
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class MoreDialogFragment extends DialogFragment {
     
@@ -73,46 +74,56 @@ public class MoreDialogFragment extends DialogFragment {
 				dismiss();
 			}
 		});
-        
-        setAsNextDelivery.setOnClickListener(new View.OnClickListener()
+
+		setAsNextDelivery.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				//TODO: Set as next delivery button
+				// TODO: Set as next delivery button
 			}
 		});
-        
-        viewMapButton.setOnClickListener(new View.OnClickListener()
+
+		viewMapButton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				//TODO: View Map button
+				Intent intent = new Intent(getActivity(), MapActivity.class);
+
+				// Pass driver name on
+				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
+						.getStringExtra(VariableManager.EXTRA_DRIVER));
+
+				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+				startActivity(intent);
+				// TODO: View Map button
 			}
 		});
-        
-        reportDelayButton.setOnClickListener(new View.OnClickListener()
+
+		reportDelayButton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				//TODO: Change to new activity
+				// TODO: Change to new activity
 				Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
 				startActivity(intent);
 				/*
 				Fragment fragment = new ReportDelayListFragment();
-			    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-			    ft.replace(R.id.realtabcontent, fragment);
-			    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-			    ft.addToBackStack(null);
-			    ft.commit();
-			    dismiss();
-			    */
+				FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+				ft.replace(R.id.realtabcontent, fragment);
+				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+				ft.addToBackStack(null);
+				ft.commit();
+				dismiss();
+				*/
 			}
 		});
-        
-        callButton.setOnClickListener(new View.OnClickListener()
+
+		callButton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -121,8 +132,8 @@ public class MoreDialogFragment extends DialogFragment {
 				startActivity(intent);
 			}
 		});
-        
-        messageButton.setOnClickListener(new View.OnClickListener()
+
+		messageButton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -132,6 +143,6 @@ public class MoreDialogFragment extends DialogFragment {
 			}
 		});
 
-        return v;
-    }
+		return v;
+	}
 }

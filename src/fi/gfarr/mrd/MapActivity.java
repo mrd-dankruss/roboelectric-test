@@ -1,9 +1,15 @@
 package fi.gfarr.mrd;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -11,14 +17,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
@@ -29,6 +36,9 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.widget.Toaster;
 
 public class MapActivity extends Activity implements OnMapClickListener, LocationListener,
@@ -87,9 +97,46 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
 		// Search function
 		setupSearchView();
-
+		setupMapMarkers();
 	}
 
+	/**
+	 * Retrieve coords of all the driver's bags and place map markers
+	 */
+	private void setupMapMarkers()
+	{
+		// Retrieve coords
+		ArrayList<HashMap<String, String>> bags = DbHandler.getInstance(getApplicationContext())
+				.getBagCoords(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+		// Check coords of each bags
+		for (int i = 0; i < bags.size(); i++)
+		{
+			try
+			{
+				double lat = Double.parseDouble(bags.get(i).get(VariableManager.EXTRA_BAG_LAT));
+				double lon = Double.parseDouble(bags.get(i).get(VariableManager.EXTRA_BAG_LON));
+				LatLng location = new LatLng(lat, lon);
+
+				String address = bags.get(i).get(VariableManager.EXTRA_BAG_ADDRESS);
+				String hubname = bags.get(i).get(VariableManager.EXTRA_BAG_HUBNAME);
+
+				map.addMarker(new MarkerOptions().title(hubname).snippet(address)
+						.position(location));
+			}
+			catch (NumberFormatException e)
+			{
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
+			}
+
+		}
+	}
+
+	/**
+	 * Setup and initialize the search bar
+	 */
 	private void setupSearchView()
 	{
 		// Start screen with keyboard initially hidden
