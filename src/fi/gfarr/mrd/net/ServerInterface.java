@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
@@ -19,13 +19,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.db.Driver;
@@ -49,7 +53,7 @@ public class ServerInterface
 	public static String requestToken()
 	{
 		String url = "http://paperlessapp.apiary.io/v1/auth/auth?imei=" + VariableManager.IMEI_TEST;
-		String response = getInputStreamFromUrl(url);
+		String response = getInputStreamFromUrl(url, null, null);
 		// Log.d(TAG, "requestToken(): " + response);
 		String token = "";
 
@@ -128,7 +132,7 @@ public class ServerInterface
 	{
 		String url = "http://paperlessapp.apiary.io/v1/driver/drivers?imei="
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token;
-		String response = getInputStreamFromUrl(url);
+		String response = getInputStreamFromUrl(url, null, null);
 
 		JSONArray drivers_jArray = null;
 
@@ -192,7 +196,7 @@ public class ServerInterface
 	{
 		String url = "http://paperlessapp.apiary.io/v1/manager/managers?imei="
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token;
-		String response = getInputStreamFromUrl(url);
+		String response = getInputStreamFromUrl(url, null, null);
 
 		JSONArray managers_jArray = null;
 
@@ -251,7 +255,7 @@ public class ServerInterface
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&driverPIN="
 				+ PIN;
 
-		String response = getInputStreamFromUrl(url);
+		String response = getInputStreamFromUrl(url, null, null);
 
 		// System.out.println(response);
 
@@ -292,7 +296,7 @@ public class ServerInterface
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&managerPIN="
 				+ PIN + "&managerid=" + man_id + "&driverid=" + driver_id;
 
-		String response = getInputStreamFromUrl(url);
+		String response = getInputStreamFromUrl(url, null, null);
 
 		// System.out.println(response);
 
@@ -335,7 +339,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url);
+			String response = getInputStreamFromUrl(url, null, null);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -347,7 +351,7 @@ public class ServerInterface
 				// Stores waybill IDs as they are loaded.
 				// Used to count the number of occurences
 				// For counting multiple packages.
-				Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+				// Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
 
 				for (int i = 0; i < result.length(); i++)
 				{
@@ -356,101 +360,8 @@ public class ServerInterface
 						// ID
 						String bag_id = result.getJSONObject(i).getString("id");
 
-						// Destination branch (bag)
-						String dest_branch = result.getJSONObject(i).getString("destbranch");
-
-						// barcode
-						String barcode = result.getJSONObject(i).getString("barcode");
-
-						// Assigned?
-						boolean assigned = result.getJSONObject(i).getBoolean("assigned");
-
-						// Time Created
-						String created_time = result.getJSONObject(i).getString("created");
-
-						// Number items
-						int num_items = result.getJSONObject(i).getInt("noitems");
-
-						// Go through temp array to find number of times the
-						// current waybill ID occurs.
-
-						// Add bag to DB
-						Bag bag = new Bag(bag_id);
-						bag.setDestinationAddress(dest_branch);
-						bag.setAssigned(assigned);
-						bag.setBarcode(barcode);
-						bag.setCreationTime(created_time);
-						bag.setDriverId(driver_id);
-						bag.setNumberItems(num_items);
-
-						// Add bag to DB returning success status
-						// Log.d(TAG, "Bag " + id + " added: "
-						// + DbHandler.getInstance(context).addBag(bag));
-
 						// Download more details
 						downloadBag(context, bag_id, driver_id);
-
-						// --- Waybills ---
-
-						JSONArray waybills = result.getJSONObject(i).getJSONArray("waybills");
-
-						// Load each waybill in bag
-						for (int j = 0; j < waybills.length(); j++)
-						{
-
-							// Tel
-							String tel = waybills.getJSONObject(j).getString("telephone");
-
-							// Weight
-							String weight = waybills.getJSONObject(j).getString("weight");
-
-							// Dimensions
-							String dimen = waybills.getJSONObject(j).getString("dimensions");
-
-							// Waybill ID
-							String waybill_id = waybills.getJSONObject(j).getString("id");
-
-							// email
-							String email = waybills.getJSONObject(j).getString("email");
-
-							// comlog
-							String comlog = waybills.getJSONObject(j).getString("comlog");
-
-							// parcel count
-							int parcel_count = waybills.getJSONObject(j).getInt("parcelcount");
-
-							// Create Waybill object and add values
-							Waybill waybill = new Waybill(waybill_id, bag_id);
-							waybill.setCustomerContact1(tel);
-							waybill.setEmail(email);
-							waybill.setComLog(comlog);
-							waybill.setWeight(weight);
-							waybill.setDimensions(dimen);
-							waybill.setParcelCount(parcel_count);
-
-							// Add ID to hashtable
-							Integer current_count = waybill_IDs.get(waybill_id);
-
-							// Calculate how many times the current waybill ID
-							// has occurred already
-							if (current_count != null)
-							{
-								// Increment occurence count of the waybill
-								waybill_IDs.put(waybill_id, current_count + 1);
-
-								// nth occurance of this waybill
-								waybill.setParcelSeq(current_count + 1);
-							}
-							else
-							{
-								// First occurance of this waybill
-								waybill.setParcelSeq(1);
-							}
-
-							// Log.d(TAG, "Waybill " + waybill_id + " added: " +
-							// DbHandler.getInstance(context).addWaybill(waybill));
-							Log.i(TAG, "Bag list fetched.");
-						}
 					}
 					catch (NumberFormatException e)
 					{
@@ -488,7 +399,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url);
+			String response = getInputStreamFromUrl(url, null, null);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -567,7 +478,8 @@ public class ServerInterface
 
 						// Weight
 						String weight = waybills.getJSONObject(j).getJSONObject("dimensions")
-								.getString("weight");
+								.getString("weight")
+								+ "kg";
 
 						// Dimensions
 						String dimen = waybills.getJSONObject(j).getString("dimensions");
@@ -640,7 +552,6 @@ public class ServerInterface
 						waybill.setCustomerName(name);
 						// waybill.setComLog(comlog);
 						waybill.setWeight(weight);
-						waybill.setDimensions(dimen);
 						waybill.setParcelCount(parcel_count);
 
 						// Add ID to hashtable
@@ -692,6 +603,85 @@ public class ServerInterface
 		}
 	}
 
+	public static void downloadDelays(Context context)
+	{
+		String url = "http://paperlessapp.apiary.io/v1/milkruns/delays?mrdToken="
+				+ VariableManager.token;
+
+		Log.i(TAG, "Fetching " + url);
+
+		try
+		{
+			String response = getInputStreamFromUrl(url, null, null);
+
+			JSONObject jObject = new JSONObject(response);
+
+			JSONArray result = jObject.getJSONArray("response");
+
+			ContentValues values;
+
+			if (result != null)
+			{
+
+				// Stores waybill IDs as they are loaded.
+				// Used to count the number of occurences
+				// For counting multiple packages.
+				// Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+
+				for (int i = 0; i < result.length(); i++)
+				{
+					try
+					{
+						values = new ContentValues();
+
+						// ID
+						String delay_id = result.getJSONObject(i).getString("id");
+
+						// Reason
+						String reason = result.getJSONObject(i).getString("name");
+
+						// Durations
+						JSONArray durations = result.getJSONObject(i).getJSONArray("items");
+
+						for (int d = 0; d < durations.length(); d++)
+						{
+							// Duration ID
+							String duration_id = durations.getJSONObject(d).getString("id");
+
+							// Duration
+							String duration = durations.getJSONObject(d).getString("name");
+
+							values.put(DbHandler.C_DELAYS_ID, delay_id);
+							values.put(DbHandler.C_DELAYS_REASON, reason);
+							values.put(DbHandler.C_DELAYS_DURATION_ID, duration_id);
+							values.put(DbHandler.C_DELAYS_DURATION, duration);
+
+							Log.d(TAG, reason + " " + duration);
+
+							DbHandler.getInstance(context).addRow(DbHandler.TABLE_DELAYS, values);
+						}
+					}
+					catch (NumberFormatException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+	}
+
 	/**
 	 * Perform HTTP GET request.
 	 * 
@@ -700,7 +690,7 @@ public class ServerInterface
 	 */
 	// http://www.androidsnippets.com/executing-a-http-get-request-with-httpclient
 
-	public static String getInputStreamFromUrl(final String url)
+	public static String getInputStreamFromUrl(final String url, Activity activity, View view)
 	{
 		if (VariableManager.DEBUG)
 		{
@@ -709,12 +699,20 @@ public class ServerInterface
 
 		try
 		{
+			final int CONN_WAIT_TIME = 5000;
+			final int CONN_DATA_WAIT_TIME = 8000;
+
+			HttpParams httpParams = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParams, CONN_WAIT_TIME);
+			HttpConnectionParams.setSoTimeout(httpParams, CONN_DATA_WAIT_TIME);
+
 			HttpGet request = new HttpGet(url);
 
 			// Depends on your web service
 			request.setHeader("Content-type", "application/json");
 
-			DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+			// DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+			DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
 
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
@@ -743,6 +741,14 @@ public class ServerInterface
 			return "";
 		}
 		catch (UnsupportedEncodingException e)
+		{
+			// TODO Auto-generated catch block
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return "";
+		}
+		catch (SocketTimeoutException e)
 		{
 			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();

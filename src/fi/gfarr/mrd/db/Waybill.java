@@ -418,6 +418,7 @@ public class Waybill
 	public void setDimensions(String dimensions)
 	{
 		this.dimensions = dimensions;
+		System.out.println("dimens: " + this.dimensions);
 	}
 
 }

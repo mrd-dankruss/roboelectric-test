@@ -5,8 +5,10 @@ import java.util.StringTokenizer;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -38,6 +40,7 @@ import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.fragments.IncompleteScanDialog;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
+import fi.gfarr.mrd.widget.CustomToast;
 import fi.gfarr.mrd.widget.Toaster;
 
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
@@ -53,7 +56,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private static final int URL_LOADER = 1;// Identifies a particular Loader
 											// being used in this component
 	static final String[] FROM =
-	{ DbHandler.C_BAG_ID };
+	{ DbHandler.C_BAG_BARCODE };
 	static final int[] TO =
 	{ R.id.textView_row_scan };
 
@@ -75,22 +78,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		try
-		{
-			Log.d(TAG,
-					DbHandler
-							.getInstance(getApplicationContext())
-							.getBag(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
-									"42").getDestination());
-		}
-		catch (NullPointerException e)
-		{
-			Log.e(TAG, "bag null");
-		}
-
 		// Store currently selected driver id globally
-		VariableManager.current_driver_id = getIntent().getStringExtra(
-				VariableManager.EXTRA_DRIVER_ID);
+		SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+
+		prefs.edit()
+				.putString(VariableManager.EXTRA_DRIVER_ID,
+						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();
 
 		initViewHolder();
 
@@ -406,12 +400,20 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								// Make toast, with strawberry jam
 								if (selected_items.size() == total_bags) // All bags scanned
 								{
-									displayToast(getString(R.string.text_scan_successful));
+									// displayToast(getString(R.string.text_scan_successful));
+									CustomToast toast = new CustomToast(this, root_view);
+									toast.setSuccess(true);
+									toast.setText(getString(R.string.text_scan_successful));
+									toast.show();
 								}
 								else
 								// Another bag scanned, not everything yet.
 								{
-									displayToast(getString(R.string.text_scan_next));
+									// displayToast(getString(R.string.text_scan_next));
+									CustomToast toast = new CustomToast(this, root_view);
+									toast.setSuccess(true);
+									toast.setText(getString(R.string.text_scan_next));
+									toast.show();
 								}
 							}
 							else

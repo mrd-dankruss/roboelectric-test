@@ -314,7 +314,6 @@ public class EnterPinActivity extends Activity
 	 */
 	private class RetrieveBagsTask extends AsyncTask<Void, Void, Void>
 	{
-
 		private ProgressDialog dialog_progress = new ProgressDialog(EnterPinActivity.this);
 
 		/** progress dialog to show user that the backup is processing. */
@@ -329,7 +328,8 @@ public class EnterPinActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.downloadBags(getApplicationContext(),getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			ServerInterface.downloadBags(getApplicationContext(),
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 			return null;
 		}
 
@@ -354,6 +354,22 @@ public class EnterPinActivity extends Activity
 
 			startActivity(intent);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause()
+	{
+		// TODO Auto-generated method stub
+		super.onPause();
+
+		/*// Close progress spinner
+		if (dialog_progress.isShowing())
+		{
+			dialog_progress.dismiss();
+		}*/
 	}
 
 }

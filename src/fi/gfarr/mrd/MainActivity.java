@@ -117,10 +117,18 @@ public class MainActivity extends Activity
 			SharedPreferences settings = PreferenceManager
 					.getDefaultSharedPreferences(getApplicationContext());
 			SharedPreferences.Editor editor = settings.edit();
-			editor.putString(VariableManager.PREF_TOKEN, token);
+			editor.putString(VariableManager.PREF, token);
 			editor.commit();
 
 			VariableManager.token = token; // Security vulnerability?
+
+			// Download delay reasons
+			// change progress spinner text
+			if (dialog.isShowing())
+			{
+				dialog.setTitle("Retrieving delay reasons");
+			}
+			ServerInterface.downloadDelays(getApplicationContext());
 
 			// Log.i(TAG, "Token aquired.");
 			return token;

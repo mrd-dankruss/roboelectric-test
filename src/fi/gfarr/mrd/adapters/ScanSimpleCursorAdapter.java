@@ -59,7 +59,7 @@ public class ScanSimpleCursorAdapter extends SimpleCursorAdapter
 
 				DbHandler.getInstance(context);
 				text_view_consignment.setText(cursor.getString(cursor
-						.getColumnIndex(DbHandler.C_BAG_ID))
+						.getColumnIndex(DbHandler.C_BAG_BARCODE))
 						+ " ( "
 						+ cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))
 						+ " ITEMS )");

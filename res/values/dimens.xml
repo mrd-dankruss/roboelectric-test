@@ -88,6 +88,6 @@
     <dimen name="margin_pin_left">16dp</dimen>
     
     <!-- Font sizes -->
-    <dimen name="font_size_manifest_panel">16sp</dimen>
+    <dimen name="font_size_manifest_panel">14sp</dimen>
 
 </resources>

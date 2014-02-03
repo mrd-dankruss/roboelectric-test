@@ -28,11 +28,10 @@ public class VariableManager
 	public static final String JSON_KEY_DRIVER_ID = "id";
 
 	// Shared prefs
-	public static final String PREF_TOKEN = "fi.gfarr.mrd.token";
+	public static final String PREF = "fi.gfarr.mrd";
 	public static final String IMEI_TEST = "490154203237518";
 
 	public static String token = "";
-	public static String current_driver_id = ""; // Stores currently selected driver for global use
 
 	// Debug mode
 	public static final boolean DEBUG = true;

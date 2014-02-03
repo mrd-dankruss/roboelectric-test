@@ -136,11 +136,11 @@
         <activity
             android:name="fi.gfarr.mrd.MapActivity"
             android:label="@string/title_activity_map"
-            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fi.gfarr.mrd.MainActivity" />
+                android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
 
         <!-- Remember to change to RELEASE API key when releasing app -->

@@ -32,6 +32,14 @@ public class Bag
 	 */
 	private boolean scanned;
 
+	/*
+	 * Completed, TO DO, or unsuccessful
+	 */
+	private String status;
+	public static final String STATUS_COMPLETED = "completed";
+	public static final String STATUS_TODO = "todo";
+	public static final String STATUS_UNSUCCESSFUL = "unsuccessful";
+
 	// Has bag been assigned?
 	private boolean assigned;
 
@@ -64,6 +72,7 @@ public class Bag
 		setScanned(false);
 		setAssigned(false);
 		setCreationTime("");
+		setStatus(STATUS_TODO);
 		setDriverId("");
 		number_items = 0;
 	}
@@ -304,6 +313,23 @@ public class Bag
 	public void setBarcode(String barcode)
 	{
 		this.barcode = barcode;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus()
+	{
+		return status;
+	}
+
+	/**
+	 * @param status
+	 *            the status to set
+	 */
+	public void setStatus(String status)
+	{
+		this.status = status;
 	}
 
 }

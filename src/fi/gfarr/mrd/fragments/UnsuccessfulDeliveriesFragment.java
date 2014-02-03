@@ -3,6 +3,8 @@ package fi.gfarr.mrd.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.Company;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.DeliveryType;
+import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 
@@ -24,6 +27,7 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 	private static final String TAG = "UnsuccessfulDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
+	private ViewDeliveriesListAdapter adapter;
 
 	public void onCreate(Bundle icicle)
 	{
@@ -32,13 +36,33 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 
 		// use your own layout
 		// ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), values);
+		/*
 		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler
 				.getInstance(getActivity()).getBags(
 						getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)));
-		setListAdapter(adapter);
+						*/
 
 		// getListView().setDivider(null);
 		// getListView().setDividerHeight(0);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onResume()
+	 */
+	@Override
+	public void onResume()
+	{
+		// TODO Auto-generated method stub
+		super.onResume();
+		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+
+		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+
+		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+				.getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
+
+		setListAdapter(adapter);
 	}
 
 	@Override
@@ -87,4 +111,5 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 	{
 		TabHost mTabHost;
 	}
+
 }

@@ -46,7 +46,12 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_deliveries);
 
-		String[] tabs = { getResources().getString(R.string.tab_completed), getResources().getString(R.string.tab_todo), getResources().getString(R.string.tab_unsuccessful) };
+		String[] tabs =
+		{ getResources().getString(R.string.tab_completed),
+				getResources().getString(R.string.tab_todo),
+				getResources().getString(R.string.tab_unsuccessful) };
+
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// Initilization
 		mPager = (ViewPager) findViewById(R.id.view_deliveries_pager);
@@ -123,14 +128,16 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 			// Store the holder with the view.
 			rootView.setTag(holder);
 
-		} else
+		}
+		else
 		{
 			holder = (ViewHolder) rootView.getTag();
 
 			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
 			{
 				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			} else
+			}
+			else
 			{
 			}
 		}
