@@ -3,12 +3,13 @@ package fi.gfarr.mrd.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.Toast;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
@@ -16,7 +17,7 @@ import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 
-public class ViewDeliveriesFragment extends ListFragment
+public class ViewDeliveriesFragment extends Fragment
 {
 
 	private static final String TAG = "ViewDeliveriesFragment";
@@ -25,38 +26,23 @@ public class ViewDeliveriesFragment extends ListFragment
 	private ViewDeliveriesListAdapter adapter;
 
 	@Override
-	public void onCreate(Bundle icicle)
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		super.onCreate(icicle);
 
-		/*
-		//		List<List<String>> values =  new ArrayList<List<String>>();
-		
-		List<String> temp1 = new ArrayList<String>();
-		temp1.add(DeliveryType.DELIVERY.toString());
-		temp1.add(Company.FNB.toString());
-		temp1.add("Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526");
-		temp1.add("00025420254 (6 items)");
-		values.add(temp1);
-		
-		List<String> temp2 = new ArrayList<String>();
-		temp2.add(DeliveryType.RETURN.toString());
-		temp2.add(Company.NONE.toString());
-		temp2.add("Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526");
-		temp2.add("00025420254 (6 items)");
-		values.add(temp2);
-		*/
+		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
-		// List<List<String>> values = new ArrayList<List<String>>();
+		return rootView;
+	}
 
-		// use your own layout
-		/*
-		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler
-				.getInstance(getActivity()).getBags(
-						getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)));
-						*/
-
-		/*SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onResume()
+	 */
+	@Override
+	public void onResume()
+	{
+		// TODO Auto-generated method stub
+		super.onResume();
+		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
 		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
@@ -64,17 +50,30 @@ public class ViewDeliveriesFragment extends ListFragment
 		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getBagsByStatus(driverid, Bag.STATUS_TODO));
 
-		setListAdapter(adapter);*/
+		if (DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
+		{
+			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(View.GONE);
+			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(
+					View.VISIBLE);
+		}
+		else
+		{
+			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(
+					View.VISIBLE);
+			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(
+					View.GONE);
+		}
 
-		// getListView().setDivider(null);
-		// getListView().setDividerHeight(0);
-	}
+		holder.list.setAdapter(adapter);
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		String item = getListAdapter().getItem(position).toString();
-		Toast.makeText(getActivity(), item + " selected", Toast.LENGTH_LONG).show();
+		holder.list.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+			{
+				Toast.makeText(getActivity(), position + " selected", Toast.LENGTH_LONG).show();
+			}
+		});
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -90,7 +89,7 @@ public class ViewDeliveriesFragment extends ListFragment
 				holder = new ViewHolder();
 			}
 
-			// holder.list = (ListView) rootView.findViewById(listId);
+			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -114,25 +113,6 @@ public class ViewDeliveriesFragment extends ListFragment
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{
-		TabHost mTabHost;
-	}
-
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onResume()
-	 */
-	@Override
-	public void onResume()
-	{
-		// TODO Auto-generated method stub
-		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
-
-		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
-
-		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getBagsByStatus(driverid, Bag.STATUS_TODO));
-
-		setListAdapter(adapter);
+		ListView list;
 	}
 }

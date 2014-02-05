@@ -99,6 +99,8 @@
     <string name="text_manAuth_heading">The following consignments have not been scanned:</string>
     <string name="text_manAuth_enter_pin">Please enter your PIN to authorize:</string>
     <string name="app_label">MrD</string>
+    <string name="text_todo_deliveries_complete_1">All packages delivered successfully!</string>
+    <string name="text_todo_deliveries_complete_2">Please return to Dispatch</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
