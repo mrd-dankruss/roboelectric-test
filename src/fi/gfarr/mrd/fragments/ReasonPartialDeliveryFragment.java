@@ -19,6 +19,7 @@ import android.widget.Toast;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ExpandableListAdapter;
 import fi.gfarr.mrd.datatype.DeliveryHandoverDataObject;
+import fi.gfarr.mrd.datatype.ReasonPartialDeliveryItem;
 
 public class ReasonPartialDeliveryFragment extends Fragment
 {
@@ -26,9 +27,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 	private ViewHolder holder;
 	private View rootView;
 	private ExpandableListAdapter listAdapter;
-	private ExpandableListView expListView;
-	private ArrayList<String> headerNames;
-	private HashMap<String, ArrayList<DeliveryHandoverDataObject>> data;
+	private ArrayList<ArrayList<ReasonPartialDeliveryItem>> data;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -39,7 +38,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 		// preparing list data
 		prepareListData();
 
-		listAdapter = new ExpandableListAdapter(holder.list, getActivity(), headerNames, data);
+		listAdapter = new ExpandableListAdapter(holder.list, getActivity(), data);
 
 		// setting list adapter
 		holder.list.setAdapter(listAdapter);
@@ -93,17 +92,10 @@ public class ReasonPartialDeliveryFragment extends Fragment
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
 					int childPosition, long id)
 			{
-				// TODO Auto-generated method stub
-
+				
 				setTick(groupPosition, childPosition);
 				listAdapter.notifyDataSetChanged();
 				
-				/*Toast.makeText(
-						getActivity(),
-						listDataHeader.get(groupPosition)
-								+ " : "
-								+ listDataChild.get(listDataHeader.get(groupPosition)).get(
-										childPosition), Toast.LENGTH_SHORT).show();*/
 				return false;
 			}
 		});
@@ -117,15 +109,12 @@ public class ReasonPartialDeliveryFragment extends Fragment
 
 	private void setTick(int groupPosition, int childPosition)
 	{
-		data.get(headerNames.get(groupPosition)).get(childPosition).setParcelScanned(true);
-		Log.d("fi.gfarr.mrd", "setTick: Group" + groupPosition + ", Child: " + childPosition + " = True");
-		for (int i = 0; i < data.get(headerNames.get(groupPosition)).size(); i++)
+		data.get(groupPosition).get(childPosition).setIsSelected(true);
+		for (int i = 0; i < data.get(groupPosition).size(); i++)
 		{
 			if (i != childPosition)
 			{
-				Log.d("fi.gfarr.mrd", "setTick1: Group" + groupPosition + ", Child: " + childPosition + " = "+data.get(headerNames.get(groupPosition)).get(childPosition).isParcelScanned());
-				data.get(headerNames.get(groupPosition)).get(childPosition).setParcelScanned(false);
-				Log.d("fi.gfarr.mrd", "setTick2: Group" + groupPosition + ", Child: " + childPosition + " = "+data.get(headerNames.get(groupPosition)).get(childPosition).isParcelScanned());
+				data.get(groupPosition).get(i).setIsSelected(false);
 			}
 		}
 	}
@@ -172,23 +161,31 @@ public class ReasonPartialDeliveryFragment extends Fragment
 
 	/*
 	 * Preparing the list data
+	 * TODO: Remove this
 	 */
 	private void prepareListData()
 	{
-		headerNames = new ArrayList<String>();
-		headerNames.add("00025420254 (TAKEALOT)");
-		headerNames.add("00025420255 (TAKEALOT)");
-		headerNames.add("00025420256 (TAKEALOT)");
+		data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
 
-		data = new HashMap<String, ArrayList<DeliveryHandoverDataObject>>();
-
-		ArrayList<DeliveryHandoverDataObject> temp = new ArrayList<DeliveryHandoverDataObject>();
-		temp.add(new DeliveryHandoverDataObject("Wrong Parcel", false));
-		temp.add(new DeliveryHandoverDataObject("Lost in Transit", true));
-		temp.add(new DeliveryHandoverDataObject("Wrong Branch", false));
-
-		data.put("00025420254 (TAKEALOT)", temp);
-		data.put("00025420255 (TAKEALOT)", temp);
-		data.put("00025420256 (TAKEALOT)", temp);
+		ArrayList<ReasonPartialDeliveryItem> temp = new ArrayList<ReasonPartialDeliveryItem>();
+		temp.add(new ReasonPartialDeliveryItem("00025420254 (TAKEALOT)", "greg_code_1", "Wrong Parcel", false));
+		temp.add(new ReasonPartialDeliveryItem("00025420254 (TAKEALOT)", "greg_code_1", "Lost in Transit", true));
+		temp.add(new ReasonPartialDeliveryItem("00025420254 (TAKEALOT)", "greg_code_1", "Wrong Branch", false));
+		
+		data.add(temp);
+		
+		temp = new ArrayList<ReasonPartialDeliveryItem>();
+		temp.add(new ReasonPartialDeliveryItem("00025420255 (FNB)", "greg_code_1", "Wrong Parcel", false));
+		temp.add(new ReasonPartialDeliveryItem("00025420255 (FNB)", "greg_code_1", "Lost in Transit", true));
+		temp.add(new ReasonPartialDeliveryItem("00025420255 (FNB)", "greg_code_1", "Wrong Branch", false));
+		
+		data.add(temp);
+		
+		temp = new ArrayList<ReasonPartialDeliveryItem>();
+		temp.add(new ReasonPartialDeliveryItem("00025420256 (FOOD)", "greg_code_1", "Wrong Parcel", false));
+		temp.add(new ReasonPartialDeliveryItem("00025420256 (FOOD)", "greg_code_1", "Lost in Transit", true));
+		temp.add(new ReasonPartialDeliveryItem("00025420256 (FOOD)", "greg_code_1", "Wrong Branch", false));
+		
+		data.add(temp);
 	}
 }
