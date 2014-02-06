@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_grey"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/transfer_data_sub_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/image_bottomgrey_shadow_block"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:text="@string/title_transfer_data_subTitle" />
+
+    <ImageView
+        android:id="@+id/transfer_data_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="34dp"
+        android:src="@drawable/icon_uploadincomplete_grey_tick" />
+
+    <TextView
+        android:id="@+id/transfer_data_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="31dp"
+        android:gravity="center"
+        android:text="@string/text_transfer_data_uploading"
+        android:textSize="22sp" />
+
+    <ProgressBar
+        android:id="@+id/transfer_data_progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="14dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="20dp"
+        android:progressDrawable="@drawable/progress_bar_custom" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|bottom" >
+
+        <Button
+            android:id="@+id/transfer_data_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:background="@drawable/button_custom"
+            android:text="@string/button_transfer_data"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+</LinearLayout>

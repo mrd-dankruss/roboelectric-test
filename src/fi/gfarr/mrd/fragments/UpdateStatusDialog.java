@@ -17,6 +17,7 @@ import android.widget.TextView;
 import fi.gfarr.mrd.DeliveryHandoverFragmentActivity;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReportDelayActivity;
+import fi.gfarr.mrd.TransferDataActivity;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 
@@ -92,6 +93,8 @@ public class UpdateStatusDialog extends DialogFragment
 				}
 				if (position == 1)
 				{
+					//Intent intent = new Intent(getActivity(), TransferDataActivity.class);
+					//startActivity(intent);
 					//TODO:
 					//Intent intent = new Intent(getActivity(), DeliveryHandoverFragmentActivity.class);
 					//startActivity(intent);
