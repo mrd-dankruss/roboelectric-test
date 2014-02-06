@@ -282,7 +282,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	@Override
 	public Object getItem(int position)
 	{
-		return position;
+		return values.get(position);
 	}
 
 	@Override

@@ -14,6 +14,8 @@
     <string name="title_actionbar_select_manager">Select manager</string>
     <string name="title_actionbar_manifest">Consignment details</string>
     <string name="title_actionbar_manager_auth">Manager authorization required</string>
+    <string name="title_actionbar_delivery_details">Delivery Details</string>
+    <string name="title_actionbar_transfer_data">Transferring delivery data</string>
 
     <!-- Button texts -->
     <string name="button_start_milkrun">Start new milkrun</string>
@@ -42,6 +44,7 @@
     <string name="button_report_delay">Report</string>
     <string name="button_send_sms">Send</string>
     <string name="button_delivery_handover_complete">Complete handover to branch</string>
+    <string name="button_transfer_data">Cancel</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
@@ -66,6 +69,7 @@
     <string name="trafficDelay_title">Traffic</string>
     <string name="title_updateStatusDialog">SMS</string>
     <string name="title_deliveryHandover">Delivery Handover</string>
+    <string name="title_transfer_data_subTitle">Connected to Dispatch Wireless network</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>
@@ -101,6 +105,7 @@
     <string name="app_label">MrD</string>
     <string name="text_todo_deliveries_complete_1">All packages delivered successfully!</string>
     <string name="text_todo_deliveries_complete_2">Please return to Dispatch</string>
+    <string name="text_transfer_data_uploading">Uploading data to server</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>

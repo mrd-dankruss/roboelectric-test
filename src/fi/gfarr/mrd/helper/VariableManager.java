@@ -11,6 +11,7 @@ public class VariableManager
 	public static final String EXTRA_CONSIGNMENT_NUMBER_ITEMS = "cons_number_items";
 	public static final String EXTRA_CONSIGNMENT_NUMBER = "cons_no";
 	public static final String EXTRA_CONSIGNMENT_DESTINATION = "cons_sdest";
+	public static final String EXTRA_BAG_NO = "bag_number";
 	public static final String EXTRA_BAG_LAT = "bag_lat";
 	public static final String EXTRA_BAG_LON = "bag_lon";
 	public static final String EXTRA_BAG_ADDRESS = "bag_address";
@@ -35,5 +36,8 @@ public class VariableManager
 
 	// Debug mode
 	public static final boolean DEBUG = true;
+	
+	// List extras
+	public static final String EXTRA_LIST_POSITION = "list_position"; 
 
 }

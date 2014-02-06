@@ -1,6 +1,7 @@
 package fi.gfarr.mrd.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
+import fi.gfarr.mrd.DeliveryDetailsActivity;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
 import fi.gfarr.mrd.db.Bag;
@@ -45,7 +46,7 @@ public class ViewDeliveriesFragment extends Fragment
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
-		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+		final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
 
 		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getBagsByStatus(driverid, Bag.STATUS_TODO));
@@ -71,7 +72,13 @@ public class ViewDeliveriesFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				Toast.makeText(getActivity(), position + " selected", Toast.LENGTH_LONG).show();
+				// Go to View Deliveries screen
+				Intent intent = new Intent(getActivity(),
+						DeliveryDetailsActivity.class);
+				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
+				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
+				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");
+				startActivity(intent);
 			}
 		});
 	}

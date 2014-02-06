@@ -43,7 +43,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="7dp"
-                        android:text="@string/delivery_title"
                         android:textSize="16sp"/>
 
                 <LinearLayout

@@ -51,7 +51,7 @@ public class DeliveryHandoverFragment extends Fragment
 		list.add(new DeliveryHandoverDataObject("7864313456", true));
 		list.add(new DeliveryHandoverDataObject("1237613554", true));
 		list.add(new DeliveryHandoverDataObject("7789995442", true));
-		list.add(new DeliveryHandoverDataObject("2222346456", false));
+		list.add(new DeliveryHandoverDataObject("2222346456", true));
 
 		final DeliveryHandoverAdapter adapter = new DeliveryHandoverAdapter(list);
 		holder.list.setAdapter(adapter);
