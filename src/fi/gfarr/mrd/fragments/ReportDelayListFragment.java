@@ -1,17 +1,18 @@
 package fi.gfarr.mrd.fragments;
 
 import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,52 +22,59 @@ import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 
-public class ReportDelayListFragment extends ListFragment
+public class ReportDelayListFragment extends Fragment
 {
+
+	private ViewHolder holder;
+	private View rootView;
+	private GenericDialogListAdapter adapter;
 
 	DialogFragment newFragment;
 	TextView subText;
-	GenericDialogListAdapter adapter;
 	ArrayList<DialogDataObject> values;
 	private int parentItemPosition;
-	private ListView list;
-	private View view;
 
-	public void onCreate(Bundle icicle)
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		super.onCreate(icicle);
 
-		// adapter = new GenericDialogListAdapter(getActivity(), values, false);
-		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getMilkrunDelayReasons(), false);
-		setListAdapter(adapter);
+		initViewHolder(inflater, container); // Inflate ViewHolder static instance
+
+		return rootView;
 	}
 
 	public void onResume()
 	{
 		super.onResume();
-	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		parentItemPosition = position;// (Integer) getListAdapter().getItem(position);
+		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+				.getMilkrunDelayReasons(), false);
+		holder.list.setAdapter(adapter);
 
-		FragmentManager fm = getActivity().getSupportFragmentManager();
-
-		if (l.getItemAtPosition(position) != null)
+		holder.list.setOnItemClickListener(new OnItemClickListener()
 		{
-			// Cursor c = (Cursor) getListView().getItemAtPosition(position);
-			// String delay_id = c.getString(c.getColumnIndex(DbHandler.C_DELAYS_ID));
-			String delay_id = ((DialogDataObject) getListView().getItemAtPosition(position))
-					.getThirdText();
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+			{
+				parentItemPosition = position;// (Integer) getListAdapter().getItem(position);
 
-			// String delay_id = (String) getListView().getItemAtPosition(position);
+				FragmentManager fm = getActivity().getSupportFragmentManager();
 
-			DelayDialog editNameDialog = DelayDialog.newInstance(delay_id);
-			editNameDialog.setTargetFragment(this, 1);
-			editNameDialog.show(fm, "reportDelayFragment");
-		}
+				if (holder.list.getItemAtPosition(position) != null)
+				{
+					// Cursor c = (Cursor) getListView().getItemAtPosition(position);
+					// String delay_id = c.getString(c.getColumnIndex(DbHandler.C_DELAYS_ID));
+					String delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position))
+							.getThirdText();
+
+					// String delay_id = (String) getListView().getItemAtPosition(position);
+
+					DelayDialog editNameDialog = DelayDialog.newInstance(delay_id);
+					editNameDialog.setTargetFragment(getFragmentManager().findFragmentById(R.id.activity_report_delay_container), 1);
+					editNameDialog.show(fm, "reportDelayFragment");
+				}
+			}
+		});
 	}
 
 	@Override
@@ -79,20 +87,11 @@ public class ReportDelayListFragment extends ListFragment
 
 		VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
 
-		LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(
-				Context.LAYOUT_INFLATER_SERVICE);
-		RelativeLayout ll = new RelativeLayout(getActivity());
-		ll = (RelativeLayout) layoutInflater.inflate(R.layout.fragment_view_deliveries_content, ll);
-		
-		Button reportButton = (Button) ll.findViewById(R.id.button_generic_report);
-
-		// System.out.println("test: " + view.getClass().getName());
-		// Button reportButton = (Button) view.findViewById(R.id.button_generic_report);
-		reportButton.setVisibility(View.INVISIBLE);
-		reportButton.setBackgroundResource(R.drawable.button_custom);
+		holder.report_button.setVisibility(View.VISIBLE);
+		//holder.report_button.setBackgroundResource(R.drawable.button_custom);
 
 		System.out.println("test: " + data.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
-		setListAdapter(adapter);
+		holder.list.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -101,6 +100,48 @@ public class ReportDelayListFragment extends ListFragment
 		// TODO: Implement sending of data here
 
 		return false;
+	}
+
+	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
+	{
+
+		if (rootView == null)
+		{
+
+			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
+
+			if (holder == null)
+			{
+				holder = new ViewHolder();
+			}
+
+			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
+			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+
+			// Store the holder with the view.
+			rootView.setTag(holder);
+
+		}
+		else
+		{
+			holder = (ViewHolder) rootView.getTag();
+
+			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
+			{
+				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
+			}
+			else
+			{
+			}
+		}
+	}
+
+	// Creates static instances of resources.
+	// Increases performance by only finding and inflating resources only once.
+	static class ViewHolder
+	{
+		ListView list;
+		Button report_button;
 	}
 
 }
