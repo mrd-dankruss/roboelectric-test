@@ -19,34 +19,17 @@ public class SmsActivity extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragment_view_deliveries_content);
+		setContentView(R.layout.activity_sms);
 
 		// Fragment: Home Begin
 		FragmentManager fm = getSupportFragmentManager();
-		fragment = fm.findFragmentById(R.id.fragment_viewDeliveries_container);
+		fragment = fm.findFragmentById(R.id.activity_sms_container);
 		if (fragment == null)
 		{
 			fragment = new SmsListFragment();
-			fm.beginTransaction().add(R.id.fragment_viewDeliveries_container, fragment).commit();
+			fm.beginTransaction().add(R.id.activity_sms_container, fragment).commit();
 		}
 		// Fragment: Home End
-		
-		Button reportButton = (Button) findViewById(R.id.button_generic_report);
-		reportButton.setVisibility(View.VISIBLE);
-		reportButton.setText(R.string.button_send_sms);
-		reportButton.setOnClickListener(new View.OnClickListener()
-		{
-			
-			@Override
-			public void onClick(View v)
-			{
-				sendMessageButton();
-			}
-		});
-	}
-	
-	public void sendMessageButton() {
-		Log.d("fi.gfarr.mrd", "Fragment Data: " + ((SmsListFragment)fragment).hasMessageSentSuccessfully());
 	}
 	
 }

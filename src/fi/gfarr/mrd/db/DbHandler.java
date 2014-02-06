@@ -1135,11 +1135,11 @@ public class DbHandler extends SQLiteOpenHelper
 	{
 		ArrayList<DialogDataObject> msgs = new ArrayList<DialogDataObject>();
 
-		msgs.add(new DialogDataObject("Hijack", null));
-		msgs.add(new DialogDataObject("Accident", null));
-		msgs.add(new DialogDataObject("IED", null));
-		msgs.add(new DialogDataObject("RPG", null));
-		msgs.add(new DialogDataObject("Ambush", null));
+		msgs.add(new DialogDataObject("Hijack", ""));
+		msgs.add(new DialogDataObject("Accident", ""));
+		msgs.add(new DialogDataObject("IED", ""));
+		msgs.add(new DialogDataObject("RPG", ""));
+		msgs.add(new DialogDataObject("Ambush", ""));
 
 		return msgs;
 	}

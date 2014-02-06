@@ -3,50 +3,72 @@ package fi.gfarr.mrd.fragments;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.db.DbHandler;
 
-public class SmsListFragment extends ListFragment
+public class SmsListFragment extends Fragment
 {
+
+	private ViewHolder holder;
+	private View rootView;
+	private GenericDialogListAdapter adapter;
 
 	DialogFragment newFragment;
 	TextView subText;
-	GenericDialogListAdapter adapter;
 	ArrayList<DialogDataObject> values;
 	private int parentItemPosition;
 
-	public void onCreate(Bundle icicle)
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		super.onCreate(icicle);
 
-		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getSMSMessages(), false);
-		setListAdapter(adapter);
+		initViewHolder(inflater, container); // Inflate ViewHolder static instance
+
+		return rootView;
 	}
 
 	public void onResume()
 	{
 		super.onResume();
-	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		parentItemPosition = (Integer) getListAdapter().getItem(position);
+		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+				.getSMSMessages(), false);
 
-		FragmentManager fm = getActivity().getSupportFragmentManager();
-		SMSDialog editNameDialog = SMSDialog.newInstance("delay id"); // DEBUG
-		editNameDialog.setTargetFragment(this, 1);
-		editNameDialog.show(fm, "SMSFragment");
+		holder.list.setAdapter(adapter);
+
+		holder.list.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+			{
+				parentItemPosition = position; //(Integer) adapter.getItem(position);
+
+				FragmentManager fm = getActivity().getSupportFragmentManager();
+				SMSDialog editNameDialog = SMSDialog.newInstance("delay id"); // DEBUG
+				editNameDialog
+						.setTargetFragment(
+								getFragmentManager().findFragmentById(
+										R.id.activity_report_delay_container), 1);
+				editNameDialog.show(fm, "SMSFragment");
+			}
+		});
 	}
 
 	@Override
@@ -95,6 +117,48 @@ public class SmsListFragment extends ListFragment
 					.show();
 			e.printStackTrace();
 		}
+	}
+
+	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
+	{
+
+		if (rootView == null)
+		{
+
+			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
+
+			if (holder == null)
+			{
+				holder = new ViewHolder();
+			}
+
+			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
+			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+
+			// Store the holder with the view.
+			rootView.setTag(holder);
+
+		}
+		else
+		{
+			holder = (ViewHolder) rootView.getTag();
+
+			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
+			{
+				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
+			}
+			else
+			{
+			}
+		}
+	}
+
+	// Creates static instances of resources.
+	// Increases performance by only finding and inflating resources only once.
+	static class ViewHolder
+	{
+		ListView list;
+		Button report_button;
 	}
 
 }

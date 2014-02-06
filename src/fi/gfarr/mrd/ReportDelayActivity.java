@@ -38,27 +38,6 @@ public class ReportDelayActivity extends FragmentActivity
 			fm.beginTransaction().add(R.id.activity_report_delay_container, fragment).commit();
 		}
 		// Fragment: Home End
-
-		/*
-		Button reportButton = (Button) findViewById(R.id.button_generic_report);
-		reportButton.setVisibility(View.VISIBLE);
-		reportButton.setText(R.string.button_report_delay);
-		reportButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				// Only perform action if there is a selection made
-				if (VariableManager.delay_id != null)
-				{
-					new ReportDelayTask().execute(
-							getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID),
-							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
-							VariableManager.delay_id);
-				}
-			}
-		});
-		*/
 	}
 
 	private class ReportDelayTask extends AsyncTask<String, Void, String>

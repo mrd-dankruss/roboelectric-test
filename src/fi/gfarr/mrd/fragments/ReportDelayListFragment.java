@@ -1,7 +1,7 @@
 package fi.gfarr.mrd.fragments;
 
 import java.util.ArrayList;
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;

@@ -13,15 +13,15 @@ public class CallActivity extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragment_view_deliveries_content);
+		setContentView(R.layout.activity_call);
 
 		// Fragment: Home Begin
 		FragmentManager fm = getSupportFragmentManager();
-		Fragment fragment = fm.findFragmentById(R.id.fragment_viewDeliveries_container);
+		Fragment fragment = fm.findFragmentById(R.id.activity_call_container);
 		if (fragment == null)
 		{
 			fragment = new CallListFragment();
-			fm.beginTransaction().add(R.id.fragment_viewDeliveries_container, fragment).commit();
+			fm.beginTransaction().add(R.id.activity_call_container, fragment).commit();
 		}
 		// Fragment: Home End
 	}

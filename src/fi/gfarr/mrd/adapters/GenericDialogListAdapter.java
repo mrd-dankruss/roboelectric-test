@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.datatype.DialogDataObject;
+import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.fragments.DelayDialog;
 import fi.gfarr.mrd.fragments.MoreDialogFragment;
 
@@ -48,7 +49,7 @@ public class GenericDialogListAdapter extends BaseAdapter
 		TextView subText = (TextView) rowView.findViewById(R.id.reportDelay_textView_subText);
 
 		mainText.setText(values.get(position).getMainText());
-
+		
 		if ((values.get(position).getSubText().length() > 0) && (isDialog == false))
 		{
 			subText.setText(values.get(position).getSubText());
