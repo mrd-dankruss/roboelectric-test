@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.datatype.DialogDataObject;
-import fi.gfarr.mrd.fragments.GenericResultDialog;
+import fi.gfarr.mrd.fragments.DelayDialog;
 import fi.gfarr.mrd.fragments.MoreDialogFragment;
 
 public class GenericDialogListAdapter extends BaseAdapter
@@ -27,7 +27,8 @@ public class GenericDialogListAdapter extends BaseAdapter
 	ArrayList<DialogDataObject> values;
 	boolean isDialog;
 
-	public GenericDialogListAdapter(FragmentActivity activity, ArrayList<DialogDataObject> values, boolean isDialog)
+	public GenericDialogListAdapter(FragmentActivity activity, ArrayList<DialogDataObject> values,
+			boolean isDialog)
 	{
 		super();
 		this.activity = activity;
@@ -39,20 +40,21 @@ public class GenericDialogListAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.fragment_report_delay_row, parent, false);
-		
+
 		TextView mainText = (TextView) rowView.findViewById(R.id.reportDelay_textView_mainText);
 		TextView subText = (TextView) rowView.findViewById(R.id.reportDelay_textView_subText);
-		
-		mainText.setText(values.get(position).getLongDisplayTime());
-		
-		if ((values.get(position).getShortDisplayTime().length() > 0) && (isDialog == false))
+
+		mainText.setText(values.get(position).getMainText());
+
+		if ((values.get(position).getSubText().length() > 0) && (isDialog == false))
 		{
-			subText.setText(values.get(position).getShortDisplayTime());
+			subText.setText(values.get(position).getSubText());
 			subText.setVisibility(View.VISIBLE);
 		}
-		
+
 		return rowView;
 	}
 
@@ -65,7 +67,7 @@ public class GenericDialogListAdapter extends BaseAdapter
 	@Override
 	public Object getItem(int position)
 	{
-		return position;
+		return values.get(position);
 	}
 
 	@Override

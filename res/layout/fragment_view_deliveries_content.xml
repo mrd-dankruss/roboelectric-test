@@ -21,20 +21,19 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_todo_deliveries_complete_1"
-            android:textSize="27sp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="@color/text_grey" />
-        
+            android:text="@string/text_todo_deliveries_complete_1"
+            android:textColor="@color/text_grey"
+            android:textSize="27sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_todo_deliveries_complete_2"
-            android:textSize="21sp"
             android:layout_marginTop="30dp"
-            android:textColor="@color/text_grey" />
-        
+            android:text="@string/text_todo_deliveries_complete_2"
+            android:textColor="@color/text_grey"
+            android:textSize="21sp" />
     </LinearLayout>
 
     <Button
@@ -44,7 +43,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_margin="7dp"
-        android:background="@drawable/button_custom"
+        android:background="@drawable/button_custom_grey"
         android:text="@string/delivery_button1"
         android:textColor="@color/black"
         android:textSize="24sp"

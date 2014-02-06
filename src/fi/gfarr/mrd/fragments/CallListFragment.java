@@ -12,6 +12,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
+import fi.gfarr.mrd.db.Contact;
+import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class CallListFragment extends ListFragment
 {
@@ -19,34 +22,35 @@ public class CallListFragment extends ListFragment
 	DialogFragment newFragment;
 	TextView subText;
 	GenericDialogListAdapter adapter;
-	ArrayList<DialogDataObject> values;
 	private int parentItemPosition;
 
 	public void onCreate(Bundle icicle)
 	{
 		super.onCreate(icicle);
-		values = new ArrayList<DialogDataObject>();
-		values.add(new DialogDataObject("Branch", "", "0834533156"));
-		values.add(new DialogDataObject("Call centre", "", "0834533156"));
-		values.add(new DialogDataObject("Chief operating Officer", "", "0834533156"));
-		values.add(new DialogDataObject("Customer", "", "0834533156"));
-		
-		
-		adapter = new GenericDialogListAdapter(getActivity(), values, false);
+
+		adapter = new GenericDialogListAdapter(getActivity(),
+				DbHandler.getInstance(getActivity())
+						.getContacts(
+								getActivity().getIntent().getStringExtra(
+										VariableManager.EXTRA_NEXT_BAG_ID)), false);
 		setListAdapter(adapter);
 	}
 
-	public void onResume() {
+	public void onResume()
+	{
 		super.onResume();
 	}
-	
+
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		parentItemPosition = (Integer) getListAdapter().getItem(position);
 		Intent intent = new Intent(Intent.ACTION_CALL);
 
-		intent.setData(Uri.parse("tel:" + values.get(parentItemPosition).getPhoneNumber()));
+		String phone_number = ((DialogDataObject) getListView().getItemAtPosition(position))
+				.getSubText();
+
+		intent.setData(Uri.parse("tel:" + phone_number));
 		getActivity().startActivity(intent);
 	}
 }

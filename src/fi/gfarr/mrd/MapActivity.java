@@ -116,7 +116,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			{
 				double lat = Double.parseDouble(bags.get(i).get(VariableManager.EXTRA_BAG_LAT));
 				double lon = Double.parseDouble(bags.get(i).get(VariableManager.EXTRA_BAG_LON));
-				LatLng location = new LatLng(lat, lon);
+				LatLng location = new LatLng(lon, lat);
 
 				String address = bags.get(i).get(VariableManager.EXTRA_BAG_ADDRESS);
 				String hubname = bags.get(i).get(VariableManager.EXTRA_BAG_HUBNAME);
