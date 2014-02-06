@@ -1,5 +1,7 @@
 package fi.gfarr.mrd.helper;
 
+import android.content.Context;
+
 public class VariableManager
 {
 
@@ -17,6 +19,8 @@ public class VariableManager
 	public static final String EXTRA_BAG_HUBNAME = "bag_hubname";
 	public static final String EXTRA_BAG_DELIVERY_TYPE = "bag_deliverytype";
 	public static final String EXTRA_BAG_DELIVERY_TYPE_MILKRUN = "bag_deliverytypemilkrun";
+	public static final String EXTRA_NEXT_BAG_ID = "bag_next_id";
+	public static final String EXTRA_DELAY_ID = "delay_id";
 	public static final int URL_LOADER_BAG_MANIFEST = 2;
 
 	// JSON keys
@@ -32,6 +36,10 @@ public class VariableManager
 	public static final String IMEI_TEST = "490154203237518";
 
 	public static String token = "";
+
+	public static String next_bag_id;
+	public static String delay_id;
+	public static Context context;
 
 	// Debug mode
 	public static final boolean DEBUG = true;

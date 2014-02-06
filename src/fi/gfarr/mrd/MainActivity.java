@@ -38,6 +38,9 @@ public class MainActivity extends Activity
 		// Initialize ViewHolder
 		initViewHolder();
 
+		// Set global variable holding context
+		VariableManager.context = this;
+
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
 
 		new RequestTokenTask().execute();
@@ -80,7 +83,7 @@ public class MainActivity extends Activity
 				{
 					public void run()
 					{
-						Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+						Intent intent = new Intent(getApplicationContext(), SignatureActivity.class);
 						startActivity(intent);
 					}
 				}).start();

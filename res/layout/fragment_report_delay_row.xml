@@ -13,19 +13,19 @@
         android:gravity="left|center_vertical"
         android:paddingLeft="14dp"
         android:text="Traffic"
-        android:textSize="20sp"
-        android:textColor="@color/reportDelay_mainText" />
+        android:textColor="@color/reportDelay_mainText"
+        android:textSize="20sp" />
 
-     <TextView 
-         	android:id="@+id/reportDelay_textView_subText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:gravity="right|center_vertical"
-            android:paddingRight="14dp"
-            android:text="10 min"
-            android:textSize="18sp"
-            android:textColor="@color/reportDelay_subText"
-            android:visibility="gone" />
-    
+    <TextView
+        android:id="@+id/reportDelay_textView_subText"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:gravity="right|center_vertical"
+        android:paddingRight="14dp"
+        android:text="10 min"
+        android:textColor="@color/reportDelay_subText"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
 </LinearLayout>

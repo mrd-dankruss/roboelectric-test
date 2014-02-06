@@ -1,6 +1,6 @@
 package fi.gfarr.mrd.db;
 
-import android.util.Log;
+import java.util.ArrayList;
 
 public class Bag
 {
@@ -48,6 +48,9 @@ public class Bag
 
 	// number of items in consignment manifest (waybill count)
 	private int number_items;
+
+	// Contact numbers
+	private ArrayList<Contact> contacts = new ArrayList<Contact>();
 
 	/**
 	 * A bag, containing several waybills, belonging to a milkrun enroute to a branch. Also referred
@@ -330,6 +333,34 @@ public class Bag
 	public void setStatus(String status)
 	{
 		this.status = status;
+	}
+
+	/**
+	 * @return the contacts
+	 */
+	public ArrayList<Contact> getContacts()
+	{
+		return contacts;
+	}
+
+	/**
+	 * @param contacts
+	 *            the contacts to set
+	 */
+	public void setContacts(ArrayList<Contact> contacts)
+	{
+		this.contacts = contacts;
+	}
+
+	/**
+	 * Add a Contact object to the list of contacts.
+	 * 
+	 * @param name
+	 * @param number
+	 */
+	public void addContact(String name, String number)
+	{
+		this.contacts.add(new Contact(name, number));
 	}
 
 }

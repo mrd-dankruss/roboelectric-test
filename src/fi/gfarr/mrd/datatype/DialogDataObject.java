@@ -2,34 +2,62 @@ package fi.gfarr.mrd.datatype;
 
 public class DialogDataObject
 {
-	
-	private String longDisplayTime;
-	private String shortDisplayTime;
-	private String phoneNumber;
-	
-	public DialogDataObject(String longDisplayTime, String shortDisplayTime) {
+
+	private String main_text;
+	private String sub_text;
+	private String third_text;
+
+	public DialogDataObject()
+	{
+		this(null, null, null);
+	}
+
+	public DialogDataObject(String longDisplayTime, String shortDisplayTime)
+	{
 		this(longDisplayTime, shortDisplayTime, null);
 	}
-	
-	public DialogDataObject(String longDisplayTime, String shortDisplayTime, String phoneNumber) {
-		this.longDisplayTime = longDisplayTime;
-		this.shortDisplayTime = shortDisplayTime;
-		this.phoneNumber = phoneNumber;
+
+	public DialogDataObject(String longDisplayTime, String shortDisplayTime, String thirdtext)
+	{
+		this.main_text = longDisplayTime;
+		this.sub_text = shortDisplayTime;
+		setThirdText("");
 	}
-	
-	public String getLongDisplayTime() {
-		return longDisplayTime;
+
+	public String getMainText()
+	{
+		return main_text;
 	}
-	
-	public String getShortDisplayTime() {
-		return shortDisplayTime;
+
+	public String getSubText()
+	{
+		return sub_text;
 	}
-	
-	public String getPhoneNumber() {
-		return phoneNumber;
+
+	public void setSubText(String newShortTime)
+	{
+		sub_text = newShortTime;
 	}
-	
-	public void setShortDisplayTime(String newShortTime) {
-		shortDisplayTime = newShortTime;
+
+	public void setMainText(String text)
+	{
+		main_text = text;
+	}
+
+	/**
+	 * @return the delay_id
+	 */
+	public String getThirdText()
+	{
+		return third_text;
+	}
+
+	/**
+	 * @param delay_id
+	 *            the delay_id to set
+	 */
+	public void setThirdText(String delay_id)
+	{
+		this.third_text = delay_id;
 	}
 }

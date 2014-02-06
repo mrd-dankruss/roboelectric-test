@@ -8,7 +8,6 @@
         android:id="@+id/fragment_viewDeliveries_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
     </FrameLayout>
 
     <Button
@@ -18,7 +17,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_margin="7dp"
-        android:background="@drawable/button_custom"
+        android:background="@drawable/button_custom_grey"
         android:text="@string/delivery_button1"
         android:textColor="@color/black"
         android:textSize="24sp"

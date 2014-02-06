@@ -16,57 +16,77 @@ import fi.gfarr.mrd.ReportDelayActivity;
 import fi.gfarr.mrd.SmsActivity;
 import fi.gfarr.mrd.helper.VariableManager;
 
-public class MoreDialogFragment extends DialogFragment {
-    
+public class MoreDialogFragment extends DialogFragment
+{
+
 	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
 	private boolean isExtendedDialaog;
+	private static String bagid;
 
-    
-    /**
-     * @param isExtendedDialog A boolean option for displaying the normal or extended more dialog box.
-     * @return Returns a new MoreDialogFragment (DialogFragment)
-     */
-    public static MoreDialogFragment newInstance(boolean isExtendedDialog) {
-    	MoreDialogFragment f = new MoreDialogFragment();
+	/**
+	 * @param isExtendedDialog
+	 *            A boolean option for displaying the normal or extended more dialog box.
+	 * @return Returns a new MoreDialogFragment (DialogFragment)
+	 */
+	public static MoreDialogFragment newInstance(boolean isExtendedDialog)
+	{
+		MoreDialogFragment f = new MoreDialogFragment();
 
-        Bundle args = new Bundle();
-        args.putBoolean(EXTENDED_DIALOG, isExtendedDialog);
-        f.setArguments(args);
+		Bundle args = new Bundle();
+		args.putBoolean(EXTENDED_DIALOG, isExtendedDialog);
+		f.setArguments(args);
 
-        return f;
-    }
+		return f;
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);        
-    }
+	public static MoreDialogFragment newInstance(boolean isExtendedDialog, String bag_id)
+	{
+		MoreDialogFragment f = new MoreDialogFragment();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_deliveries_more, container, false);
-        
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        
-        Bundle args = getArguments();
-        
-        if (args != null) {
-        	isExtendedDialaog = args.getBoolean(EXTENDED_DIALOG); 
+		Bundle args = new Bundle();
+		args.putBoolean(EXTENDED_DIALOG, isExtendedDialog);
+		f.setArguments(args);
+
+		bagid = bag_id;
+
+		return f;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		View v = inflater.inflate(R.layout.fragment_deliveries_more, container, false);
+
+		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+		Bundle args = getArguments();
+
+		if (args != null)
+		{
+			isExtendedDialaog = args.getBoolean(EXTENDED_DIALOG);
 		}
-        
-        ImageButton closeDialogButton = (ImageButton) v.findViewById(R.id.button_deliveriesMore_closeButton);
-        Button setAsNextDelivery = (Button) v.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
-        Button viewMapButton = (Button) v.findViewById(R.id.button_deliveriesMore_viewMap);
-        Button reportDelayButton = (Button) v.findViewById(R.id.button_deliveriesMore_reportDelay);
-        Button callButton = (Button) v.findViewById(R.id.button_deliveriesMore_call);
-        Button messageButton = (Button) v.findViewById(R.id.button_deliveriesMore_message);
-        
-        if (isExtendedDialaog == true)
+
+		ImageButton closeDialogButton = (ImageButton) v
+				.findViewById(R.id.button_deliveriesMore_closeButton);
+		Button setAsNextDelivery = (Button) v
+				.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
+		Button viewMapButton = (Button) v.findViewById(R.id.button_deliveriesMore_viewMap);
+		Button reportDelayButton = (Button) v.findViewById(R.id.button_deliveriesMore_reportDelay);
+		Button callButton = (Button) v.findViewById(R.id.button_deliveriesMore_call);
+		Button messageButton = (Button) v.findViewById(R.id.button_deliveriesMore_message);
+
+		if (isExtendedDialaog == true)
 		{
 			setAsNextDelivery.setVisibility(View.VISIBLE);
 		}
-        
-        closeDialogButton.setOnClickListener(new View.OnClickListener()
+
+		closeDialogButton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -110,6 +130,15 @@ public class MoreDialogFragment extends DialogFragment {
 			{
 				// TODO: Change to new activity
 				Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
+
+				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
+						.getStringExtra(VariableManager.EXTRA_DRIVER));
+
+				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
+
 				startActivity(intent);
 				/*
 				Fragment fragment = new ReportDelayListFragment();
@@ -129,6 +158,7 @@ public class MoreDialogFragment extends DialogFragment {
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getActivity(), CallActivity.class);
+				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 				startActivity(intent);
 			}
 		});

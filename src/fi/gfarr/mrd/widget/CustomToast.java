@@ -15,11 +15,11 @@ public class CustomToast
 	Toast toast;
 	View layout;
 
-	public CustomToast(Activity activity, View v)
+	public CustomToast(Activity activity, View view)
 	{
 
 		LayoutInflater inflater = activity.getLayoutInflater();
-		layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) v.findViewById(R.id.toast_layout_root));
+		layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) view.findViewById(R.id.toast_layout_root));
 
 		text = (TextView) layout.findViewById(R.id.textView_toast);
 		

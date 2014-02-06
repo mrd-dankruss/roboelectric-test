@@ -30,7 +30,9 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String TABLE_MANAGERS = "Managers";
 	public static final String TABLE_BAGS = "Bag"; // Consignments going to various delivery points
 	public static final String TABLE_WAYBILLS = "Waybill"; // Cargo containing items belonging to
-															// consignments
+															// bags
+	public static final String TABLE_CONTACTS = "Contacts";
+
 	public static final String TABLE_DELAYS = "Delays";
 
 	// ------------ Fields - Drivers ---------
@@ -51,6 +53,13 @@ public class DbHandler extends SQLiteOpenHelper
 	// ------------ Fields - Bags -------------
 	public static final String C_BAG_ID = "_id"; // Consignment number
 													// (PK)
+
+	// ------------ Fields - Contacts -------------
+	public static final String C_CONTACTS_ID = "_id"; // Primary key
+	public static final String C_CONTACTS_NAME = "contact_name";
+	public static final String C_CONTACTS_NUMBER = "contact_number";
+	public static final String C_CONTACTS_BAG_ID = "contact_bagid"; // Foreign key. linking contact
+																	// to bag
 
 	/*
 	 * Has bag been scanned? used to move consignments to bottom of list as they
@@ -182,8 +191,14 @@ public class DbHandler extends SQLiteOpenHelper
 
 			final String CREATE_TABLE_DELAYS = "CREATE TABLE " + TABLE_DELAYS + "(" + C_DELAYS_ID
 					+ " INTEGER PRIMARY KEY," + C_DELAYS_REASON + " TEXT," + C_DELAYS_DURATION_ID
-					+ " INTEGER," + C_DELAYS_DURATION + " TEXT)";
+					+ " TEXT," + C_DELAYS_DURATION + " TEXT)";
 			createTable(db, TABLE_DELAYS, CREATE_TABLE_DELAYS);
+
+			final String CREATE_TABLE_CONTACTS = "CREATE TABLE " + TABLE_CONTACTS + "("
+					+ C_CONTACTS_ID + " INTEGER PRIMARY KEY," + C_CONTACTS_NAME + " TEXT,"
+					+ C_CONTACTS_NUMBER + " INTEGER," + "FOREIGN KEY(" + C_CONTACTS_BAG_ID
+					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
+			createTable(db, TABLE_DELAYS, CREATE_TABLE_CONTACTS);
 
 			db.setTransactionSuccessful();
 		}
@@ -221,6 +236,7 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANAGERS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BAGS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELAYS);
 		onCreate(db);
 	}
@@ -259,6 +275,17 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_MANAGER_NAME, name);
 
 		return addRow(TABLE_MANAGERS, values);
+	}
+
+	public boolean addContact(String name, String number, String bagid)
+	{
+		ContentValues values = new ContentValues();
+
+		values.put(C_CONTACTS_NAME, name);
+		values.put(C_CONTACTS_NUMBER, number);
+		values.put(C_CONTACTS_BAG_ID, bagid);
+
+		return addRow(TABLE_CONTACTS, values);
 	}
 
 	/**
@@ -664,6 +691,69 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * Return contact details linked to the specified bag ID.
+	 * 
+	 * @param bag_id
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getContacts(String bag_id)
+	{
+		SQLiteDatabase db = null;
+		ArrayList<DialogDataObject> contacts = new ArrayList<DialogDataObject>();
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			// ArrayList<Bag> bags = null;
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_ID + " LIKE '" + bag_id
+					+ "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				// bags = new ArrayList<Bag>();
+
+				if (!cursor.isAfterLast())
+				{
+					DialogDataObject contact = new DialogDataObject();
+
+					contact.setMainText(cursor.getString(cursor.getColumnIndex(C_CONTACTS_NAME)));
+
+					contact.setSubText(cursor.getString(cursor.getColumnIndex(C_CONTACTS_NUMBER)));
+
+					contacts.add(contact);
+					cursor.moveToNext();
+				}
+			}
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+		return contacts;
+	}
+
+	/**
 	 * Return number of consignments belonging to a driver
 	 * 
 	 * @return count
@@ -723,7 +813,7 @@ public class DbHandler extends SQLiteOpenHelper
 					// cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
 
 					// concat string of bag numbers with newline to be displayed in list format
-					list = list + cursor.getString(cursor.getColumnIndex(C_BAG_ID)) + "\n";
+					list = list + cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)) + "\n";
 					cursor.moveToNext();
 				}
 			}
@@ -921,7 +1011,6 @@ public class DbHandler extends SQLiteOpenHelper
 		SQLiteDatabase db = null;
 		try
 		{
-
 			db = this.getReadableDatabase(); // Open db
 
 			ArrayList<DialogDataObject> delays = null;
@@ -934,9 +1023,13 @@ public class DbHandler extends SQLiteOpenHelper
 
 				while (!cursor.isAfterLast())
 				{
-					String reason = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_ADDRESS));
+					String reason = cursor.getString(cursor.getColumnIndex(C_DELAYS_REASON));
+					String delay_id = cursor.getString(cursor.getColumnIndex(C_DELAYS_ID));
 
-					delays.add(new DialogDataObject(reason, ""));
+					DialogDataObject dialog_data_object = new DialogDataObject(reason, "");
+					dialog_data_object.setThirdText(delay_id);
+
+					delays.add(dialog_data_object);
 
 					cursor.moveToNext();
 				}
@@ -971,4 +1064,83 @@ public class DbHandler extends SQLiteOpenHelper
 		}
 	}
 
+	/**
+	 * Return durations of delay reason
+	 * 
+	 * @param reason_id
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<DialogDataObject> delays = null;
+			String sql = "SELECT * FROM " + TABLE_DELAYS + " WHERE " + C_DELAYS_ID + " LIKE '"
+					+ reason_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				delays = new ArrayList<DialogDataObject>();
+
+				while (!cursor.isAfterLast())
+				{
+					String duration = cursor.getString(cursor.getColumnIndex(C_DELAYS_DURATION));
+
+					delays.add(new DialogDataObject(duration, ""));
+
+					cursor.moveToNext();
+				}
+			}
+
+			return delays;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.d(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Return list of predefined message to be SMSed. Hardcoded for now.
+	 * 
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getSMSMessages()
+	{
+		ArrayList<DialogDataObject> msgs = new ArrayList<DialogDataObject>();
+
+		msgs.add(new DialogDataObject("Hijack", null));
+		msgs.add(new DialogDataObject("Accident", null));
+		msgs.add(new DialogDataObject("IED", null));
+		msgs.add(new DialogDataObject("RPG", null));
+		msgs.add(new DialogDataObject("Ambush", null));
+
+		return msgs;
+	}
 }

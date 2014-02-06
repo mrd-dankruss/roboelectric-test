@@ -51,15 +51,13 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 				getResources().getString(R.string.tab_todo),
 				getResources().getString(R.string.tab_unsuccessful) };
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-
 		// Initilization
 		mPager = (ViewPager) findViewById(R.id.view_deliveries_pager);
 		actionBar = getActionBar();
 		mPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
 		mPager.setAdapter(mPagerAdapter);
-		actionBar.setHomeButtonEnabled(false);
+		actionBar.setHomeButtonEnabled(true);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// Adding Tabs

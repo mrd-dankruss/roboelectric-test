@@ -18,6 +18,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.fragments.MoreDialogFragment;
 import fi.gfarr.mrd.fragments.UpdateStatusDialog;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {
@@ -29,6 +30,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	private TextView deliveryNumber, titleDetail, address, id;
 	private Button updateStatus, more;
 	private LinearLayout buttonsHolder;
+	private String bag_id;
 
 	public enum DeliveryType
 	{
@@ -119,6 +121,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			// Only doing Milkruns for now so hardcode
 			deliveryType.setImageResource(getCompanyIcon(Company.MRD));
 
+			// Make ID of current next bag global
+			bag_id = values.get(position).getBagNumber();
+
 			// Add leading zero
 			if (position < 10)
 			{
@@ -153,7 +158,8 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = UpdateStatusDialog.newInstance(10);
+					DialogFragment newFragment = UpdateStatusDialog
+							.newInstance("Insert bagid here");
 					newFragment.show(activity.getSupportFragmentManager(), "dialog");
 				}
 			});
@@ -164,7 +170,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = MoreDialogFragment.newInstance(false);
+					DialogFragment newFragment = MoreDialogFragment.newInstance(false, bag_id);
 					newFragment.show(activity.getSupportFragmentManager(), "dialog");
 				}
 			});

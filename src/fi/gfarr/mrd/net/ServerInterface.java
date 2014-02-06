@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.http.HttpEntity;
@@ -28,9 +29,13 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import fi.gfarr.mrd.db.Bag;
+import fi.gfarr.mrd.db.Contact;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.db.Driver;
 import fi.gfarr.mrd.db.Waybill;
@@ -43,6 +48,50 @@ public class ServerInterface
 	private final static String TAG = "ServerInterface";
 
 	// private static Context context;
+
+	/*	private static final int MSG_SHOW_TOAST = 1;
+
+		// Used to display toasts on the UI thread from these static methods
+		private static Handler messageHandler = new Handler()
+		{
+			public void handleMessage(android.os.Message msg)
+			{
+				if (msg.what == MSG_SHOW_TOAST)
+				{
+					String message = (String) msg.obj;
+					Toast.makeText(VariableManager.CONTEXT, message, Toast.LENGTH_SHORT).show();
+				}
+			}
+		};
+		private static String toast_msg = ""; // Toast msg to be displayed
+
+		private static void displayMessage(String message)
+		{
+			Message msg = new Message();
+			msg.what = MSG_SHOW_TOAST;
+			msg.obj = message;
+			messageHandler.sendMessage(msg);
+		}*/
+
+	public static Handler UIHandler = new Handler(Looper.getMainLooper());
+
+	public static void displayToast(final String message)
+	{
+		UIHandler.post(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Log.e(TAG, "Test: " + message);
+				Toast.makeText(VariableManager.context, message, Toast.LENGTH_SHORT).show();
+
+				/*CustomToast toast = new CustomToast(VariableManager.CONTEXT, view);
+				 toast.setSuccess(true);
+				 toast.setText("Delivery completed successfully!");
+				 toast.show();*/
+			}
+		});
+	}
 
 	/**
 	 * Makes API call to request a new session token.
@@ -67,7 +116,12 @@ public class ServerInterface
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
+
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: auth/auth");
+			}
 			return "";
 			// Oops
 		}
@@ -77,6 +131,7 @@ public class ServerInterface
 			Log.d(TAG, "token: " + token);
 		}
 		return token;
+		// return "WEUasduio768SDUIYS7667uiuasdasd"; // DEBUG!!
 	}
 
 	/**
@@ -108,7 +163,11 @@ public class ServerInterface
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: driver?id");
+			}
 			return "";
 			// Oops
 		}
@@ -145,7 +204,7 @@ public class ServerInterface
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 
 		if (drivers_jArray != null)
@@ -182,6 +241,10 @@ public class ServerInterface
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					if (VariableManager.DEBUG)
+					{
+						displayToast("JSONException: driver/drivers");
+					}
 				}
 			}
 		}
@@ -209,7 +272,7 @@ public class ServerInterface
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 
 		if (managers_jArray != null)
@@ -238,6 +301,10 @@ public class ServerInterface
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					if (VariableManager.DEBUG)
+					{
+						displayToast("JSONException: manager/managers");
+					}
 				}
 			}
 		}
@@ -271,7 +338,11 @@ public class ServerInterface
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: auth/driver");
+			}
 		}
 
 		if (VariableManager.DEBUG)
@@ -280,6 +351,7 @@ public class ServerInterface
 		}
 
 		return status;
+		// return "success"; // DEBUG!!
 	}
 
 	/**
@@ -312,7 +384,11 @@ public class ServerInterface
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: auth/manager");
+			}
 		}
 
 		if (VariableManager.DEBUG)
@@ -372,6 +448,10 @@ public class ServerInterface
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						if (VariableManager.DEBUG)
+						{
+							displayToast("JSONException: bags/driver");
+						}
 					}
 				}
 			}
@@ -381,6 +461,10 @@ public class ServerInterface
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: bags/driver");
+			}
 		}
 	}
 
@@ -461,6 +545,18 @@ public class ServerInterface
 					bag.setDestinationContact(dest_contact1);
 					bag.setScanned(scanned);
 					bag.setNumberItems(waybill_count);
+
+					JSONArray json_contacts = result.getJSONArray("contacts");
+					ArrayList<Contact> contacts = new ArrayList<Contact>();
+
+					for (int i = 0; i < json_contacts.length(); i++)
+					{
+						String name = json_contacts.getJSONObject(i).getString("name");
+						String number = json_contacts.getJSONObject(i).getString("number");
+						contacts.add(new Contact(name, number));
+					}
+
+					bag.setContacts(contacts);
 
 					Log.d(TAG, "Bag " + id + " added: "
 							+ DbHandler.getInstance(context).addBag(bag));
@@ -591,6 +687,10 @@ public class ServerInterface
 					StringWriter sw = new StringWriter();
 					e.printStackTrace(new PrintWriter(sw));
 					Log.e(TAG, sw.toString());
+					if (VariableManager.DEBUG)
+					{
+						displayToast("JSONException: bags/bag");
+					}
 				}
 
 			}
@@ -622,7 +722,6 @@ public class ServerInterface
 
 			if (result != null)
 			{
-
 				// Stores waybill IDs as they are loaded.
 				// Used to count the number of occurences
 				// For counting multiple packages.
@@ -670,6 +769,10 @@ public class ServerInterface
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						if (VariableManager.DEBUG)
+						{
+							displayToast("JSONException: milkruns/delays");
+						}
 					}
 				}
 			}
@@ -679,6 +782,10 @@ public class ServerInterface
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: milkruns/delays");
+			}
 		}
 	}
 
@@ -696,7 +803,6 @@ public class ServerInterface
 		{
 			Log.d(TAG, "Fetching JSON from " + url);
 		}
-
 		try
 		{
 			final int CONN_WAIT_TIME = 5000;
@@ -737,7 +843,7 @@ public class ServerInterface
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			// sw.toString();
-			Log.d("updateDb()", sw.toString());
+			Log.e("updateDb()", sw.toString());
 			return "";
 		}
 		catch (UnsupportedEncodingException e)
@@ -745,7 +851,7 @@ public class ServerInterface
 			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return "";
 		}
 		catch (SocketTimeoutException e)
@@ -753,7 +859,11 @@ public class ServerInterface
 			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("SocketTimeoutException");
+			}
 			return "";
 		}
 		catch (IOException e)
@@ -761,9 +871,24 @@ public class ServerInterface
 			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return "";
 		}
+	}
+
+	/**
+	 * Post a delay to API
+	 * 
+	 * @param bagid
+	 * @param driverid
+	 * @param delayid
+	 * @return
+	 */
+	public static String postDelay(String bagid, String driverid, String delayid)
+	{
+		return postData("http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bagid
+				+ "&driverid=" + driverid + "&mrdToken=" + VariableManager.token + "&delayid="
+				+ delayid);
 	}
 
 	/**
@@ -813,11 +938,17 @@ public class ServerInterface
 		}
 		catch (ClientProtocolException e)
 		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
 			return "";
 			// TODO Auto-generated catch block
 		}
 		catch (IOException e)
 		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
 			return "";
 			// TODO Auto-generated catch block
 		}
