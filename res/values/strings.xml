@@ -70,6 +70,7 @@
     <string name="title_updateStatusDialog">SMS</string>
     <string name="title_deliveryHandover">Delivery Handover</string>
     <string name="title_transfer_data_subTitle">Connected to Dispatch Wireless network</string>
+    <string name="title_geofence_enter">Arrived at destination!</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>

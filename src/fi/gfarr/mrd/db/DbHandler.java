@@ -1127,6 +1127,22 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * Return list of people to be SMSed. Hardcoded for now.
+	 * 
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getSMSContactPeople()
+	{
+		ArrayList<DialogDataObject> msgs = new ArrayList<DialogDataObject>();
+
+		msgs.add(new DialogDataObject("Branch", ""));
+		msgs.add(new DialogDataObject("Call Centre", ""));
+		msgs.add(new DialogDataObject("Chief Operating Officer", ""));
+
+		return msgs;
+	}
+	
+	/**
 	 * Return list of predefined message to be SMSed. Hardcoded for now.
 	 * 
 	 * @return
@@ -1135,11 +1151,11 @@ public class DbHandler extends SQLiteOpenHelper
 	{
 		ArrayList<DialogDataObject> msgs = new ArrayList<DialogDataObject>();
 
-		msgs.add(new DialogDataObject("Hijack", ""));
-		msgs.add(new DialogDataObject("Accident", ""));
-		msgs.add(new DialogDataObject("IED", ""));
-		msgs.add(new DialogDataObject("RPG", ""));
-		msgs.add(new DialogDataObject("Ambush", ""));
+		msgs.add(new DialogDataObject("HIJACK", "HIJACK"));
+		msgs.add(new DialogDataObject("Accident", "Accident"));
+		msgs.add(new DialogDataObject("IED", "IED"));
+		msgs.add(new DialogDataObject("RPG", "RPG"));
+		msgs.add(new DialogDataObject("Ambush", "Ambush"));
 
 		return msgs;
 	}

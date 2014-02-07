@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
-import fi.gfarr.mrd.ReportDelayActivity;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.db.DbHandler;
