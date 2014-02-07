@@ -75,7 +75,7 @@ public class DeliveryHandoverFragment extends Fragment
 				if (allParcelsScanned())
 				{
 					getActivity().finish();
-					CustomToast toast = new CustomToast(getActivity(), v);
+					CustomToast toast = new CustomToast(getActivity());
 					toast.setSuccess(true);
 					toast.setText("Delivery completed successfully!");
 					toast.show();

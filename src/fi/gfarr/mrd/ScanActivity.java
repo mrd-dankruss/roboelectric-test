@@ -401,7 +401,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								if (selected_items.size() == total_bags) // All bags scanned
 								{
 									// displayToast(getString(R.string.text_scan_successful));
-									CustomToast toast = new CustomToast(this, root_view);
+									CustomToast toast = new CustomToast(this);
 									toast.setSuccess(true);
 									toast.setText(getString(R.string.text_scan_successful));
 									toast.show();
@@ -410,7 +410,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								// Another bag scanned, not everything yet.
 								{
 									// displayToast(getString(R.string.text_scan_next));
-									CustomToast toast = new CustomToast(this, root_view);
+									CustomToast toast = new CustomToast(this);
 									toast.setSuccess(true);
 									toast.setText(getString(R.string.text_scan_next));
 									toast.show();
