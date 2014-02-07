@@ -2,11 +2,14 @@ package fi.gfarr.mrd.fragments;
 
 import java.util.ArrayList;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +19,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
+import fi.gfarr.mrd.ReportDelayActivity;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.ServerInterface;
+import fi.gfarr.mrd.widget.CustomToast;
 
 public class ReportDelayListFragment extends Fragment
 {
 
+	private final String TAG = "ReportDelayActivity";
 	private ViewHolder holder;
 	private View rootView;
 	private GenericDialogListAdapter adapter;
@@ -69,36 +76,91 @@ public class ReportDelayListFragment extends Fragment
 					// String delay_id = (String) getListView().getItemAtPosition(position);
 
 					DelayDialog editNameDialog = DelayDialog.newInstance(delay_id);
-					editNameDialog.setTargetFragment(getFragmentManager().findFragmentById(R.id.activity_report_delay_container), 1);
+					editNameDialog.setTargetFragment(
+							getFragmentManager().findFragmentById(
+									R.id.activity_report_delay_container), 1);
 					editNameDialog.show(fm, "reportDelayFragment");
 				}
 			}
 		});
+
+		holder.report_button.setOnClickListener(new View.OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				// TODO Auto-generated method stub
+				// Only perform action if there is a selection made
+				if (VariableManager.delay_id != null)
+				{
+					new ReportDelayTask().execute(
+							getActivity().getIntent().getStringExtra(
+									VariableManager.EXTRA_NEXT_BAG_ID), getActivity().getIntent()
+									.getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+							VariableManager.delay_id);
+				}
+			}
+		});
+		holder.report_button.setVisibility(View.VISIBLE);
+		holder.report_button.setEnabled(false);
 	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		/*	values.get(parentItemPosition).setSubText(
-					data.getStringExtra(GenericResultDialog.DIALOG_TIME_STRING));*/
 		((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(data
 				.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
 
 		VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
 
-		holder.report_button.setVisibility(View.VISIBLE);
-		//holder.report_button.setBackgroundResource(R.drawable.button_custom);
-
-		System.out.println("test: " + data.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
+		// holder.report_button.setVisibility(View.VISIBLE);
+		holder.report_button.setBackgroundResource(R.drawable.button_custom);
 		holder.list.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
+		holder.report_button.setEnabled(true);
 	}
 
-	public boolean hasDataSentSuccessfully()
+	private class ReportDelayTask extends AsyncTask<String, Void, String>
 	{
-		// TODO: Implement sending of data here
 
-		return false;
+		private ProgressDialog dialog = new ProgressDialog(getActivity());
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog.setMessage("Submitting delay report");
+			this.dialog.show();
+		}
+
+		@Override
+		protected String doInBackground(String... args)
+		{
+			return ServerInterface.postDelay(args[0], args[1], args[2]);
+
+			// Log.i(TAG, "Token aquired.");
+
+		}
+
+		@Override
+		protected void onPostExecute(String result)
+		{
+			// Close progress spinner
+			if (dialog.isShowing())
+			{
+				dialog.dismiss();
+			}
+			Log.i(TAG, result);
+			// CustomToast toast = new CustomToast(this, )
+			VariableManager.delay_id = null;
+			CustomToast blah = new CustomToast(getActivity());
+			blah.setText("Success");
+			blah.setSuccess(true);
+			blah.show();
+			getActivity().finish();
+		}
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
