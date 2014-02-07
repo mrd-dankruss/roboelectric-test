@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,11 @@ public class CallListFragment extends Fragment
 	{
 		super.onResume();
 
+		Log.d("fi.gfarr.mrd",
+				"NEXT_BAG: "
+						+ getActivity().getIntent().getStringExtra(
+								VariableManager.EXTRA_NEXT_BAG_ID));
+
 		adapter = new GenericDialogListAdapter(getActivity(),
 				DbHandler.getInstance(getActivity())
 						.getContacts(
@@ -60,8 +66,7 @@ public class CallListFragment extends Fragment
 				parentItemPosition = (Integer) adapter.getItem(position);
 				Intent intent = new Intent(Intent.ACTION_CALL);
 
-				String phone_number = ((DialogDataObject) adapter.getItem(position))
-						.getSubText();
+				String phone_number = ((DialogDataObject) adapter.getItem(position)).getSubText();
 
 				intent.setData(Uri.parse("tel:" + phone_number));
 				getActivity().startActivity(intent);

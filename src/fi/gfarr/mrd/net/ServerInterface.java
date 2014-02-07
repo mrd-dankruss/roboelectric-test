@@ -549,18 +549,20 @@ public class ServerInterface
 					JSONArray json_contacts = result.getJSONArray("contacts");
 					ArrayList<Contact> contacts = new ArrayList<Contact>();
 
-					for (int i = 0; i < json_contacts.length(); i++)
-					{
-						String name = json_contacts.getJSONObject(i).getString("name");
-						String number = json_contacts.getJSONObject(i).getString("number");
-						contacts.add(new Contact(name, number));
-					}
-
 					bag.setContacts(contacts);
 
 					Log.d(TAG, "Bag " + id + " added: "
 							+ DbHandler.getInstance(context).addBag(bag));
 
+					for (int i = 0; i < json_contacts.length(); i++)
+					{
+						String name = json_contacts.getJSONObject(i).getString("name");
+						String number = json_contacts.getJSONObject(i).getString("number");
+						contacts.add(new Contact(name, number));
+						Log.d(TAG, "Contact " + name + " added: "
+								+ DbHandler.getInstance(context).addContact(name, number, id));
+					}
+					
 					// --- Waybills ---
 
 					JSONArray waybills = result.getJSONArray("waybills");
