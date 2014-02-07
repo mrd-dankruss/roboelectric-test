@@ -59,7 +59,7 @@
     <string name="title_next_delivery_food">YOUR NEXT FOOD DELIVERY</string>
     <string name="title_deliveries">Deliveries</string>
     <string name="title_signature">COLLECT PROOF OF COLLECTION</string>
-    <string name="title_scan_consignments">Scan Consignments</string>    
+    <string name="title_scan_consignments">Scan Consignments</string>
     <string name="title_reason_partial_deliveries">Reasons for Partial Deliveries</string>
     <string name="title_set_as_next_delivery">Set as next delivery</string>
     <string name="title_return">RETURN</string>
@@ -106,6 +106,8 @@
     <string name="text_todo_deliveries_complete_1">All packages delivered successfully!</string>
     <string name="text_todo_deliveries_complete_2">Please return to Dispatch</string>
     <string name="text_transfer_data_uploading">Uploading data to server</string>
+    <string name="text_process_handover_successful">Process succcessful handover</string>
+    <string name="text_process_handover_failed">Process failed handover</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
@@ -130,11 +132,10 @@
     <string name="text_manifest_volumetrics">Volumetrics:</string>
     <string name="text_manifest">Manifest</string>
     <string name="title_activity_manager_auth_incomplete_scan">ManagerAuthIncompleteScanActivity</string>
-    
-    
+
     <!-- Content Descriptors -->
     <string name="contentDesc_imageView_deliveryType">Delivery Type Image</string>
-    
+
     <!-- Filler Strings (To be removed) -->
     <string name="delivery_no">#01</string>
     <string name="delivery_title">Your Next Delivery</string>

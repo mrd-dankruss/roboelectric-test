@@ -47,5 +47,7 @@ public class VariableManager
 	
 	// List extras
 	public static final String EXTRA_LIST_POSITION = "list_position"; 
+	
+
 
 }

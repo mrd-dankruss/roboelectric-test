@@ -5,13 +5,13 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -223,6 +223,24 @@ public class MainActivity extends Activity
 			}
 		}
 	}
+
+	/*
+	 * Create a PendingIntent that triggers an IntentService in your
+	 * app when a geofence transition occurs.
+	 */
+	/*    private PendingIntent getTransitionPendingIntent() {
+	        // Create an explicit Intent
+	        Intent intent = new Intent(this,
+	                ReceiveTransitionsIntentService.class);
+	        
+	         * Return the PendingIntent
+	         
+	        return PendingIntent.getService(
+	                this,
+	                0,
+	                intent,
+	                PendingIntent.FLAG_UPDATE_CURRENT);
+	    }*/
 
 	// ViewHolder stores static instances of views in order to reduce the number
 	// of times that findViewById is called, which affected listview performance

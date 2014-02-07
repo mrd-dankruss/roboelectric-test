@@ -8,13 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
@@ -32,13 +35,14 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
-import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.widget.Toaster;
 
 public class MapActivity extends Activity implements OnMapClickListener, LocationListener,
@@ -51,6 +55,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private GoogleMap map;
 	private LocationManager location_manager;
 	private LatLng lat_long;
+	private LatLng selected_marker_lat_long;
 	private MarkerOptions marker_options;
 
 	@Override
@@ -88,6 +93,17 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			String provider = location_manager.getBestProvider(criteria, true);
 			location_manager.requestLocationUpdates(provider, 20000, 0, this);
 
+			map.setOnMarkerClickListener(new OnMarkerClickListener()
+			{
+				@Override
+				public boolean onMarkerClick(Marker marker)
+				{
+					selected_marker_lat_long = marker.getPosition();
+					// TODO Auto-generated method stub
+					return false;
+				}
+			});
+
 		}
 		catch (NullPointerException e)
 		{
@@ -98,6 +114,52 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		// Search function
 		setupSearchView();
 		setupMapMarkers();
+
+		// Setup "Navigate here" button
+		root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
+		Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
+		button_navigate.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Only if marker has been selected
+				if (selected_marker_lat_long != null)
+				{
+					/*CustomToast toast = new CustomToast(getParent(), getWindow().getCurrentFocus());
+					toast.setText("Ahoy");
+					toast.show();*/
+
+					// Get selected marker coords
+					double marker_lat = selected_marker_lat_long.latitude;
+					double marker_lon = selected_marker_lat_long.longitude;
+					int zoom_level = 14;
+
+					// Convert coords to Uri
+
+					// Map point based on address
+					/*Uri location = Uri.parse("geo:" + marker_lat + "," + marker_lon + "?z="
+							+ zoom_level);*/
+					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "Here"
+							+ "&z=" + zoom_level);
+					// Or map point based on latitude/longitude
+					// Uri location = Uri.parse("geo:37.422219,-122.08364?z=14"); // z param is zoom
+					// level
+					Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
+
+					// Check if there is an App to receive intent (or else it will crash boom bang)
+					PackageManager packageManager = getPackageManager();
+					List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent,
+							0);
+					boolean isIntentSafe = activities.size() > 0;
+
+					if (isIntentSafe)
+					{
+						startActivity(mapIntent);
+					}
+				}
+			}
+		});
+
 	}
 
 	/**
@@ -130,7 +192,6 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				e.printStackTrace(new PrintWriter(sw));
 				Log.e(TAG, sw.toString());
 			}
-
 		}
 	}
 

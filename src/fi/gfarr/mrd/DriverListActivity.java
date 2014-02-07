@@ -26,8 +26,9 @@ import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 
-public class DriverListActivity extends ListActivity implements
-		LoaderCallbacks<Cursor>, OnQueryTextListener {
+public class DriverListActivity extends ListActivity implements LoaderCallbacks<Cursor>,
+		OnQueryTextListener
+{
 
 	private ViewHolder holder;
 	private View root_view;
@@ -35,12 +36,15 @@ public class DriverListActivity extends ListActivity implements
 	private static final int URL_LOADER = 0;// Identifies a particular Loader
 											// being used in this component
 
-	static final String[] FROM = { DbHandler.C_DRIVER_NAME };
-	static final int[] TO = { R.id.textView_row_driverlist };
+	static final String[] FROM =
+	{ DbHandler.C_DRIVER_NAME };
+	static final int[] TO =
+	{ R.id.textView_row_driverlist };
 	private String filter = ""; // Filter used in SQL query
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_driver_list);
@@ -51,8 +55,10 @@ public class DriverListActivity extends ListActivity implements
 
 		// Cancel button click
 		// Click Start New Milkrun button
-		holder.button_cancel.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
+		holder.button_cancel.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
 				// return to mainmenu
 				finish();
 			}
@@ -64,14 +70,14 @@ public class DriverListActivity extends ListActivity implements
 
 		getLoaderManager().initLoader(URL_LOADER, null, this);
 
-		//Test data
-		String[] names = { "Bruce Springsteen", "Eric Clapton",
-				"Keith Richards", "Angus Young", "Mark Knopfler",
-				"John Fogerty", "Tom Petty", "Jethro Tull", "Brian May",
-				"Gary Moore", "Mick Jagger", "Freddie Murcury",
-				"Brian Johnson", "Bon Scott", "Jimi Hendrix",
-				"Stevie Ray Vaugn", "Chuck Berry", "Ozzy Osborne",
-				"Alice Cooper" };
+		// Test data
+		/*	String[] names = { "Bruce Springsteen", "Eric Clapton",
+					"Keith Richards", "Angus Young", "Mark Knopfler",
+					"John Fogerty", "Tom Petty", "Jethro Tull", "Brian May",
+					"Gary Moore", "Mick Jagger", "Freddie Murcury",
+					"Brian Johnson", "Bon Scott", "Jimi Hendrix",
+					"Stevie Ray Vaugn", "Chuck Berry", "Ozzy Osborne",
+					"Alice Cooper" };*/
 
 		// for (int i = 0; i < names.length; i++) {
 		// DbHandler.getInstance(this).addDriver(new Driver(i, names[i]));
@@ -82,40 +88,42 @@ public class DriverListActivity extends ListActivity implements
 		setupSearchView();
 
 		// Set click listener for list items (selecting a driver)
-		holder.list.setOnItemClickListener(new OnItemClickListener() {
+		holder.list.setOnItemClickListener(new OnItemClickListener()
+		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
 
-				if (holder.list.getItemAtPosition(position) != null) {
+				if (holder.list.getItemAtPosition(position) != null)
+				{
 					Cursor c = (Cursor) holder.list.getItemAtPosition(position);
 
 					Intent intent;
 
 					// Check if PIN already exists for this driver
-					if (!c.getString(c.getColumnIndex(DbHandler.C_DRIVER_PIN)).equals(
-							"")) {
-						intent = new Intent(getApplicationContext(),
-								EnterPinActivity.class);
-					} else {
-						intent = new Intent(getApplicationContext(),
-								CreatePinActivity.class);
+					if (!c.getString(c.getColumnIndex(DbHandler.C_DRIVER_PIN)).equals(""))
+					{
+						intent = new Intent(getApplicationContext(), EnterPinActivity.class);
+					}
+					else
+					{
+						intent = new Intent(getApplicationContext(), CreatePinActivity.class);
 					}
 
-					DbHandler.getInstance(getApplicationContext());
-					intent.putExtra(VariableManager.EXTRA_DRIVER, String
-							.valueOf(c.getString(c
-									.getColumnIndex(DbHandler.C_DRIVER_NAME))));
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID, String
-							.valueOf(c.getString(c
-									.getColumnIndex(DbHandler.C_DRIVER_ID))));
+					// DbHandler.getInstance(getApplicationContext());
+					intent.putExtra(VariableManager.EXTRA_DRIVER,
+							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_DRIVER_NAME))));
+					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_DRIVER_ID))));
+
 					startActivity(intent);
 				}
 			}
 		});
 	}
 
-	private void setupSearchView() {
+	private void setupSearchView()
+	{
 		// Start screen with keyboard initially hidden
 		holder.search_view.setIconifiedByDefault(true);
 
@@ -133,7 +141,8 @@ public class DriverListActivity extends ListActivity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.driver_list, menu);
 		return true;
@@ -143,15 +152,15 @@ public class DriverListActivity extends ListActivity implements
 	 * Manages your Loaders for you. Responsible for dealing with the Activity
 	 * or Fragment lifecycle.
 	 */
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+	public Loader<Cursor> onCreateLoader(int id, Bundle args)
+	{
 
 		DbHandler.getInstance(this);
-		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_DRIVERS
-				+ " WHERE " + DbHandler.C_DRIVER_NAME + " LIKE " + " '%" + filter
-				+ "%'" + " ORDER BY " + DbHandler.C_DRIVER_NAME + " ASC";
+		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_DRIVERS + " WHERE "
+				+ DbHandler.C_DRIVER_NAME + " LIKE " + " '%" + filter + "%'" + " ORDER BY "
+				+ DbHandler.C_DRIVER_NAME + " ASC";
 
-		SQLiteCursorLoader loader = new SQLiteCursorLoader(
-				getApplicationContext(),
+		SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
 				DbHandler.getInstance(getApplicationContext()), rawQuery, null);
 
 		return loader;
@@ -160,8 +169,10 @@ public class DriverListActivity extends ListActivity implements
 	/**
 	 * Update the UI based on the results of your query.
 	 */
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (cursor != null && cursor.getCount() > 0) {
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+	{
+		if (cursor != null && cursor.getCount() > 0)
+		{
 
 			cursor.moveToFirst();
 
@@ -170,10 +181,11 @@ public class DriverListActivity extends ListActivity implements
 			 * fronting this adapter to re-display
 			 */
 
-			cursor_adapter = new SimpleCursorAdapter(this,
-					R.layout.row_driverlist, cursor, FROM, TO, 0);
+			cursor_adapter = new SimpleCursorAdapter(this, R.layout.row_driverlist, cursor, FROM,
+					TO, 0);
 
-			if (cursor_adapter != null) {
+			if (cursor_adapter != null)
+			{
 				holder.list.setAdapter(cursor_adapter);
 				cursor_adapter.changeCursor(cursor);
 			}
@@ -186,43 +198,49 @@ public class DriverListActivity extends ListActivity implements
 	 * hold to null. But do not close the cursor – the Loader does this for you.
 	 */
 	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
+	public void onLoaderReset(Loader<Cursor> loader)
+	{
 		/*
 		 * * Clears out the adapter's reference to the Cursor. This prevents
 		 * memory leaks.
 		 */
-		if (cursor_adapter != null) {
+		if (cursor_adapter != null)
+		{
 			cursor_adapter.changeCursor(null);
 		}
 	}
 
-	public void initViewHolder() {
+	public void initViewHolder()
+	{
 
-		if (root_view == null) {
+		if (root_view == null)
+		{
 
-			root_view = this.getWindow().getDecorView()
-					.findViewById(android.R.id.content);
+			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-			if (holder == null) {
+			if (holder == null)
+			{
 				holder = new ViewHolder();
 			}
 
 			holder.list = getListView();
-			holder.button_cancel = (Button) root_view
-					.findViewById(R.id.button_driverlist_cancel);
-			holder.search_view = (SearchView) root_view
-					.findViewById(R.id.searchView_driverlist);
+			holder.button_cancel = (Button) root_view.findViewById(R.id.button_driverlist_cancel);
+			holder.search_view = (SearchView) root_view.findViewById(R.id.searchView_driverlist);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
-		} else {
+		}
+		else
+		{
 			holder = (ViewHolder) root_view.getTag();
 
-			if ((root_view.getParent() != null)
-					&& (root_view.getParent() instanceof ViewGroup)) {
+			if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
+			{
 				((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-			} else {
+			}
+			else
+			{
 			}
 		}
 	}
@@ -231,20 +249,25 @@ public class DriverListActivity extends ListActivity implements
 	 * Creates static instances of resources. Increases performance by only
 	 * finding and inflating resources only once.
 	 **/
-	static class ViewHolder {
+	static class ViewHolder
+	{
 		Button button_cancel;
 		ListView list;
 		SearchView search_view;
 	}
 
 	@Override
-	public boolean onQueryTextChange(String newText) {
+	public boolean onQueryTextChange(String newText)
+	{
 		// TODO Auto-generated method stub
-		if (TextUtils.isEmpty(newText)) {
+		if (TextUtils.isEmpty(newText))
+		{
 			holder.list.clearTextFilter();
 			filter = "";
 			getLoaderManager().restartLoader(URL_LOADER, null, this);
-		} else {
+		}
+		else
+		{
 			holder.list.setFilterText(newText);
 			filter = newText;
 			getLoaderManager().restartLoader(URL_LOADER, null, this);
@@ -256,17 +279,18 @@ public class DriverListActivity extends ListActivity implements
 	 * When the user presses the 'Search' button
 	 */
 	@Override
-	public boolean onQueryTextSubmit(String query) {
+	public boolean onQueryTextSubmit(String query)
+	{
 		// TODO Auto-generated method stub
 		hideSoftKeyboard(this);
 		return false;
 	}
 
-	public static void hideSoftKeyboard(Activity activity) {
+	public static void hideSoftKeyboard(Activity activity)
+	{
 		InputMethodManager inputMethodManager = (InputMethodManager) activity
 				.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus()
-				.getWindowToken(), 0);
+		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
 	}
 
 }

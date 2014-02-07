@@ -789,6 +789,74 @@ public class ServerInterface
 		}
 	}
 
+	public static void downloadFailedDeliveryReasons(Context context)
+	{
+		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?mrdToken="
+				+ VariableManager.token;
+
+		Log.i(TAG, "Fetching " + url);
+
+		try
+		{
+			String response = getInputStreamFromUrl(url, null, null);
+
+			JSONObject jObject = new JSONObject(response);
+
+			JSONArray result = jObject.getJSONArray("response");
+
+			ContentValues values;
+
+			if (result != null)
+			{
+				// Stores waybill IDs as they are loaded.
+				// Used to count the number of occurences
+				// For counting multiple packages.
+				// Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+
+				for (int i = 0; i < result.length(); i++)
+				{
+					try
+					{
+						values = new ContentValues();
+
+						// ID
+						String reason_id = result.getJSONObject(i).getString("id");
+
+						// Reason
+						String reason_name = result.getJSONObject(i).getString("name");
+
+						DbHandler.getInstance(context).addRow(
+								DbHandler.TABLE_FAILED_HANDOVER_REASONS, values);
+					}
+					catch (NumberFormatException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						if (VariableManager.DEBUG)
+						{
+							displayToast("JSONException: milkruns/handover");
+						}
+					}
+				}
+			}
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: milkruns/handover");
+			}
+		}
+	}
+
 	/**
 	 * Perform HTTP GET request.
 	 * 
@@ -889,6 +957,20 @@ public class ServerInterface
 		return postData("http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bagid
 				+ "&driverid=" + driverid + "&mrdToken=" + VariableManager.token + "&delayid="
 				+ delayid);
+	}
+
+	/**
+	 * Post failed handover to API.
+	 * 
+	 * @param bag_id
+	 * @param reason_id
+	 *            IDs acquired from /milkrun/handover
+	 * @return
+	 */
+	public static String postFailedHandover(String bag_id, String reason_id)
+	{
+		return postData("http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bag_id
+				+ "&handoverid=" + reason_id + "&mrdToken=" + VariableManager.token);
 	}
 
 	/**

@@ -51,9 +51,8 @@ public class UpdateStatusDialog extends DialogFragment
 		super.onCreate(savedInstanceState);
 
 		temp = new ArrayList<DialogDataObject>();
-		temp.add(new DialogDataObject("Process successful handover", ""));
-		temp.add(new DialogDataObject("Process failed handover", ""));
-
+		temp.add(new DialogDataObject(getString(R.string.text_process_handover_successful), ""));
+		temp.add(new DialogDataObject(getString(R.string.text_process_handover_failed), ""));
 	}
 
 	@Override
@@ -88,6 +87,7 @@ public class UpdateStatusDialog extends DialogFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
+				// Successful
 				if (position == 0)
 				{
 					Intent intent = new Intent(getActivity(),
@@ -95,13 +95,15 @@ public class UpdateStatusDialog extends DialogFragment
 					startActivity(intent);
 					dismiss();
 				}
+				// Failed
 				if (position == 1)
 				{
-					//Intent intent = new Intent(getActivity(), TransferDataActivity.class);
-					//startActivity(intent);
-					//TODO:
-					//Intent intent = new Intent(getActivity(), DeliveryHandoverFragmentActivity.class);
-					//startActivity(intent);
+					// Intent intent = new Intent(getActivity(), TransferDataActivity.class);
+					// startActivity(intent);
+					// TODO:
+					// Intent intent = new Intent(getActivity(),
+					// DeliveryHandoverFragmentActivity.class);
+					// startActivity(intent);
 					dismiss();
 				}
 			}

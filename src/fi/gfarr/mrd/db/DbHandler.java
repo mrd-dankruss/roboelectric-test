@@ -34,6 +34,7 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String TABLE_CONTACTS = "Contacts";
 
 	public static final String TABLE_DELAYS = "Delays";
+	public static final String TABLE_FAILED_HANDOVER_REASONS = "FailedHandoverReasons";
 
 	// ------------ Fields - Drivers ---------
 	public static final String C_DRIVER_ID = "_id"; // Primary key
@@ -133,6 +134,10 @@ public class DbHandler extends SQLiteOpenHelper
 	// X of whatever
 	public static final String C_wAYBILL_PARCEL_SEQUENCE = "waybill_parcel_seq";
 
+	// ------------ Fields - Failed handover reasons -------------
+	public static final String C_FAILED_HANDOVER_REASONS_ID = "failed_handover_reasons_id";
+	public static final String C_FAILED_HANDOVER_REASONS_NAME = "failed_handover_reasons_name";
+
 	public DbHandler(Context context)
 	{
 		super(context, DB_NAME, null, DB_VERSION);
@@ -200,6 +205,11 @@ public class DbHandler extends SQLiteOpenHelper
 					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_DELAYS, CREATE_TABLE_CONTACTS);
 
+			final String CREATE_TABLE_FAILED_HANDOVER_REASONS = "CREATE TABLE "
+					+ TABLE_FAILED_HANDOVER_REASONS + "(" + C_FAILED_HANDOVER_REASONS_ID
+					+ " INTEGER PRIMARY KEY," + C_FAILED_HANDOVER_REASONS_NAME + " TEXT)";
+			createTable(db, TABLE_FAILED_HANDOVER_REASONS, CREATE_TABLE_FAILED_HANDOVER_REASONS);
+
 			db.setTransactionSuccessful();
 		}
 		catch (SQLiteException e)
@@ -207,7 +217,7 @@ public class DbHandler extends SQLiteOpenHelper
 			// block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, DbHandler.class.getName() + " - Error creating table: " + sw.toString());
+			Log.e(TAG, DbHandler.class.getName() + " - Error creating table: " + sw.toString());
 		}
 		finally
 		{
@@ -225,7 +235,7 @@ public class DbHandler extends SQLiteOpenHelper
 	private void createTable(SQLiteDatabase db, String table, String raw_query)
 	{
 		db.execSQL(raw_query);
-		Log.d(TAG, "created SQL table: " + table);
+		Log.e(TAG, "created SQL table: " + table);
 	}
 
 	@Override
@@ -238,6 +248,7 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELAYS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAILED_HANDOVER_REASONS);
 		onCreate(db);
 	}
 
@@ -342,9 +353,6 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_WAYBILL_WEIGHT, item.getWeight());
 		values.put(C_WAYBILL_BAG_ID, item.getBagNumber()); // FK
 
-		Log.d(TAG, values.getAsString(C_WAYBILL_DIMEN));
-		Log.d(TAG, item.getDimensions());
-
 		return addRow(TABLE_WAYBILLS, values);
 	}
 
@@ -428,13 +436,13 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 		finally
 		{
@@ -474,13 +482,13 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 		finally
 		{
@@ -577,7 +585,7 @@ public class DbHandler extends SQLiteOpenHelper
 					bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
 							.getColumnIndex(C_BAG_NUM_ITEMS))));
 					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
-					Log.d(TAG, bag.getBagNumber());
+
 					bags.add(bag);
 					cursor.moveToNext();
 				}
@@ -668,13 +676,13 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 		}
 		finally
 		{
@@ -783,7 +791,6 @@ public class DbHandler extends SQLiteOpenHelper
 		cursor.moveToFirst();
 		String bagid = cursor.getString(cursor.getColumnIndex(C_BAG_ID));
 		cursor.close();
-		Log.d(TAG, "getBagIdAtRow(): " + bagid);
 		return bagid;
 	}
 
@@ -809,7 +816,7 @@ public class DbHandler extends SQLiteOpenHelper
 			{
 				while (!cursor.isAfterLast())
 				{
-					// Log.d(TAG, "Not scanned: " +
+
 					// cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
 
 					// concat string of bag numbers with newline to be displayed in list format
@@ -824,14 +831,14 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return list;
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return list;
 		}
 		finally
@@ -892,7 +899,6 @@ public class DbHandler extends SQLiteOpenHelper
 					bag.setDestinationSuburb(cursor.getString(cursor
 							.getColumnIndex(C_BAG_DEST_SUBURB)));
 					bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
-					Log.d(TAG, bag.getDestinationHubName());
 					list.add(bag);
 					cursor.moveToNext();
 				}
@@ -904,14 +910,14 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return list;
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return list;
 		}
 		finally
@@ -965,8 +971,6 @@ public class DbHandler extends SQLiteOpenHelper
 					bag.put(VariableManager.EXTRA_BAG_LAT, lat);
 					bag.put(VariableManager.EXTRA_BAG_LON, lon);
 
-					Log.d(TAG, hubname + " " + lat + "," + lon);
-
 					bags.add(bag);
 					cursor.moveToNext();
 				}
@@ -978,14 +982,141 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return null;
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns list of reasons for milkrun delay
+	 * 
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getFailedHandoverReasons()
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<DialogDataObject> reasons = null;
+			String sql = "SELECT * FROM " + TABLE_FAILED_HANDOVER_REASONS;
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				reasons = new ArrayList<DialogDataObject>();
+
+				while (!cursor.isAfterLast())
+				{
+					String reason_name = cursor.getString(cursor
+							.getColumnIndex(C_FAILED_HANDOVER_REASONS_NAME));
+					String reason_id = cursor.getString(cursor
+							.getColumnIndex(C_FAILED_HANDOVER_REASONS_ID));
+
+					DialogDataObject dialog_data_object = new DialogDataObject(reason_name,
+							reason_id);
+
+					reasons.add(dialog_data_object);
+
+					cursor.moveToNext();
+				}
+			}
+
+			return reasons;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Return durations of delay reason
+	 * 
+	 * @param reason_id
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<DialogDataObject> delays = null;
+			String sql = "SELECT * FROM " + TABLE_DELAYS + " WHERE " + C_DELAYS_ID + " LIKE '"
+					+ reason_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				delays = new ArrayList<DialogDataObject>();
+
+				while (!cursor.isAfterLast())
+				{
+					String duration = cursor.getString(cursor.getColumnIndex(C_DELAYS_DURATION));
+
+					delays.add(new DialogDataObject(duration, ""));
+
+					cursor.moveToNext();
+				}
+			}
+
+			return delays;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
 			return null;
 		}
 		finally
@@ -1041,76 +1172,14 @@ public class DbHandler extends SQLiteOpenHelper
 		{ // TODO Auto-generated catch
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return null;
 		}
 		catch (IllegalStateException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
-			return null;
-		}
-		finally
-		{
-
-			if (db != null)
-			{
-				if (db.isOpen()) // check if db is already open
-				{
-					db.close(); // close db
-				}
-			}
-		}
-	}
-
-	/**
-	 * Return durations of delay reason
-	 * 
-	 * @param reason_id
-	 * @return
-	 */
-	public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
-	{
-		SQLiteDatabase db = null;
-		try
-		{
-
-			db = this.getReadableDatabase(); // Open db
-
-			ArrayList<DialogDataObject> delays = null;
-			String sql = "SELECT * FROM " + TABLE_DELAYS + " WHERE " + C_DELAYS_ID + " LIKE '"
-					+ reason_id + "'";
-			Cursor cursor = db.rawQuery(sql, null);
-
-			if (cursor != null && cursor.moveToFirst())
-			{
-				delays = new ArrayList<DialogDataObject>();
-
-				while (!cursor.isAfterLast())
-				{
-					String duration = cursor.getString(cursor.getColumnIndex(C_DELAYS_DURATION));
-
-					delays.add(new DialogDataObject(duration, ""));
-
-					cursor.moveToNext();
-				}
-			}
-
-			return delays;
-		}
-		catch (SQLiteException e)
-		{ // TODO Auto-generated catch
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
-			return null;
-		}
-		catch (IllegalStateException e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.d(TAG, sw.toString());
+			Log.e(TAG, sw.toString());
 			return null;
 		}
 		finally
