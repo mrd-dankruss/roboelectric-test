@@ -139,9 +139,6 @@ public class ReportDelayListFragment extends Fragment
 		protected String doInBackground(String... args)
 		{
 			return ServerInterface.postDelay(args[0], args[1], args[2]);
-
-			// Log.i(TAG, "Token aquired.");
-
 		}
 
 		@Override
@@ -153,12 +150,12 @@ public class ReportDelayListFragment extends Fragment
 				dialog.dismiss();
 			}
 			Log.i(TAG, result);
-			// CustomToast toast = new CustomToast(this, )
 			VariableManager.delay_id = null;
-			CustomToast blah = new CustomToast(getActivity());
-			blah.setText("Success");
-			blah.setSuccess(true);
-			blah.show();
+			
+			CustomToast custom_toast = new CustomToast(getActivity());
+			custom_toast.setText("Success");
+			custom_toast.setSuccess(true);
+			custom_toast.show();
 			getActivity().finish();
 		}
 	}
