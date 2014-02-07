@@ -201,9 +201,9 @@ public class DbHandler extends SQLiteOpenHelper
 
 			final String CREATE_TABLE_CONTACTS = "CREATE TABLE " + TABLE_CONTACTS + "("
 					+ C_CONTACTS_ID + " INTEGER PRIMARY KEY," + C_CONTACTS_NAME + " TEXT,"
-					+ C_CONTACTS_NUMBER + " INTEGER," + "FOREIGN KEY(" + C_CONTACTS_BAG_ID
-					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
-			createTable(db, TABLE_DELAYS, CREATE_TABLE_CONTACTS);
+					+ C_CONTACTS_BAG_ID + " TEXT," + C_CONTACTS_NUMBER + " TEXT," + "FOREIGN KEY("
+					+ C_CONTACTS_BAG_ID + ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
+			createTable(db, TABLE_CONTACTS, CREATE_TABLE_CONTACTS);
 
 			final String CREATE_TABLE_FAILED_HANDOVER_REASONS = "CREATE TABLE "
 					+ TABLE_FAILED_HANDOVER_REASONS + "(" + C_FAILED_HANDOVER_REASONS_ID
@@ -295,6 +295,10 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_CONTACTS_NAME, name);
 		values.put(C_CONTACTS_NUMBER, number);
 		values.put(C_CONTACTS_BAG_ID, bagid);
+		
+		Log.d("Contacts", "Name: " + name);
+		Log.d("Contacts", "Name: " + number);
+		Log.d("Contacts", "Name: " + bagid);
 
 		return addRow(TABLE_CONTACTS, values);
 	}
@@ -714,7 +718,7 @@ public class DbHandler extends SQLiteOpenHelper
 			db = this.getReadableDatabase(); // Open db
 
 			// ArrayList<Bag> bags = null;
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_ID + " LIKE '" + bag_id
+			String sql = "SELECT * FROM " + TABLE_CONTACTS + " WHERE " + C_BAG_ID + " LIKE '" + bag_id
 					+ "'";
 			Cursor cursor = db.rawQuery(sql, null);
 
@@ -726,6 +730,9 @@ public class DbHandler extends SQLiteOpenHelper
 				{
 					DialogDataObject contact = new DialogDataObject();
 
+					Log.d("getContacts", "getColumnIndex.Name: " + cursor.getColumnIndex(C_CONTACTS_NAME));
+					Log.d("getContacts", "getColumnIndex.Contact: " + cursor);
+					
 					contact.setMainText(cursor.getString(cursor.getColumnIndex(C_CONTACTS_NAME)));
 
 					contact.setSubText(cursor.getString(cursor.getColumnIndex(C_CONTACTS_NUMBER)));
@@ -1196,6 +1203,22 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * Return list of people to be SMSed. Hardcoded for now.
+	 * 
+	 * @return
+	 */
+	public ArrayList<DialogDataObject> getSMSContactPeople()
+	{
+		ArrayList<DialogDataObject> msgs = new ArrayList<DialogDataObject>();
+
+		msgs.add(new DialogDataObject("Branch", ""));
+		msgs.add(new DialogDataObject("Call Centre", ""));
+		msgs.add(new DialogDataObject("Chief Operating Officer", ""));
+
+		return msgs;
+	}
+
+	/**
 	 * Return list of predefined message to be SMSed. Hardcoded for now.
 	 * 
 	 * @return
@@ -1204,11 +1227,11 @@ public class DbHandler extends SQLiteOpenHelper
 	{
 		ArrayList<DialogDataObject> msgs = new ArrayList<DialogDataObject>();
 
-		msgs.add(new DialogDataObject("Hijack", ""));
-		msgs.add(new DialogDataObject("Accident", ""));
-		msgs.add(new DialogDataObject("IED", ""));
-		msgs.add(new DialogDataObject("RPG", ""));
-		msgs.add(new DialogDataObject("Ambush", ""));
+		msgs.add(new DialogDataObject("HIJACK", "HIJACK"));
+		msgs.add(new DialogDataObject("Accident", "Accident"));
+		msgs.add(new DialogDataObject("IED", "IED"));
+		msgs.add(new DialogDataObject("RPG", "RPG"));
+		msgs.add(new DialogDataObject("Ambush", "Ambush"));
 
 		return msgs;
 	}

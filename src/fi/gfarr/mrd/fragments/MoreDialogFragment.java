@@ -119,6 +119,8 @@ public class MoreDialogFragment extends DialogFragment
 						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 				startActivity(intent);
+				
+				dismiss();
 				// TODO: View Map button
 			}
 		});
@@ -140,15 +142,8 @@ public class MoreDialogFragment extends DialogFragment
 				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 
 				startActivity(intent);
-				/*
-				Fragment fragment = new ReportDelayListFragment();
-				FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-				ft.replace(R.id.realtabcontent, fragment);
-				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-				ft.addToBackStack(null);
-				ft.commit();
+				
 				dismiss();
-				*/
 			}
 		});
 
@@ -160,6 +155,8 @@ public class MoreDialogFragment extends DialogFragment
 				Intent intent = new Intent(getActivity(), CallActivity.class);
 				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 				startActivity(intent);
+				
+				dismiss();
 			}
 		});
 
@@ -170,6 +167,8 @@ public class MoreDialogFragment extends DialogFragment
 			{
 				Intent intent = new Intent(getActivity(), SmsActivity.class);
 				startActivity(intent);
+				
+				dismiss();
 			}
 		});
 

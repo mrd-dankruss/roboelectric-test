@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class SMSDialog extends DialogFragment
 {
@@ -54,12 +56,7 @@ public class SMSDialog extends DialogFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		durations = new ArrayList<DialogDataObject>();
-		durations.add(new DialogDataObject("5 min", "5 min"));
-		durations.add(new DialogDataObject("10 min", "10 min"));
-		durations.add(new DialogDataObject("20 min", "20 min"));
-		durations.add(new DialogDataObject("30 min", "30 min"));
-		durations.add(new DialogDataObject("1 hour", "1 hour"));
+		durations = DbHandler.getInstance(getActivity()).getSMSMessages();
 
 	}
 
@@ -95,10 +92,16 @@ public class SMSDialog extends DialogFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
+				Log.d("fi.gfarr.mrd", "getTargetRequestCode: " + getTargetRequestCode());
+				Log.d("fi.gfarr.mrd", "getTargetFragment: " + getTargetFragment());
+				
+				
+				
 				getActivity().getIntent().putExtra(DIALOG_TIME_STRING,
 						((DialogDataObject) adapter.getItem(position)).getMainText());
-				// getActivity().getIntent().putExtra(DIALOG_TIME_STRING, "string we hardcode");
 				getActivity().getIntent().putExtra(DIALOG_ITEM_POS, position);
+				getActivity().getIntent().putExtra(VariableManager.EXTRA_DELAY_ID, bag_id);
+				
 				getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK,
 						getActivity().getIntent());
 				dismiss();
