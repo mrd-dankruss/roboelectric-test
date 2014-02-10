@@ -562,7 +562,7 @@ public class ServerInterface
 						Log.d(TAG, "Contact " + name + " added: "
 								+ DbHandler.getInstance(context).addContact(name, number, id));
 					}
-					
+
 					// --- Waybills ---
 
 					JSONArray waybills = result.getJSONArray("waybills");
@@ -826,6 +826,9 @@ public class ServerInterface
 
 						// Reason
 						String reason_name = result.getJSONObject(i).getString("name");
+
+						values.put(DbHandler.C_FAILED_HANDOVER_REASONS_ID, reason_id);
+						values.put(DbHandler.C_FAILED_HANDOVER_REASONS_NAME, reason_name);
 
 						DbHandler.getInstance(context).addRow(
 								DbHandler.TABLE_FAILED_HANDOVER_REASONS, values);
