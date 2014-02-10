@@ -30,16 +30,16 @@
             android:textStyle="bold" />
     </FrameLayout>
 
-    
-
-        <SearchView
+        <AutoCompleteTextView
             android:id="@+id/searchView_map"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/height_pin"
             android:background="@color/colour_white"
-            android:ems="10" >
+            android:ems="10"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:textColor="@color/grey" >
 
-        </SearchView>
+        </AutoCompleteTextView>
         
         <RelativeLayout
         android:id="@+id/toast_map"

@@ -1,13 +1,21 @@
 package fi.gfarr.mrd;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -24,23 +32,29 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import fi.gfarr.mrd.adapters.PlacesAutoCompleteAdapter;
+import fi.gfarr.mrd.datatype.MapPlacesItem;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.widget.Toaster;
@@ -57,6 +71,12 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private LatLng lat_long;
 	private LatLng selected_marker_lat_long;
 	private MarkerOptions marker_options;
+
+	private ArrayList<MapPlacesItem> resultList;
+	private static final String API_KEY = "AIzaSyAG4j23urq6PDPP3MSo_CjjEdTzMJJ3M_Y";
+	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+	private static final String TYPE_DETAILS = "/details";
+	private static final String OUT_JSON = "/json";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -104,6 +124,30 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				}
 			});
 
+			holder.autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this,
+					R.layout.list_map_item));
+
+			holder.autoCompView.setOnItemClickListener(new OnItemClickListener()
+			{
+				@Override
+				public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+				{
+					String list_string = ((MapPlacesItem) holder.autoCompView.getAdapter().getItem(
+							position)).getLocationName();
+					String list_reference = ((MapPlacesItem) holder.autoCompView.getAdapter()
+							.getItem(position)).getLocationReference();
+
+					Toast.makeText(getApplicationContext(), list_string, Toast.LENGTH_SHORT).show();
+					holder.autoCompView.setText(list_string.replaceAll("\n", ", "));
+
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(holder.autoCompView.getWindowToken(), 0);
+
+					new AddPlaceMarkerTask().execute(list_string, list_reference);
+
+				}
+			});
+
 		}
 		catch (NullPointerException e)
 		{
@@ -139,7 +183,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					// Map point based on address
 					/*Uri location = Uri.parse("geo:" + marker_lat + "," + marker_lon + "?z="
 							+ zoom_level);*/
-					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "Here"
+					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "(Here)"
 							+ "&z=" + zoom_level);
 					// Or map point based on latitude/longitude
 					// Uri location = Uri.parse("geo:37.422219,-122.08364?z=14"); // z param is zoom
@@ -201,16 +245,16 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private void setupSearchView()
 	{
 		// Start screen with keyboard initially hidden
-		holder.search_view.setIconifiedByDefault(true);
+		// holder.search_view.setIconifiedByDefault(true);
 
 		// Listen for text entered in the search field
-		holder.search_view.setOnQueryTextListener(this);
+		// holder.search_view.setOnQueryTextListener(this);
 
 		// Remove the silly 'play' button n searchView
-		holder.search_view.setSubmitButtonEnabled(false);
+		// holder.search_view.setSubmitButtonEnabled(false);
 
 		// Text to display when no query is entered
-		holder.search_view.setQueryHint(getString(R.string.text_search_hint));
+		// holder.search_view.setQueryHint(getString(R.string.text_search_hint));
 	}
 
 	/**
@@ -242,7 +286,9 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				holder = new ViewHolder();
 			}
 
-			holder.search_view = (SearchView) root_view.findViewById(R.id.searchView_map);
+			// holder.search_view = (SearchView) root_view.findViewById(R.id.searchView_map);
+			holder.autoCompView = (AutoCompleteTextView) root_view
+					.findViewById(R.id.searchView_map);
 
 			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_map_toast);
 
@@ -271,7 +317,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	static class ViewHolder
 	{
 		MapFragment map_fragment;
-		SearchView search_view;
+		// SearchView search_view;
+		AutoCompleteTextView autoCompView;
 		TextView textView_toast;
 		RelativeLayout relativeLayout_toast;
 	}
@@ -396,5 +443,110 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		InputMethodManager inputMethodManager = (InputMethodManager) activity
 				.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+	}
+
+	private ArrayList<String> addPlaceMarker(String location_name, String location_reference)
+	{
+
+		HttpURLConnection conn = null;
+		StringBuilder jsonResults = new StringBuilder();
+		ArrayList<String> resultList = null;
+
+		try
+		{
+			StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_DETAILS + OUT_JSON);
+			sb.append("?sensor=true&key=" + API_KEY);
+			sb.append("&components=country:za");
+			sb.append("&reference=" + location_reference);
+
+			Log.d(TAG, "URL: " + sb.toString());
+
+			URL url = new URL(sb.toString());
+			conn = (HttpURLConnection) url.openConnection();
+			InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+			// Load the results into a StringBuilder
+			int read;
+			char[] buff = new char[1024];
+			while ((read = in.read(buff)) != -1)
+			{
+				jsonResults.append(buff, 0, read);
+			}
+		}
+		catch (MalformedURLException e)
+		{
+			Log.e(TAG, "Error processing Places API URL", e);
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG, "Error connecting to Places API", e);
+		}
+		finally
+		{
+			if (conn != null)
+			{
+				conn.disconnect();
+			}
+		}
+
+		try
+		{
+			// Create a JSON object hierarchy from the results
+			JSONObject jsonObj = new JSONObject(jsonResults.toString());
+			JSONObject predsJsonArray = jsonObj.getJSONObject("result").getJSONObject("geometry")
+					.getJSONObject("location");
+
+			resultList = new ArrayList<String>();
+
+			resultList.add(location_name);
+			resultList.add(location_reference);
+			resultList.add(predsJsonArray.get("lat").toString());
+			resultList.add(predsJsonArray.get("lng").toString());
+
+		}
+		catch (JSONException e)
+		{
+			Log.e(TAG, "Cannot process JSON results", e);
+		}
+
+		return resultList;
+	}
+
+	private class AddPlaceMarkerTask extends AsyncTask<String, Void, ArrayList<String>>
+	{
+
+		// private ProgressDialog dialog = new ProgressDialog(getApplication());
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			// this.dialog.setMessage("Adding location");
+			// this.dialog.show();
+		}
+
+		@Override
+		protected ArrayList<String> doInBackground(String... args)
+		{
+			return addPlaceMarker(args[0], args[1]);
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<String> result)
+		{
+			// String address = result.get(0);
+			String hubname = result.get(0);
+
+			double lat = Double.parseDouble(result.get(2));
+			double lon = Double.parseDouble(result.get(3));
+			LatLng location = new LatLng(lat, lon);
+
+			map.addMarker(new MarkerOptions().title(hubname).position(location));
+			
+			CameraPosition cameraPosition = new CameraPosition.Builder().target(location).zoom(12.0f).build();
+			CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+			map.moveCamera(cameraUpdate);  
+		}
 	}
 }

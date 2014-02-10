@@ -19,15 +19,15 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragment_view_deliveries_content);
+		setContentView(R.layout.activity_handover);
 
 		// Fragment: Home Begin
 		FragmentManager fm = getSupportFragmentManager();
-		fragment = fm.findFragmentById(R.id.fragment_viewDeliveries_container);
+		fragment = fm.findFragmentById(R.id.activity_handover_container);
 		if (fragment == null)
 		{
 			fragment = new DeliveryHandoverFragment();
-			fm.beginTransaction().add(R.id.fragment_viewDeliveries_container, fragment).commit();
+			fm.beginTransaction().add(R.id.activity_handover_container, fragment).commit();
 		}
 		// Fragment: Home End
 	}
