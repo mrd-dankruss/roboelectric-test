@@ -1,27 +1,42 @@
 package fi.gfarr.mrd.net;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import javax.net.ssl.SSLSocketFactory;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -965,6 +980,67 @@ public class ServerInterface
 	}
 
 	/**
+	 * POST a communication message to server.
+	 * 
+	 * @param message
+	 * @param bagid
+	 * @param type
+	 * @param result
+	 * @return
+	 */
+	public static String postMessage(String message, String number, String bagid, String type,
+			boolean result)
+	{
+		// Convert bool to String
+		String result_string = "false";
+		if (result)
+		{
+			result_string = "true";
+		}
+
+		// Make JSON notation
+		JSONObject comExtra = new JSONObject();
+		try
+		{
+			comExtra.put("message", message);
+			comExtra.put("number", number);
+		}
+		catch (JSONException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		/*return postData("http://paperlessapp.apiary.io/v1/waybill/communication?id=" + bagid
+				+ "&comType=" + type + "&mrdToken=" + VariableManager.token + "&comResult="
+				+ result_string + "&comExtra=" + comExtra.toString());*/
+
+		String status = null;
+
+		try
+		{
+			status = doJSONPOST(
+					"http://paperlessapp.apiary.io/v1/waybill/communication?id=" + bagid
+							+ "&comType=" + type + "&mrdToken=" + VariableManager.token
+							+ "&comResult=" + result_string, comExtra, 5000)
+					.getJSONObject("response").getJSONObject("waybill").getString("status");
+		}
+		catch (JSONException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e(TAG, e.toString());
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e(TAG, e.toString());
+		}
+		return status;
+	}
+
+	/**
 	 * Post failed handover to API.
 	 * 
 	 * @param bag_id
@@ -974,7 +1050,7 @@ public class ServerInterface
 	 */
 	public static String postFailedHandover(String bag_id, String reason_id)
 	{
-		return postData("http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bag_id
+		return postData("http://paperlessapp.apiary.io/v1/milkruns/handover?bagid=" + bag_id
 				+ "&handoverid=" + reason_id + "&mrdToken=" + VariableManager.token);
 	}
 
@@ -1003,7 +1079,6 @@ public class ServerInterface
 
 			// Execute HTTP Post Request
 			HttpResponse response = httpclient.execute(httppost);
-
 			HttpEntity entity = response.getEntity();
 
 			InputStream inputStream = entity.getContent();
@@ -1038,6 +1113,151 @@ public class ServerInterface
 			Log.e(TAG, sw.toString());
 			return "";
 			// TODO Auto-generated catch block
+		}
+	}
+
+	public static String convertInputStreamToString(InputStream is) throws Exception
+	{
+		BufferedReader rd = new BufferedReader(inputStreamToReader(new BufferedInputStream(is)),
+				4096);// Checks for BOM, should still work if BOM not present
+		String line;
+		StringBuilder sb = new StringBuilder();
+		try
+		{
+			while ((line = rd.readLine()) != null)
+			{
+				sb.append(line);
+			}
+			rd.close();
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}
+
+		return sb.toString();
+	}
+
+	// This can be used to setup a DefaultHttpClient to ignore certificate errors over https or
+	// connect to non default ports
+	public static DefaultHttpClient getNewHttpClient()
+	{
+		try
+		{
+			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+			trustStore.load(null, null);
+
+			MySSLSocketFactory sf = new MySSLSocketFactory(trustStore);
+			sf.setHostnameVerifier(MySSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+			HttpParams params = new BasicHttpParams();
+			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+
+			SchemeRegistry registry = new SchemeRegistry();
+			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+			registry.register(new Scheme("https", sf, 443));
+
+			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+
+			return new DefaultHttpClient(ccm, params);
+		}
+		catch (Exception e)
+		{
+			return new DefaultHttpClient();
+		}
+	}
+
+	public static JSONObject doJSONPOST(String url, JSONObject json, int timeout) throws Exception
+	{
+		Hashtable<String, String> temp_header_item;
+		JSONObject toreturn;
+		StringEntity temp_entity;
+		InputStream content = null;
+		int default_connection_timeout = 5000;
+
+		try
+		{
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost(url);
+
+			// Timeouts
+			HttpConnectionParams.setConnectionTimeout(httpclient.getParams(),
+					default_connection_timeout);// throws java.net.SocketTimeoutException : Socket
+												// is not connected
+			HttpConnectionParams.setSoTimeout(httpclient.getParams(), timeout);// throws
+																				// java.net.SocketTimeoutException
+																				// : The operation
+																				// timed out
+
+			temp_entity = new StringEntity(json.toString());
+			temp_entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+
+			httppost.setEntity(temp_entity);
+
+			// Execute HTTP Post Request
+			HttpResponse response = httpclient.execute(httppost);
+			content = response.getEntity().getContent();
+
+			temp_header_item = new Hashtable<String, String>();
+			for (int i = 0; i < response.getAllHeaders().length; i++)
+			{
+				temp_header_item = new Hashtable<String, String>();
+				temp_header_item.put(response.getAllHeaders()[i].getName().toLowerCase(),
+						response.getAllHeaders()[i].getValue());
+			}
+
+			toreturn = new JSONObject(convertInputStreamToString(content));
+
+			httpclient.getConnectionManager().shutdown();
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}
+
+		return toreturn;
+	}
+
+	/**
+	 * Check if BOM is present and use it to determine encoding
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public static Reader inputStreamToReader(BufferedInputStream in) throws IOException
+	{
+		in.mark(3);// Need to decorate InputStream with BufferedInputStream to enable mark and reset
+					// functionality
+		int byte1 = in.read();
+		int byte2 = in.read();
+
+		if (byte1 == 0xFF && byte2 == 0xFE)
+		{
+			Log.i("[HttpInterface]", "Stream has BOM and is encoded in UTF-16LE");
+			return new InputStreamReader(in, "UTF-16LE");
+		}
+		else if (byte1 == 0xFF && byte2 == 0xFF)
+		{
+			Log.i("[HttpInterface]", "Stream has BOM and is encoded in UTF-16BE");
+			return new InputStreamReader(in, "UTF-16BE");
+		}
+		else
+		{
+			int byte3 = in.read();
+			if (byte1 == 0xEF && byte2 == 0xBB && byte3 == 0xBF)
+			{
+				Log.i("[HttpInterface]", "Stream has BOM and is encoded in UTF-8");
+				return new InputStreamReader(in, "UTF-8");
+			}
+			else
+			{
+				Log.i("[HttpInterface]",
+						"Stream has no BOM falling back to ISO 8859_1 (ISO-Latin-1)");
+				in.reset();
+				return new InputStreamReader(in);
+			}
 		}
 	}
 

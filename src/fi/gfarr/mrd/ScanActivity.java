@@ -145,7 +145,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				// TODO Auto-generated method stub
 
 				// Check if all bags have been scanned
-				if (true) //XXX: DEBUG
+
+				if (true) // DEBUG
+				// if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() >
+				// 0))
 				{
 					// Go to View Deliveries screen
 					Intent intent = new Intent(getApplicationContext(),

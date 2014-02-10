@@ -123,6 +123,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 			// Make ID of current next bag global
 			bag_id = values.get(position).getBagNumber();
+			Log.d(TAG, "Bag ID: " + bag_id);
 
 			// Add leading zero
 			if (position < 10)

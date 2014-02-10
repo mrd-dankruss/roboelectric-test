@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
+import fi.gfarr.mrd.adapters.SmsDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
@@ -28,9 +29,10 @@ import fi.gfarr.mrd.widget.CustomToast;
 public class SmsListFragment extends Fragment
 {
 
+	private final String TAG = "SmsListFragment";
 	private ViewHolder holder;
 	private View rootView;
-	private GenericDialogListAdapter adapter;
+	private SmsDialogListAdapter adapter;
 
 	DialogFragment newFragment;
 	TextView subText;
@@ -50,8 +52,11 @@ public class SmsListFragment extends Fragment
 	{
 		super.onResume();
 
-		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getSMSContactPeople(), false);
+		adapter = new SmsDialogListAdapter(getActivity(),
+				DbHandler.getInstance(getActivity())
+						.getContacts(
+								getActivity().getIntent().getStringExtra(
+										VariableManager.EXTRA_NEXT_BAG_ID)), false);
 
 		holder.list.setAdapter(adapter);
 
@@ -62,19 +67,19 @@ public class SmsListFragment extends Fragment
 			{
 				parentItemPosition = position; // (Integer) adapter.getItem(position);
 
-				String delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position))
-						.getThirdText();
+				String sms_message = ((DialogDataObject) holder.list.getItemAtPosition(position))
+						.getSubText();
+
+				// Log.d(TAG, "Bag ID: " + bag_id);
 
 				FragmentManager fm = getActivity().getSupportFragmentManager();
-				SMSDialog editNameDialog = SMSDialog.newInstance(delay_id);
-				editNameDialog
-						.setTargetFragment(
-								getFragmentManager().findFragmentById(
-										R.id.activity_sms_container), 1);
+				SMSDialog editNameDialog = SMSDialog.newInstance();
+				editNameDialog.setTargetFragment(
+						getFragmentManager().findFragmentById(R.id.activity_sms_container), 1);
 				editNameDialog.show(fm, "SMSFragment");
 			}
 		});
-		
+
 		holder.report_button.setOnClickListener(new View.OnClickListener()
 		{
 
@@ -83,13 +88,15 @@ public class SmsListFragment extends Fragment
 			{
 				// TODO Auto-generated method stub
 				// Only perform action if there is a selection made
-				if (VariableManager.delay_id != null)
+
+				for (int i = 0; i < adapter.getCount(); i++)
 				{
 					new SendSMSTask().execute(
+							((DialogDataObject) adapter.getItem(parentItemPosition)).getThirdText(),
+							((DialogDataObject) adapter.getItem(parentItemPosition)).getSubText(),
 							getActivity().getIntent().getStringExtra(
-									VariableManager.EXTRA_NEXT_BAG_ID), getActivity().getIntent()
-									.getStringExtra(VariableManager.EXTRA_DRIVER_ID),
-							VariableManager.delay_id);
+									VariableManager.EXTRA_NEXT_BAG_ID), "SMS", "true");
+
 				}
 			}
 		});
@@ -100,11 +107,10 @@ public class SmsListFragment extends Fragment
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		
-		((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(data
-				.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
+		((DialogDataObject) adapter.getItem(parentItemPosition)).setThirdText(data
+				.getStringExtra(SMSDialog.DIALOG_TIME_STRING));
 
-		VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
+		// VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
 
 		// holder.report_button.setVisibility(View.VISIBLE);
 		holder.report_button.setBackgroundResource(R.drawable.button_custom);
@@ -123,14 +129,21 @@ public class SmsListFragment extends Fragment
 		@Override
 		protected void onPreExecute()
 		{
-			this.dialog.setMessage("Submitting delay report");
+			this.dialog.setMessage("Sending SMS");
 			this.dialog.show();
 		}
 
 		@Override
 		protected String doInBackground(String... args)
 		{
-			return ServerInterface.postDelay(args[0], args[1], args[2]);
+			boolean result = false;
+			if (args[4].equals("true"))
+			{
+				result = true;
+			}
+
+			return ServerInterface.postMessage(args[0], args[1], args[2], args[3], result);
+			// return ""; // DEBUG
 		}
 
 		@Override
@@ -141,9 +154,9 @@ public class SmsListFragment extends Fragment
 			{
 				dialog.dismiss();
 			}
-			
+
 			VariableManager.delay_id = null;
-			
+
 			CustomToast custom_toast = new CustomToast(getActivity());
 			custom_toast.setText("Success");
 			custom_toast.setSuccess(true);
@@ -151,7 +164,7 @@ public class SmsListFragment extends Fragment
 			getActivity().finish();
 		}
 	}
-	
+
 	/*
 	public void sendMessage()
 	{

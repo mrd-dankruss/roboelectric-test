@@ -53,11 +53,11 @@ public class DialogDataObject
 	}
 
 	/**
-	 * @param delay_id
+	 * @param thirdtext
 	 *            the delay_id to set
 	 */
-	public void setThirdText(String delay_id)
+	public void setThirdText(String thirdtext)
 	{
-		this.third_text = delay_id;
+		this.third_text = thirdtext;
 	}
 }

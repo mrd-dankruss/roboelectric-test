@@ -3,6 +3,7 @@ package fi.gfarr.mrd.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import fi.gfarr.mrd.helper.VariableManager;
 public class MoreDialogFragment extends DialogFragment
 {
 
+	private final String TAG = "MoreDialogFragment";
 	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
 	private boolean isExtendedDialaog;
 	private static String bagid;
@@ -119,7 +121,7 @@ public class MoreDialogFragment extends DialogFragment
 						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 				startActivity(intent);
-				
+
 				dismiss();
 				// TODO: View Map button
 			}
@@ -142,7 +144,7 @@ public class MoreDialogFragment extends DialogFragment
 				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 
 				startActivity(intent);
-				
+
 				dismiss();
 			}
 		});
@@ -155,7 +157,7 @@ public class MoreDialogFragment extends DialogFragment
 				Intent intent = new Intent(getActivity(), CallActivity.class);
 				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 				startActivity(intent);
-				
+
 				dismiss();
 			}
 		});
@@ -166,8 +168,10 @@ public class MoreDialogFragment extends DialogFragment
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getActivity(), SmsActivity.class);
+				Log.d(TAG, "Next bag ID - clickListener: " + bagid);
+				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 				startActivity(intent);
-				
+
 				dismiss();
 			}
 		});

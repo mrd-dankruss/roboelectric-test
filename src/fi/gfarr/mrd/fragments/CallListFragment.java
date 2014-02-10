@@ -63,7 +63,7 @@ public class CallListFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				parentItemPosition = (Integer) adapter.getItem(position);
+				parentItemPosition = position;// (Integer) adapter.getItem(position);
 				Intent intent = new Intent(Intent.ACTION_CALL);
 
 				String phone_number = ((DialogDataObject) adapter.getItem(position)).getSubText();
