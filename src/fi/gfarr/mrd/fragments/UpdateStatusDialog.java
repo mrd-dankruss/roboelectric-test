@@ -98,6 +98,7 @@ public class UpdateStatusDialog extends DialogFragment
 				// Failed
 				if (position == 1)
 				{
+					
 					// Intent intent = new Intent(getActivity(), TransferDataActivity.class);
 					// startActivity(intent);
 					// TODO:

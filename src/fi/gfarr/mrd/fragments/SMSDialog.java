@@ -24,20 +24,17 @@ public class SMSDialog extends DialogFragment
 {
 	private int mNum;
 	public static String DIALOG_TIME_STRING = "DIALOG_TIME_STRING";
+	public static String DIALOG_MESSAGE = "DIALOG_MESSAGE";
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
-	private ArrayList<DialogDataObject> durations;
-
-	// ID of delay reason passed from previous screen
-	private static String bag_id;
 
 	/**
 	 * Create a new instance of MyDialogFragment, providing "num"
 	 * as an argument.
 	 * 
-	 * @param bag_id
-	 *            ID of delay reason passed from calling activity.
+	 * @param bagid
+	 *            ID of bag passed from calling activity.
 	 */
-	public static SMSDialog newInstance(String delay_reason_id)
+	public static SMSDialog newInstance()
 	{
 		SMSDialog f = new SMSDialog();
 
@@ -46,8 +43,6 @@ public class SMSDialog extends DialogFragment
 		args.putInt("num", num);
 		f.setArguments(args);*/
 
-		bag_id = delay_reason_id;
-
 		return f;
 	}
 
@@ -55,9 +50,6 @@ public class SMSDialog extends DialogFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		durations = DbHandler.getInstance(getActivity()).getSMSMessages();
-
 	}
 
 	@Override
@@ -92,16 +84,16 @@ public class SMSDialog extends DialogFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				Log.d("fi.gfarr.mrd", "getTargetRequestCode: " + getTargetRequestCode());
-				Log.d("fi.gfarr.mrd", "getTargetFragment: " + getTargetFragment());
-				
-				
-				
+				// Log.d("fi.gfarr.mrd", "getTargetRequestCode: " + getTargetRequestCode());
+				// Log.d("fi.gfarr.mrd", "getTargetFragment: " + getTargetFragment());
+
 				getActivity().getIntent().putExtra(DIALOG_TIME_STRING,
-						((DialogDataObject) adapter.getItem(position)).getMainText());
+						((DialogDataObject) adapter.getItem(position)).getSubText());
+				getActivity().getIntent().putExtra(DIALOG_MESSAGE,
+						((DialogDataObject) adapter.getItem(position)).getThirdText());
 				getActivity().getIntent().putExtra(DIALOG_ITEM_POS, position);
-				getActivity().getIntent().putExtra(VariableManager.EXTRA_DELAY_ID, bag_id);
-				
+				// getActivity().getIntent().putExtra(VariableManager.EXTRA_DELAY_ID, bag_id);
+
 				getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK,
 						getActivity().getIntent());
 				dismiss();

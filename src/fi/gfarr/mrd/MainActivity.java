@@ -133,6 +133,12 @@ public class MainActivity extends Activity
 			}
 			ServerInterface.downloadDelays(getApplicationContext());
 
+			if (dialog.isShowing())
+			{
+				dialog.setTitle("Retrieving failed handover reasons");
+			}
+			ServerInterface.downloadFailedDeliveryReasons(getApplicationContext());
+
 			// Log.i(TAG, "Token aquired.");
 			return token;
 		}
