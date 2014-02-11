@@ -1,11 +1,8 @@
 package fi.gfarr.mrd;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,25 +10,26 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import fi.gfarr.mrd.adapters.PersonAutoCompleteAdapter;
+import fi.gfarr.mrd.datatype.UserItem;
+import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 
 public class MainActivity extends Activity
 {
-
-	private List<Fragment> fragments = new ArrayList<Fragment>(); // List of
-																	// screen
-																	// fragments
 	private ViewHolder holder;
 	private View root_view;
 	private final String TAG = "MainActivity";
+	ArrayList<UserItem> person_item_list;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -47,9 +45,19 @@ public class MainActivity extends Activity
 
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
 
+		person_item_list = new ArrayList<UserItem>();
+
 		new RequestTokenTask().execute();
 
 		initClickListeners();
+
+		PersonAutoCompleteAdapter adapter = new PersonAutoCompleteAdapter(
+				getApplicationContext(), person_item_list);
+
+		// Set the adapter
+		holder.text_name.setAdapter(adapter);
+		holder.text_name.setThreshold(1);
+
 	}
 
 	/**
@@ -158,37 +166,52 @@ public class MainActivity extends Activity
 				dialog.dismiss();
 			}
 
-			// Progress spinner
-			final ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-			dialog.setMessage("Retrieving list of drivers");
-			dialog.show();
-
-			// Retrieve list of drivers from server, after token has been acquired
-			// JSONArray drivers_jArray = ServerInterface.getDrivers();
-
 			// Retrieve list of drivers in a thread
-			Runnable r = new Runnable()
+			new RequestDriverManagerTask().execute();
+		}
+	}
+
+	/**
+	 * Requests token from server.
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class RequestDriverManagerTask extends AsyncTask<Void, Void, String>
+	{
+
+		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog.setMessage("Retrieving list of drivers/managers");
+			this.dialog.show();
+		}
+
+		@Override
+		protected String doInBackground(Void... urls)
+		{
+			ServerInterface.getDrivers(getApplicationContext());
+			ServerInterface.getManagers(getApplicationContext());
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result)
+		{
+			// TODO: Initilize person_item_list
+			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
+			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getManagers());
+			Log.d(TAG, "PersonList: " + person_item_list.size());
+
+			// Close progress spinner
+			if (dialog.isShowing())
 			{
-				@Override
-				public void run()
-				{
-					// Log.i(TAG, "Fetching list of drivers");
-					ServerInterface.getDrivers(getApplicationContext());
-					// Log.i(TAG, "Driver list updated.");
-
-					runOnUiThread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							if (dialog.isShowing()) dialog.dismiss();
-						}
-					});
-				}
-			};
-
-			Thread thread = new Thread(r);
-			thread.start();
+				dialog.dismiss();
+			}
 		}
 	}
 

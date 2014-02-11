@@ -5,8 +5,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import fi.gfarr.mrd.datatype.DialogDataObject;
-import fi.gfarr.mrd.helper.VariableManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,6 +12,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import fi.gfarr.mrd.datatype.DialogDataObject;
+import fi.gfarr.mrd.datatype.UserItem;
+import fi.gfarr.mrd.datatype.UserItem.PersonType;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class DbHandler extends SQLiteOpenHelper
 {
@@ -1235,5 +1237,130 @@ public class DbHandler extends SQLiteOpenHelper
 		msgs.add(new DialogDataObject("Ambush", "Ambush"));
 
 		return msgs;
+	}
+
+	/**
+	 * Returns list of drivers
+	 * 
+	 * @return
+	 */
+	public ArrayList<UserItem> getDrivers()
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<UserItem> drivers = null;
+			String sql = "SELECT * FROM " + TABLE_DRIVERS;
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				drivers = new ArrayList<UserItem>();
+
+				while (!cursor.isAfterLast())
+				{
+					String driver_id = cursor.getString(cursor.getColumnIndex(C_DRIVER_ID));
+					String driver_name = cursor.getString(cursor.getColumnIndex(C_DRIVER_NAME));
+
+					UserItem person_item = new UserItem(driver_id, driver_name, PersonType.DRIVER);
+
+					drivers.add(person_item);
+
+					cursor.moveToNext();
+				}
+			}
+
+			return drivers;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * Returns list of drivers
+	 * 
+	 * @return
+	 */
+	public ArrayList<UserItem> getManagers()
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<UserItem> managers = null;
+			String sql = "SELECT * FROM " + TABLE_MANAGERS;
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				managers = new ArrayList<UserItem>();
+
+				while (!cursor.isAfterLast())
+				{
+					String manager_id = cursor.getString(cursor.getColumnIndex(C_MANAGER_ID));
+					String manager_name = cursor.getString(cursor.getColumnIndex(C_MANAGER_NAME));
+
+					UserItem person_item = new UserItem(manager_id, manager_name, PersonType.MANAGER);
+
+					managers.add(person_item);
+
+					cursor.moveToNext();
+				}
+			}
+
+			return managers;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
 	}
 }
