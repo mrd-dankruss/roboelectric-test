@@ -6,47 +6,72 @@
     android:background="@color/colour_white"
     android:orientation="vertical" >
 
+    <Button
+        android:id="@+id/button_mainmenu_start_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/button_custom"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:text="@string/button_login" />
+
     <ImageView
         android:id="@+id/ImageView01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button_mainmenu_start_milkrun"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
         android:paddingBottom="@dimen/mainmenu_padding_logo_bottom"
         android:paddingLeft="@dimen/mainmenu_padding_logo_side"
         android:paddingRight="@dimen/mainmenu_padding_logo_side"
         android:paddingTop="@dimen/mainmenu_padding_logo_top"
         android:src="@drawable/mrd_logo_large" />
 
-    <Button
-        android:id="@+id/button_mainmenu_start_milkrun"
+    <EditText
+        android:id="@+id/text_mainmenu_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button_mainmenu_training_run"
+        android:layout_above="@+id/button_mainmenu_start_login"
         android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="@dimen/margin_button_WE"
-        android:layout_marginRight="@dimen/margin_button_WE"      
-        android:background="@drawable/button_custom"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="24dp"
+        android:ems="10"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:text="@string/button_start_milkrun" />
-
-    <Button
-        android:id="@+id/button_mainmenu_training_run"
+        android:hint="@string/text_hint_mainmenu_enter_password"
+        android:background="@color/main_activity_grey"
+        android:textColor="@color/text_grey"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textSize="16sp"
+        android:inputType="textPassword" />
+    
+    <AutoCompleteTextView
+        android:id="@+id/text_mainmenu_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="@dimen/margin_mainmenu_bottom"
-        android:layout_marginLeft="@dimen/margin_button_WE"
-        android:layout_marginRight="@dimen/margin_button_WE"
-        android:layout_marginTop="@dimen/margin_mainmenu_button_gap"
-        android:background="@drawable/button_custom_grey"
+        android:layout_above="@+id/text_mainmenu_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:text="@string/button_start_trainingrun" />
+        android:hint="@string/text_hint_mainmenu_enter_name"
+        android:background="@color/main_activity_grey"
+        android:textColor="@color/text_grey"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textSize="16sp" >
+
+        <requestFocus />
+    </AutoCompleteTextView>
 
 </RelativeLayout>

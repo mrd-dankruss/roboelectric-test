@@ -149,5 +149,9 @@
     <string name="delivery_detail_communicationTitle">Communication Log</string>
     <string name="delivery_detail_communicationLog">SMS sent at 15/08/2013 at 15:13\nRunning 5 minutes late</string>
     <string name="delivery_handover_subtitle">Please wait while the parcels are scanned in by the receiving branch manager.</string>
+    
+    <!-- TextView Hints -->
+    <string name="text_hint_mainmenu_enter_name">Enter Name</string>
+    <string name="text_hint_mainmenu_enter_password">Tap here to enter your 4-digit PIN</string>
 
 </resources>

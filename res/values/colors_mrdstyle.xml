@@ -40,5 +40,6 @@
     <color name="textView_grey">#D2D2D2</color>
     <color name="green_tick">#119C30</color>
     <color name="text_grey">#646464</color>
+    <color name="main_activity_grey">#EDEDED</color>
     
 </resources>

@@ -9,13 +9,17 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 
@@ -54,7 +58,7 @@ public class MainActivity extends Activity
 	private void initClickListeners()
 	{
 		// Click Start New Milkrun button
-		holder.button_start_milkrun.setOnClickListener(new View.OnClickListener()
+		holder.button_login.setOnClickListener(new View.OnClickListener()
 		{
 			public void onClick(View v)
 			{
@@ -72,6 +76,7 @@ public class MainActivity extends Activity
 			}
 		});
 
+		/*
 		// Click Start Trainingrun button
 		holder.button_start_trainingrun.setOnClickListener(new View.OnClickListener()
 		{
@@ -89,6 +94,7 @@ public class MainActivity extends Activity
 				}).start();
 			}
 		});
+		*/
 	}
 
 	/**
@@ -207,10 +213,13 @@ public class MainActivity extends Activity
 				holder = new ViewHolder();
 			}
 
-			holder.button_start_milkrun = (Button) root_view
-					.findViewById(R.id.button_mainmenu_start_milkrun);
-			holder.button_start_trainingrun = (Button) root_view
-					.findViewById(R.id.button_mainmenu_training_run);
+			holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
+			holder.text_name = (AutoCompleteTextView) root_view
+					.findViewById(R.id.text_mainmenu_name);
+			holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
+
+			holder.text_password.setTypeface(Typeface.DEFAULT); // TODO: Remove from here. Add
+																// proper font setting.
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -252,8 +261,9 @@ public class MainActivity extends Activity
 	// of times that findViewById is called, which affected listview performance
 	static class ViewHolder
 	{
-		Button button_start_milkrun;
-		Button button_start_trainingrun;
+		Button button_login;
+		AutoCompleteTextView text_name;
+		EditText text_password;
 	}
 
 }
