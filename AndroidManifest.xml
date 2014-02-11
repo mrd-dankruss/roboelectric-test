@@ -238,6 +238,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
+        <activity
+            android:name="fi.gfarr.mrd.ReasonPartialDeliveryActivity"
+            android:label="@string/title_actionbar_failed_delivery"
+            android:launchMode="singleTop"
+            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
+        </activity>
     </application>
 
 </manifest>

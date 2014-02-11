@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReasonForFailedHandoverActivity;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class UpdateStatusDialog extends DialogFragment
 {
@@ -91,6 +93,7 @@ public class UpdateStatusDialog extends DialogFragment
 				{
 					Intent intent = new Intent(getActivity(),
 							DeliveryHandoverFragmentActivity.class);
+					intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 					startActivity(intent);
 					dismiss();
 				}
@@ -98,6 +101,7 @@ public class UpdateStatusDialog extends DialogFragment
 				if (position == 1)
 				{
 					Intent intent = new Intent(getActivity(), ReasonForFailedHandoverActivity.class);
+					intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 					startActivity(intent);
 					dismiss();
 				}

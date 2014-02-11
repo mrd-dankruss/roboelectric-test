@@ -2,6 +2,9 @@ package fi.gfarr.mrd.fragments;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -136,14 +139,39 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			{
 				dialog.dismiss();
 			}
-			Log.i(TAG, result);
-			VariableManager.delay_id = null;
 
-			CustomToast custom_toast = new CustomToast(getActivity());
-			custom_toast.setText("Success");
-			custom_toast.setSuccess(true);
-			custom_toast.show();
-			getActivity().finish();
+			// VariableManager.delay_id = null;
+
+			try
+			{
+				JSONObject result_object = new JSONObject(result);
+				String status = result_object.getString("response");
+				Log.d(TAG, "postFailedHandover: " + status);
+				if (status.equals("success"))
+				{
+					CustomToast custom_toast = new CustomToast(getActivity());
+					custom_toast.setText("Success");
+					custom_toast.setSuccess(true);
+					custom_toast.show();
+				}
+				else
+				{
+					CustomToast custom_toast = new CustomToast(getActivity());
+					custom_toast.setText("Failed");
+					custom_toast.setSuccess(false);
+					custom_toast.show();
+				}
+			}
+			catch (JSONException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (getActivity() != null)
+			{
+				getActivity().finish();
+			}
 		}
 	}
 

@@ -4,7 +4,9 @@ import java.lang.ref.WeakReference;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -351,6 +353,11 @@ public class EnterPinActivity extends Activity
 
 			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			prefs.edit().putString(VariableManager.EXTRA_DRIVER_ID, null).commit();
 
 			startActivity(intent);
 		}
