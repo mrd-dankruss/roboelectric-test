@@ -40,6 +40,7 @@ public class MainActivity extends Activity
 	private String selected_user_id;
 	private String selected_user_name;
 	private UserType selected_user_type;
+	String imei_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -87,7 +88,7 @@ public class MainActivity extends Activity
 		});
 
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		Log.d(TAG, "MNGR: " + mngr.getDeviceId());
+		imei_id = mngr.getDeviceId();
 
 	}
 
@@ -165,7 +166,7 @@ public class MainActivity extends Activity
 		protected String doInBackground(Void... urls)
 		{
 			// Log.i(TAG, "Fetching token...");
-			String token = ServerInterface.requestToken();
+			String token = ServerInterface.requestToken(imei_id);
 
 			SharedPreferences settings = PreferenceManager
 					.getDefaultSharedPreferences(getApplicationContext());
@@ -230,8 +231,8 @@ public class MainActivity extends Activity
 		@Override
 		protected String doInBackground(Void... urls)
 		{
-			ServerInterface.getDrivers(getApplicationContext());
-			ServerInterface.getManagers(getApplicationContext());
+			ServerInterface.getDrivers(getApplicationContext(), imei_id);
+			ServerInterface.getManagers(getApplicationContext(), imei_id);
 			return null;
 		}
 
@@ -276,7 +277,7 @@ public class MainActivity extends Activity
 		{
 			String hash = PinManager.toMD5(holder.text_password.getText().toString());
 
-			String status = ServerInterface.authDriver(hash, selected_user_id);
+			String status = ServerInterface.authDriver(hash, selected_user_id, imei_id);
 
 			if (status.equals("success"))
 			{

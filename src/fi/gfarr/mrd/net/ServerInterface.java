@@ -114,9 +114,9 @@ public class ServerInterface
 	 * @param IMEI
 	 *            number.
 	 */
-	public static String requestToken()
+	public static String requestToken(String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/auth/auth?imei=" + VariableManager.IMEI_TEST;
+		String url = "http://paperlessapp.apiary.io/v1/auth/auth?imei=" + imei_id;
 		String response = getInputStreamFromUrl(url, null, null);
 		// Log.d(TAG, "requestToken(): " + response);
 		String token = "";
@@ -202,10 +202,10 @@ public class ServerInterface
 	 * @param token
 	 * @return
 	 */
-	public static void getDrivers(Context context)
+	public static void getDrivers(Context context, String imei_id)
 	{
 		String url = "http://paperlessapp.apiary.io/v1/driver/drivers?imei="
-				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token;
+				+ imei_id + "&mrdtoken=" + VariableManager.token;
 		String response = getInputStreamFromUrl(url, null, null);
 
 		JSONArray drivers_jArray = null;
@@ -270,10 +270,10 @@ public class ServerInterface
 	 * 
 	 * @param context
 	 */
-	public static void getManagers(Context context)
+	public static void getManagers(Context context, String imei_id)
 	{
 		String url = "http://paperlessapp.apiary.io/v1/manager/managers?imei="
-				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token;
+				+ imei_id + "&mrdtoken=" + VariableManager.token;
 		String response = getInputStreamFromUrl(url, null, null);
 
 		JSONArray managers_jArray = null;
@@ -331,10 +331,10 @@ public class ServerInterface
 	 * @param PIN
 	 * @return
 	 */
-	public static String authDriver(String PIN, String driver_id)
+	public static String authDriver(String PIN, String driver_id, String imei_id)
 	{
 		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei="
-				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&driverPIN="
+				+ imei_id + "&mrdtoken=" + VariableManager.token + "&driverPIN="
 				+ PIN + "&driverID=" + driver_id;
 
 		String response = getInputStreamFromUrl(url, null, null);
@@ -377,10 +377,10 @@ public class ServerInterface
 	 * @param PIN
 	 * @return
 	 */
-	public static String authManager(String man_id, String driver_id, String PIN)
+	public static String authManager(String man_id, String driver_id, String PIN, String imei_id)
 	{
 		String url = "http://paperlessapp.apiary.io/v1/auth/manager?imei="
-				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&managerPIN="
+				+ imei_id + "&mrdtoken=" + VariableManager.token + "&managerPIN="
 				+ PIN + "&managerid=" + man_id + "&driverid=" + driver_id;
 
 		String response = getInputStreamFromUrl(url, null, null);

@@ -4,11 +4,13 @@ import java.lang.ref.WeakReference;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	private View root_view;
 	private final String TAG = "ManagerAuthIncompleteScanActivity";
 	ProgressDialog dialog_login;
+	String imei_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,6 +44,9 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 
 		// Initialize ViewHolder
 		initViewHolder();
+		
+		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		imei_id = mngr.getDeviceId();
 
 		// Display name of manager
 		holder.textView_name
@@ -159,7 +165,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 					String man_id = getIntent().getStringExtra(VariableManager.EXTRA_MANAGER_ID);
 					String driver_id = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID);
 
-					String status = ServerInterface.authManager(man_id, driver_id, hash);
+					String status = ServerInterface.authManager(man_id, driver_id, hash, imei_id);
 
 					if (status.equals("success"))
 					{

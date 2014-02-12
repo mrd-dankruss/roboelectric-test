@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -36,6 +37,7 @@ public class EnterPinActivity extends Activity
 	private ViewHolder holder;
 	private View root_view;
 	private EnterPinActivity context;
+	String imei_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -51,6 +53,9 @@ public class EnterPinActivity extends Activity
 		// Inflate views
 		initViewHolder();
 
+		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		imei_id = mngr.getDeviceId();
+		
 		// Obtain selected driver's name passed from parent activity and display
 		holder.textView_driver.setText(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
@@ -149,7 +154,7 @@ public class EnterPinActivity extends Activity
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
 
-					String status = ServerInterface.authDriver(hash, null);
+					String status = ServerInterface.authDriver(hash, null, imei_id);
 
 					if (status.equals("success"))
 					{

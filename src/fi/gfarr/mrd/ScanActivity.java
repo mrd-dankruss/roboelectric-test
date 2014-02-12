@@ -16,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,6 +64,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private ArrayList<String> selected_items;
 
 	private IncompleteScanDialog dialog;
+	
+	String imei_id;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -78,6 +81,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
+		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		imei_id = mngr.getDeviceId();
+		
 		// Store currently selected driver id globally
 		SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
@@ -690,7 +696,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		protected Void doInBackground(Void... urls)
 		{
 			// Log.i(TAG, "Fetching token...");
-			ServerInterface.getManagers(getApplicationContext());
+			ServerInterface.getManagers(getApplicationContext(), imei_id);
 
 			return null;
 		}
