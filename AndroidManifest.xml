@@ -258,6 +258,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.MainActivity" />
         </activity>
+        <activity
+            android:name="fi.gfarr.mrd.LoginActivity"
+            android:label="@string/title_actionbar_home"
+            android:parentActivityName="fi.gfarr.mrd.HomeActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
