@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import fi.gfarr.mrd.datatype.DeliveryHandoverDataObject;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.datatype.UserItem;
 import fi.gfarr.mrd.datatype.UserItem.UserType;
@@ -702,6 +703,71 @@ public class DbHandler extends SQLiteOpenHelper
 			}
 		}
 		return bag;
+	}
+
+	/**
+	 * Returns list of bags, per driver, in DeliveryHandoverDataObject format. Used in successful
+	 * handover screen.
+	 * 
+	 * @param driver_id
+	 * @return
+	 */
+	public ArrayList<DeliveryHandoverDataObject> getBagsForHandover(String driver_id)
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<DeliveryHandoverDataObject> bags = null;
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
+					+ driver_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				bags = new ArrayList<DeliveryHandoverDataObject>();
+
+				while (!cursor.isAfterLast())
+				{
+					DeliveryHandoverDataObject bag = new DeliveryHandoverDataObject(
+							cursor.getString(cursor.getColumnIndex(C_BAG_ID)), false);
+
+					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
+
+					bags.add(bag);
+					cursor.moveToNext();
+				}
+			}
+
+			return bags;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
 	}
 
 	/**

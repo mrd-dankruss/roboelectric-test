@@ -159,8 +159,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = UpdateStatusDialog
-							.newInstance("Insert bagid here");
+					DialogFragment newFragment = UpdateStatusDialog.newInstance(bag_id);
 					newFragment.show(activity.getSupportFragmentManager(), "dialog");
 				}
 			});
