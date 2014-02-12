@@ -5,7 +5,8 @@
     <string name="action_settings">Settings</string>
 
     <!-- Actionbar titles -->
-    <string name="title_actionbar_mainmenu">Home</string>
+    <string name="title_actionbar_mainmenu">Login</string>
+    <string name="title_actionbar_home">Home</string>
     <string name="title_actionbar_driverlist_select_name">Please select your name</string>
     <string name="title_actionbar_signature">Processing Collection</string>
     <string name="title_actionbar_create_pin">Create Pin</string>

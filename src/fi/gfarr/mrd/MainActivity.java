@@ -413,7 +413,7 @@ public class MainActivity extends Activity
 				dialog_progress.dismiss();
 			}
 
-			Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+			Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
 
 			DbHandler.getInstance(getApplicationContext());
 			// Pass driver name on
