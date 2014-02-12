@@ -136,8 +136,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 							position)).getLocationName();
 					String list_reference = ((MapPlacesItem) holder.autoCompView.getAdapter()
 							.getItem(position)).getLocationReference();
-
-					Toast.makeText(getApplicationContext(), list_string, Toast.LENGTH_SHORT).show();
+					
 					holder.autoCompView.setText(list_string.replaceAll("\n", ", "));
 
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

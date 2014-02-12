@@ -331,11 +331,11 @@ public class ServerInterface
 	 * @param PIN
 	 * @return
 	 */
-	public static String authDriver(String PIN)
+	public static String authDriver(String PIN, String driver_id)
 	{
 		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei="
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&driverPIN="
-				+ PIN;
+				+ PIN + "&driverID=" + driver_id;
 
 		String response = getInputStreamFromUrl(url, null, null);
 

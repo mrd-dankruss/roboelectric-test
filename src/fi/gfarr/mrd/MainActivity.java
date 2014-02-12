@@ -4,25 +4,32 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import fi.gfarr.mrd.adapters.PersonAutoCompleteAdapter;
 import fi.gfarr.mrd.datatype.UserItem;
+import fi.gfarr.mrd.datatype.UserItem.UserType;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
+import fi.gfarr.mrd.security.PinManager;
+import fi.gfarr.mrd.widget.CustomToast;
 
 public class MainActivity extends Activity
 {
@@ -30,6 +37,9 @@ public class MainActivity extends Activity
 	private View root_view;
 	private final String TAG = "MainActivity";
 	ArrayList<UserItem> person_item_list;
+	private String selected_user_id;
+	private String selected_user_name;
+	private UserType selected_user_type;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -51,12 +61,33 @@ public class MainActivity extends Activity
 
 		initClickListeners();
 
-		PersonAutoCompleteAdapter adapter = new PersonAutoCompleteAdapter(
-				getApplicationContext(), person_item_list);
+		PersonAutoCompleteAdapter adapter = new PersonAutoCompleteAdapter(getApplicationContext(),
+				person_item_list);
 
 		// Set the adapter
 		holder.text_name.setAdapter(adapter);
 		holder.text_name.setThreshold(1);
+
+		holder.text_name.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+			{
+				selected_user_id = ((UserItem) holder.text_name.getAdapter().getItem(position))
+						.getUserID();
+				selected_user_name = ((UserItem) holder.text_name.getAdapter().getItem(position))
+						.getUserName();
+				selected_user_type = ((UserItem) holder.text_name.getAdapter().getItem(position))
+						.getUserType();
+
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+
+			}
+		});
+
+		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		Log.d(TAG, "MNGR: " + mngr.getDeviceId());
 
 	}
 
@@ -71,16 +102,21 @@ public class MainActivity extends Activity
 			public void onClick(View v)
 			{
 				// Perform action on click
-
-				new Thread(new Runnable()
+				if (checkPin())
 				{
-					public void run()
+					if (selected_user_type == UserType.DRIVER)
 					{
-						Intent intent = new Intent(getApplicationContext(),
-								DriverListActivity.class);
-						startActivity(intent);
+						new DriverLoginUserTask().execute();
 					}
-				}).start();
+					if (selected_user_type == UserType.MANAGER)
+					{
+						CustomToast not_yet_implemented = new CustomToast(MainActivity.this);
+						not_yet_implemented.setText("Manager login is not implemented.");
+						not_yet_implemented.setSuccess(false);
+						not_yet_implemented.show();
+						// new DriverLoginUserTask().execute();
+					}
+				}
 			}
 		});
 
@@ -213,6 +249,193 @@ public class MainActivity extends Activity
 				dialog.dismiss();
 			}
 		}
+	}
+
+	/**
+	 * Requests token from server.
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class DriverLoginUserTask extends AsyncTask<Void, Void, Boolean>
+	{
+
+		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog.setMessage("Authenticating");
+			this.dialog.show();
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... urls)
+		{
+			String hash = PinManager.toMD5(holder.text_password.getText().toString());
+
+			String status = ServerInterface.authDriver(hash, selected_user_id);
+
+			if (status.equals("success"))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result)
+		{
+
+			if (result == true)
+			{
+				new RetrieveBagsTask().execute();
+				// Close progress spinner
+				if (dialog.isShowing())
+				{
+					dialog.dismiss();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Requests token from server.
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class ManagerLoginUserTask extends AsyncTask<Void, Void, Boolean>
+	{
+
+		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog.setMessage("Authenticating");
+			this.dialog.show();
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... urls)
+		{
+			String hash = PinManager.toMD5(holder.text_password.getText().toString());
+
+			// TODO: Wait for change to API or new API call
+			// String status = ServerInterface.authManager(man_id, driver_id, PIN);
+			String status = "blah";
+
+			if (status.equals("success"))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result)
+		{
+
+			if (result == true)
+			{
+				new RetrieveBagsTask().execute();
+				// Close progress spinner
+				if (dialog.isShowing())
+				{
+					dialog.dismiss();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Check PIN's validity (data validation)
+	 * 
+	 * @return True is valid.
+	 */
+	private boolean checkPin()
+	{
+
+		// Check for 4-digit format
+		String msg = PinManager.checkPin(holder.text_password.getText().toString(), this);
+		if (msg.equals("OK"))
+		{
+
+			return true;
+		}
+		else
+		{
+			displayToast(msg);
+			return false;
+		}
+	}
+
+	/**
+	 * Retrieve list of bags from API in background
+	 * 
+	 * @author greg
+	 * 
+	 */
+	private class RetrieveBagsTask extends AsyncTask<Void, Void, Void>
+	{
+		private ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			ServerInterface.downloadBags(getApplicationContext(), selected_user_id);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
+
+			Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+
+			DbHandler.getInstance(getApplicationContext());
+			// Pass driver name on
+			intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
+
+			Log.d(TAG, "Driver ID: " + selected_user_id);
+			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+
+			startActivity(intent);
+		}
+	}
+
+	/**
+	 * Display a toast using the custom Toaster class
+	 * 
+	 * @param msg
+	 */
+	private void displayToast(String msg)
+	{
+		CustomToast toast_main_menu = new CustomToast(this);
+		toast_main_menu.setSuccess(false);
+		toast_main_menu.setText("Please check your PIN length");
+		toast_main_menu.show();
 	}
 
 	@Override

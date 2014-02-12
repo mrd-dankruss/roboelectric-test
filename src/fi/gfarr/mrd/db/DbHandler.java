@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.datatype.UserItem;
-import fi.gfarr.mrd.datatype.UserItem.PersonType;
+import fi.gfarr.mrd.datatype.UserItem.UserType;
 import fi.gfarr.mrd.helper.VariableManager;
 
 public class DbHandler extends SQLiteOpenHelper
@@ -1264,7 +1264,7 @@ public class DbHandler extends SQLiteOpenHelper
 					String driver_id = cursor.getString(cursor.getColumnIndex(C_DRIVER_ID));
 					String driver_name = cursor.getString(cursor.getColumnIndex(C_DRIVER_NAME));
 
-					UserItem person_item = new UserItem(driver_id, driver_name, PersonType.DRIVER);
+					UserItem person_item = new UserItem(driver_id, driver_name, UserType.DRIVER);
 
 					drivers.add(person_item);
 
@@ -1327,7 +1327,7 @@ public class DbHandler extends SQLiteOpenHelper
 					String manager_id = cursor.getString(cursor.getColumnIndex(C_MANAGER_ID));
 					String manager_name = cursor.getString(cursor.getColumnIndex(C_MANAGER_NAME));
 
-					UserItem person_item = new UserItem(manager_id, manager_name, PersonType.MANAGER);
+					UserItem person_item = new UserItem(manager_id, manager_name, UserType.MANAGER);
 
 					managers.add(person_item);
 

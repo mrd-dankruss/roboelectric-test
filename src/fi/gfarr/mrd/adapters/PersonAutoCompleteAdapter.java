@@ -47,7 +47,7 @@ public class PersonAutoCompleteAdapter extends BaseAdapter implements Filterable
 					// Retrieve the autocomplete results.
 					for (int i = 0; i < person_list.size(); i++)
 					{
-						if ((person_list.get(i).getPersonName().toLowerCase()).contains(constraint))
+						if ((person_list.get(i).getUserName().toLowerCase()).contains(constraint))
 						{
 							Log.d(TAG, "person_list: " + person_list.get(i));
 							result_list.add(person_list.get(i));
@@ -96,7 +96,7 @@ public class PersonAutoCompleteAdapter extends BaseAdapter implements Filterable
 
 		TextView text_person = (TextView) rowView.findViewById(R.id.textView_row_driverlist);
 
-		text_person.setText(person_list.get(position).getPersonName());
+		text_person.setText(person_list.get(position).getUserName());
 
 		return rowView;
 	}
