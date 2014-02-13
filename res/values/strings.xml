@@ -22,8 +22,9 @@
     <string name="title_actionbar_change_driver">Change Driver</string>
 
     <!-- Button texts -->
-    <string name="button_start_milkrun">Start new milkrun</string>
-    <string name="button_start_trainingrun">Start trainrun</string>
+    <string name="button_start_new_milkrun">Start new milkrun</string>
+    <string name="button_start_milkrun">Start Milkrun</string>
+    <string name="button_start_trainingrun">Start training run</string>
     <string name="button_update_status">Update Status</string>
     <string name="button_more">More</string>
     <string name="button_login">Login</string>

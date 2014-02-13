@@ -467,7 +467,9 @@ public class MainActivity extends Activity
 				holder = new ViewHolder();
 			}
 
-			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF, FontHelper.STYLE_BOLD));
+			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
 			
 			holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
 			holder.button_login.setTypeface(typeface_robotoBold);

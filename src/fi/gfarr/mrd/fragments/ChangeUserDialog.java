@@ -2,28 +2,24 @@ package fi.gfarr.mrd.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import fi.gfarr.mrd.R;
+import fi.gfarr.mrd.helper.FontHelper;
 
-public class ChangeUserDialog extends Dialog //implements android.view.View.OnClickListener
+public class ChangeUserDialog extends Dialog
 {
-
-	private final String TAG = "ChangeUserDialog";
 	private Activity context;
-	private Dialog dialog;
-	private Button button_cancel, button_ok;	
-	private ImageButton button_close;
-	private TextView dialog_content;
+	private TextView dialog_title;
 
-	public ChangeUserDialog(Activity a)
+	public ChangeUserDialog(Activity activity)
 	{
-		super(a);
-		// TODO Auto-generated constructor stub
-		this.context = a;
+		super(activity);
+		this.context = activity;
 	}
 
 	@Override
@@ -33,35 +29,13 @@ public class ChangeUserDialog extends Dialog //implements android.view.View.OnCl
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.dialog_change_user_confirm);
 
-		button_close = (ImageButton) findViewById(R.id.button_change_user_closeButton);
-		button_cancel = (Button) findViewById(R.id.button_change_user_cancel);
-		button_ok = (Button) findViewById(R.id.button_change_user_ok);
-		dialog_content = (TextView) findViewById(R.id.text_change_driver_content);
+		Typeface typeface_robotoBold = Typeface.createFromAsset(context.getAssets(), FontHelper
+				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+						FontHelper.STYLE_BOLD));
 
-//		button_scan.setOnClickListener(this);
-//		button_continue.setOnClickListener(this);
+		dialog_title = (TextView) findViewById(R.id.textView_trafficDelay_title);
+		
+		dialog_title.setTypeface(typeface_robotoBold);
 	}
-	
-/*
-	@Override
-	public void onClick(View v)
-	{
-		switch (v.getId())
-		{
-		case R.id.button_incomplete_scan_scan:
-			// Log.d(TAG, "Scan them");
-			// Do nothing. Close dialog.
-			break;
-		case R.id.button_incomplete_scan_continue:
-			// Log.d(TAG, "Continue anyway");
-			// Require manager authorization.		
-			Intent intent = new Intent(context, ManagerAuthIncompleteScanActivity.class);
-			
-			break;
-		default:
-			break;
-		}
-		dismiss();
-	}
-	*/
+
 }

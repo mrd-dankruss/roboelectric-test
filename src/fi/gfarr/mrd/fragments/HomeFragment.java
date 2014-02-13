@@ -1,6 +1,7 @@
 package fi.gfarr.mrd.fragments;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ScanActivity;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 
 public class HomeFragment extends Fragment
@@ -50,17 +52,17 @@ public class HomeFragment extends Fragment
 				startActivity(intent);
 			}
 		});
-		
+
 		holder.button_training_run.setOnClickListener(new View.OnClickListener()
 		{
-			
+
 			@Override
 			public void onClick(View v)
 			{
 				// TODO: Implement training runs
 			}
 		});
-		
+
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -76,9 +78,16 @@ public class HomeFragment extends Fragment
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_robotoBold = Typeface.createFromAsset(getActivity().getAssets(),
+					FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+			
 			holder.button_milkrun = (Button) rootView.findViewById(R.id.button_home_milkrun);
 			holder.button_training_run = (Button) rootView.findViewById(R.id.button_home_training);
 
+			holder.button_milkrun.setTypeface(typeface_robotoBold);
+			holder.button_training_run.setTypeface(typeface_robotoBold);
+			
 			// Store the holder with the view.
 			rootView.setTag(holder);
 

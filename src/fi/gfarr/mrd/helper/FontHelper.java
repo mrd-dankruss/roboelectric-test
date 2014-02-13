@@ -20,7 +20,6 @@ public class FontHelper
 
 	public static String getFontString(String font, String type, int style_byte)
 	{
-		System.out.println("****FONTS****");
 		boolean a = (style_byte & STYLE_THIN) != 0;
 		boolean b = (style_byte & STYLE_LIGHT) != 0;
 		boolean c = (style_byte & STYLE_MEDIUM) != 0;
@@ -66,7 +65,6 @@ public class FontHelper
 		}
 		else if (e)
 		{
-			System.out.println("****Bold****");
 			font += "Bold";
 		}
 		else if (f)
@@ -77,7 +75,6 @@ public class FontHelper
 		{
 			font += "Regular";
 		}
-		System.out.println("****" + font + "." + type + "****");
 		return font + "." + type;
 	}
 }

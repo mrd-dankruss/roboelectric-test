@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import fi.gfarr.mrd.adapters.ScanSimpleCursorAdapter;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.fragments.ChangeUserDialog;
 import fi.gfarr.mrd.fragments.IncompleteScanDialog;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.widget.CustomToast;
@@ -99,7 +101,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();
 
 		user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
-		
+
 		initViewHolder();
 
 		if (savedInstanceState != null)
@@ -283,7 +285,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				.findViewById(R.id.button_change_user_ok);
 		final TextView dialog_content = (TextView) dialog_change_user
 				.findViewById(R.id.text_change_driver_content);
-		
+
 		dialog_content.setText("Are you sure you want to log out " + user_name + "?");
 
 		button_close.setOnClickListener(new OnClickListener()
@@ -706,6 +708,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+			
 			holder.list = (ListView) root_view.findViewById(R.id.scan_list);
 
 			holder.button_start_milkrun = (Button) root_view
@@ -715,6 +721,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 			holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_scan);
 
+			holder.button_start_milkrun.setTypeface(typeface_robotoBold);
+			
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
