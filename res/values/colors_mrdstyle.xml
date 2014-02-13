@@ -41,5 +41,6 @@
     <color name="green_tick">#119C30</color>
     <color name="text_grey">#646464</color>
     <color name="main_activity_grey">#EDEDED</color>
+    <color name="change_driver_grey">#F5F5F5</color>
     
 </resources>

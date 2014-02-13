@@ -15,7 +15,7 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.
 -->
 
 <resources>
@@ -30,6 +30,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_mrdstyle</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_mrdstyle</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Mrdstyle</item>
+        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
     </style>
 
     <style name="ActionBar.Solid.Mrdstyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
@@ -84,6 +85,12 @@
     <style name="DialogText">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/colour_text_darkgrey</item>
+    </style>
+
+    <style name="ActionButtonStyle" parent="@android:style/Widget.Holo.Light.ActionButton">
+        <item name="android:minWidth">0dip</item>
+        <item name="android:paddingLeft">0dip</item>
+        <item name="android:paddingRight">24dip</item>
     </style>
 
 </resources>

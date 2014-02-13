@@ -27,10 +27,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
@@ -38,6 +40,7 @@ import com.google.zxing.client.android.CaptureActivity;
 
 import fi.gfarr.mrd.adapters.ScanSimpleCursorAdapter;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.fragments.ChangeUserDialog;
 import fi.gfarr.mrd.fragments.IncompleteScanDialog;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
@@ -64,8 +67,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private ArrayList<String> selected_items;
 
 	private IncompleteScanDialog dialog;
-	
-	String imei_id;
+	private ChangeUserDialog dialog_change_user;
+
+	private String imei_id;
+	static final int REQUEST_MANUAL_BARCODE = 1;
+	private Intent intent_manual_barcode;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -83,7 +89,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
-		
+
 		// Store currently selected driver id globally
 		SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
@@ -231,6 +237,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    // Check which request we're responding to
+	    if (requestCode == REQUEST_MANUAL_BARCODE) {
+	        // Make sure the request was successful
+	        if (resultCode == RESULT_OK) {
+	        	handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE), null, null, null), null, 0);
+	            Toast.makeText(this, "Barcode: " + data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE), Toast.LENGTH_LONG).show();;
+	        }
+	    }
+	}
+	
+	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState)
 	{
 		super.onRestoreInstanceState(savedInstanceState);
@@ -242,6 +260,52 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		String msg = "onRestoreInstanceState - " + selected_items.get(0);
 		Log.d(TAG, msg);
+	}
+
+	private void setupChangeUserDialog()
+	{
+		dialog_change_user = new ChangeUserDialog(ScanActivity.this);
+		dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		dialog_change_user.show();
+
+		LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+
+		final ImageButton button_close = (ImageButton) dialog_change_user
+				.findViewById(R.id.button_change_user_closeButton);
+		final Button button_cancel = (Button) dialog_change_user
+				.findViewById(R.id.button_change_user_cancel);
+		final Button button_ok = (Button) dialog_change_user
+				.findViewById(R.id.button_change_user_ok);
+
+		button_close.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				dialog_change_user.dismiss();
+			}
+		});
+
+		button_cancel.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				dialog_change_user.dismiss();
+			}
+		});
+
+		button_ok.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				dialog_change_user.dismiss();
+				Intent intent = new Intent(ScanActivity.this, MainActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+			}
+		});
 	}
 
 	/**
@@ -540,6 +604,16 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Respond to the action bar's Up/Home button
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		case R.id.action_scan_enter_barcode:
+			Log.d(TAG, "Enter barcode manually");
+			// TODO: Add barcode manually
+			intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
+		    startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
+			return true;
+		case R.id.action_scan_change_driver:
+			Log.d(TAG, "Change driver");
+			setupChangeUserDialog();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -259,13 +259,13 @@
                 android:value="fi.gfarr.mrd.MainActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.LoginActivity"
-            android:label="@string/title_actionbar_home"
-            android:parentActivityName="fi.gfarr.mrd.HomeActivity"
+            android:name="fi.gfarr.mrd.EnterBarcodeActivity"
+            android:label="@string/title_actionbar_enter_barcode"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fi.gfarr.mrd.HomeActivity" />
+                android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
     </application>
 
