@@ -26,6 +26,7 @@ import fi.gfarr.mrd.adapters.PersonAutoCompleteAdapter;
 import fi.gfarr.mrd.datatype.UserItem;
 import fi.gfarr.mrd.datatype.UserItem.UserType;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
@@ -466,7 +467,11 @@ public class MainActivity extends Activity
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF, FontHelper.STYLE_BOLD));
+			
 			holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
+			holder.button_login.setTypeface(typeface_robotoBold);
+			
 			holder.text_name = (AutoCompleteTextView) root_view
 					.findViewById(R.id.text_mainmenu_name);
 			holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);

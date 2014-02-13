@@ -213,12 +213,6 @@ public class CustomDialog extends Dialog {
 											DialogInterface.BUTTON_POSITIVE);
 								}
 							});
-					Typeface custom_typeface = Typeface.createFromAsset(context
-							.getAssets(), FontHelper.getFontString(
-							FontHelper.FONT_ROBOTO,
-							FontHelper.FONT_TYPE_OTF, FontHelper.STYLE_ITALIC));
-					((Button) (layout.findViewById(R.id.positiveButton)))
-							.setTypeface(custom_typeface);
 				}
 			} else {
 				// if no confirm button just set the visibility to GONE
@@ -238,12 +232,6 @@ public class CustomDialog extends Dialog {
 											DialogInterface.BUTTON_NEGATIVE);
 								}
 							});
-					Typeface custom_typeface = Typeface.createFromAsset(context
-							.getAssets(), FontHelper.getFontString(
-							FontHelper.FONT_ROBOTO,
-							FontHelper.FONT_TYPE_OTF, FontHelper.STYLE_ITALIC));
-					((Button) (layout.findViewById(R.id.negativeButton)))
-							.setTypeface(custom_typeface);
 				}
 			} else {
 				// if no confirm button just set the visibility to GONE

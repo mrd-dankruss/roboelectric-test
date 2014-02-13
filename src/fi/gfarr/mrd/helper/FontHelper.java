@@ -1,62 +1,83 @@
 package fi.gfarr.mrd.helper;
 
+/**
+ * @author Kevin
+ */
+
 public class FontHelper
 {
-	public static String FONT_ROBOTO = "fonts/Roboto";
-	
+	public static String FONT_ROBOTO = "fonts/roboto/Roboto-";
+
 	public static String FONT_TYPE_TTF = "ttf";
-	//public static String FONT_TYPE_OTF = "otf";
-	public static String FONT_TYPE_OTF = "ttf";
-	
-	public static int STYLE_NONE = 0x0;
-	public static int STYLE_REGULAR = 0x1;
-	public static int STYLE_ITALIC = 0x2;
-	public static int STYLE_BOLD = 0x4;
-	public static int STYLE_COND = 0x8;
-	public static int STYLE_SEMI = 0x10;
-	
+
+	public static int STYLE_REGULAR = 0x0;
+	public static int STYLE_THIN = 0x1;
+	public static int STYLE_LIGHT = 0x2;
+	public static int STYLE_MEDIUM = 0x4;
+	public static int STYLE_ITALIC = 0x8;
+	public static int STYLE_BOLD = 0x10;
+	public static int STYLE_BLACK = 0x32;
+
 	public static String getFontString(String font, String type, int style_byte)
 	{
-		String font_append = "";
-		
-		boolean a = (style_byte & STYLE_REGULAR) != 0;
-		boolean b = (style_byte & STYLE_ITALIC) != 0;
-		boolean c = (style_byte & STYLE_BOLD) != 0;
-		boolean d = (style_byte & STYLE_COND) != 0;
-		boolean e = (style_byte & STYLE_SEMI) != 0;
-		//boolean f = (style_byte & 0x20) != 0;
-		//boolean g = (style_byte & 0x40) != 0;
-		//boolean h = (style_byte & 0x80) != 0;
-		
-		if (a == true)
+		System.out.println("****FONTS****");
+		boolean a = (style_byte & STYLE_THIN) != 0;
+		boolean b = (style_byte & STYLE_LIGHT) != 0;
+		boolean c = (style_byte & STYLE_MEDIUM) != 0;
+		boolean d = (style_byte & STYLE_ITALIC) != 0;
+		boolean e = (style_byte & STYLE_BOLD) != 0;
+		boolean f = (style_byte & STYLE_BLACK) != 0;
+
+		if (a && d)
 		{
-			font_append += "Regular";
+			font += "ThinItalic";
 		}
-		if (c == true)
+		else if (b && d)
 		{
-			font_append += "Bold";
+			font += "LightItalic";
 		}
-		if (d == true)
+		else if (c && d)
 		{
-			font_append += "Cond";
+			font += "MediumItalic";
 		}
-		if (e == true)
+		else if (e && d)
 		{
-			font_append += "Semibold";
+			font += "BoldItalic";
 		}
-		if (b == true)
+		else if (f && d)
 		{
-			font_append += "It";
+			font += "BlackItalic";
 		}
-		
-		if (font_append.compareTo("") == 0)
+		else if (a)
 		{
-			return font+"."+type;
+			font += "Thin";
+		}
+		else if (b)
+		{
+			font += "Light";
+		}
+		else if (c)
+		{
+			font += "Medium";
+		}
+		else if (d)
+		{
+			font += "Italic";
+		}
+		else if (e)
+		{
+			System.out.println("****Bold****");
+			font += "Bold";
+		}
+		else if (f)
+		{
+			font += "Black";
 		}
 		else
 		{
-			//Log.i("[FontHelper]", "Font generated is |"+font+"-"+font_append+"."+type+"|");
-			return font+"-"+font_append+"."+type;
+			font += "Regular";
 		}
+		System.out.println("****" + font + "." + type + "****");
+		return font + "." + type;
 	}
 }
