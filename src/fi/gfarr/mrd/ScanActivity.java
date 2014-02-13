@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
@@ -72,6 +71,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private String imei_id;
 	static final int REQUEST_MANUAL_BARCODE = 1;
 	private Intent intent_manual_barcode;
+	private String user_name;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -98,6 +98,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				.putString(VariableManager.EXTRA_DRIVER_ID,
 						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();
 
+		user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
+		
 		initViewHolder();
 
 		if (savedInstanceState != null)
@@ -237,17 +239,20 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    // Check which request we're responding to
-	    if (requestCode == REQUEST_MANUAL_BARCODE) {
-	        // Make sure the request was successful
-	        if (resultCode == RESULT_OK) {
-	        	handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE), null, null, null), null, 0);
-	            Toast.makeText(this, "Barcode: " + data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE), Toast.LENGTH_LONG).show();;
-	        }
-	    }
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		// Check which request we're responding to
+		if (requestCode == REQUEST_MANUAL_BARCODE)
+		{
+			// Make sure the request was successful
+			if (resultCode == RESULT_OK)
+			{
+				handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
+						null, null, null), null, 0);
+			}
+		}
 	}
-	
+
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState)
 	{
@@ -276,6 +281,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				.findViewById(R.id.button_change_user_cancel);
 		final Button button_ok = (Button) dialog_change_user
 				.findViewById(R.id.button_change_user_ok);
+		final TextView dialog_content = (TextView) dialog_change_user
+				.findViewById(R.id.text_change_driver_content);
+		
+		dialog_content.setText("Are you sure you want to log out " + user_name + "?");
 
 		button_close.setOnClickListener(new OnClickListener()
 		{
@@ -609,7 +618,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			Log.d(TAG, "Enter barcode manually");
 			// TODO: Add barcode manually
 			intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
-		    startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
+			startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
 			return true;
 		case R.id.action_scan_change_driver:
 			Log.d(TAG, "Change driver");

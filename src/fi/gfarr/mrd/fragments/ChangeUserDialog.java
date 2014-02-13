@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import fi.gfarr.mrd.R;
 
 public class ChangeUserDialog extends Dialog //implements android.view.View.OnClickListener
@@ -16,6 +17,7 @@ public class ChangeUserDialog extends Dialog //implements android.view.View.OnCl
 	private Dialog dialog;
 	private Button button_cancel, button_ok;	
 	private ImageButton button_close;
+	private TextView dialog_content;
 
 	public ChangeUserDialog(Activity a)
 	{
@@ -34,6 +36,7 @@ public class ChangeUserDialog extends Dialog //implements android.view.View.OnCl
 		button_close = (ImageButton) findViewById(R.id.button_change_user_closeButton);
 		button_cancel = (Button) findViewById(R.id.button_change_user_cancel);
 		button_ok = (Button) findViewById(R.id.button_change_user_ok);
+		dialog_content = (TextView) findViewById(R.id.text_change_driver_content);
 
 //		button_scan.setOnClickListener(this);
 //		button_continue.setOnClickListener(this);
