@@ -29,13 +29,13 @@ public class ChangeUserDialog extends Dialog
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.dialog_change_user_confirm);
 
-		Typeface typeface_robotoBold = Typeface.createFromAsset(context.getAssets(), FontHelper
+		Typeface typeface_roboto_bold = Typeface.createFromAsset(context.getAssets(), FontHelper
 				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_BOLD));
 
 		dialog_title = (TextView) findViewById(R.id.textView_trafficDelay_title);
 		
-		dialog_title.setTypeface(typeface_robotoBold);
+		dialog_title.setTypeface(typeface_roboto_bold);
 	}
 
 }

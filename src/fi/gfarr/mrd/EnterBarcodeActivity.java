@@ -1,7 +1,9 @@
 package fi.gfarr.mrd;
 
+import fi.gfarr.mrd.helper.FontHelper;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -55,10 +57,15 @@ public class EnterBarcodeActivity extends FragmentActivity
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+			
 			holder.text_barcode = (EditText) rootView.findViewById(R.id.text_enter_barcode);
 			holder.button_ok = (Button) rootView.findViewById(R.id.button_enter_barcode_ok);
-
-			// Store the holder with the view.
+			
+			holder.button_ok.setTypeface(typeface_roboto_bold);
+			
 			rootView.setTag(holder);
 
 		}

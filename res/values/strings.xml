@@ -18,7 +18,7 @@
     <string name="title_actionbar_delivery_details">Delivery Details</string>
     <string name="title_actionbar_transfer_data">Transferring delivery data</string>
     <string name="title_actionbar_failed_delivery">Reason for failed delivery</string>
-    <string name="title_actionbar_enter_barcode">Enter Barcode Manually</string>
+    <string name="title_actionbar_enter_barcode">Enter barcode</string>
     <string name="title_actionbar_change_driver">Change Driver</string>
 
     <!-- Button texts -->

@@ -313,7 +313,7 @@ public class MainActivity extends Activity
 	/**
 	 * Requests token from server.
 	 * 
-	 * @author greg
+	 * @author htdahms
 	 * 
 	 */
 	private class ManagerLoginUserTask extends AsyncTask<Void, Void, Boolean>
@@ -467,21 +467,22 @@ public class MainActivity extends Activity
 				holder = new ViewHolder();
 			}
 
-			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_BOLD));
-			
+			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_REGULAR));
+
 			holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
-			holder.button_login.setTypeface(typeface_robotoBold);
-			
+			holder.button_login.setTypeface(typeface_roboto_bold);
+
 			holder.text_name = (AutoCompleteTextView) root_view
 					.findViewById(R.id.text_mainmenu_name);
 			holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
 
-			holder.text_password.setTypeface(Typeface.DEFAULT); // TODO: Remove from here. Add
-																// proper font setting.
+			holder.text_password.setTypeface(typeface_roboto_regular);
 
-			// Store the holder with the view.
 			root_view.setTag(holder);
 
 		}

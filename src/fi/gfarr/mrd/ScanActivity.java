@@ -162,9 +162,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 				// Check if all bags have been scanned
 
-				if (true) // DEBUG
-				// if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() >
-				// 0))
+				// if (true) // DEBUG
+				if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
 				{
 					// Go to View Deliveries screen
 					Intent intent = new Intent(getApplicationContext(),
@@ -711,7 +710,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_BOLD));
-			
+
 			holder.list = (ListView) root_view.findViewById(R.id.scan_list);
 
 			holder.button_start_milkrun = (Button) root_view
@@ -722,7 +721,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_scan);
 
 			holder.button_start_milkrun.setTypeface(typeface_robotoBold);
-			
+
 			// Store the holder with the view.
 			root_view.setTag(holder);
 

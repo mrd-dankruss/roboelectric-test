@@ -20,7 +20,7 @@
         android:textColor="@color/text_grey"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:textSize="16sp" />
+        android:textSize="@dimen/font_size_text_field" />
     
     <Button
         android:id="@+id/button_enter_barcode_ok"
@@ -32,6 +32,7 @@
         android:background="@drawable/button_custom"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:text="@string/button_ok" />
+        android:text="@string/button_ok"
+        android:textSize="@dimen/font_size_button" />
 
 </LinearLayout>
