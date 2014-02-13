@@ -4,17 +4,20 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import fi.gfarr.mrd.adapters.TabsPagerAdapter;
+import fi.gfarr.mrd.helper.VariableManager;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements TabListener
 
 {
-
+	private final String TAG = "ViewDeliveriesFragmentActivity";
 	private ViewHolder holder;
 	private View rootView;
 	private int currentPage = 0;

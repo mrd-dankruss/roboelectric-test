@@ -35,7 +35,6 @@ public class DeliveryDetailsActivity extends FragmentActivity
 		intent = getIntent();
 
 		bag = DbHandler.getInstance(this).getBag(
-				intent.getStringExtra(VariableManager.EXTRA_DRIVER_ID),
 				intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 	}
 
@@ -45,7 +44,7 @@ public class DeliveryDetailsActivity extends FragmentActivity
 		super.onResume();
 
 		Log.d("fi.gfarr.mrd", "Title: " + holder.text_delivery_title.getText());
-		
+
 		holder.text_delivery_number.setText(intent
 				.getStringExtra(VariableManager.EXTRA_LIST_POSITION));
 		holder.text_delivery_title.setText("CURRENT MILKRUN DELIVERY"); // TODO: Change
@@ -56,14 +55,14 @@ public class DeliveryDetailsActivity extends FragmentActivity
 		holder.text_delivery_communication_log.setText("SMS sent at 15:13\nRunning 5 minutes late");
 
 		// TODO:Set image here one day when app is extended.
-		//holder.image_company_logo.setText("");
+		// holder.image_company_logo.setText("");
 
-		//holder.button_update_status.setText("");
-		//holder.button_more.setText("");
-		
+		// holder.button_update_status.setText("");
+		// holder.button_more.setText("");
+
 		holder.button_update_status.setOnClickListener(new View.OnClickListener()
 		{
-			
+
 			@Override
 			public void onClick(View v)
 			{
@@ -73,14 +72,14 @@ public class DeliveryDetailsActivity extends FragmentActivity
 
 		holder.button_more.setOnClickListener(new View.OnClickListener()
 		{
-			
+
 			@Override
 			public void onClick(View v)
 			{
 				// TODO Auto-generated method stub
 			}
 		});
-		
+
 	}
 
 	public void initViewHolder()

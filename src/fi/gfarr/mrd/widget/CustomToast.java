@@ -17,30 +17,32 @@ public class CustomToast
 
 	public CustomToast(Activity activity)
 	{
-
 		LayoutInflater inflater = activity.getLayoutInflater();
 		View view = activity.getWindow().getDecorView().findViewById(android.R.id.content);
-		
-		layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) view.findViewById(R.id.toast_layout_root));
+
+		layout = inflater.inflate(R.layout.toast_layout,
+				(ViewGroup) view.findViewById(R.id.toast_layout_root));
 
 		text = (TextView) layout.findViewById(R.id.textView_toast);
-		
+
 		toast = new Toast(activity);
 		toast.setGravity(Gravity.FILL_HORIZONTAL, 0, -280);
 		toast.setDuration(Toast.LENGTH_LONG);
 		toast.setView(layout);
-
 	}
 
-	public void setSuccess(boolean goodNewsToast) {
+	public void setSuccess(boolean goodNewsToast)
+	{
 		if (goodNewsToast)
 		{
 			layout.setBackgroundResource(R.drawable.toast_green);
-		} else {
+		}
+		else
+		{
 			layout.setBackgroundResource(R.drawable.toast_red);
 		}
 	}
-	
+
 	public void setText(String msg)
 	{
 		text.setText(msg);

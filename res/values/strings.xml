@@ -77,6 +77,7 @@
     <string name="title_deliveryHandover">Delivery Handover</string>
     <string name="title_transfer_data_subTitle">Connected to Dispatch Wireless network</string>
     <string name="title_geofence_enter">Arrived at destination!</string>
+    <string name="title_dialog_handover">Update collection status</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>

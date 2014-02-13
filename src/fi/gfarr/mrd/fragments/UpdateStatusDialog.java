@@ -64,7 +64,7 @@ public class UpdateStatusDialog extends DialogFragment
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
 		TextView title = (TextView) v.findViewById(R.id.textView_trafficDelay_title);
-		title.setText(R.string.title_updateStatusDialog);
+		title.setText(R.string.title_dialog_handover);
 
 		ImageButton closeDialogButton = (ImageButton) v
 				.findViewById(R.id.button_trafficDelay_closeButton);

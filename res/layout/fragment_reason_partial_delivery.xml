@@ -20,7 +20,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/reason_partial_button"
+        android:layout_above="@+id/button_reason_partial_delivery"
         android:layout_below="@+id/reason_partial_delivery_text"
         android:layout_margin="8dp"
         android:background="#E9E9E9"
@@ -35,7 +35,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/reason_partial_button"
+        android:id="@+id/button_reason_partial_delivery"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

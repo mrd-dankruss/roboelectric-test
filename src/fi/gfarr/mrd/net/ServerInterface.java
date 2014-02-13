@@ -62,32 +62,6 @@ public class ServerInterface
 
 	private final static String TAG = "ServerInterface";
 
-	// private static Context context;
-
-	/*	private static final int MSG_SHOW_TOAST = 1;
-
-		// Used to display toasts on the UI thread from these static methods
-		private static Handler messageHandler = new Handler()
-		{
-			public void handleMessage(android.os.Message msg)
-			{
-				if (msg.what == MSG_SHOW_TOAST)
-				{
-					String message = (String) msg.obj;
-					Toast.makeText(VariableManager.CONTEXT, message, Toast.LENGTH_SHORT).show();
-				}
-			}
-		};
-		private static String toast_msg = ""; // Toast msg to be displayed
-
-		private static void displayMessage(String message)
-		{
-			Message msg = new Message();
-			msg.what = MSG_SHOW_TOAST;
-			msg.obj = message;
-			messageHandler.sendMessage(msg);
-		}*/
-
 	public static Handler UIHandler = new Handler(Looper.getMainLooper());
 
 	public static void displayToast(final String message)
@@ -204,8 +178,10 @@ public class ServerInterface
 	 */
 	public static void getDrivers(Context context, String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/driver/drivers?imei="
-				+ imei_id + "&mrdtoken=" + VariableManager.token;
+
+		String url = "http://paperlessapp.apiary.io/v1/driver/drivers?imei=" + imei_id
+				+ "&mrdtoken=" + VariableManager.token;
+
 		String response = getInputStreamFromUrl(url, null, null);
 
 		JSONArray drivers_jArray = null;
@@ -272,8 +248,8 @@ public class ServerInterface
 	 */
 	public static void getManagers(Context context, String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/manager/managers?imei="
-				+ imei_id + "&mrdtoken=" + VariableManager.token;
+		String url = "http://paperlessapp.apiary.io/v1/manager/managers?imei=" + imei_id
+				+ "&mrdtoken=" + VariableManager.token;
 		String response = getInputStreamFromUrl(url, null, null);
 
 		JSONArray managers_jArray = null;
@@ -333,9 +309,8 @@ public class ServerInterface
 	 */
 	public static String authDriver(String PIN, String driver_id, String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei="
-				+ imei_id + "&mrdtoken=" + VariableManager.token + "&driverPIN="
-				+ PIN + "&driverID=" + driver_id;
+		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei=" + imei_id + "&mrdtoken="
+				+ VariableManager.token + "&driverPIN=" + PIN + "&driverID=" + driver_id;
 
 		String response = getInputStreamFromUrl(url, null, null);
 
@@ -379,9 +354,9 @@ public class ServerInterface
 	 */
 	public static String authManager(String man_id, String driver_id, String PIN, String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/auth/manager?imei="
-				+ imei_id + "&mrdtoken=" + VariableManager.token + "&managerPIN="
-				+ PIN + "&managerid=" + man_id + "&driverid=" + driver_id;
+		String url = "http://paperlessapp.apiary.io/v1/auth/manager?imei=" + imei_id + "&mrdtoken="
+				+ VariableManager.token + "&managerPIN=" + PIN + "&managerid=" + man_id
+				+ "&driverid=" + driver_id;
 
 		String response = getInputStreamFromUrl(url, null, null);
 
@@ -520,6 +495,9 @@ public class ServerInterface
 					// Barcode
 					String barcode = result.getString("barcode");
 
+					// Status
+					String bag_status = result.getString("status");
+
 					// Waybill count
 					int waybill_count = result.getInt("waybillcount");
 
@@ -560,6 +538,7 @@ public class ServerInterface
 					bag.setDestinationContact(dest_contact1);
 					bag.setScanned(scanned);
 					bag.setNumberItems(waybill_count);
+					bag.setStatus(bag_status);
 
 					JSONArray json_contacts = result.getJSONArray("contacts");
 					ArrayList<Contact> contacts = new ArrayList<Contact>();
@@ -877,6 +856,77 @@ public class ServerInterface
 		}
 	}
 
+	public static void downloadPartialDeliveryReasons(Context context)
+	{
+		String url = "http://paperlessapp.apiary.io/v1/milkruns/partial?mrdToken="
+				+ VariableManager.token;
+
+		Log.i(TAG, "Fetching " + url);
+
+		try
+		{
+			String response = getInputStreamFromUrl(url, null, null);
+
+			JSONObject jObject = new JSONObject(response);
+
+			JSONArray result = jObject.getJSONArray("response");
+
+			ContentValues values;
+
+			if (result != null)
+			{
+				// Stores waybill IDs as they are loaded.
+				// Used to count the number of occurences
+				// For counting multiple packages.
+				// Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+
+				for (int i = 0; i < result.length(); i++)
+				{
+					try
+					{
+						values = new ContentValues();
+
+						// ID
+						String reason_id = result.getJSONObject(i).getString("id");
+
+						// Reason
+						String reason_name = result.getJSONObject(i).getString("name");
+
+						values.put(DbHandler.C_PARTIAL_DELIVERY_REASONS_ID, reason_id);
+						values.put(DbHandler.C_PARTIAL_DELIVERY_REASONS_NAME, reason_name);
+
+						DbHandler.getInstance(context).addRow(
+								DbHandler.TABLE_PARTIAL_DELIVERY_REASONS, values);
+					}
+					catch (NumberFormatException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						if (VariableManager.DEBUG)
+						{
+							displayToast("JSONException: milkruns/partial");
+						}
+					}
+				}
+			}
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: milkruns/partial");
+			}
+		}
+	}
+
 	/**
 	 * Perform HTTP GET request.
 	 * 
@@ -906,7 +956,8 @@ public class ServerInterface
 			request.setHeader("Content-type", "application/json");
 
 			// DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-			DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
+			// DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
+			DefaultHttpClient httpclient = getNewHttpClient();
 
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
@@ -1055,6 +1106,20 @@ public class ServerInterface
 	}
 
 	/**
+	 * Post partial delivery to API.
+	 * 
+	 * @param waybill_id
+	 * @param status_id
+	 * @param extra
+	 * @return
+	 */
+	public static String postPartialDelivery(String waybill_id, String status_id, String extra)
+	{
+		return postData("http://paperlessapp.apiary.io/v1/waybill/delivery?id=" + waybill_id
+				+ "&deliveryid=" + status_id + "&mrdToken=" + VariableManager.token);
+	}
+
+	/**
 	 * Perform HTTP POST request.
 	 * 
 	 * @param url
@@ -1064,7 +1129,8 @@ public class ServerInterface
 	public static String postData(String url)
 	{
 		// Create a new HttpClient and Post Header
-		HttpClient httpclient = new DefaultHttpClient();
+		// HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = getNewHttpClient();
 		HttpPost httppost = new HttpPost(url);
 
 		try

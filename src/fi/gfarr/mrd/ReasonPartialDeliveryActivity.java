@@ -13,9 +13,9 @@ import fi.gfarr.mrd.fragments.SmsListFragment;
 
 public class ReasonPartialDeliveryActivity extends FragmentActivity
 {
-	
+
 	Fragment fragment;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -28,9 +28,9 @@ public class ReasonPartialDeliveryActivity extends FragmentActivity
 		if (fragment == null)
 		{
 			fragment = new ReasonPartialDeliveryFragment();
-			fm.beginTransaction().add(R.id.activity_reason_partial_delivery_container, fragment).commit();
+			fm.beginTransaction().add(R.id.activity_reason_partial_delivery_container, fragment)
+					.commit();
 		}
 		// Fragment: Home End
 	}
-	
 }

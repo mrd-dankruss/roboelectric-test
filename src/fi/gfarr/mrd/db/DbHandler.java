@@ -38,6 +38,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 	public static final String TABLE_DELAYS = "Delays";
 	public static final String TABLE_FAILED_HANDOVER_REASONS = "FailedHandoverReasons";
+	public static final String TABLE_PARTIAL_DELIVERY_REASONS = "PartialDeliveryReasons";
 
 	// ------------ Fields - Drivers ---------
 	public static final String C_DRIVER_ID = "_id"; // Primary key
@@ -107,6 +108,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 	public static final String C_WAYBILL_ID = "_id"; // ID PK
 	public static final String C_WAYBILL_BAG_ID = "bag_id"; // FK
+	public static final String C_WAYBILL_BARCODE = "waybill_barcode"; // barcode
 
 	// Waybill dimensions (volumetrics)
 	public static final String C_WAYBILL_DIMEN = "waybill_dimen";
@@ -140,6 +142,10 @@ public class DbHandler extends SQLiteOpenHelper
 	// ------------ Fields - Failed handover reasons -------------
 	public static final String C_FAILED_HANDOVER_REASONS_ID = "failed_handover_reasons_id";
 	public static final String C_FAILED_HANDOVER_REASONS_NAME = "failed_handover_reasons_name";
+
+	// ------------ Fields - Partial delivery reasons -------------
+	public static final String C_PARTIAL_DELIVERY_REASONS_ID = "partial_delvery_reasons_id";
+	public static final String C_PARTIAL_DELIVERY_REASONS_NAME = "partial_delivery_reasons_name";
 
 	public DbHandler(Context context)
 	{
@@ -188,13 +194,14 @@ public class DbHandler extends SQLiteOpenHelper
 					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
 					+ C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST_LONG + " TEXT,"
 					+ C_WAYBILL_DEST_LAT + " TEXT," + C_WAYBILL_DEST_TOWN + " TEXT,"
-					+ C_WAYBILL_DEST_SUBURB + " TEXT," + C_WAYBILL_DEST_ADDRESS + " TEXT,"
-					+ C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
-					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_PARCELCOUNT + " INTEGER,"
-					+ C_WAYBILL_CUSTOMER_ID + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT,"
-					+ C_WAYBILL_CUSTOMER_CONTACT1 + " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT,"
-					+ C_WAYBILL_CUSTOMER_EMAIL + " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
-					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
+					+ C_WAYBILL_BARCODE + " TEXT," + C_WAYBILL_DEST_SUBURB + " TEXT,"
+					+ C_WAYBILL_DEST_ADDRESS + " TEXT," + C_WAYBILL_TEL + " TEXT,"
+					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT," + C_WAYBILL_DIMEN + " TEXT,"
+					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_CUSTOMER_ID + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT1
+					+ " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT," + C_WAYBILL_CUSTOMER_EMAIL
+					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS
+					+ "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 
 			final String CREATE_TABLE_DELAYS = "CREATE TABLE " + TABLE_DELAYS + "(" + C_DELAYS_ID
@@ -212,6 +219,11 @@ public class DbHandler extends SQLiteOpenHelper
 					+ TABLE_FAILED_HANDOVER_REASONS + "(" + C_FAILED_HANDOVER_REASONS_ID
 					+ " INTEGER PRIMARY KEY," + C_FAILED_HANDOVER_REASONS_NAME + " TEXT)";
 			createTable(db, TABLE_FAILED_HANDOVER_REASONS, CREATE_TABLE_FAILED_HANDOVER_REASONS);
+
+			final String CREATE_TABLE_PARTIAL_DELIVERY_REASONS = "CREATE TABLE "
+					+ TABLE_PARTIAL_DELIVERY_REASONS + "(" + C_PARTIAL_DELIVERY_REASONS_ID
+					+ " INTEGER PRIMARY KEY," + C_PARTIAL_DELIVERY_REASONS_NAME + " TEXT)";
+			createTable(db, TABLE_PARTIAL_DELIVERY_REASONS, CREATE_TABLE_PARTIAL_DELIVERY_REASONS);
 
 			db.setTransactionSuccessful();
 		}
@@ -252,6 +264,7 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELAYS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAILED_HANDOVER_REASONS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTIAL_DELIVERY_REASONS);
 		onCreate(db);
 	}
 
@@ -357,6 +370,7 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_WAYBILL_CUSTOMER_NAME, item.getCustomerName());
 		values.put(C_WAYBILL_CUSTOMER_ID, item.getCustomerID());
 		values.put(C_WAYBILL_CUSTOMER_EMAIL, item.getEmail());
+		values.put(C_WAYBILL_BARCODE, item.getBarcode());
 		values.put(C_WAYBILL_WEIGHT, item.getWeight());
 		values.put(C_WAYBILL_BAG_ID, item.getBagNumber()); // FK
 
@@ -631,7 +645,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * Return bag according to bag number
 	 * Should only be one.
 	 */
-	public Bag getBag(String driver_id, String bag_id)
+	public Bag getBag(String bag_id)
 	{
 		SQLiteDatabase db = null;
 		Bag bag = null;
@@ -641,8 +655,8 @@ public class DbHandler extends SQLiteOpenHelper
 			db = this.getReadableDatabase(); // Open db
 
 			// ArrayList<Bag> bags = null;
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
-					+ driver_id + "'";
+			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_ID + " LIKE '" + bag_id
+					+ "'";
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
@@ -673,6 +687,7 @@ public class DbHandler extends SQLiteOpenHelper
 					bag.setDestinationSuburb(cursor.getString(cursor
 							.getColumnIndex(C_BAG_DEST_SUBURB)));
 					bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
+					bag.setStatus(cursor.getString(cursor.getColumnIndex(C_BAG_STATUS)));
 
 					// bags.add(bag);
 					// cursor.moveToNext();
@@ -706,13 +721,96 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
-	 * Returns list of bags, per driver, in DeliveryHandoverDataObject format. Used in successful
-	 * handover screen.
+	 * Return Waybill according to bag ID.
 	 * 
-	 * @param driver_id
+	 * @param bag_id
 	 * @return
 	 */
-	public ArrayList<DeliveryHandoverDataObject> getBagsForHandover(String driver_id)
+	public Waybill getWaybill(String bag_id)
+	{
+		SQLiteDatabase db = null;
+		Waybill waybill = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			// ArrayList<Bag> bags = null;
+			String sql = "SELECT * FROM " + TABLE_WAYBILLS + " WHERE " + C_WAYBILL_BAG_ID
+					+ " LIKE '" + bag_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				// bags = new ArrayList<Bag>();
+
+				if (!cursor.isAfterLast())
+				{
+					waybill = new Waybill(cursor.getString(cursor.getColumnIndex(C_WAYBILL_ID)),
+							cursor.getString(cursor.getColumnIndex(C_WAYBILL_BAG_ID)));
+
+					waybill.setBarcode(cursor.getString(cursor.getColumnIndex(C_WAYBILL_BARCODE)));
+					waybill.setCustomerContact1(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_CUSTOMER_CONTACT1)));
+					waybill.setCustomerContact2(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_CUSTOMER_CONTACT2)));
+					waybill.setCustomerID(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_CUSTOMER_ID)));
+					waybill.setCustomerName(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_CUSTOMER_NAME)));
+					waybill.setEmail(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_CUSTOMER_EMAIL)));
+					waybill.setDeliveryAddress(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_DEST_ADDRESS)));
+					waybill.setDeliveryLat(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_DEST_LAT)));
+					waybill.setDeliveryLong(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_DEST_LONG)));
+					waybill.setDeliverySuburb(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_DEST_SUBURB)));
+					waybill.setDeliveryTown(cursor.getString(cursor
+							.getColumnIndex(C_WAYBILL_DEST_TOWN)));
+					waybill.setDimensions(cursor.getString(cursor.getColumnIndex(C_WAYBILL_DIMEN)));
+					waybill.setWeight(cursor.getString(cursor.getColumnIndex(C_WAYBILL_WEIGHT)));
+					// bags.add(bag);
+					// cursor.moveToNext();
+				}
+			}
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+		return waybill;
+	}
+
+	/**
+	 * Returns list of waybill, per bag, in DeliveryHandoverDataObject format. Used in successful
+	 * handover screen.
+	 * 
+	 * @param bag_id
+	 * @return
+	 */
+	public ArrayList<DeliveryHandoverDataObject> getWaybillsForHandover(String bag_id)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -721,8 +819,8 @@ public class DbHandler extends SQLiteOpenHelper
 			db = this.getReadableDatabase(); // Open db
 
 			ArrayList<DeliveryHandoverDataObject> bags = null;
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
-					+ driver_id + "'";
+			String sql = "SELECT * FROM " + TABLE_WAYBILLS + " WHERE " + C_WAYBILL_BAG_ID
+					+ " LIKE '" + bag_id + "'";
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
@@ -731,12 +829,12 @@ public class DbHandler extends SQLiteOpenHelper
 
 				while (!cursor.isAfterLast())
 				{
-					DeliveryHandoverDataObject bag = new DeliveryHandoverDataObject(
-							cursor.getString(cursor.getColumnIndex(C_BAG_ID)), false);
+					DeliveryHandoverDataObject parcel = new DeliveryHandoverDataObject(
+							cursor.getString(cursor.getColumnIndex(C_WAYBILL_ID)), false);
 
-					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
+					parcel.setBarcode(cursor.getString(cursor.getColumnIndex(C_WAYBILL_BARCODE)));
 
-					bags.add(bag);
+					bags.add(parcel);
 					cursor.moveToNext();
 				}
 			}
@@ -1107,6 +1205,71 @@ public class DbHandler extends SQLiteOpenHelper
 							.getColumnIndex(C_FAILED_HANDOVER_REASONS_NAME));
 					String reason_id = cursor.getString(cursor
 							.getColumnIndex(C_FAILED_HANDOVER_REASONS_ID));
+
+					DialogDataObject dialog_data_object = new DialogDataObject(reason_name,
+							reason_id);
+
+					reasons.add(dialog_data_object);
+
+					cursor.moveToNext();
+				}
+			}
+
+			return reasons;
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return null;
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Return list of reasons for partial delivery
+	 * 
+	 * @return ArrayList<DialogDataObject>
+	 */
+	public ArrayList<DialogDataObject> getPartialDeliveryReasons()
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+			db = this.getReadableDatabase(); // Open db
+
+			ArrayList<DialogDataObject> reasons = null;
+			String sql = "SELECT * FROM " + TABLE_PARTIAL_DELIVERY_REASONS;
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				reasons = new ArrayList<DialogDataObject>();
+
+				while (!cursor.isAfterLast())
+				{
+					String reason_name = cursor.getString(cursor
+							.getColumnIndex(C_PARTIAL_DELIVERY_REASONS_NAME));
+					String reason_id = cursor.getString(cursor
+							.getColumnIndex(C_PARTIAL_DELIVERY_REASONS_ID));
 
 					DialogDataObject dialog_data_object = new DialogDataObject(reason_name,
 							reason_id);

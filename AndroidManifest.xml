@@ -241,13 +241,13 @@
         </activity>
         <activity
             android:name="fi.gfarr.mrd.ReasonPartialDeliveryActivity"
-            android:label="@string/title_actionbar_failed_delivery"
+            android:label="@string/title_reason_partial_deliveries"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="fi.gfarr.mrd.DeliveryHandoverFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
+                android:value="fi.gfarr.mrd.DeliveryHandoverFragmentActivity" />
         </activity>
         <activity
             android:name="fi.gfarr.mrd.HomeActivity"
@@ -267,6 +267,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
+
+        <receiver android:name="fi.gfarr.mrd.net.NetworkStateReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
