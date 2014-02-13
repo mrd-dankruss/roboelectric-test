@@ -22,6 +22,7 @@ import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ReasonForFailedHandoverListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
+import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
@@ -153,6 +154,11 @@ public class ReasonForFailedHandoverFragment extends Fragment
 					custom_toast.setText("Success");
 					custom_toast.setSuccess(true);
 					custom_toast.show();
+					String bagid = getActivity().getIntent().getStringExtra(
+							VariableManager.EXTRA_NEXT_BAG_ID);
+					Bag bag = DbHandler.getInstance(getActivity()).getBag(bagid);
+					bag.setStatus(Bag.STATUS_UNSUCCESSFUL);
+					DbHandler.getInstance(getActivity()).addBag(bag);
 				}
 				else
 				{

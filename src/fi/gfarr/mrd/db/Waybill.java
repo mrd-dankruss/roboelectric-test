@@ -47,10 +47,16 @@ public class Waybill
 	// Parcel sequence number
 	private int parcel_seq;
 
-	public Waybill(String wayb, String bag)
+	/**
+	 * New Waybill object
+	 * 
+	 * @param waybill_number
+	 * @param bag_id
+	 */
+	public Waybill(String waybill_number, String bag_id)
 	{
-		setWaybillNumber(wayb);
-		setBagNumber(bag);
+		setWaybillNumber(waybill_number);
+		setBagNumber(bag_id);
 		setBarcode("no barcode");
 		setDimensions("0");
 		setDeliveryLat("0");

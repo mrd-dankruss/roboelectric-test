@@ -139,6 +139,12 @@ public class MainActivity extends Activity
 			}
 			ServerInterface.downloadFailedDeliveryReasons(getApplicationContext());
 
+			if (dialog.isShowing())
+			{
+				dialog.setTitle("Retrieving partial delivery reasons");
+			}
+			ServerInterface.downloadPartialDeliveryReasons(getApplicationContext());
+
 			// Log.i(TAG, "Token aquired.");
 			return token;
 		}

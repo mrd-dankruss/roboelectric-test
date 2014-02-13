@@ -1,6 +1,9 @@
 package fi.gfarr.mrd.datatype;
 
-public class DeliveryHandoverDataObject
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class DeliveryHandoverDataObject implements Parcelable
 {
 
 	private String parcelID;
@@ -12,6 +15,11 @@ public class DeliveryHandoverDataObject
 		this.parcelID = parcelID;
 		this.parcelScanned = parcelScanned;
 		setBarcode("No Barcode");
+	}
+
+	public DeliveryHandoverDataObject(Parcel in)
+	{
+		readFromParcel(in);
 	}
 
 	public String getParcelID()
@@ -45,5 +53,42 @@ public class DeliveryHandoverDataObject
 	{
 		this.barcode = barcode;
 	}
+
+	@Override
+	public int describeContents()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags)
+	{
+		// TODO Auto-generated method stub
+		dest.writeString(getParcelID());
+		dest.writeByte((byte) (isParcelScanned() ? 1 : 0));
+		dest.writeString(getBarcode());
+
+	}
+
+	public void readFromParcel(Parcel in)
+	{
+		parcelID = in.readString();
+		parcelScanned = in.readByte() != 0; // myBoolean == true if byte != 0
+		setBarcode(in.readString());
+	}
+
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator()
+	{
+		public DeliveryHandoverDataObject createFromParcel(Parcel in)
+		{
+			return new DeliveryHandoverDataObject(in);
+		}
+
+		public DeliveryHandoverDataObject[] newArray(int size)
+		{
+			return new DeliveryHandoverDataObject[size];
+		}
+	};
 
 }

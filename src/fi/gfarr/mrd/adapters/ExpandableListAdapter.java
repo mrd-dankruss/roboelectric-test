@@ -81,7 +81,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter
 	@Override
 	public int getChildrenCount(int groupPosition)
 	{
-		Log.d("fi.gfarr.mrd", "getChildCount: " + data.get(groupPosition).size());
+//		Log.d("fi.gfarr.mrd", "getChildCount: " + data.get(groupPosition).size());
 		return data.get(groupPosition).size();
 	}
 

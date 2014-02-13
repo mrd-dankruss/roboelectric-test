@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +21,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import fi.gfarr.mrd.DeliveryDetailsActivity;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReasonPartialDeliveryActivity;
 import fi.gfarr.mrd.datatype.DeliveryHandoverDataObject;
-import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.widget.CustomToast;
@@ -60,13 +57,10 @@ public class DeliveryHandoverFragment extends Fragment
 			list.add(new DeliveryHandoverDataObject("7789995442", true));
 			list.add(new DeliveryHandoverDataObject("2222346456", true));*/
 
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+		String bagid = getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
+		// Log.d(TAG, "Zorro - Bag ID: " + bagid);
 
-		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
-		// Log.d(TAG, "Driver ID: " + driverid);
-
-		list = DbHandler.getInstance(getActivity()).getBagsForHandover(driverid);
+		list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 
 		final DeliveryHandoverAdapter adapter = new DeliveryHandoverAdapter(list);
 		holder.list.setAdapter(adapter);
@@ -124,8 +118,21 @@ public class DeliveryHandoverFragment extends Fragment
 							ft.commit();*/
 							Intent intent = new Intent(getActivity(),
 									ReasonPartialDeliveryActivity.class);
-							//intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
-							startActivity(intent);
+
+							Bundle b = new Bundle();
+							/*b.putParcelableArrayList(
+									VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
+									getUnscannedParcels(list));*/
+							intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
+									getUnscannedParcels(list));
+							intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, getActivity()
+									.getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID));
+							// intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE, b);
+							// intent.putExtra(VariableManager.EXTRA_BAG_NO,
+							// ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
+							// startActivity(intent);
+							getActivity().startActivityForResult(intent,
+									VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
 						}
 					});
 
@@ -145,6 +152,36 @@ public class DeliveryHandoverFragment extends Fragment
 		});
 
 		return rootView;
+	}
+
+	/**
+	 * Checks list of parcels and returns a list of parcels which have not yet been scanned.
+	 * 
+	 * @param list
+	 * @return
+	 */
+	private String[] getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list)
+	{
+		ArrayList<String> arraylist_unscanned = new ArrayList<String>();
+
+		// TODO conver arraylist to array properly
+		for (int i = 0; i < list.size(); i++)
+		{
+			if (!list.get(i).isParcelScanned())
+			{
+				// list_unscanned[i] = (list.get(i).getParcelID());
+				arraylist_unscanned.add(list.get(i).getParcelID());
+			}
+		}
+		String[] list_unscanned = new String[arraylist_unscanned.size()];
+
+		for (int i = 0; i < arraylist_unscanned.size(); i++)
+		{
+			list_unscanned[i] = arraylist_unscanned.get(i);
+			Log.d(TAG, "unscanned bagid: " + i + ") " + list_unscanned[i]);
+		}
+
+		return list_unscanned;
 	}
 
 	/**

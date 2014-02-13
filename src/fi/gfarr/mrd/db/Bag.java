@@ -37,7 +37,8 @@ public class Bag
 	 */
 	private String status;
 	public static final String STATUS_COMPLETED = "completed";
-	public static final String STATUS_TODO = "todo";
+	public static final String STATUS_PARTIAL = "partial";
+	public static final String STATUS_TODO = "incomplete";
 	public static final String STATUS_UNSUCCESSFUL = "unsuccessful";
 
 	// Has bag been assigned?

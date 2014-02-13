@@ -73,7 +73,8 @@
         android:layout_toRightOf="@+id/textView_manifest_volume"
         android:maxWidth="40dp"
         android:text="TextView"
-        android:textSize="@dimen/font_size_manifest_panel" />
+        android:textSize="@dimen/font_size_manifest_panel"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/textView_manifest_waybill"
