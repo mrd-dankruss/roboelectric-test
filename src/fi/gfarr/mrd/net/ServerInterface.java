@@ -178,7 +178,7 @@ public class ServerInterface
 	 */
 	public static void getDrivers(Context context)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/driver/drivers?imei="
+		String url = "https://paperlessapp.apiary.io/v1/driver/drivers?imei="
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token;
 		String response = getInputStreamFromUrl(url, null, null);
 
@@ -307,7 +307,7 @@ public class ServerInterface
 	 */
 	public static String authDriver(String PIN)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei="
+		String url = "https://paperlessapp.apiary.io/v1/auth/driver?imei="
 				+ VariableManager.IMEI_TEST + "&mrdtoken=" + VariableManager.token + "&driverPIN="
 				+ PIN;
 
@@ -955,7 +955,8 @@ public class ServerInterface
 			request.setHeader("Content-type", "application/json");
 
 			// DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-			DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
+			// DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
+			DefaultHttpClient httpclient = getNewHttpClient();
 
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
@@ -1127,7 +1128,8 @@ public class ServerInterface
 	public static String postData(String url)
 	{
 		// Create a new HttpClient and Post Header
-		HttpClient httpclient = new DefaultHttpClient();
+		// HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = getNewHttpClient();
 		HttpPost httppost = new HttpPost(url);
 
 		try
