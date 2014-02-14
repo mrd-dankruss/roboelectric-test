@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
@@ -230,6 +232,13 @@ public class EnterPinActivity extends Activity
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_REGULAR));
+			
 			holder.button_login = (Button) root_view.findViewById(R.id.button_enter_pin_login);
 			holder.button_change = (Button) root_view.findViewById(R.id.button_enter_pin_change);
 			holder.textView_driver = (TextView) root_view
@@ -240,6 +249,12 @@ public class EnterPinActivity extends Activity
 			holder.relativeLayout_toast = (RelativeLayout) root_view
 					.findViewById(R.id.toast_enter_pin);
 
+			
+			holder.button_login.setTypeface(typeface_roboto_bold);
+			holder.button_change.setTypeface(typeface_roboto_bold);
+			holder.textView_driver.setTypeface(typeface_roboto_bold);
+			holder.editText_pin.setTypeface(typeface_roboto_regular);
+			
 			// Store the holder with the view.
 			root_view.setTag(holder);
 

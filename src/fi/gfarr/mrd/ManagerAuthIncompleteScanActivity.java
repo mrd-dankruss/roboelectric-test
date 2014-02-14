@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,8 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import fi.gfarr.mrd.EnterPinActivity.MyHandler;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
@@ -44,7 +45,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 
 		// Initialize ViewHolder
 		initViewHolder();
-		
+
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
 
@@ -292,6 +293,13 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_REGULAR));
+
 			holder.button_continue = (Button) root_view.findViewById(R.id.button_manAuth_continue);
 			holder.button_change_manager = (Button) root_view
 					.findViewById(R.id.button_manAuth_change);
@@ -302,9 +310,10 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 					.findViewById(R.id.textView_manAuth_manager_name);
 			holder.editText_pin = (EditText) root_view.findViewById(R.id.editText_manAuth_pin);
 			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_man_auth_toast);
-
 			holder.relativeLayout_toast = (RelativeLayout) root_view
 					.findViewById(R.id.toast_man_auth);
+			
+			
 
 			// Store the holder with the view.
 			root_view.setTag(holder);

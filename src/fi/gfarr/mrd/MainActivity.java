@@ -90,6 +90,7 @@ public class MainActivity extends Activity
 
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
+		Log.d("IMEI", imei_id);
 
 	}
 
