@@ -195,7 +195,7 @@ public class MoreDialogFragment extends DialogFragment
 		@Override
 		protected String doInBackground(Void... params)
 		{
-			return ServerInterface.setNextDelivery(bagid);
+			return ServerInterface.getInstance(getActivity()).setNextDelivery(bagid);
 		}
 
 		@Override

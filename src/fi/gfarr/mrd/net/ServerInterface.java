@@ -1407,7 +1407,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url, null, null);
+			String response = getInputStreamFromUrl(url);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -1456,7 +1456,7 @@ public class ServerInterface
 		return id;
 	}
 
-	public static String setNextDelivery(String id)
+	public String setNextDelivery(String id)
 	{
 
 		String url = "http://paperlessapp.apiary.io/v1/waybill/setnext?id=" + id + "&mrdToken="
