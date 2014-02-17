@@ -5,8 +5,8 @@
     android:orientation="vertical"
     android:background="@color/main_activity_grey" >
     
-    <TextView
-        android:id="@+id/text_mainmenu_name"
+    <AutoCompleteTextView
+        android:id="@+id/text_login_screen_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
@@ -24,7 +24,7 @@
         android:textSize="@dimen/font_size_text_field" />
     
     <EditText
-        android:id="@+id/text_mainmenu_password"
+        android:id="@+id/text_login_screen_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
@@ -42,7 +42,7 @@
         android:inputType="numberPassword" />
     
     <Button
-        android:id="@+id/button_login"
+        android:id="@+id/button_login_screen"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"

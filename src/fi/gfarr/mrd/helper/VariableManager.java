@@ -51,5 +51,9 @@ public class VariableManager
 
 	// Activity result codes
 	public static final int ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY = 0;
+	
+	//Last Logged In
+	public static final String LAST_LOGGED_IN_MANAGER_NAME = "fi.gfarr.mrd.last_logged_in_manager_name";
+	public static final String LAST_LOGGED_IN_MANAGER_ID = "fi.gfarr.mrd.last_logged_in_manager_id";
 
 }

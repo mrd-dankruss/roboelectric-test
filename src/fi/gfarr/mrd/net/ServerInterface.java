@@ -15,8 +15,6 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import javax.net.ssl.SSLSocketFactory;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -1325,6 +1323,72 @@ public class ServerInterface
 				return new InputStreamReader(in);
 			}
 		}
+	}
+
+	/**
+	 * Retrieve a single bag object
+	 * 
+	 * @param c
+	 * @param bag_id
+	 */
+	public static String scanBag(Context context, String barcode)
+	{
+		String id = "";
+		
+		String url = "http://paperlessapp.apiary.io/v1/bags/scan?barcode=" + barcode + "&mrdToken="
+				+ VariableManager.token;
+
+		Log.i(TAG, "Fetching " + url);
+
+		try
+		{
+			String response = getInputStreamFromUrl(url, null, null);
+
+			JSONObject jObject = new JSONObject(response);
+
+			JSONObject result = jObject.getJSONObject("response").getJSONObject("bag");
+
+			if (result != null)
+			{
+
+				// Stores waybill IDs as they are loaded.
+				// Used to count the number of occurences
+				// For counting multiple packages.
+				Hashtable<String, Integer> waybill_IDs = new Hashtable<String, Integer>();
+
+				try
+				{
+					// ID
+					id = result.getString("id");
+
+				}
+				catch (NumberFormatException e)
+				{
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw));
+					Log.e(TAG, sw.toString());
+				}
+				catch (JSONException e)
+				{
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw));
+					Log.e(TAG, sw.toString());
+					if (VariableManager.DEBUG)
+					{
+						displayToast("JSONException: bags/bag");
+					}
+				}
+
+			}
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		
+		return id;
 	}
 
 }

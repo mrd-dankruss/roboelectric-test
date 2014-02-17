@@ -22,7 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import fi.gfarr.mrd.adapters.PersonAutoCompleteAdapter;
+import fi.gfarr.mrd.adapters.UserAutoCompleteAdapter;
 import fi.gfarr.mrd.datatype.UserItem;
 import fi.gfarr.mrd.datatype.UserItem.UserType;
 import fi.gfarr.mrd.db.DbHandler;
@@ -63,7 +63,7 @@ public class MainActivity extends Activity
 
 		initClickListeners();
 
-		PersonAutoCompleteAdapter adapter = new PersonAutoCompleteAdapter(getApplicationContext(),
+		UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
 				person_item_list);
 
 		// Set the adapter

@@ -267,6 +267,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
+        <activity
+            android:name="fi.gfarr.mrd.ManagerAuthNotAssignedActivity"
+            android:label="@string/title_actionbar_manager_auth_not_assigned"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ScanActivity" />
+        </activity>
+        <activity
+            android:name="fi.gfarr.mrd.LoginActivity"
+            android:label="@string/title_actionbar_mainmenu"
+            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fi.gfarr.mrd.ScanActivity" />
+        </activity>
 
         <receiver android:name="fi.gfarr.mrd.net.NetworkStateReceiver" >
             <intent-filter>

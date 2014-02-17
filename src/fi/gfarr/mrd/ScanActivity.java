@@ -42,11 +42,11 @@ import fi.gfarr.mrd.adapters.ScanSimpleCursorAdapter;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.fragments.ChangeUserDialog;
 import fi.gfarr.mrd.fragments.IncompleteScanDialog;
+import fi.gfarr.mrd.fragments.NotAssignedToUserDialog;
 import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.widget.CustomToast;
-import fi.gfarr.mrd.widget.Toaster;
 
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
 {
@@ -69,11 +69,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 	private IncompleteScanDialog dialog;
 	private ChangeUserDialog dialog_change_user;
+	private NotAssignedToUserDialog dialog_not_assigned;
 
 	private String imei_id;
 	static final int REQUEST_MANUAL_BARCODE = 1;
+	static final int RESULT_MANAGER_AUTH = 2;
 	private Intent intent_manual_barcode;
 	private String user_name;
+
+	private String last_scanned_barcode;
+
+	SharedPreferences prefs;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -93,8 +99,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		imei_id = mngr.getDeviceId();
 
 		// Store currently selected driver id globally
-		SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+		prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 		prefs.edit()
 				.putString(VariableManager.EXTRA_DRIVER_ID,
@@ -158,10 +163,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
-
 				// Check if all bags have been scanned
-
 				// if (true) // DEBUG
 				if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
 				{
@@ -242,14 +244,22 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		// Check which request we're responding to
 		if (requestCode == REQUEST_MANUAL_BARCODE)
 		{
-			// Make sure the request was successful
 			if (resultCode == RESULT_OK)
 			{
 				handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
 						null, null, null), null, 0);
+			}
+		}
+		if (requestCode == RESULT_MANAGER_AUTH)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
+				{
+					new AddBagToDriver().execute();
+				}
 			}
 		}
 	}
@@ -412,6 +422,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	@Override
 	public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
 	{
+		boolean parcel_in_list = false;
 		// Toast.makeText(this.getApplicationContext(), "Scanned code " + rawResult.getText(),
 		// Toast.LENGTH_LONG).show();
 
@@ -458,6 +469,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 							if (cons_number.equals(rawResult.getText()))
 							{
+
+								parcel_in_list = true;
+
 								// Match found. Mark as selected.
 								text_view.setTextColor(getResources().getColor(
 										R.color.colour_green_scan)); // Change
@@ -524,6 +538,76 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					// }
 					cursor.moveToNext();
 					i++;
+				}
+			}
+			if (parcel_in_list == false)
+			{
+				last_scanned_barcode = rawResult.getText();
+				if (dialog_not_assigned != null)
+				{
+					if (dialog_not_assigned.isShowing() == false)
+					{
+						dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+						dialog_not_assigned.getWindow().setBackgroundDrawable(
+								new ColorDrawable(Color.TRANSPARENT));
+						dialog_not_assigned.show();
+
+						final Button button_continue = (Button) dialog_not_assigned
+								.findViewById(R.id.button_not_assigned_continue);
+
+						button_continue.setOnClickListener(new OnClickListener()
+						{
+							@Override
+							public void onClick(View v)
+							{
+								if (prefs
+										.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+								{
+									Intent intent = new Intent(getApplicationContext(),
+											LoginActivity.class);
+
+									startActivity(intent);
+									dialog_not_assigned.dismiss();
+								}
+								else
+								{
+									startNotAssignedActivity();
+									dialog_not_assigned.dismiss();
+								}
+							}
+						});
+					}
+				}
+				else
+				{
+					dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+					dialog_not_assigned.getWindow().setBackgroundDrawable(
+							new ColorDrawable(Color.TRANSPARENT));
+					dialog_not_assigned.show();
+
+					final Button button_continue = (Button) dialog_not_assigned
+							.findViewById(R.id.button_not_assigned_continue);
+
+					button_continue.setOnClickListener(new OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+							{
+								Intent intent = new Intent(getApplicationContext(),
+										LoginActivity.class);
+
+								startActivity(intent);
+								dialog_not_assigned.dismiss();
+							}
+							else
+							{
+								startNotAssignedActivity();
+								dialog_not_assigned.dismiss();
+							}
+						}
+					});
 				}
 			}
 		}
@@ -617,7 +701,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			return true;
 		case R.id.action_scan_enter_barcode:
 			Log.d(TAG, "Enter barcode manually");
-			// TODO: Add barcode manually
 			intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
 			startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
 			return true;
@@ -753,16 +836,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	}
 
 	/**
-	 * Display a toast using the custom Toaster class
-	 * 
-	 * @param msg
-	 */
-	private void displayToast(String msg)
-	{
-		Toaster.displayToast(msg, holder.textView_toast, holder.relativeLayout_toast, this);
-	}
-
-	/**
 	 * Retrieve list of managers from API in background
 	 * 
 	 * @author greg
@@ -811,6 +884,55 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 			startActivity(intent);
+		}
+	}
+
+	private void startNotAssignedActivity()
+	{
+		// Start manager authorization activity
+		Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
+
+		// Pass driver name on
+		intent.putExtra(VariableManager.EXTRA_DRIVER,
+				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+
+		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+		startActivityForResult(intent, RESULT_MANAGER_AUTH);
+	}
+
+	private class AddBagToDriver extends AsyncTask<Void, Void, Void>
+	{
+
+		private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
+
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Adding bag");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			ServerInterface.downloadBag(getApplicationContext(),
+					ServerInterface.scanBag(getApplicationContext(), last_scanned_barcode),
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
 		}
 	}
 
