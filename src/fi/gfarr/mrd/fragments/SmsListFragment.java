@@ -2,6 +2,9 @@ package fi.gfarr.mrd.fragments;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -142,7 +145,8 @@ public class SmsListFragment extends Fragment
 				result = true;
 			}
 
-			return ServerInterface.postMessage(args[0], args[1], args[2], args[3], result);
+			return ServerInterface.getInstance(getActivity()).postMessage(args[0], args[1],
+					args[2], args[3], result);
 			// return ""; // DEBUG
 		}
 
@@ -158,9 +162,31 @@ public class SmsListFragment extends Fragment
 			VariableManager.delay_id = null;
 
 			CustomToast custom_toast = new CustomToast(getActivity());
-			custom_toast.setText("Success");
-			custom_toast.setSuccess(true);
+			String status = "";
+			try
+			{
+				JSONObject obj = new JSONObject(result);
+				status = obj.getJSONObject("response").getString("status");
+			}
+			catch (JSONException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (status.equals("true"))
+			{
+				custom_toast.setText("Success");
+				custom_toast.setSuccess(true);
+			}
+			else
+			{
+				custom_toast.setText(VariableManager.TEXT_NET_ERROR);
+				custom_toast.setSuccess(false);
+			}
+
 			custom_toast.show();
+
 			getActivity().finish();
 		}
 	}

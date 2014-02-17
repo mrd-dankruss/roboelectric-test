@@ -87,7 +87,7 @@ public class CreatePinActivity extends Activity
 		protected String doInBackground(Void... params)
 		{
 			// TODO Auto-generated method stub
-			return ServerInterface.updatePIN(
+			return ServerInterface.getInstance(getApplicationContext()).updatePIN(
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
 					holder.editText_pin1.getText().toString());
 		}

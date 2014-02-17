@@ -129,7 +129,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
 		@Override
 		protected String doInBackground(String... args)
 		{
-			return ServerInterface.postFailedHandover(args[0], args[1]);
+			return ServerInterface.getInstance(getActivity()).postFailedHandover(args[0], args[1]);
 		}
 
 		@Override

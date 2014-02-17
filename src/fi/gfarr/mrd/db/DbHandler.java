@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONObject;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,6 +19,7 @@ import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.datatype.UserItem;
 import fi.gfarr.mrd.datatype.UserItem.UserType;
 import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.CallQueueObject;
 
 public class DbHandler extends SQLiteOpenHelper
 {
@@ -32,10 +35,9 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String TABLE_DRIVERS = "Drivers";
 	public static final String TABLE_MANAGERS = "Managers";
 	public static final String TABLE_BAGS = "Bag"; // Consignments going to various delivery points
-	public static final String TABLE_WAYBILLS = "Waybill"; // Cargo containing items belonging to
-															// bags
+	public static final String TABLE_WAYBILLS = "Waybill";
+	public static final String TABLE_CALLQUEUE = "CallQueue"; // Queues API calls if net is down
 	public static final String TABLE_CONTACTS = "Contacts";
-
 	public static final String TABLE_DELAYS = "Delays";
 	public static final String TABLE_FAILED_HANDOVER_REASONS = "FailedHandoverReasons";
 	public static final String TABLE_PARTIAL_DELIVERY_REASONS = "PartialDeliveryReasons";
@@ -147,6 +149,11 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_PARTIAL_DELIVERY_REASONS_ID = "partial_delvery_reasons_id";
 	public static final String C_PARTIAL_DELIVERY_REASONS_NAME = "partial_delivery_reasons_name";
 
+	// ------------ Fields - Call Queue -------------
+	public static final String C_CALLQUEUE_ID = "_id";
+	public static final String C_CALLQUEUE_URL = "callqueue_url";
+	public static final String C_CALLQUEUE_JSON = "callqueue_json";
+
 	public DbHandler(Context context)
 	{
 		super(context, DB_NAME, null, DB_VERSION);
@@ -175,20 +182,26 @@ public class DbHandler extends SQLiteOpenHelper
 					+ " INTEGER PRIMARY KEY AUTOINCREMENT," + C_DRIVER_NAME + " TEXT,"
 					+ C_DRIVER_PIN + " TEXT)";
 			createTable(db, TABLE_DRIVERS, CREATE_TABLE_DRIVERS);
+			// Log.d(TAG, CREATE_TABLE_DRIVERS);
 
 			final String CREATE_TABLE_MANAGERS = "CREATE TABLE " + TABLE_MANAGERS + "("
 					+ C_MANAGER_ID + " INTEGER PRIMARY KEY," + " TEXT," + C_MANAGER_NAME + " TEXT)";
 			createTable(db, TABLE_MANAGERS, CREATE_TABLE_MANAGERS);
 
+			// Log.d(TAG, CREATE_TABLE_MANAGERS);
+
 			final String CREATE_TABLE_BAGS = "CREATE TABLE " + TABLE_BAGS + "(" + C_BAG_ID
 					+ " TEXT PRIMARY KEY," + C_BAG_SCANNED + " INTEGER," + C_BAG_ASSIGNED
 					+ " TEXT," + C_BAG_BARCODE + " TEXT," + C_BAG_NUM_ITEMS + " INTEGER,"
 					+ C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT," + C_BAG_DEST_TOWN
-					+ " TEXT," + " TEXT," + C_BAG_DEST_SUBURB + " TEXT," + C_BAG_DEST_LONG
-					+ " TEXT," + C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME + " TEXT,"
+					+ " TEXT," + C_BAG_DEST_SUBURB + " TEXT," + C_BAG_DEST_LONG + " TEXT,"
+					+ C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME + " TEXT,"
 					+ C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT," + C_BAG_STATUS
-					+ " TEXT," + C_BAG_DEST_ADDRESS + " TEXT)";
+					+ " TEXT," + C_BAG_DEST_ADDRESS + " TEXT," + "FOREIGN KEY(" + C_BAG_DRIVER_ID
+					+ ") REFERENCES " + TABLE_DRIVERS + "(" + C_DRIVER_ID + "))";
 			createTable(db, TABLE_BAGS, CREATE_TABLE_BAGS);
+
+			Log.d(TAG, CREATE_TABLE_BAGS);
 
 			final String CREATE_TABLE_WAYBILL = "CREATE TABLE " + TABLE_WAYBILLS + "("
 					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
@@ -203,27 +216,39 @@ public class DbHandler extends SQLiteOpenHelper
 					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS
 					+ "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
+			// Log.d(TAG, CREATE_TABLE_WAYBILL);
 
 			final String CREATE_TABLE_DELAYS = "CREATE TABLE " + TABLE_DELAYS + "(" + C_DELAYS_ID
 					+ " INTEGER PRIMARY KEY," + C_DELAYS_REASON + " TEXT," + C_DELAYS_DURATION_ID
 					+ " TEXT," + C_DELAYS_DURATION + " TEXT)";
 			createTable(db, TABLE_DELAYS, CREATE_TABLE_DELAYS);
+			// Log.d(TAG, CREATE_TABLE_DELAYS);
 
 			final String CREATE_TABLE_CONTACTS = "CREATE TABLE " + TABLE_CONTACTS + "("
 					+ C_CONTACTS_ID + " INTEGER PRIMARY KEY," + C_CONTACTS_NAME + " TEXT,"
 					+ C_CONTACTS_BAG_ID + " TEXT," + C_CONTACTS_NUMBER + " TEXT," + "FOREIGN KEY("
 					+ C_CONTACTS_BAG_ID + ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_CONTACTS, CREATE_TABLE_CONTACTS);
+			// Log.d(TAG, CREATE_TABLE_CONTACTS);
 
 			final String CREATE_TABLE_FAILED_HANDOVER_REASONS = "CREATE TABLE "
 					+ TABLE_FAILED_HANDOVER_REASONS + "(" + C_FAILED_HANDOVER_REASONS_ID
 					+ " INTEGER PRIMARY KEY," + C_FAILED_HANDOVER_REASONS_NAME + " TEXT)";
 			createTable(db, TABLE_FAILED_HANDOVER_REASONS, CREATE_TABLE_FAILED_HANDOVER_REASONS);
 
+			// Log.d(TAG, CREATE_TABLE_FAILED_HANDOVER_REASONS);
+
 			final String CREATE_TABLE_PARTIAL_DELIVERY_REASONS = "CREATE TABLE "
 					+ TABLE_PARTIAL_DELIVERY_REASONS + "(" + C_PARTIAL_DELIVERY_REASONS_ID
 					+ " INTEGER PRIMARY KEY," + C_PARTIAL_DELIVERY_REASONS_NAME + " TEXT)";
 			createTable(db, TABLE_PARTIAL_DELIVERY_REASONS, CREATE_TABLE_PARTIAL_DELIVERY_REASONS);
+			// Log.d(TAG, CREATE_TABLE_PARTIAL_DELIVERY_REASONS);
+
+			final String CREATE_TABLE_CALLQUEUE = "CREATE TABLE " + TABLE_CALLQUEUE + "("
+					+ C_CALLQUEUE_ID + " INTEGER PRIMARY KEY," + C_CALLQUEUE_JSON + " TEXT,"
+					+ C_CALLQUEUE_URL + " TEXT)";
+			createTable(db, TABLE_CALLQUEUE, CREATE_TABLE_CALLQUEUE);
+			// Log.d(TAG, CREATE_TABLE_CALLQUEUE);
 
 			db.setTransactionSuccessful();
 		}
@@ -262,6 +287,7 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BAGS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CALLQUEUE);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELAYS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAILED_HANDOVER_REASONS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTIAL_DELIVERY_REASONS);
@@ -1180,6 +1206,87 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * Pushes attempted API call to the queue in case of network unavailability.
+	 * 
+	 * @param url
+	 *            URL of API call
+	 * @return
+	 */
+	public boolean pushCall(String url, JSONObject json)
+	{
+		ContentValues values = new ContentValues();
+
+		values.put(C_CALLQUEUE_URL, url);
+		values.put(C_CALLQUEUE_JSON, json.toString());
+		boolean success = addRow(TABLE_CALLQUEUE, values);
+		Log.d(TAG, "Pushing call to queue: " + success + "\n" + url);
+		return success;
+	}
+
+	/**
+	 * Return first row of queue, then delete it.
+	 * 
+	 * @return URL at top of queue.
+	 */
+	public CallQueueObject popCallQueue()
+	{
+		SQLiteDatabase db = null;
+		CallQueueObject call = null;
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			// ArrayList<Bag> bags = null;
+			String sql = "SELECT * FROM " + TABLE_CALLQUEUE;
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				// bags = new ArrayList<Bag>();
+
+				if (!cursor.isAfterLast())
+				{
+					call = new CallQueueObject(cursor.getString(cursor
+							.getColumnIndex(C_CALLQUEUE_URL)), cursor.getString(cursor
+							.getColumnIndex(C_CALLQUEUE_JSON)));
+
+					// Delete topmost row
+					db.execSQL("DELETE FROM " + TABLE_CALLQUEUE + " WHERE " + C_CALLQUEUE_ID
+							+ " IN (SELECT " + C_CALLQUEUE_ID + " FROM " + TABLE_CALLQUEUE
+							+ " ORDER BY " + C_CALLQUEUE_ID + " LIMIT 1)");
+					// bags.add(bag);
+					// cursor.moveToNext();
+				}
+			}
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+		return call;
+	}
+
+	/**
 	 * Returns list of reasons for milkrun delay
 	 * 
 	 * @return
@@ -1529,8 +1636,7 @@ public class DbHandler extends SQLiteOpenHelper
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Returns list of drivers
 	 * 

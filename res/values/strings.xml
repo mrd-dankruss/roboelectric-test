@@ -105,6 +105,7 @@
     <string name="text_destination_branch">Destination branch:</string>
     <string name="text_scan_successful">Scan successful</string>
     <string name="text_play_services">Google Play services required</string>
+    <string name="text_net_error">Connection error</string>
     <string name="text_scan_next">Scan next</string>
     <string name="text_incomplete_scan_message">You have not scanned all of your consignments!</string>
     <string name="text_incomplete_scan_title">Warning!</string>
@@ -155,7 +156,7 @@
     <string name="delivery_detail_communicationTitle">Communication Log</string>
     <string name="delivery_detail_communicationLog">SMS sent at 15/08/2013 at 15:13\nRunning 5 minutes late</string>
     <string name="delivery_handover_subtitle">Please wait while the parcels are scanned in by the receiving branch manager.</string>
-    
+
     <!-- TextView Hints -->
     <string name="text_hint_mainmenu_enter_name">Enter Name</string>
     <string name="text_hint_mainmenu_enter_password">Tap here to enter your 4-digit PIN</string>

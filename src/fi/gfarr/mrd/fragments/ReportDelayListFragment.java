@@ -2,6 +2,9 @@ package fi.gfarr.mrd.fragments;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -137,7 +140,7 @@ public class ReportDelayListFragment extends Fragment
 		@Override
 		protected String doInBackground(String... args)
 		{
-			return ServerInterface.postDelay(args[0], args[1], args[2]);
+			return ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
 		}
 
 		@Override
@@ -150,10 +153,32 @@ public class ReportDelayListFragment extends Fragment
 			}
 			Log.i(TAG, result);
 			VariableManager.delay_id = null;
-			
+			Log.d(TAG, "zorro : postDelay response: " + result);
+
 			CustomToast custom_toast = new CustomToast(getActivity());
-			custom_toast.setText("Success");
-			custom_toast.setSuccess(true);
+			String status = "";
+			try
+			{
+				JSONObject obj = new JSONObject(result);
+				status = obj.getJSONObject("response").getString("status");
+			}
+			catch (JSONException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (status.equals("true"))
+			{
+				custom_toast.setText("Success");
+				custom_toast.setSuccess(true);
+			}
+			else
+			{
+				custom_toast.setText(VariableManager.TEXT_NET_ERROR);
+				custom_toast.setSuccess(false);
+			}
+
 			custom_toast.show();
 			getActivity().finish();
 		}

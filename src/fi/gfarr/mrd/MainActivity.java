@@ -1,5 +1,7 @@
 package fi.gfarr.mrd;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -48,6 +50,14 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// Check & store network availability
+		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(
+				VariableManager.PREF_NETWORK_AVAILABLE,
+				NetworkStateReceiver.getInstance(getApplicationContext())
+						.checkNetworkAvailability()).commit();*/
+
 		// Initialize ViewHolder
 		initViewHolder();
 
@@ -57,6 +67,9 @@ public class MainActivity extends Activity
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
 
 		person_item_list = new ArrayList<UserItem>();
+
+		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		imei_id = mngr.getDeviceId();
 
 		new RequestTokenTask().execute();
 
@@ -86,9 +99,6 @@ public class MainActivity extends Activity
 
 			}
 		});
-
-		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		imei_id = mngr.getDeviceId();
 
 	}
 
@@ -166,8 +176,9 @@ public class MainActivity extends Activity
 		protected String doInBackground(Void... urls)
 		{
 			// Log.i(TAG, "Fetching token...");
-			String token = ServerInterface.requestToken(imei_id);
-
+			String token = ServerInterface.getInstance(getApplicationContext()).requestToken(
+					imei_id);
+			// Log.d(TAG, "zorro token: " + token);
 			SharedPreferences settings = PreferenceManager
 					.getDefaultSharedPreferences(getApplicationContext());
 			SharedPreferences.Editor editor = settings.edit();
@@ -246,10 +257,25 @@ public class MainActivity extends Activity
 		protected void onPostExecute(String result)
 		{
 			// TODO: Initilize person_item_list
-			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
-			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getManagers());
-			Log.d(TAG, "PersonList: " + person_item_list.size());
+			try
+			{
+				person_item_list
+						.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
+				person_item_list.addAll(DbHandler.getInstance(getApplicationContext())
+						.getManagers());
+				Log.d(TAG, "PersonList: " + person_item_list.size());
+			}
+			catch (NullPointerException e)
+			{
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
 
+				/*CustomToast toast = new CustomToast(getParent());
+				toast.setText("Network error");
+				toast.setSuccess(false);
+				toast.show();*/
+			}
 			// Close progress spinner
 			if (dialog.isShowing())
 			{

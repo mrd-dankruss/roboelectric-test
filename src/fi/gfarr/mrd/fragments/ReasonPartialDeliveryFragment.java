@@ -166,8 +166,9 @@ public class ReasonPartialDeliveryFragment extends Fragment
 					{
 						try
 						{
-							String result_JSON_string = ServerInterface.postPartialDelivery(reasons
-									.get(r).getGroupName(), reasons.get(r).getReasonID(), "");
+							String result_JSON_string = ServerInterface.getInstance(getActivity())
+									.postPartialDelivery(reasons.get(r).getGroupName(),
+											reasons.get(r).getReasonID(), "");
 
 							JSONObject result_JSON = new JSONObject(result_JSON_string);
 
