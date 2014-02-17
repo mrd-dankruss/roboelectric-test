@@ -3,6 +3,7 @@ package fi.gfarr.mrd.fragments;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -20,6 +21,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReasonForFailedHandoverActivity;
 import fi.gfarr.mrd.adapters.GenericDialogListAdapter;
 import fi.gfarr.mrd.datatype.DialogDataObject;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 
 public class UpdateStatusDialog extends DialogFragment
@@ -63,8 +65,14 @@ public class UpdateStatusDialog extends DialogFragment
 
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
+		Typeface typeface_roboto_bold = Typeface.createFromAsset(getActivity().getAssets(), FontHelper
+				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+						FontHelper.STYLE_BOLD));
+		
 		TextView title = (TextView) v.findViewById(R.id.textView_trafficDelay_title);
 		title.setText(R.string.title_dialog_handover);
+		
+		title.setTypeface(typeface_roboto_bold);
 
 		ImageButton closeDialogButton = (ImageButton) v
 				.findViewById(R.id.button_trafficDelay_closeButton);

@@ -3,6 +3,7 @@ package fi.gfarr.mrd.adapters;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.fragments.MoreDialogFragment;
 import fi.gfarr.mrd.fragments.UpdateStatusDialog;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
@@ -79,11 +81,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		/*
-		Typeface typeface_robotoRegular = Typeface.createFromAsset(activity.getAssets(), FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF, FontHelper.STYLE_REGULAR));
-		Typeface typeface_robotoLight = Typeface.createFromAsset(activity.getAssets(), FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF, FontHelper.STYLE_ITALIC));
-		Typeface typeface_robotoBold = Typeface.createFromAsset(activity.getAssets(), FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF, FontHelper.STYLE_BOLD));
-		*/
+		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(), FontHelper
+				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+						FontHelper.STYLE_BOLD));
 
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -93,10 +93,10 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		deliveryType = (ImageView) rowView.findViewById(R.id.deliveries_imageView_deliveryType);
 
 		deliveryNumber = (TextView) rowView.findViewById(R.id.deliveries_textView_deliveryNumber);
-		// deliveryNumber.setTypeface(typeface_robotoBold);
+		deliveryNumber.setTypeface(typeface_roboto_bold);
 
 		titleDetail = (TextView) rowView.findViewById(R.id.deliveries_textView_titleDetail);
-		// titleDetail.setTypeface(typeface_robotoBold);
+		titleDetail.setTypeface(typeface_roboto_bold);
 
 		companyLogo = (ImageView) rowView.findViewById(R.id.deliveries_imageView_companyLogo);
 
@@ -110,10 +110,10 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				.findViewById(R.id.deliveries_linearLayout_buttonsHolder);
 
 		updateStatus = (Button) rowView.findViewById(R.id.deliveries_button_updateStatus);
-		// updateStatus.setTypeface(typeface_robotoBold);
+		updateStatus.setTypeface(typeface_roboto_bold);
 
 		more = (Button) rowView.findViewById(R.id.deliveries_button_more);
-		// more.setTypeface(typeface_robotoBold);
+		more.setTypeface(typeface_roboto_bold);
 
 		if (position == 0)
 		{

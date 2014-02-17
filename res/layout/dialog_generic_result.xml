@@ -25,7 +25,7 @@
             android:paddingLeft="12dp"
             android:text="@string/trafficDelay_title"
             android:textColor="@color/black"
-            android:textSize="26sp" />
+            android:textSize="@dimen/font_size_dialog_title" />
 
         <LinearLayout
             android:layout_width="match_parent"

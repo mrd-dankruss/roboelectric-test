@@ -25,7 +25,7 @@
                 android:contentDescription="@string/contentDesc_imageView_deliveryType"
                 android:paddingLeft="14dp"
                 android:paddingRight="10dp"
-                android:paddingTop="10dp"
+                android:paddingTop="16dp"
                 android:src="@drawable/icon_delivery" />
 
             <TextView
@@ -35,14 +35,15 @@
                 android:paddingRight="7dp"
                 android:paddingTop="15dp"
                 android:text="@string/delivery_no"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/black" />
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="16sp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="19dp"
                 android:background="@color/seperator_grey"
-                android:paddingTop="15dp" />
+                android:paddingTop="19dp" />
 
             <TextView
                 android:id="@+id/deliveries_textView_titleDetail"
@@ -50,7 +51,8 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="7dp"
                 android:text="@string/delivery_title"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/black" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,7 +86,8 @@
             android:lines="4"
             android:paddingLeft="14dp"
             android:paddingRight="8dp"
-            android:text="@string/delivery_address" />
+            android:text="@string/delivery_address"
+            android:textSize="@dimen/font_size_delivery_details_address" />
 
         <TextView
             android:id="@+id/deliveries_textView_id"
@@ -93,7 +96,9 @@
             android:paddingLeft="14dp"
             android:paddingRight="8dp"
             android:paddingTop="12dp"
-            android:text="@string/delivery_orderNo" />
+            android:text="@string/delivery_orderNo"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_size_delivery_details_address" />
 
         <LinearLayout
             android:id="@+id/deliveries_linearLayout_buttonsHolder"
@@ -113,7 +118,7 @@
                 android:focusableInTouchMode="false"
                 android:text="@string/delivery_button1"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="@dimen/font_size_button" />
 
             <Button
                 android:id="@+id/deliveries_button_more"
@@ -127,7 +132,7 @@
                 android:paddingRight="10dp"
                 android:text="@string/delivery_button2"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="@dimen/font_size_button" />
         </LinearLayout>
     </LinearLayout>
 
