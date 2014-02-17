@@ -6,22 +6,19 @@ import java.util.List;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.Toast;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
-import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.Company;
-import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.DeliveryType;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
 
-public class CompletedDeliveriesFragment extends ListFragment
+public class CompletedDeliveriesFragment extends Fragment
 {
 
 	private static final String TAG = "ViewDeliveriesFragment";
@@ -29,14 +26,13 @@ public class CompletedDeliveriesFragment extends ListFragment
 	private View rootView;
 	private ViewDeliveriesListAdapter adapter;
 
-	public void onCreate(Bundle icicle)
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		super.onCreate(icicle);
 
-		List<List<String>> values = new ArrayList<List<String>>();
+		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
-		// getListView().setDivider(null);
-		// getListView().setDividerHeight(0);
+		return rootView;
 	}
 
 	/* (non-Javadoc)
@@ -55,14 +51,8 @@ public class CompletedDeliveriesFragment extends ListFragment
 		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
 
-		setListAdapter(adapter);
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		String item = getListAdapter().getItem(position).toString();
-		Toast.makeText(getActivity(), item + " selected", Toast.LENGTH_LONG).show();
+		holder.list.setAdapter(adapter);
+		
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -71,14 +61,14 @@ public class CompletedDeliveriesFragment extends ListFragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
+			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null, false);
 
 			if (holder == null)
 			{
 				holder = new ViewHolder();
 			}
 
-			// holder.list = (ListView) rootView.findViewById(listId);
+			holder.list = (ListView) rootView.findViewById(R.id.fragment_successful_deliveries_container);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -102,6 +92,6 @@ public class CompletedDeliveriesFragment extends ListFragment
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{
-		TabHost mTabHost;
+		ListView list;
 	}
 }

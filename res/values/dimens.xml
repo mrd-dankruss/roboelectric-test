@@ -94,5 +94,6 @@
     <dimen name="font_size_dialog_content">16sp</dimen>
     <dimen name="font_size_dialog_title">17sp</dimen>
     <dimen name="font_size_fragment_title">17sp</dimen>
+    <dimen name="font_size_footnote">10sp</dimen>
 
 </resources>
