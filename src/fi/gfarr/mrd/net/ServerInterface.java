@@ -115,7 +115,6 @@ public class ServerInterface
 		{
 			JSONObject jObject = new JSONObject(response);
 			token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
-
 		}
 		catch (JSONException e)
 		{
@@ -1189,14 +1188,6 @@ public class ServerInterface
 
 		try
 		{
-			// Add your data
-			// List<NameValuePair> nameValuePairs = new
-			// ArrayList<NameValuePair>(2);
-			// nameValuePairs.add(new BasicNameValuePair("id", "12345"));
-			// nameValuePairs.add(new BasicNameValuePair("stringdata",
-			// "AndDev is Cool!"));
-			// httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
 			// Execute HTTP Post Request
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity entity = response.getEntity();
