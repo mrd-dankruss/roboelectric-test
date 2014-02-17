@@ -24,10 +24,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import fi.gfarr.mrd.adapters.PersonAutoCompleteAdapter;
+import fi.gfarr.mrd.adapters.UserAutoCompleteAdapter;
 import fi.gfarr.mrd.datatype.UserItem;
 import fi.gfarr.mrd.datatype.UserItem.UserType;
 import fi.gfarr.mrd.db.DbHandler;
+import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
@@ -75,7 +76,7 @@ public class MainActivity extends Activity
 
 		initClickListeners();
 
-		PersonAutoCompleteAdapter adapter = new PersonAutoCompleteAdapter(getApplicationContext(),
+		UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
 				person_item_list);
 
 		// Set the adapter
@@ -338,7 +339,7 @@ public class MainActivity extends Activity
 	/**
 	 * Requests token from server.
 	 * 
-	 * @author greg
+	 * @author htdahms
 	 * 
 	 */
 	private class ManagerLoginUserTask extends AsyncTask<Void, Void, Boolean>
@@ -492,15 +493,22 @@ public class MainActivity extends Activity
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_REGULAR));
+
 			holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
+			holder.button_login.setTypeface(typeface_roboto_bold);
+
 			holder.text_name = (AutoCompleteTextView) root_view
 					.findViewById(R.id.text_mainmenu_name);
 			holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
 
-			holder.text_password.setTypeface(Typeface.DEFAULT); // TODO: Remove from here. Add
-																// proper font setting.
+			holder.text_password.setTypeface(typeface_roboto_regular);
 
-			// Store the holder with the view.
 			root_view.setTag(holder);
 
 		}

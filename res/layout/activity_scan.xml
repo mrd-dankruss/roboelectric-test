@@ -32,7 +32,8 @@
             android:layout_marginRight="@dimen/margin_button_WE"
             android:layout_marginTop="@dimen/margin_button_NS"
             android:background="@drawable/button_custom"
-            android:text="@string/button_start_milkrun" />
+            android:text="@string/button_start_milkrun"
+            android:textSize="@dimen/font_size_button" />
     </FrameLayout>
 
     <FrameLayout

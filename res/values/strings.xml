@@ -15,15 +15,17 @@
     <string name="title_actionbar_select_manager">Select manager</string>
     <string name="title_actionbar_manifest">Consignment details</string>
     <string name="title_actionbar_manager_auth">Manager authorization required</string>
+    <string name="title_actionbar_manager_auth_not_assigned">Manager authorization required</string>
     <string name="title_actionbar_delivery_details">Delivery Details</string>
     <string name="title_actionbar_transfer_data">Transferring delivery data</string>
     <string name="title_actionbar_failed_delivery">Reason for failed delivery</string>
-    <string name="title_actionbar_enter_barcode">Enter Barcode Manually</string>
+    <string name="title_actionbar_enter_barcode">Enter barcode</string>
     <string name="title_actionbar_change_driver">Change Driver</string>
 
     <!-- Button texts -->
-    <string name="button_start_milkrun">Start new milkrun</string>
-    <string name="button_start_trainingrun">Start trainrun</string>
+    <string name="button_start_new_milkrun">Start new milkrun</string>
+    <string name="button_start_milkrun">Start Milkrun</string>
+    <string name="button_start_trainingrun">Start training run</string>
     <string name="button_update_status">Update Status</string>
     <string name="button_more">More</string>
     <string name="button_login">Login</string>
@@ -49,8 +51,8 @@
     <string name="button_send_sms">Send</string>
     <string name="button_delivery_handover_complete">Complete handover to branch</string>
     <string name="button_transfer_data">Cancel</string>
-    <string name="button_transfer_data">Cancel</string>
-    <string name="button_transfer_data">Cancel</string>
+    <string name="button_not_assigned_continue">Continue</string>
+    <string name="button_not_assigned_cancel">Cancel</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
@@ -117,6 +119,7 @@
     <string name="text_transfer_data_uploading">Uploading data to server</string>
     <string name="text_process_handover_successful">Process succcessful handover</string>
     <string name="text_process_handover_failed">Process failed handover</string>
+    <string name="text_not_assigned_message">This consignment has not been assigned to you!</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
@@ -130,7 +133,7 @@
     <string name="title_activity_scan_list">ScanListActivity</string>
 
     <!-- Google Maps API keys -->
-    <string name="key_googlemaps_api_debug">AIzaSyB7Rp0ex2YM7kywAWNxlBO30k0GlyZtQ4s</string>
+    <string name="key_googlemaps_api_debug">AIzaSyAgcNgAZWz8ivlhJHhsQzUZjTaK9YadroE</string>
     <string name="key_googlemaps_api_release">AIzaSyCdXJWisT8lPyKasiqKnXSnXhsHvQzSZ6E</string>
     <string name="title_activity_view_bag_manifest">ViewBagManifestActivity</string>
 

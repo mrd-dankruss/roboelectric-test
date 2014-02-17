@@ -1,8 +1,5 @@
 package fi.gfarr.mrd.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,9 +11,7 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.Toast;
 import fi.gfarr.mrd.R;
-import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
-import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.Company;
-import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter.DeliveryType;
+import fi.gfarr.mrd.adapters.UnsuccessfulDeliveriesListAdapter;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
@@ -27,7 +22,7 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 	private static final String TAG = "UnsuccessfulDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
-	private ViewDeliveriesListAdapter adapter;
+	private UnsuccessfulDeliveriesListAdapter adapter;
 
 	public void onCreate(Bundle icicle)
 	{
@@ -59,7 +54,7 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 
 		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
 
-		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+		adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
 
 		setListAdapter(adapter);
@@ -78,7 +73,7 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
+			rootView = inflater.inflate(R.layout.fragment_unsuccessful_deliveries_content, null, false);
 
 			if (holder == null)
 			{

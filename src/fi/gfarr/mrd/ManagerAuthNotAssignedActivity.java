@@ -6,8 +6,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,31 +17,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
-import fi.gfarr.mrd.widget.Toaster;
+import fi.gfarr.mrd.widget.CustomToast;
 
-public class ManagerAuthIncompleteScanActivity extends Activity
+public class ManagerAuthNotAssignedActivity extends Activity
 {
 
 	private ViewHolder holder;
 	private View root_view;
-	private final String TAG = "ManagerAuthIncompleteScanActivity";
-	ProgressDialog dialog_login;
-	String imei_id;
+	private final String TAG = "ManagerAuthNotAssignedActivity";
+	private ProgressDialog dialog_login;
+	private String imei_id;
+	private String last_logged_in_manager_name;
+	private String last_logged_in_manager_id;
+	
+	public static String MANAGER_AUTH_SUCCESS = "fi.gfarr.mrd.ManagerAuthNotAssignedActivity.auth_success";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_manager_auth_incomplete_scan);
+		setContentView(R.layout.activity_manager_auth_not_assigned);
 
-		setTitle(R.string.title_actionbar_manager_auth); // Change actionbar title
+		setTitle(R.string.title_actionbar_manager_auth_not_assigned); // Change actionbar title
 
 		// Initialize ViewHolder
 		initViewHolder();
@@ -49,58 +51,26 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
 
-		// Display name of manager
-		holder.textView_name
-				.setText(getIntent().getStringExtra(VariableManager.EXTRA_MANAGER_NAME));
-
 		// Heading
-		holder.textView_heading.setText(getString(R.string.text_manAuth_heading));
-
-		// List of unscanned bags
-		new RetrieveUnScannedConsignmentsTask().execute();
+		holder.text_content.setText("Assigning consignment "
+				+ getIntent().getStringExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER) + " to "
+				+ getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
 		initClickListeners();
-
-		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
 	}
 
-	private class RetrieveUnScannedConsignmentsTask extends AsyncTask<Void, Void, Void>
+	@Override
+	public void onResume()
 	{
+		super.onResume();
 
-		private ProgressDialog dialog_progress = new ProgressDialog(
-				ManagerAuthIncompleteScanActivity.this);
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		private String list = "";
+		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, null);
+		last_logged_in_manager_id = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
 
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog_progress.setMessage("Retrieving unscanned consignments");
-			this.dialog_progress.show();
-		}
-
-		@Override
-		protected Void doInBackground(Void... urls)
-		{
-			list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned(
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-			System.out.println("list: " + list);
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void nothing)
-		{
-			holder.textView_list.setText(list);
-
-			// Close progress spinner
-			if (dialog_progress.isShowing())
-			{
-				dialog_progress.dismiss();
-			}
-		}
+		// Display name of manager
+		holder.text_name.setText(last_logged_in_manager_name);
 	}
 
 	@Override
@@ -145,7 +115,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		if (checkPin())
 		{
 			// Progress spinner
-			dialog_login = new ProgressDialog(ManagerAuthIncompleteScanActivity.this);
+			dialog_login = new ProgressDialog(ManagerAuthNotAssignedActivity.this);
 			dialog_login.setMessage("Authenticating");
 			dialog_login.show();
 
@@ -163,18 +133,21 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
 
-					String man_id = getIntent().getStringExtra(VariableManager.EXTRA_MANAGER_ID);
 					String driver_id = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID);
 
-					String status = ServerInterface.authManager(man_id, driver_id, hash, imei_id);
+					String status = ServerInterface.authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
 
 					if (status.equals("success"))
 					{
-						handler.sendEmptyMessage(0);
+						//handler.sendEmptyMessage(0);
+						Intent intent = new Intent();              
+						intent.putExtra(MANAGER_AUTH_SUCCESS, true);
+						setResult(Activity.RESULT_OK, intent);
+						finish();
 					}
 					else
 					{
-						handler.sendEmptyMessage(1);
+						//handler.sendEmptyMessage(1);
 					}
 				}
 			};
@@ -218,7 +191,10 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	 */
 	private void displayToast(String msg)
 	{
-		Toaster.displayToast(msg, holder.textView_toast, holder.relativeLayout_toast, this);
+		CustomToast toast = new CustomToast(this);
+		toast.setText(msg);
+		toast.setSuccess(false);
+		toast.show();
 	}
 
 	/**
@@ -230,17 +206,17 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	 */
 	static class MyHandler extends Handler
 	{
-		private WeakReference<ManagerAuthIncompleteScanActivity> mActivity;
+		private WeakReference<ManagerAuthNotAssignedActivity> mActivity;
 
-		MyHandler(ManagerAuthIncompleteScanActivity activity)
+		MyHandler(ManagerAuthNotAssignedActivity activity)
 		{
-			mActivity = new WeakReference<ManagerAuthIncompleteScanActivity>(activity);
+			mActivity = new WeakReference<ManagerAuthNotAssignedActivity>(activity);
 		}
 
 		@Override
 		public void handleMessage(Message msg)
 		{
-			ManagerAuthIncompleteScanActivity activity = mActivity.get();
+			ManagerAuthNotAssignedActivity activity = mActivity.get();
 			if (activity != null)
 			{
 				activity.handleMessage(msg);
@@ -300,20 +276,22 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_REGULAR));
 
-			holder.button_continue = (Button) root_view.findViewById(R.id.button_manAuth_continue);
+			holder.button_continue = (Button) root_view
+					.findViewById(R.id.button_not_assigned_activity_continue);
 			holder.button_change_manager = (Button) root_view
-					.findViewById(R.id.button_manAuth_change);
-			holder.textView_heading = (TextView) root_view
-					.findViewById(R.id.textView_manAuth_heading);
-			holder.textView_list = (TextView) root_view.findViewById(R.id.textView_manAuth_list);
-			holder.textView_name = (TextView) root_view
-					.findViewById(R.id.textView_manAuth_manager_name);
-			holder.editText_pin = (EditText) root_view.findViewById(R.id.editText_manAuth_pin);
-			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_man_auth_toast);
-			holder.relativeLayout_toast = (RelativeLayout) root_view
-					.findViewById(R.id.toast_man_auth);
-			
-			
+					.findViewById(R.id.button_not_assigned_activity_change);
+			holder.editText_pin = (EditText) root_view
+					.findViewById(R.id.editText_not_assigned_activity_pin);
+			holder.text_name = (TextView) root_view
+					.findViewById(R.id.text_not_assigned_activity_name);
+			holder.text_content = (TextView) root_view
+					.findViewById(R.id.textView_not_assigned_activity_heading);
+
+			holder.button_continue.setTypeface(typeface_roboto_bold);
+			holder.button_change_manager.setTypeface(typeface_roboto_bold);
+			holder.editText_pin.setTypeface(typeface_roboto_regular);
+			holder.text_name.setTypeface(typeface_roboto_bold);
+			holder.text_content.setTypeface(typeface_roboto_regular);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -337,9 +315,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	static class ViewHolder
 	{
 		Button button_continue, button_change_manager;
-		TextView textView_name, textView_heading, textView_list;
+		TextView text_name, text_content;
 		EditText editText_pin;
-		TextView textView_toast;
-		RelativeLayout relativeLayout_toast;
 	}
 }

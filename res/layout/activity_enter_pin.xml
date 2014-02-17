@@ -47,7 +47,7 @@
         android:layout_marginLeft="@dimen/margin_standard"
         android:layout_marginTop="@dimen/margin_pin_text_N"
         android:text="TextView"
-        android:textSize="24sp" />
+        android:textSize="@dimen/font_size_fragment_title" />
 
     <EditText
         android:id="@+id/editText_enter_pin"
@@ -62,7 +62,8 @@
         android:background="@color/colour_white"
         android:ems="10"
         android:inputType="numberPassword"
-        android:paddingLeft="@dimen/margin_pin_left" >
+        android:paddingLeft="@dimen/margin_pin_left"
+        android:hint="@string/text_hint_mainmenu_enter_password" >
 
         <requestFocus />
     </EditText>

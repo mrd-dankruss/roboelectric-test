@@ -2,27 +2,25 @@ package fi.gfarr.mrd.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import fi.gfarr.mrd.ManagerAuthIncompleteScanActivity;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import fi.gfarr.mrd.R;
+import fi.gfarr.mrd.helper.FontHelper;
 
-public class IncompleteScanDialog extends Dialog //implements android.view.View.OnClickListener
+public class IncompleteScanDialog extends Dialog
 {
-
-	private final String TAG = "IncompleteScanDialog";
 	private Activity context;
-	private Dialog dialog;
-	private Button button_scan, button_continue;	
+	private TextView dialog_title;
+	private ImageButton dialog_close;
 
-	public IncompleteScanDialog(Activity a)
+	public IncompleteScanDialog(Activity activity)
 	{
-		super(a);
-		// TODO Auto-generated constructor stub
-		this.context = a;
+		super(activity);
+		this.context = activity;
 	}
 
 	@Override
@@ -31,34 +29,24 @@ public class IncompleteScanDialog extends Dialog //implements android.view.View.
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.dialog_incomplete_scan);
-
-		button_scan = (Button) findViewById(R.id.button_incomplete_scan_scan);
-		button_continue = (Button) findViewById(R.id.button_incomplete_scan_continue);
-
-//		button_scan.setOnClickListener(this);
-//		button_continue.setOnClickListener(this);
-	}
-	
-/*
-	@Override
-	public void onClick(View v)
-	{
-		switch (v.getId())
+		
+		Typeface typeface_roboto_bold = Typeface.createFromAsset(context.getAssets(), FontHelper
+				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+						FontHelper.STYLE_BOLD));
+		
+		dialog_title = (TextView) findViewById(R.id.textView_manAuth_manager_name);
+		dialog_close = (ImageButton) findViewById(R.id.button_incomplete_scan_closeButton);
+		
+		dialog_title.setTypeface(typeface_roboto_bold);
+		
+		dialog_close.setOnClickListener(new View.OnClickListener()
 		{
-		case R.id.button_incomplete_scan_scan:
-			// Log.d(TAG, "Scan them");
-			// Do nothing. Close dialog.
-			break;
-		case R.id.button_incomplete_scan_continue:
-			// Log.d(TAG, "Continue anyway");
-			// Require manager authorization.		
-			Intent intent = new Intent(context, ManagerAuthIncompleteScanActivity.class);
 			
-			break;
-		default:
-			break;
-		}
-		dismiss();
+			@Override
+			public void onClick(View v)
+			{
+				dismiss();
+			}
+		});
 	}
-	*/
 }

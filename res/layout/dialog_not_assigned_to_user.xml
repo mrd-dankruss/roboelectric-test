@@ -9,7 +9,7 @@
     android:padding="0dp" >
 
     <LinearLayout
-        android:id="@+id/incomplete_scan_title_linearLayout"
+        android:id="@+id/linearLayout_not_assigned"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginBottom="0dp"
@@ -19,7 +19,7 @@
         android:padding="0dp" >
 
         <TextView
-            android:id="@+id/textView_manAuth_manager_name"
+            android:id="@+id/textView_not_assigned_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -40,7 +40,7 @@
                 android:background="@color/seperator_grey" />
 
             <ImageButton
-                android:id="@+id/button_incomplete_scan_closeButton"
+                android:id="@+id/button_not_assigned_closeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
@@ -57,21 +57,21 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/textView_manAuth_enter_pin"
+            android:id="@+id/text_not_assigned_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/background_grey"
             android:padding="14dp"
-            android:text="@string/text_incomplete_scan_message"
+            android:text="@string/text_not_assigned_message"
             android:textSize="@dimen/font_size_dialog_content" />
 
 
         <Button
-            android:id="@+id/button_incomplete_scan_scan"
+            android:id="@+id/button_not_assigned_cancel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_change_driver"
-            android:text="@string/button_incomplete_scan_scan"
+            android:text="@string/button_not_assigned_cancel"
             android:textSize="@dimen/font_size_button" />
 
         <View
@@ -80,11 +80,11 @@
             android:background="@color/seperator_grey" />
 
         <Button
-            android:id="@+id/button_incomplete_scan_continue"
+            android:id="@+id/button_not_assigned_continue"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_change_driver"
-            android:text="@string/button_incomplete_scan_continue"
+            android:text="@string/button_not_assigned_continue"
             android:textSize="@dimen/font_size_button" />
     </LinearLayout>
 

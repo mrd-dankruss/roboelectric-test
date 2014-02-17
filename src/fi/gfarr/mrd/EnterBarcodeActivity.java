@@ -2,46 +2,45 @@ package fi.gfarr.mrd;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import fi.gfarr.mrd.helper.FontHelper;
 
 public class EnterBarcodeActivity extends FragmentActivity
 {
-	
+
 	private final String TAG = "EnterBarcodeFragment";
 	private ViewHolder holder;
 	private View rootView;
 	public final static String MANUAL_BARCODE = "MANUAL_BARCODE";
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_enter_barcode);
-		
+
 		initViewHolder();
-		
+
 		holder.button_ok.setOnClickListener(new View.OnClickListener()
 		{
-			
+
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
-				Intent intent = new Intent();              
+				Intent intent = new Intent();
 				intent.putExtra(MANUAL_BARCODE, holder.text_barcode.getText().toString());
 				setResult(Activity.RESULT_OK, intent);
 				finish();
 			}
 		});
 	}
-	
-	
+
 	public void initViewHolder()
 	{
 
@@ -55,10 +54,15 @@ public class EnterBarcodeActivity extends FragmentActivity
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+
 			holder.text_barcode = (EditText) rootView.findViewById(R.id.text_enter_barcode);
 			holder.button_ok = (Button) rootView.findViewById(R.id.button_enter_barcode_ok);
 
-			// Store the holder with the view.
+			holder.button_ok.setTypeface(typeface_roboto_bold);
+
 			rootView.setTag(holder);
 
 		}

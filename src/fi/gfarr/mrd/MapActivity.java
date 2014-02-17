@@ -70,6 +70,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private LocationManager location_manager;
 	private LatLng lat_long;
 	private LatLng selected_marker_lat_long;
+	private String selected_marker_name;
 	private MarkerOptions marker_options;
 
 	private ArrayList<MapPlacesItem> resultList;
@@ -119,6 +120,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				public boolean onMarkerClick(Marker marker)
 				{
 					selected_marker_lat_long = marker.getPosition();
+					selected_marker_name = marker.getTitle();
 					// TODO Auto-generated method stub
 					return false;
 				}
@@ -182,7 +184,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					// Map point based on address
 					/*Uri location = Uri.parse("geo:" + marker_lat + "," + marker_lon + "?z="
 							+ zoom_level);*/
-					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "(Here)"
+					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "("
+							+ selected_marker_name + ")"
 							+ "&z=" + zoom_level);
 					// Or map point based on latitude/longitude
 					// Uri location = Uri.parse("geo:37.422219,-122.08364?z=14"); // z param is zoom

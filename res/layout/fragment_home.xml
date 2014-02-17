@@ -16,7 +16,8 @@
         android:background="@drawable/button_custom"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:text="@string/button_start_milkrun" />
+        android:text="@string/button_start_new_milkrun"
+        android:textSize="@dimen/font_size_button" />
     
     <Button
         android:id="@+id/button_home_training"
@@ -28,6 +29,7 @@
         android:background="@drawable/button_custom_grey"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:text="@string/button_start_trainingrun" />
+        android:text="@string/button_start_trainingrun"
+        android:textSize="@dimen/font_size_button" />
 
 </LinearLayout>

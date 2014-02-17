@@ -15,16 +15,16 @@ import android.widget.TextView;
 import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.datatype.UserItem;
 
-public class PersonAutoCompleteAdapter extends BaseAdapter implements Filterable
+public class UserAutoCompleteAdapter extends BaseAdapter implements Filterable
 {
 
-	private final String TAG = "PersonAutoCompleteAdapter";
+	private final String TAG = "UserAutoCompleteAdapter";
 
 	private Context context;
 	private ArrayList<UserItem> person_list;
 	private ArrayList<UserItem> person_list_original;
 
-	public PersonAutoCompleteAdapter(Context context, ArrayList<UserItem> person_list)
+	public UserAutoCompleteAdapter(Context context, ArrayList<UserItem> person_list)
 	{
 		this.context = context;
 		this.person_list = person_list;
