@@ -34,6 +34,7 @@ public class VariableManager
 
 	// Shared prefs
 	public static final String PREF = "fi.gfarr.mrd";
+	public static final String PREF_NETWORK_AVAILABLE = "fi.gfarr.mrd.network.avail";
 	public static final String IMEI_TEST = "490154203237518";
 
 	public static String token = "";
@@ -41,6 +42,7 @@ public class VariableManager
 	public static String next_bag_id;
 	public static String delay_id;
 	public static Context context;
+	public static final String TEXT_NET_ERROR = "Connection error";
 
 	// Debug mode
 	public static final boolean DEBUG = true;

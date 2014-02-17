@@ -39,14 +39,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
+import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.Contact;
 import fi.gfarr.mrd.db.DbHandler;
@@ -61,6 +60,25 @@ public class ServerInterface
 	private final static String TAG = "ServerInterface";
 
 	public static Handler UIHandler = new Handler(Looper.getMainLooper());
+
+	private static ServerInterface server_interface;
+	private static Context context;
+
+	public ServerInterface(Context ctx)
+	{
+		context = ctx;
+		// TODO Auto-generated constructor stub
+	}
+
+	// Return singleton instance of DbHandler
+	public static ServerInterface getInstance(Context context)
+	{
+		if (server_interface == null)
+		{
+			server_interface = new ServerInterface(context.getApplicationContext());
+		}
+		return server_interface;
+	}
 
 	public static void displayToast(final String message)
 	{
@@ -86,11 +104,11 @@ public class ServerInterface
 	 * @param IMEI
 	 *            number.
 	 */
-	public static String requestToken(String imei_id)
+	public String requestToken(String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/auth/auth?imei=" + imei_id;
-		String response = getInputStreamFromUrl(url, null, null);
-		// Log.d(TAG, "requestToken(): " + response);
+		String url = "http://uat.mrdexpress.com/api/v1/auth/auth?imei=" + imei_id;
+		String response = getInputStreamFromUrl(url);
+		Log.d(TAG, "zorro - requestToken(): " + response);
 		String token = "";
 
 		try
@@ -118,7 +136,6 @@ public class ServerInterface
 			Log.d(TAG, "token: " + token);
 		}
 		return token;
-		// return "WEUasduio768SDUIYS7667uiuasdasd"; // DEBUG!!
 	}
 
 	/**
@@ -130,7 +147,7 @@ public class ServerInterface
 	 *            PIN number.
 	 * @return
 	 */
-	public static String updatePIN(String id, String new_pin)
+	public String updatePIN(String id, String new_pin)
 	{
 
 		String url = "http://paperlessapp.apiary.io/v1/driver?id=" + id + "&mrdToken="
@@ -180,7 +197,7 @@ public class ServerInterface
 		String url = "http://paperlessapp.apiary.io/v1/driver/drivers?imei=" + imei_id
 				+ "&mrdtoken=" + VariableManager.token;
 
-		String response = getInputStreamFromUrl(url, null, null);
+		String response = getInputStreamFromUrl(url);
 
 		JSONArray drivers_jArray = null;
 
@@ -248,7 +265,7 @@ public class ServerInterface
 	{
 		String url = "http://paperlessapp.apiary.io/v1/manager/managers?imei=" + imei_id
 				+ "&mrdtoken=" + VariableManager.token;
-		String response = getInputStreamFromUrl(url, null, null);
+		String response = getInputStreamFromUrl(url);
 
 		JSONArray managers_jArray = null;
 
@@ -310,9 +327,7 @@ public class ServerInterface
 		String url = "http://paperlessapp.apiary.io/v1/auth/driver?imei=" + imei_id + "&mrdtoken="
 				+ VariableManager.token + "&driverPIN=" + PIN + "&driverID=" + driver_id;
 
-		String response = getInputStreamFromUrl(url, null, null);
-
-		// System.out.println(response);
+		String response = getInputStreamFromUrl(url);
 
 		String status = "";
 
@@ -356,7 +371,7 @@ public class ServerInterface
 				+ VariableManager.token + "&managerPIN=" + PIN + "&managerid=" + man_id
 				+ "&driverid=" + driver_id;
 
-		String response = getInputStreamFromUrl(url, null, null);
+		String response = getInputStreamFromUrl(url);
 
 		// System.out.println(response);
 
@@ -403,7 +418,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url, null, null);
+			String response = getInputStreamFromUrl(url);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -471,7 +486,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url, null, null);
+			String response = getInputStreamFromUrl(url);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -706,7 +721,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url, null, null);
+			String response = getInputStreamFromUrl(url);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -792,7 +807,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url, null, null);
+			String response = getInputStreamFromUrl(url);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -863,7 +878,7 @@ public class ServerInterface
 
 		try
 		{
-			String response = getInputStreamFromUrl(url, null, null);
+			String response = getInputStreamFromUrl(url);
 
 			JSONObject jObject = new JSONObject(response);
 
@@ -933,7 +948,7 @@ public class ServerInterface
 	 */
 	// http://www.androidsnippets.com/executing-a-http-get-request-with-httpclient
 
-	public static String getInputStreamFromUrl(final String url, Activity activity, View view)
+	public static String getInputStreamFromUrl(final String url)
 	{
 		if (VariableManager.DEBUG)
 		{
@@ -972,15 +987,16 @@ public class ServerInterface
 			{
 				sb.append(line + "\n");
 			}
-
 			return sb.toString();
+
 		}
 		catch (UnknownHostException e)
 		{
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			// sw.toString();
-			Log.e("updateDb()", sw.toString());
+			Log.e(TAG, "No connection");
+			Log.e(TAG, sw.toString());
 			return "";
 		}
 		catch (UnsupportedEncodingException e)
@@ -996,6 +1012,7 @@ public class ServerInterface
 			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, "Connection timeout");
 			Log.e(TAG, sw.toString());
 			if (VariableManager.DEBUG)
 			{
@@ -1021,11 +1038,21 @@ public class ServerInterface
 	 * @param delayid
 	 * @return
 	 */
-	public static String postDelay(String bagid, String driverid, String delayid)
+	public String postDelay(String bagid, String driverid, String delayid)
 	{
-		return postData("http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bagid
+		String url = "http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bagid
 				+ "&driverid=" + driverid + "&mrdToken=" + VariableManager.token + "&delayid="
-				+ delayid);
+				+ delayid;
+		String result = postData(url);
+
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
 	}
 
 	/**
@@ -1037,7 +1064,7 @@ public class ServerInterface
 	 * @param result
 	 * @return
 	 */
-	public static String postMessage(String message, String number, String bagid, String type,
+	public String postMessage(String message, String number, String bagid, String type,
 			boolean result)
 	{
 		// Convert bool to String
@@ -1065,14 +1092,12 @@ public class ServerInterface
 				+ result_string + "&comExtra=" + comExtra.toString());*/
 
 		String status = null;
-
+		String url = "http://paperlessapp.apiary.io/v1/waybill/communication?id=" + bagid
+				+ "&comType=" + type + "&mrdToken=" + VariableManager.token + "&comResult="
+				+ result_string;
 		try
 		{
-			status = doJSONPOST(
-					"http://paperlessapp.apiary.io/v1/waybill/communication?id=" + bagid
-							+ "&comType=" + type + "&mrdToken=" + VariableManager.token
-							+ "&comResult=" + result_string, comExtra, 5000)
-					.getJSONObject("response").getJSONObject("waybill").getString("status");
+			status = doJSONPOST(url, comExtra, 5000);
 		}
 		catch (JSONException e)
 		{
@@ -1086,7 +1111,15 @@ public class ServerInterface
 			e.printStackTrace();
 			Log.e(TAG, e.toString());
 		}
-		return status;
+
+		if (status.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, comExtra));
+		}
+		else
+		{
+			return status;
+		}
 	}
 
 	/**
@@ -1097,10 +1130,22 @@ public class ServerInterface
 	 *            IDs acquired from /milkrun/handover
 	 * @return
 	 */
-	public static String postFailedHandover(String bag_id, String reason_id)
+	public String postFailedHandover(String bag_id, String reason_id)
 	{
-		return postData("http://paperlessapp.apiary.io/v1/milkruns/handover?bagid=" + bag_id
-				+ "&handoverid=" + reason_id + "&mrdToken=" + VariableManager.token);
+		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?bagid=" + bag_id
+				+ "&handoverid=" + reason_id + "&mrdToken=" + VariableManager.token;
+
+		String result = postData(url);
+
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
+
 	}
 
 	/**
@@ -1111,10 +1156,21 @@ public class ServerInterface
 	 * @param extra
 	 * @return
 	 */
-	public static String postPartialDelivery(String waybill_id, String status_id, String extra)
+	public String postPartialDelivery(String waybill_id, String status_id, String extra)
 	{
-		return postData("http://paperlessapp.apiary.io/v1/waybill/delivery?id=" + waybill_id
-				+ "&deliveryid=" + status_id + "&mrdToken=" + VariableManager.token);
+		String url = "http://paperlessapp.apiary.io/v1/waybill/delivery?id=" + waybill_id
+				+ "&deliveryid=" + status_id + "&mrdToken=" + VariableManager.token;
+
+		String result = postData(url);
+
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
 	}
 
 	/**
@@ -1124,7 +1180,7 @@ public class ServerInterface
 	 * @return
 	 */
 	// http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
-	public static String postData(String url)
+	public String postData(String url)
 	{
 		// Create a new HttpClient and Post Header
 		// HttpClient httpclient = new DefaultHttpClient();
@@ -1158,7 +1214,7 @@ public class ServerInterface
 				sb.append(line + "\n");
 			}
 			String result = sb.toString();
-
+			Log.d(TAG, "postData: " + result);
 			return result;
 
 		}
@@ -1175,7 +1231,7 @@ public class ServerInterface
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
-			return "";
+			return VariableManager.TEXT_NET_ERROR;
 			// TODO Auto-generated catch block
 		}
 	}
@@ -1232,10 +1288,19 @@ public class ServerInterface
 		}
 	}
 
-	public static JSONObject doJSONPOST(String url, JSONObject json, int timeout) throws Exception
+	/**
+	 * Perform HTTP POST request with a JSON object in the message body.
+	 * 
+	 * @param url
+	 * @param json
+	 * @param timeout
+	 * @return
+	 * @throws Exception
+	 */
+	public String doJSONPOST(String url, JSONObject json, int timeout) throws Exception
 	{
 		Hashtable<String, String> temp_header_item;
-		JSONObject toreturn;
+		String toreturn = null;
 		StringEntity temp_entity;
 		InputStream content = null;
 		int default_connection_timeout = 5000;
@@ -1271,15 +1336,15 @@ public class ServerInterface
 						response.getAllHeaders()[i].getValue());
 			}
 
-			toreturn = new JSONObject(convertInputStreamToString(content));
+			toreturn = new JSONObject(convertInputStreamToString(content))
+					.getJSONObject("response").getJSONObject("waybill").getString("status");
 
 			httpclient.getConnectionManager().shutdown();
 		}
 		catch (Exception e)
 		{
-			throw e;
+			toreturn = VariableManager.TEXT_NET_ERROR;
 		}
-
 		return toreturn;
 	}
 
