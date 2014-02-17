@@ -1,8 +1,5 @@
 package fi.gfarr.mrd.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,10 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 import fi.gfarr.mrd.R;
-import fi.gfarr.mrd.adapters.ViewDeliveriesListAdapter;
+import fi.gfarr.mrd.adapters.CompletedDeliveriesListAdapter;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.VariableManager;
@@ -24,7 +21,7 @@ public class CompletedDeliveriesFragment extends Fragment
 	private static final String TAG = "ViewDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
-	private ViewDeliveriesListAdapter adapter;
+	private CompletedDeliveriesListAdapter adapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -46,13 +43,47 @@ public class CompletedDeliveriesFragment extends Fragment
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
-		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+		final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
 
-		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
+		adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
+				getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
 
 		holder.list.setAdapter(adapter);
-		
+
+		holder.button_completed.setOnClickListener(new View.OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				holder.button_completed
+						.setBackgroundResource(R.drawable.partial_tab_white);
+				holder.button_partial
+						.setBackgroundResource(R.drawable.partial_tab_grey);
+				adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
+						getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
+				holder.list.setAdapter(adapter);
+				adapter.notifyDataSetChanged();
+			}
+		});
+
+		holder.button_partial.setOnClickListener(new View.OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				holder.button_completed
+						.setBackgroundResource(R.drawable.partial_tab_grey);
+				holder.button_partial
+						.setBackgroundResource(R.drawable.partial_tab_white);
+				adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
+						getActivity()).getBagsByStatus(driverid, Bag.STATUS_PARTIAL));
+				holder.list.setAdapter(adapter);
+				adapter.notifyDataSetChanged();
+			}
+		});
+
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -61,14 +92,20 @@ public class CompletedDeliveriesFragment extends Fragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null, false);
+			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null,
+					false);
 
 			if (holder == null)
 			{
 				holder = new ViewHolder();
 			}
 
-			holder.list = (ListView) rootView.findViewById(R.id.fragment_successful_deliveries_container);
+			holder.list = (ListView) rootView
+					.findViewById(R.id.fragment_successful_deliveries_container);
+			holder.button_completed = (Button) rootView
+					.findViewById(R.id.fragment_successful_deliveries_completed_button);
+			holder.button_partial = (Button) rootView
+					.findViewById(R.id.fragment_successful_deliveries_partial_button);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -93,5 +130,6 @@ public class CompletedDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
+		Button button_completed, button_partial;
 	}
 }
