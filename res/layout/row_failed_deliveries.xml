@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@drawable/deliveries_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:background="@color/background_grey" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/deliveries_background"
+        android:orientation="vertical"
+        android:padding="14dp" >
+
+        <TextView
+            android:id="@+id/text_failed_deliveries_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="2"
+            android:text="5 Meson close, Techno Park\nStellenbosch"
+            android:textColor="@color/text_grey"
+            android:textSize="@dimen/font_size_manifest_panel" />
+
+        <TextView
+            android:id="@+id/text_failed_deliveries_bags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_failed_deliveries_address"
+            android:text="000012345678 (Takealot)\n000012345678 (Takealot)"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_size_manifest_panel" />
+
+        <TextView
+            android:id="@+id/text_failed_deliveries_failed_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_failed_deliveries_bags"
+            android:layout_marginTop="20dp"
+            android:text="Failed delivery at 21/07/2013 15:47"
+            android:textColor="@color/text_grey"
+            android:textSize="@dimen/font_size_manifest_panel" />
+
+        <TextView
+            android:id="@+id/text_failed_deliveries_failed_reason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_failed_deliveries_failed_time"
+            android:text="Reason: Customer not home"
+            android:textColor="@color/text_grey"
+            android:textSize="@dimen/font_size_manifest_panel" />
+    </RelativeLayout>
+
+</LinearLayout>
