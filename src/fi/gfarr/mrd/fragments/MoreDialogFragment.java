@@ -1,6 +1,8 @@
 package fi.gfarr.mrd.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -16,6 +18,7 @@ import fi.gfarr.mrd.R;
 import fi.gfarr.mrd.ReportDelayActivity;
 import fi.gfarr.mrd.SmsActivity;
 import fi.gfarr.mrd.helper.VariableManager;
+import fi.gfarr.mrd.net.ServerInterface;
 
 public class MoreDialogFragment extends DialogFragment
 {
@@ -24,7 +27,12 @@ public class MoreDialogFragment extends DialogFragment
 	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
 	private boolean isExtendedDialaog;
 	private static String bagid;
+	private Activity activity;
 
+	public interface SetNextDeliveryListener {
+        void onSetNextDelivery(boolean is_successful);
+    }
+	
 	/**
 	 * @param isExtendedDialog
 	 *            A boolean option for displaying the normal or extended more dialog box.
@@ -58,6 +66,8 @@ public class MoreDialogFragment extends DialogFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		activity = getActivity();
 	}
 
 	@Override
@@ -73,11 +83,12 @@ public class MoreDialogFragment extends DialogFragment
 		{
 			isExtendedDialaog = args.getBoolean(EXTENDED_DIALOG);
 		}
-
+		
 		ImageButton closeDialogButton = (ImageButton) v
 				.findViewById(R.id.button_deliveriesMore_closeButton);
 		Button setAsNextDelivery = (Button) v
 				.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
+		View setAsNextDeliveryDivider = (View) v.findViewById(R.id.seperator_deliveriesMore_nextDelivery);
 		Button viewMapButton = (Button) v.findViewById(R.id.button_deliveriesMore_viewMap);
 		Button reportDelayButton = (Button) v.findViewById(R.id.button_deliveriesMore_reportDelay);
 		Button callButton = (Button) v.findViewById(R.id.button_deliveriesMore_call);
@@ -86,6 +97,7 @@ public class MoreDialogFragment extends DialogFragment
 		if (isExtendedDialaog == true)
 		{
 			setAsNextDelivery.setVisibility(View.VISIBLE);
+			setAsNextDeliveryDivider.setVisibility(View.VISIBLE);
 		}
 
 		closeDialogButton.setOnClickListener(new View.OnClickListener()
@@ -102,7 +114,8 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				// TODO: Set as next delivery button
+				dismiss();
+				new SetNextDelivery().execute();
 			}
 		});
 
@@ -123,7 +136,6 @@ public class MoreDialogFragment extends DialogFragment
 				startActivity(intent);
 
 				dismiss();
-				// TODO: View Map button
 			}
 		});
 
@@ -132,7 +144,6 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				// TODO: Change to new activity
 				Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
 
 				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
@@ -177,5 +188,33 @@ public class MoreDialogFragment extends DialogFragment
 		});
 
 		return v;
+	}
+	
+	private class SetNextDelivery extends AsyncTask<Void, Void, String>
+	{
+		@Override
+		protected String doInBackground(Void... params)
+		{
+			return ServerInterface.setNextDelivery(bagid);
+		}
+
+		@Override
+		protected void onPostExecute(String result)
+		{
+
+			try
+			{
+				if (result.equals("success"))
+				{
+					SetNextDeliveryListener activity_next_delivery = (SetNextDeliveryListener) activity;
+					activity_next_delivery.onSetNextDelivery(true);
+		            dismiss();
+				}
+			}
+			catch (NumberFormatException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }

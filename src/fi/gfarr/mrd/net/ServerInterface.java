@@ -1391,4 +1391,40 @@ public class ServerInterface
 		return id;
 	}
 
+	public static String setNextDelivery(String id)
+	{
+
+		String url = "http://paperlessapp.apiary.io/v1/waybill/setnext?id=" + id + "&mrdToken="
+				+ VariableManager.token;
+
+		String response = postData(url);
+
+		String status = "";
+
+		try
+		{
+			JSONObject jObject = new JSONObject(response);
+			status = jObject.getJSONObject("response").getString("status");
+
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: driver?id");
+			}
+			return "";
+			// Oops
+		}
+
+		if (VariableManager.DEBUG)
+		{
+			Log.d(TAG, "token: " + status);
+		}
+		return status;
+	}
+	
 }
