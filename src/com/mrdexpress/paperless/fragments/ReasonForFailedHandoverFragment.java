@@ -5,14 +5,6 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
-import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.widget.CustomToast;
-
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,7 +19,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
+import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ReasonForFailedHandoverFragment extends Fragment
 {

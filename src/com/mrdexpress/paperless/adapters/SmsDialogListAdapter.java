@@ -1,26 +1,17 @@
 package com.mrdexpress.paperless.adapters;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.fragments.DelayDialog;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 
 import android.content.Context;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.datatype.DialogDataObject;
 
 public class SmsDialogListAdapter extends BaseAdapter
 {

@@ -1,18 +1,16 @@
 package com.mrdexpress.paperless.fragments;
 
-import com.mrdexpress.paperless.helper.FontHelper;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
 
 /**
  * 

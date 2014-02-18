@@ -25,8 +25,6 @@ import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 
-import fi.gfarr.mrd.R;
-
 public class ManagerListActivity extends ListActivity implements LoaderCallbacks<Cursor>,
 		OnQueryTextListener
 {

@@ -3,15 +3,8 @@ package com.mrdexpress.paperless.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
-import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.widget.CustomToast;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -27,7 +20,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
+import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class DeliveryHandoverFragment extends Fragment
 {

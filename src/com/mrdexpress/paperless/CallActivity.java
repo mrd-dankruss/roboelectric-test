@@ -1,13 +1,11 @@
 package com.mrdexpress.paperless;
 
-import com.mrdexpress.paperless.fragments.CallListFragment;
-import com.mrdexpress.paperless.fragments.ReportDelayListFragment;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.fragments.CallListFragment;
 
 public class CallActivity extends FragmentActivity
 {

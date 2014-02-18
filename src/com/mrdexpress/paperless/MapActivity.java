@@ -58,8 +58,6 @@ import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.Toaster;
 
-import fi.gfarr.mrd.R;
-
 public class MapActivity extends Activity implements OnMapClickListener, LocationListener,
 		android.location.LocationListener, OnQueryTextListener
 {

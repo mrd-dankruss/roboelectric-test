@@ -1,9 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import com.mrdexpress.paperless.ScanActivity;
-import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,7 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.ScanActivity;
+import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.VariableManager;
 
 public class HomeFragment extends Fragment
 {

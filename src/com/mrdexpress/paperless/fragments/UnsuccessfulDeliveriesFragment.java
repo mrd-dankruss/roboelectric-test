@@ -1,10 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import com.mrdexpress.paperless.adapters.UnsuccessfulDeliveriesListAdapter;
-import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,7 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.Toast;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.adapters.UnsuccessfulDeliveriesListAdapter;
+import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.VariableManager;
 
 public class UnsuccessfulDeliveriesFragment extends ListFragment
 {

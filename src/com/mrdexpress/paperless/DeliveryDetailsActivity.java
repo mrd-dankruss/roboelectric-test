@@ -2,16 +2,6 @@ package com.mrdexpress.paperless;
 
 import java.util.ArrayList;
 
-import com.mrdexpress.paperless.datatype.ComLogObject;
-import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
-import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
-import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.widget.CustomToast;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -22,7 +12,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.datatype.ComLogObject;
+import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.fragments.MoreDialogFragment;
+import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
+import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
+import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class DeliveryDetailsActivity extends FragmentActivity implements SetNextDeliveryListener
 {

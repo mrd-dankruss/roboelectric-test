@@ -1,16 +1,11 @@
 package com.mrdexpress.paperless;
 
-import com.mrdexpress.paperless.fragments.ReportDelayListFragment;
-import com.mrdexpress.paperless.fragments.SmsListFragment;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.fragments.SmsListFragment;
 
 public class SmsActivity extends FragmentActivity
 {
