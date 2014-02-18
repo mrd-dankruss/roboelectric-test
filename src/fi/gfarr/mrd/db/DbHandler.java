@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
@@ -14,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import fi.gfarr.mrd.datatype.ComLogObject;
 import fi.gfarr.mrd.datatype.DeliveryHandoverDataObject;
 import fi.gfarr.mrd.datatype.DialogDataObject;
 import fi.gfarr.mrd.datatype.UserItem;
@@ -39,6 +42,7 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String TABLE_CALLQUEUE = "CallQueue"; // Queues API calls if net is down
 	public static final String TABLE_CONTACTS = "Contacts";
 	public static final String TABLE_DELAYS = "Delays";
+	public static final String TABLE_COMLOG = "ComLog";
 	public static final String TABLE_FAILED_HANDOVER_REASONS = "FailedHandoverReasons";
 	public static final String TABLE_PARTIAL_DELIVERY_REASONS = "PartialDeliveryReasons";
 
@@ -145,6 +149,13 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_FAILED_HANDOVER_REASONS_ID = "failed_handover_reasons_id";
 	public static final String C_FAILED_HANDOVER_REASONS_NAME = "failed_handover_reasons_name";
 
+	// ------------ Fields - ComLog -------------
+	public static final String C_COMLOG_ID = "_id";
+	public static final String C_COMLOG_TIMESTAMP = "comlog_timestamp";
+	public static final String C_COMLOG_USER = "comlog_user";
+	public static final String C_COMLOG_NOTE = "comlog_note";
+	public static final String C_COMLOG_BAGID = "comlog_bag_id";
+
 	// ------------ Fields - Partial delivery reasons -------------
 	public static final String C_PARTIAL_DELIVERY_REASONS_ID = "partial_delvery_reasons_id";
 	public static final String C_PARTIAL_DELIVERY_REASONS_NAME = "partial_delivery_reasons_name";
@@ -250,6 +261,13 @@ public class DbHandler extends SQLiteOpenHelper
 			createTable(db, TABLE_CALLQUEUE, CREATE_TABLE_CALLQUEUE);
 			// Log.d(TAG, CREATE_TABLE_CALLQUEUE);
 
+			final String CREATE_TABLE_COMLOG = "CREATE TABLE " + TABLE_COMLOG + "(" + C_COMLOG_ID
+					+ " INTEGER AUTOINCREMENT PRIMARY KEY," + C_COMLOG_TIMESTAMP + " TEXT,"
+					+ C_COMLOG_NOTE + " TEXT," + C_COMLOG_BAGID + " TEXT," + C_COMLOG_USER
+					+ " TEXT," + "FOREIGN KEY(" + C_COMLOG_BAGID + ") REFERENCES " + TABLE_BAGS
+					+ "(" + C_BAG_ID + "))";
+			createTable(db, TABLE_COMLOG, CREATE_TABLE_COMLOG);
+
 			db.setTransactionSuccessful();
 		}
 		catch (SQLiteException e)
@@ -287,6 +305,7 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BAGS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMLOG);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CALLQUEUE);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELAYS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAILED_HANDOVER_REASONS);
@@ -338,11 +357,42 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_CONTACTS_NUMBER, number);
 		values.put(C_CONTACTS_BAG_ID, bagid);
 
-		Log.d("Contacts", "Name: " + name);
-		Log.d("Contacts", "Name: " + number);
-		Log.d("Contacts", "Name: " + bagid);
-
 		return addRow(TABLE_CONTACTS, values);
+	}
+
+	/**
+	 * Add entry into ComLog table
+	 * 
+	 * @param timestamp
+	 * @param user
+	 * @param note
+	 * @param bagid
+	 * @return
+	 */
+	public boolean addComLog(JSONArray comlog)
+	{
+		ContentValues values = new ContentValues();
+		boolean result = true;
+
+		for (int i = 0; i < comlog.length(); i++)
+		{
+			try
+			{
+				values.put(C_COMLOG_TIMESTAMP, comlog.getJSONObject(i).getString("timestamp"));
+				values.put(C_COMLOG_NOTE, comlog.getJSONObject(i).getString("note"));
+				values.put(C_COMLOG_USER, comlog.getJSONObject(i).getString("user"));
+				values.put(C_COMLOG_BAGID, comlog.getJSONObject(i).getString("bagid"));
+
+				addRow(TABLE_COMLOG, values);
+			}
+			catch (JSONException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				result = false;
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -959,6 +1009,66 @@ public class DbHandler extends SQLiteOpenHelper
 			}
 		}
 		return contacts;
+	}
+
+	public ArrayList<ComLogObject> getComLog(String bag_id)
+	{
+		SQLiteDatabase db = null;
+		ArrayList<ComLogObject> comlogs = new ArrayList<ComLogObject>();
+		try
+		{
+
+			db = this.getReadableDatabase(); // Open db
+
+			// ArrayList<Bag> bags = null;
+			String sql = "SELECT * FROM " + TABLE_COMLOG + " WHERE " + C_COMLOG_BAGID + " LIKE '"
+					+ bag_id + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				// bags = new ArrayList<Bag>();
+
+				if (!cursor.isAfterLast())
+				{
+					ComLogObject comlog = new ComLogObject(cursor.getString(cursor
+							.getColumnIndex(C_COMLOG_TIMESTAMP)), cursor.getString(cursor
+							.getColumnIndex(C_COMLOG_USER)), cursor.getString(cursor
+							.getColumnIndex(C_COMLOG_NOTE)));
+
+					/*					Log.d("getContacts",
+												"getColumnIndex.Name: " + cursor.getColumnIndex(C_CONTACTS_NAME));
+										Log.d("getContacts", "getColumnIndex.Contact: " + cursor);*/
+
+					comlogs.add(comlog);
+					cursor.moveToNext();
+				}
+			}
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+		return comlogs;
 	}
 
 	/**

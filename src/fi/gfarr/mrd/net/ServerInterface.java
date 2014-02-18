@@ -115,7 +115,6 @@ public class ServerInterface
 		{
 			JSONObject jObject = new JSONObject(response);
 			token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
-
 		}
 		catch (JSONException e)
 		{
@@ -533,6 +532,10 @@ public class ServerInterface
 							.getJSONObject("coords").getString("lat");
 					String dest_long = result.getJSONObject("destination").getJSONObject("address")
 							.getJSONObject("coords").getString("lon");
+
+					JSONArray comlog = result.getJSONArray("comlog");
+
+					Log.d(TAG, "Comlog added: " + DbHandler.getInstance(context).addComLog(comlog));
 
 					// Go through temp array to find number of times the
 					// current waybill ID occurs.
@@ -1189,14 +1192,6 @@ public class ServerInterface
 
 		try
 		{
-			// Add your data
-			// List<NameValuePair> nameValuePairs = new
-			// ArrayList<NameValuePair>(2);
-			// nameValuePairs.add(new BasicNameValuePair("id", "12345"));
-			// nameValuePairs.add(new BasicNameValuePair("stringdata",
-			// "AndDev is Cool!"));
-			// httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
 			// Execute HTTP Post Request
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity entity = response.getEntity();
@@ -1399,7 +1394,7 @@ public class ServerInterface
 	public static String scanBag(Context context, String barcode)
 	{
 		String id = "";
-		
+
 		String url = "http://paperlessapp.apiary.io/v1/bags/scan?barcode=" + barcode + "&mrdToken="
 				+ VariableManager.token;
 
@@ -1452,7 +1447,7 @@ public class ServerInterface
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
 		}
-		
+
 		return id;
 	}
 
@@ -1491,5 +1486,5 @@ public class ServerInterface
 		}
 		return status;
 	}
-	
+
 }

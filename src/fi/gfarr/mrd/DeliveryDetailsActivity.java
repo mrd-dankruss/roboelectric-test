@@ -1,16 +1,18 @@
 package fi.gfarr.mrd;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import fi.gfarr.mrd.datatype.ComLogObject;
 import fi.gfarr.mrd.db.Bag;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.fragments.MoreDialogFragment;
@@ -52,11 +54,22 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		holder.text_delivery_number.setText("#"
 				+ Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION)) + 1);
 		holder.text_delivery_title.setText("CURRENT MILKRUN DELIVERY"); // TODO: Change
-		holder.text_delivery_addressee.setText("Addressee" + bag.getDestinationHubName());
+		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
 		holder.text_delivery_address.setText(bag.getDestinationAddress());
 		holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
 		// TODO: Remove hardcoded values
-		holder.text_delivery_communication_log.setText("SMS sent at 15:13\nRunning 5 minutes late");
+
+		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog(
+				bag.getBagNumber());
+
+		String comlog_text = "";
+		for (int i = 0; i < comlogs.size(); i++)
+		{
+			comlog_text.concat("SMS sent at " + comlogs.get(i).getTimestamp() + "\n"
+					+ comlogs.get(i).getNote() + "\n\n");
+		}
+
+		holder.text_delivery_communication_log.setText(comlog_text);
 
 		// TODO:Set image here one day when app is extended.
 		// holder.image_company_logo.setText("");
