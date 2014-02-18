@@ -89,7 +89,7 @@
         android:background="@drawable/button_custom"
         android:text="@string/button_complete_collection" />
 
-    <fi.gfarr.mrd.SignatureView
+    <com.mrdexpress.paperless.SignatureView
         android:id="@+id/signatureView"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"

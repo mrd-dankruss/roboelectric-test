@@ -32,7 +32,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Mrdstyle" >
         <activity
-            android:name="fi.gfarr.mrd.MainActivity"
+            android:name="com.mrdexpress.paperless.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
@@ -43,9 +43,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:name="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:label="@string/title_deliveries"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -61,20 +61,20 @@
                 android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ScanActivity"
+            android:name="com.mrdexpress.paperless.ScanActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_scan_consignments"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
+            android:parentActivityName="com.mrdexpress.paperless.DriverListActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.DriverListActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.DriverListActivity"
+            android:name="com.mrdexpress.paperless.DriverListActivity"
             android:label="@string/title_activity_driver_list"
-            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
             <meta-data
@@ -90,9 +90,9 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ManagerListActivity"
+            android:name="com.mrdexpress.paperless.ManagerListActivity"
             android:label="@string/title_activity_manager_list"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
             <meta-data
@@ -108,36 +108,36 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.SignatureActivity"
+            android:name="com.mrdexpress.paperless.SignatureActivity"
             android:label="@string/title_activity_signature"
-            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.MainActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.CreatePinActivity"
+            android:name="com.mrdexpress.paperless.CreatePinActivity"
             android:label="@string/title_activity_create_pin"
-            android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
+            android:parentActivityName="com.mrdexpress.paperless.DriverListActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.DriverListActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.EnterPinActivity"
+            android:name="com.mrdexpress.paperless.EnterPinActivity"
             android:label="@string/title_activity_enter_pin"
-            android:parentActivityName="fi.gfarr.mrd.DriverListActivity"
+            android:parentActivityName="com.mrdexpress.paperless.DriverListActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.DriverListActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.MapActivity"
+            android:name="com.mrdexpress.paperless.MapActivity"
             android:label="@string/title_activity_map"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -150,136 +150,137 @@
             android:value="@string/key_googlemaps_api_debug" />
 
         <activity
-            android:name="fi.gfarr.mrd.ViewBagManifestActivity"
+            android:name="com.mrdexpress.paperless.ViewBagManifestActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_view_bag_manifest"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ManagerAuthIncompleteScanActivity"
+            android:name="com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity"
             android:label="@string/title_activity_manager_auth_incomplete_scan"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ReportDelayActivity"
+            android:name="com.mrdexpress.paperless.ReportDelayActivity"
             android:label="@string/title_report_delay"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.CallActivity"
+            android:name="com.mrdexpress.paperless.CallActivity"
             android:label="@string/title_call"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.SmsActivity"
+            android:name="com.mrdexpress.paperless.SmsActivity"
             android:label="@string/title_sms"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.DeliveryHandoverFragmentActivity"
+            android:name="com.mrdexpress.paperless.DeliveryHandoverFragmentActivity"
             android:label="@string/title_deliveryHandover"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.DeliveryDetailsActivity"
+            android:name="com.mrdexpress.paperless.DeliveryDetailsActivity"
             android:label="@string/title_actionbar_delivery_details"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.TransferDataActivity"
+            android:name="com.mrdexpress.paperless.TransferDataActivity"
             android:label="@string/title_actionbar_transfer_data"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ReasonForFailedHandoverActivity"
+            android:name="com.mrdexpress.paperless.ReasonForFailedHandoverActivity"
             android:label="@string/title_actionbar_failed_delivery"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.ViewDeliveriesFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ReasonPartialDeliveryActivity"
+            android:name="com.mrdexpress.paperless.ReasonPartialDeliveryActivity"
             android:label="@string/title_reason_partial_deliveries"
             android:launchMode="singleTop"
-            android:parentActivityName="fi.gfarr.mrd.DeliveryHandoverFragmentActivity"
+            android:parentActivityName="com.mrdexpress.paperless.DeliveryHandoverFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.DeliveryHandoverFragmentActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.HomeActivity"
+            android:name="com.mrdexpress.paperless.HomeActivity"
             android:label="@string/title_actionbar_home"
-            android:parentActivityName="fi.gfarr.mrd.MainActivity"
+            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.MainActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.EnterBarcodeActivity"
+            android:name="com.mrdexpress.paperless.EnterBarcodeActivity"
             android:label="@string/title_actionbar_enter_barcode"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fi.gfarr.mrd.ScanActivity" />
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.ManagerAuthNotAssignedActivity"
+            android:name="com.mrdexpress.paperless.ManagerAuthNotAssignedActivity"
             android:label="@string/title_actionbar_manager_auth_not_assigned"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fi.gfarr.mrd.ScanActivity" />
+                android:value="com.mrdexpress.paperless.ScanActivity" >
+            </meta-data>
         </activity>
         <activity
-            android:name="fi.gfarr.mrd.LoginActivity"
+            android:name="com.mrdexpress.paperless.LoginActivity"
             android:label="@string/title_actionbar_mainmenu"
-            android:parentActivityName="fi.gfarr.mrd.ScanActivity"
+            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -21,7 +21,7 @@
         android:text="TextView"
         android:textSize="@dimen/font_size_manifest_panel" />
 
-    <fi.gfarr.mrd.widget.AutoResizeTextView
+    <com.mrdexpress.paperless.widget.AutoResizeTextView
         android:id="@+id/textView_manifest_volume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
         android:textSize="@dimen/font_size_manifest_panel"
         android:textStyle="bold" />
 
-    <fi.gfarr.mrd.widget.AutoResizeTextView
+    <com.mrdexpress.paperless.widget.AutoResizeTextView
         android:id="@+id/textView_manifest_weight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
