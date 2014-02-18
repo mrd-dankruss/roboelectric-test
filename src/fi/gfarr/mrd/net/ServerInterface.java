@@ -533,6 +533,10 @@ public class ServerInterface
 					String dest_long = result.getJSONObject("destination").getJSONObject("address")
 							.getJSONObject("coords").getString("lon");
 
+					JSONArray comlog = result.getJSONArray("comlog");
+
+					Log.d(TAG, "Comlog added: " + DbHandler.getInstance(context).addComLog(comlog));
+
 					// Go through temp array to find number of times the
 					// current waybill ID occurs.
 
@@ -1390,7 +1394,7 @@ public class ServerInterface
 	public static String scanBag(Context context, String barcode)
 	{
 		String id = "";
-		
+
 		String url = "http://paperlessapp.apiary.io/v1/bags/scan?barcode=" + barcode + "&mrdToken="
 				+ VariableManager.token;
 
@@ -1443,7 +1447,7 @@ public class ServerInterface
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
 		}
-		
+
 		return id;
 	}
 
@@ -1482,5 +1486,5 @@ public class ServerInterface
 		}
 		return status;
 	}
-	
+
 }
