@@ -53,6 +53,11 @@ public class VariableManager
 	// Activity result codes
 	public static final int ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY = 0;
 
+	// API error codes
+	public static final String API_ERROR_CODE_BADREQUEST = "400";
+	public static final String API_ERROR_CODE_UNAUTHORISED = "401";
+	public static final String API_ERROR_CODE_NOTFOUND = "402";
+
 	// Last Logged In
 	public static final String LAST_LOGGED_IN_MANAGER_NAME = "com.mrdexpress.paperless.last_logged_in_manager_name";
 	public static final String LAST_LOGGED_IN_MANAGER_ID = "com.mrdexpress.paperless.last_logged_in_manager_id";

@@ -46,6 +46,7 @@ import com.mrdexpress.paperless.db.Driver;
 import com.mrdexpress.paperless.db.Waybill;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -369,7 +370,7 @@ public class ServerInterface
 			try
 			{
 				obj = new JSONObject(response);
-				String error_code = stripErrorCode(obj.toString());
+				status = stripErrorCode(obj.toString());
 			}
 			catch (JSONException e1)
 			{

@@ -336,6 +336,18 @@ public class MainActivity extends Activity
 					dialog.dismiss();
 				}
 			}
+			else
+			{
+				// Close progress spinner
+				if (dialog.isShowing())
+				{
+					dialog.dismiss();
+				}
+				CustomToast toast = new CustomToast(getParent());
+				toast.setText(getString(R.string.text_unauthorised));
+				toast.setSuccess(false);
+				toast.show();
+			}
 		}
 	}
 

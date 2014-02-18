@@ -120,6 +120,7 @@
     <string name="text_process_handover_successful">Process succcessful handover</string>
     <string name="text_process_handover_failed">Process failed handover</string>
     <string name="text_not_assigned_message">This consignment has not been assigned to you!</string>
+    <string name="text_unauthorised">Unauthorised</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
