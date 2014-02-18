@@ -6,25 +6,26 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fi.gfarr.mrd.db.DbHandler;
 import fi.gfarr.mrd.helper.FontHelper;
 import fi.gfarr.mrd.helper.VariableManager;
 import fi.gfarr.mrd.net.ServerInterface;
 import fi.gfarr.mrd.security.PinManager;
-import fi.gfarr.mrd.widget.Toaster;
+import fi.gfarr.mrd.widget.CustomToast;
 
 public class ManagerAuthIncompleteScanActivity extends Activity
 {
@@ -32,8 +33,12 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	private ViewHolder holder;
 	private View root_view;
 	private final String TAG = "ManagerAuthIncompleteScanActivity";
-	ProgressDialog dialog_login;
-	String imei_id;
+	private ProgressDialog dialog_login;
+	private String imei_id;
+	private String last_logged_in_manager_name;
+	private String last_logged_in_manager_id;
+
+	public static String MANAGER_AUTH_INCOMPLETE_SCAN = "fi.gfarr.mrd.ManagerAuthIncompleteScanActivity.auth_success";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,7 +46,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_manager_auth_incomplete_scan);
 
-		setTitle(R.string.title_actionbar_manager_auth); // Change actionbar title
+		setTitle(R.string.title_actionbar_manager_auth_not_assigned); // Change actionbar title
 
 		// Initialize ViewHolder
 		initViewHolder();
@@ -49,19 +54,10 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
 
-		// Display name of manager
-		holder.textView_name
-				.setText(getIntent().getStringExtra(VariableManager.EXTRA_MANAGER_NAME));
-
-		// Heading
-		holder.textView_heading.setText(getString(R.string.text_manAuth_heading));
-
 		// List of unscanned bags
 		new RetrieveUnScannedConsignmentsTask().execute();
 
 		initClickListeners();
-
-		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
 	}
 
 	private class RetrieveUnScannedConsignmentsTask extends AsyncTask<Void, Void, Void>
@@ -93,7 +89,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		@Override
 		protected void onPostExecute(Void nothing)
 		{
-			holder.textView_list.setText(list);
+			holder.text_list.setText(list);
 
 			// Close progress spinner
 			if (dialog_progress.isShowing())
@@ -101,6 +97,22 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 				dialog_progress.dismiss();
 			}
 		}
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME,
+				null);
+		last_logged_in_manager_id = prefs
+				.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
+
+		// Display name of manager
+		holder.text_name.setText(last_logged_in_manager_name);
 	}
 
 	@Override
@@ -121,6 +133,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			public void onClick(View v)
 			{
 				// Perform action on click
+				Log.d("Click", "Click");
 				login();
 			}
 		});
@@ -163,18 +176,23 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
 
-					String man_id = getIntent().getStringExtra(VariableManager.EXTRA_MANAGER_ID);
 					String driver_id = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID);
 
-					String status = ServerInterface.authManager(man_id, driver_id, hash, imei_id);
+					String status = ServerInterface.authManager(last_logged_in_manager_id,
+							driver_id, hash, imei_id);
 
+					Log.d("Incomplete", "Success: " + status);
 					if (status.equals("success"))
 					{
-						handler.sendEmptyMessage(0);
+						// handler.sendEmptyMessage(0);
+						Intent intent = new Intent();
+						intent.putExtra(MANAGER_AUTH_INCOMPLETE_SCAN, true);
+						setResult(Activity.RESULT_OK, intent);
+						finish();
 					}
 					else
 					{
-						handler.sendEmptyMessage(1);
+						// handler.sendEmptyMessage(1);
 					}
 				}
 			};
@@ -218,7 +236,10 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	 */
 	private void displayToast(String msg)
 	{
-		Toaster.displayToast(msg, holder.textView_toast, holder.relativeLayout_toast, this);
+		CustomToast toast = new CustomToast(this);
+		toast.setText(msg);
+		toast.setSuccess(false);
+		toast.show();
 	}
 
 	/**
@@ -232,9 +253,10 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	{
 		private WeakReference<ManagerAuthIncompleteScanActivity> mActivity;
 
-		MyHandler(ManagerAuthIncompleteScanActivity activity)
+		MyHandler(ManagerAuthIncompleteScanActivity managerAuthIncompleteScanActivity)
 		{
-			mActivity = new WeakReference<ManagerAuthIncompleteScanActivity>(activity);
+			mActivity = new WeakReference<ManagerAuthIncompleteScanActivity>(
+					managerAuthIncompleteScanActivity);
 		}
 
 		@Override
@@ -300,20 +322,24 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_REGULAR));
 
-			holder.button_continue = (Button) root_view.findViewById(R.id.button_manAuth_continue);
+			holder.button_continue = (Button) root_view
+					.findViewById(R.id.button_incomplete_scan_activity_continue);
 			holder.button_change_manager = (Button) root_view
-					.findViewById(R.id.button_manAuth_change);
-			holder.textView_heading = (TextView) root_view
-					.findViewById(R.id.textView_manAuth_heading);
-			holder.textView_list = (TextView) root_view.findViewById(R.id.textView_manAuth_list);
-			holder.textView_name = (TextView) root_view
-					.findViewById(R.id.textView_manAuth_manager_name);
-			holder.editText_pin = (EditText) root_view.findViewById(R.id.editText_manAuth_pin);
-			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_man_auth_toast);
-			holder.relativeLayout_toast = (RelativeLayout) root_view
-					.findViewById(R.id.toast_man_auth);
-			
-			
+					.findViewById(R.id.button_incomplete_scan_activity_change);
+			holder.editText_pin = (EditText) root_view
+					.findViewById(R.id.editText_incomplete_scan_activity_pin);
+			holder.text_name = (TextView) root_view
+					.findViewById(R.id.text_incomplete_scan_activity_name);
+			holder.text_content = (TextView) root_view
+					.findViewById(R.id.textView_incomplete_scan_activity_heading);
+			holder.text_list = (TextView) root_view
+					.findViewById(R.id.textView_incomplete_scan_activity_list);
+
+			holder.button_continue.setTypeface(typeface_roboto_bold);
+			holder.button_change_manager.setTypeface(typeface_roboto_bold);
+			holder.editText_pin.setTypeface(typeface_roboto_regular);
+			holder.text_name.setTypeface(typeface_roboto_bold);
+			holder.text_content.setTypeface(typeface_roboto_regular);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -337,9 +363,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 	static class ViewHolder
 	{
 		Button button_continue, button_change_manager;
-		TextView textView_name, textView_heading, textView_list;
+		TextView text_name, text_content, text_list;
 		EditText editText_pin;
-		TextView textView_toast;
-		RelativeLayout relativeLayout_toast;
 	}
 }

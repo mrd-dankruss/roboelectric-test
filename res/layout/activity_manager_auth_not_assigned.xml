@@ -40,7 +40,7 @@
             android:ems="10"
             android:inputType="numberPassword"
             android:paddingLeft="@dimen/margin_pin_left"
-            android:hint="@string/text_hint_enter_barcode" />
+            android:hint="@string/text_create_pin_enter" />
         
         <Button
             android:id="@+id/button_not_assigned_activity_continue"

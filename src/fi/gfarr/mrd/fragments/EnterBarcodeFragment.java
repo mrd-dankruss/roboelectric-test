@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import fi.gfarr.mrd.R;
 
@@ -56,7 +57,7 @@ public class EnterBarcodeFragment extends Fragment
 				holder = new ViewHolder();
 			}
 
-			holder.text_barcode = (ListView) rootView.findViewById(R.id.text_enter_barcode);
+			holder.text_barcode = (EditText) rootView.findViewById(R.id.text_enter_barcode);
 			holder.button_ok = (Button) rootView.findViewById(R.id.button_enter_barcode_ok);
 
 			// Store the holder with the view.
@@ -81,7 +82,7 @@ public class EnterBarcodeFragment extends Fragment
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{
-		ListView text_barcode;
+		EditText text_barcode;
 		Button button_ok;
 	}
 

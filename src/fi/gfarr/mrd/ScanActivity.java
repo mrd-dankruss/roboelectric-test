@@ -74,6 +74,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private String imei_id;
 	static final int REQUEST_MANUAL_BARCODE = 1;
 	static final int RESULT_MANAGER_AUTH = 2;
+	static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
 	private Intent intent_manual_barcode;
 	private String user_name;
 
@@ -259,6 +260,22 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
 				{
 					new AddBagToDriver().execute();
+				}
+			}
+		}
+		if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(
+						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+				{
+					Intent intent = new Intent(getApplicationContext(),
+							ViewDeliveriesFragmentActivity.class);
+					// intent.putExtra(EXTRA_MESSAGE, message);
+					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+					startActivity(intent);
 				}
 			}
 		}
@@ -874,16 +891,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			}
 
 			// Start manager authorization activity
-			Intent intent = new Intent(getApplicationContext(), ManagerListActivity.class);
+			if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+			{
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
-			// Pass driver name on
-			intent.putExtra(VariableManager.EXTRA_DRIVER,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
-
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-
-			startActivity(intent);
+				startActivity(intent);
+				dialog.dismiss();
+			}
+			else
+			{
+				startIncompleteScanActivity();
+				dialog.dismiss();
+			}
 		}
 	}
 
@@ -900,6 +919,21 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 		startActivityForResult(intent, RESULT_MANAGER_AUTH);
+	}
+
+	private void startIncompleteScanActivity()
+	{
+		// Start manager authorization activity
+		Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
+
+		// Pass driver name on
+		intent.putExtra(VariableManager.EXTRA_DRIVER,
+				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+
+		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
+		startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
 	}
 
 	private class AddBagToDriver extends AsyncTask<Void, Void, Void>
