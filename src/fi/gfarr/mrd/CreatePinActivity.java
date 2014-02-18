@@ -253,7 +253,7 @@ public class CreatePinActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.downloadBags(getApplicationContext(),
+			ServerInterface.getInstance(getApplicationContext()).downloadBags(getApplicationContext(),
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 			return null;
 		}

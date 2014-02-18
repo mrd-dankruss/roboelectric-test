@@ -166,7 +166,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 					String man_id = getIntent().getStringExtra(VariableManager.EXTRA_MANAGER_ID);
 					String driver_id = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID);
 
-					String status = ServerInterface.authManager(man_id, driver_id, hash, imei_id);
+					String status = ServerInterface.getInstance(getApplicationContext()).authManager(man_id, driver_id, hash, imei_id);
 
 					if (status.equals("success"))
 					{

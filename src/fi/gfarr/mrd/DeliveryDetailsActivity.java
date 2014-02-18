@@ -63,12 +63,12 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 				bag.getBagNumber());
 
 		String comlog_text = "";
+
 		for (int i = 0; i < comlogs.size(); i++)
 		{
-			comlog_text.concat("SMS sent at " + comlogs.get(i).getTimestamp() + "\n"
-					+ comlogs.get(i).getNote() + "\n\n");
+			comlog_text = "SMS sent at " + comlog_text + comlogs.get(i).getTimestamp() + "\n"
+					+ comlogs.get(i).getNote() + "\n";
 		}
-
 		holder.text_delivery_communication_log.setText(comlog_text);
 
 		// TODO:Set image here one day when app is extended.

@@ -262,7 +262,7 @@ public class DbHandler extends SQLiteOpenHelper
 			// Log.d(TAG, CREATE_TABLE_CALLQUEUE);
 
 			final String CREATE_TABLE_COMLOG = "CREATE TABLE " + TABLE_COMLOG + "(" + C_COMLOG_ID
-					+ " INTEGER AUTOINCREMENT PRIMARY KEY," + C_COMLOG_TIMESTAMP + " TEXT,"
+					+ " INTEGER PRIMARY KEY AUTOINCREMENT," + C_COMLOG_TIMESTAMP + " TEXT,"
 					+ C_COMLOG_NOTE + " TEXT," + C_COMLOG_BAGID + " TEXT," + C_COMLOG_USER
 					+ " TEXT," + "FOREIGN KEY(" + C_COMLOG_BAGID + ") REFERENCES " + TABLE_BAGS
 					+ "(" + C_BAG_ID + "))";
@@ -369,7 +369,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param bagid
 	 * @return
 	 */
-	public boolean addComLog(JSONArray comlog)
+	public boolean addComLog(JSONArray comlog, String bagid)
 	{
 		ContentValues values = new ContentValues();
 		boolean result = true;
@@ -381,7 +381,7 @@ public class DbHandler extends SQLiteOpenHelper
 				values.put(C_COMLOG_TIMESTAMP, comlog.getJSONObject(i).getString("timestamp"));
 				values.put(C_COMLOG_NOTE, comlog.getJSONObject(i).getString("note"));
 				values.put(C_COMLOG_USER, comlog.getJSONObject(i).getString("user"));
-				values.put(C_COMLOG_BAGID, comlog.getJSONObject(i).getString("bagid"));
+				values.put(C_COMLOG_BAGID, bagid);
 
 				addRow(TABLE_COMLOG, values);
 			}

@@ -180,13 +180,8 @@ public class MainActivity extends Activity
 			String token = ServerInterface.getInstance(getApplicationContext()).requestToken(
 					imei_id);
 			// Log.d(TAG, "zorro token: " + token);
-			SharedPreferences settings = PreferenceManager
-					.getDefaultSharedPreferences(getApplicationContext());
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putString(VariableManager.PREF, token);
-			editor.commit();
 
-			VariableManager.token = token; // Security vulnerability?
+			// VariableManager.token = token; // Security vulnerability?
 
 			// Download delay reasons
 			// change progress spinner text
@@ -194,19 +189,22 @@ public class MainActivity extends Activity
 			{
 				dialog.setTitle("Retrieving delay reasons");
 			}
-			ServerInterface.downloadDelays(getApplicationContext());
+			ServerInterface.getInstance(getApplicationContext()).downloadDelays(
+					getApplicationContext());
 
 			if (dialog.isShowing())
 			{
 				dialog.setTitle("Retrieving failed handover reasons");
 			}
-			ServerInterface.downloadFailedDeliveryReasons(getApplicationContext());
+			ServerInterface.getInstance(getApplicationContext()).downloadFailedDeliveryReasons(
+					getApplicationContext());
 
 			if (dialog.isShowing())
 			{
 				dialog.setTitle("Retrieving partial delivery reasons");
 			}
-			ServerInterface.downloadPartialDeliveryReasons(getApplicationContext());
+			ServerInterface.getInstance(getApplicationContext()).downloadPartialDeliveryReasons(
+					getApplicationContext());
 
 			// Log.i(TAG, "Token aquired.");
 			return token;
@@ -249,8 +247,10 @@ public class MainActivity extends Activity
 		@Override
 		protected String doInBackground(Void... urls)
 		{
-			ServerInterface.getDrivers(getApplicationContext(), imei_id);
-			ServerInterface.getManagers(getApplicationContext(), imei_id);
+			ServerInterface.getInstance(getApplicationContext()).getDrivers(
+					getApplicationContext(), imei_id);
+			ServerInterface.getInstance(getApplicationContext()).getManagers(
+					getApplicationContext(), imei_id);
 			return null;
 		}
 
@@ -310,7 +310,8 @@ public class MainActivity extends Activity
 		{
 			String hash = PinManager.toMD5(holder.text_password.getText().toString());
 
-			String status = ServerInterface.authDriver(hash, selected_user_id, imei_id);
+			String status = ServerInterface.getInstance(getApplicationContext()).authDriver(hash,
+					selected_user_id, imei_id);
 
 			if (status.equals("success"))
 			{
@@ -433,7 +434,8 @@ public class MainActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.downloadBags(getApplicationContext(), selected_user_id);
+			ServerInterface.getInstance(getApplicationContext()).downloadBags(
+					getApplicationContext(), selected_user_id);
 			return null;
 		}
 

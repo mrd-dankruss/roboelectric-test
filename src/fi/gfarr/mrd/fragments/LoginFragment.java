@@ -74,22 +74,23 @@ public class LoginFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
 			{
-				selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
-						.getUserID();
-				selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
-						.getUserName();
-				selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
-						.getUserType();
+				selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(
+						position)).getUserID();
+				selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(
+						position)).getUserName();
+				selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(
+						position)).getUserType();
 
-				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+						Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(holder.text_manager_name.getWindowToken(), 0);
 
 			}
 		});
-		
+
 		holder.button_login.setOnClickListener(new View.OnClickListener()
 		{
-			
+
 			@Override
 			public void onClick(View v)
 			{
@@ -145,7 +146,8 @@ public class LoginFragment extends Fragment
 
 			final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
 
-			String status = ServerInterface.authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
+			String status = ServerInterface.getInstance(getActivity().getApplicationContext())
+					.authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
 
 			if (status.equals("success"))
 			{
@@ -166,10 +168,13 @@ public class LoginFragment extends Fragment
 				{
 					dialog.dismiss();
 				}
-				
-				prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, selected_user_id).commit();
-				prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selected_user_name).commit();
-				
+
+				prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, selected_user_id)
+						.commit();
+				prefs.edit()
+						.putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selected_user_name)
+						.commit();
+
 				getActivity().finish();
 			}
 		}
