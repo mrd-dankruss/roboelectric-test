@@ -34,10 +34,9 @@ public class VariableManager
 
 	// Shared prefs
 	public static final String PREF = "fi.gfarr.mrd";
+	public static final String PREF_TOKEN = "fi.gfarr.mrd.token";
 	public static final String PREF_NETWORK_AVAILABLE = "fi.gfarr.mrd.network.avail";
 	public static final String IMEI_TEST = "490154203237518";
-
-	public static String token = "";
 
 	public static String next_bag_id;
 	public static String delay_id;
@@ -53,8 +52,8 @@ public class VariableManager
 
 	// Activity result codes
 	public static final int ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY = 0;
-	
-	//Last Logged In
+
+	// Last Logged In
 	public static final String LAST_LOGGED_IN_MANAGER_NAME = "fi.gfarr.mrd.last_logged_in_manager_name";
 	public static final String LAST_LOGGED_IN_MANAGER_ID = "fi.gfarr.mrd.last_logged_in_manager_id";
 

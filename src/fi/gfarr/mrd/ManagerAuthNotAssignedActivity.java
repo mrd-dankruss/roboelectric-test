@@ -135,7 +135,7 @@ public class ManagerAuthNotAssignedActivity extends Activity
 
 					String driver_id = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID);
 
-					String status = ServerInterface.authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
+					String status = ServerInterface.getInstance(getApplicationContext()).authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
 
 					if (status.equals("success"))
 					{

@@ -57,7 +57,7 @@ public class EnterPinActivity extends Activity
 
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
-		
+
 		// Obtain selected driver's name passed from parent activity and display
 		holder.textView_driver.setText(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
@@ -156,7 +156,8 @@ public class EnterPinActivity extends Activity
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
 
-					String status = ServerInterface.authDriver(hash, null, imei_id);
+					String status = ServerInterface.getInstance(getApplicationContext())
+							.authDriver(hash, null, imei_id);
 
 					if (status.equals("success"))
 					{
@@ -238,7 +239,7 @@ public class EnterPinActivity extends Activity
 			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_REGULAR));
-			
+
 			holder.button_login = (Button) root_view.findViewById(R.id.button_enter_pin_login);
 			holder.button_change = (Button) root_view.findViewById(R.id.button_enter_pin_change);
 			holder.textView_driver = (TextView) root_view
@@ -249,12 +250,11 @@ public class EnterPinActivity extends Activity
 			holder.relativeLayout_toast = (RelativeLayout) root_view
 					.findViewById(R.id.toast_enter_pin);
 
-			
 			holder.button_login.setTypeface(typeface_roboto_bold);
 			holder.button_change.setTypeface(typeface_roboto_bold);
 			holder.textView_driver.setTypeface(typeface_roboto_bold);
 			holder.editText_pin.setTypeface(typeface_roboto_regular);
-			
+
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
@@ -350,7 +350,8 @@ public class EnterPinActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.downloadBags(getApplicationContext(),
+			ServerInterface.getInstance(getApplicationContext()).downloadBags(
+					getApplicationContext(),
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 			return null;
 		}
