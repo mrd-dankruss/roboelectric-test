@@ -1,12 +1,11 @@
 package com.mrdexpress.paperless;
 
-import com.mrdexpress.paperless.fragments.TransferDataFragment;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.fragments.TransferDataFragment;
 
 public class TransferDataActivity extends FragmentActivity
 {

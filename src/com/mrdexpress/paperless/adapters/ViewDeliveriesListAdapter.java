@@ -2,12 +2,6 @@ package com.mrdexpress.paperless.adapters;
 
 import java.util.ArrayList;
 
-import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
-import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
-import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
@@ -21,7 +15,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.fragments.MoreDialogFragment;
+import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
+import com.mrdexpress.paperless.helper.FontHelper;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {

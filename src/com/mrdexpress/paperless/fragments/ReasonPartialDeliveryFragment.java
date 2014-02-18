@@ -7,15 +7,6 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mrdexpress.paperless.adapters.ExpandableListAdapter;
-import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.db.Waybill;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.widget.CustomToast;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -32,7 +23,16 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.adapters.ExpandableListAdapter;
+import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Waybill;
+import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ReasonPartialDeliveryFragment extends Fragment
 {

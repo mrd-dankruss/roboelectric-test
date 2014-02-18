@@ -1,16 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
-
-import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
-import com.mrdexpress.paperless.datatype.UserItem;
-import com.mrdexpress.paperless.datatype.UserItem.UserType;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.security.PinManager;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,7 +19,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
+import com.mrdexpress.paperless.datatype.UserItem;
+import com.mrdexpress.paperless.datatype.UserItem.UserType;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.security.PinManager;
 
 public class LoginFragment extends Fragment
 {

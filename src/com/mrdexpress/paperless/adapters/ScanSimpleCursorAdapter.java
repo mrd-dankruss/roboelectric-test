@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.adapters;
 
-import com.mrdexpress.paperless.db.DbHandler;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -10,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.db.DbHandler;
 
 public class ScanSimpleCursorAdapter extends SimpleCursorAdapter
 {

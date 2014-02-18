@@ -13,8 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.m039.wf.SectionAdapter;
-
-import fi.gfarr.mrd.R;
+import com.mrdexpress.paperless.R;
 
 /**
  * 

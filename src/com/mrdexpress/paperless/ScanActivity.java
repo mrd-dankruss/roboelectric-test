@@ -47,8 +47,6 @@ import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
 
-import fi.gfarr.mrd.R;
-
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
 {
 
@@ -88,7 +86,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	{
 		super.onCreate(savedInstanceState);
 
-		setContentView(fi.gfarr.mrd.R.layout.activity_scan);
+		setContentView(R.layout.activity_scan);
 
 		// Start rerieving milkruns list from server
 		// Param is driver ID, passed through from DriverListActivity

@@ -1,10 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
-import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
+import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.VariableManager;
 
 public class CompletedDeliveriesFragment extends Fragment
 {

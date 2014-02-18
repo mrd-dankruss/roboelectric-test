@@ -18,8 +18,6 @@ import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 
-import fi.gfarr.mrd.R;
-
 public class ViewBagManifestActivity extends ListActivity implements LoaderCallbacks<Cursor>
 {
 

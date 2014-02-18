@@ -6,7 +6,8 @@ import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 import android.util.Log;
-import fi.gfarr.mrd.R;
+
+import com.mrdexpress.paperless.R;
 
 public class PinManager {
 

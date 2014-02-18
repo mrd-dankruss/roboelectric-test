@@ -1,12 +1,12 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import fi.gfarr.mrd.R;
-import fi.gfarr.mrd.R.layout;
+
+import com.mrdexpress.paperless.R;
 
 public class DeliveryDetailsFragment extends Fragment {
 	
