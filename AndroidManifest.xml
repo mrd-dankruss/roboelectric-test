@@ -257,7 +257,7 @@
                 android:value="com.mrdexpress.paperless.DeliveryHandoverFragmentActivity" />
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.HomeActivity"
+            android:name="com.mrdexpress.paperless.DriverHomeActivity"
             android:label="@string/title_actionbar_home"
             android:parentActivityName="com.mrdexpress.paperless.MainActivity"
             android:screenOrientation="portrait" >

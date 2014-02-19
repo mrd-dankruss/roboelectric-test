@@ -14,10 +14,10 @@ import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 
-public class HomeFragment extends Fragment
+public class ManagerHomeFragment extends Fragment
 {
 
-	private final String TAG = "HomeFragment";
+	private final String TAG = "ManagerFragment";
 	private ViewHolder holder;
 	private View rootView;
 
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_home, null, false);
+			rootView = inflater.inflate(R.layout.fragment_home_manager, null, false);
 
 			if (holder == null)
 			{
@@ -83,9 +83,11 @@ public class HomeFragment extends Fragment
 					FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_BOLD));
 			
-			holder.button_milkrun = (Button) rootView.findViewById(R.id.button_home_milkrun);
-			holder.button_training_run = (Button) rootView.findViewById(R.id.button_home_training);
+			holder.button_auth_new_delivery_run = (Button) rootView.findViewById(R.id.button_home_manager_auth_new_delivery_run);
+			holder.button_milkrun = (Button) rootView.findViewById(R.id.button_home_manager_milkrun);
+			holder.button_training_run = (Button) rootView.findViewById(R.id.button_home_manager_training);
 
+			holder.button_auth_new_delivery_run.setTypeface(typeface_robotoBold);
 			holder.button_milkrun.setTypeface(typeface_robotoBold);
 			holder.button_training_run.setTypeface(typeface_robotoBold);
 			
@@ -111,6 +113,7 @@ public class HomeFragment extends Fragment
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{
+		Button button_auth_new_delivery_run;
 		Button button_milkrun;
 		Button button_training_run;
 	}

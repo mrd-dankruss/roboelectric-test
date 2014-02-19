@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-import com.mrdexpress.paperless.fragments.HomeFragment;
+import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 
-public class HomeActivity extends FragmentActivity
+public class DriverHomeActivity extends FragmentActivity
 {
 	
 	Fragment fragment;
@@ -23,7 +23,7 @@ public class HomeActivity extends FragmentActivity
 		fragment = fm.findFragmentById(R.id.activity_home_container);
 		if (fragment == null)
 		{
-			fragment = new HomeFragment();
+			fragment = new DriverHomeFragment();
 			fm.beginTransaction().add(R.id.activity_home_container, fragment).commit();
 		}
 		// Fragment: Home End

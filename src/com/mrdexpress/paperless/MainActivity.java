@@ -169,11 +169,13 @@ public class MainActivity extends Activity
 					}
 					if (selected_user_type == UserType.MANAGER)
 					{
+						/*
 						CustomToast not_yet_implemented = new CustomToast(MainActivity.this);
 						not_yet_implemented.setText("Manager login is not implemented.");
 						not_yet_implemented.setSuccess(false);
 						not_yet_implemented.show();
-						// new DriverLoginUserTask().execute();
+						*/
+						new DriverLoginUserTask().execute();
 					}
 				}
 			}
@@ -492,7 +494,7 @@ public class MainActivity extends Activity
 
 			if (result == true)
 			{
-				new RetrieveBagsTask().execute();
+				new RetrieveManagerBagsTask().execute();
 				// Close progress spinner
 				if (dialog.isShowing())
 				{
@@ -560,7 +562,7 @@ public class MainActivity extends Activity
 				dialog_progress.dismiss();
 			}
 
-			Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+			Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
 
 			DbHandler.getInstance(getApplicationContext());
 			// Pass driver name on
@@ -573,6 +575,49 @@ public class MainActivity extends Activity
 		}
 	}
 
+	private class RetrieveManagerBagsTask extends AsyncTask<Void, Void, Void>
+	{
+		private ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			ServerInterface.getInstance(getApplicationContext()).downloadBags(
+					getApplicationContext(), selected_user_id);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
+
+			Intent intent = new Intent(getApplicationContext(), ManagerHomeActivity.class);
+
+			DbHandler.getInstance(getApplicationContext());
+			// Pass driver name on
+			intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
+
+			Log.d(TAG, "Driver ID: " + selected_user_id);
+			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+
+			startActivity(intent);
+		}
+	}
+	
 	/**
 	 * Display a toast using the custom Toaster class
 	 * 
