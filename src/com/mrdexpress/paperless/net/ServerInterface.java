@@ -117,8 +117,12 @@ public class ServerInterface
 	 * @param IMEI
 	 *            number.
 	 */
-	public String requestToken(String imei_id)
+	public String requestToken()
 	{
+		TelephonyManager mngr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei_id = mngr.getDeviceId();
+
 		String url = API_URL + "v1/auth/auth?imei=" + imei_id;
 		String response = getInputStreamFromUrl(url);
 		Log.d(TAG, "zorro - requestToken(): " + response);
@@ -354,8 +358,16 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			status = jObject.getJSONObject("response").getJSONObject("auth").getString("status");
 
+			if (jObject.has("response"))
+			{
+				status = jObject.getJSONObject("response").getJSONObject("auth")
+						.getString("status");
+			}
+			else if (jObject.has("error"))
+			{
+				status = stripErrorCode(jObject.toString());
+			}
 		}
 		catch (JSONException e)
 		{
@@ -366,22 +378,11 @@ public class ServerInterface
 			{
 				displayToast("JSONException: auth/driver");
 			}
-			JSONObject obj;
-			try
-			{
-				obj = new JSONObject(response);
-				status = stripErrorCode(obj.toString());
-			}
-			catch (JSONException e1)
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 		}
 
 		if (VariableManager.DEBUG)
 		{
-			// Log.d(TAG, "token: " + token);
+			Log.d(TAG, "auth/driver: " + status);
 		}
 
 		return status;
@@ -398,7 +399,7 @@ public class ServerInterface
 	 */
 	public String authManager(String man_id, String driver_id, String PIN, String imei_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/auth/manager?imei=" + imei_id + "&mrdToken="
+		String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken="
 				+ ServerInterface.token + "&managerPIN=" + PIN + "&managerid=" + man_id
 				+ "&driverid=" + driver_id;
 
@@ -411,8 +412,16 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			status = jObject.getJSONObject("response").getJSONObject("auth").getString("status");
 
+			if (jObject.has("response"))
+			{
+				status = jObject.getJSONObject("response").getJSONObject("auth")
+						.getString("status");
+			}
+			else if (jObject.has("error"))
+			{
+				status = stripErrorCode(jObject.toString());
+			}
 		}
 		catch (JSONException e)
 		{
@@ -510,8 +519,7 @@ public class ServerInterface
 	 */
 	public void downloadBag(Context context, String bag_id, String driver_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/bag/bag?id=" + bag_id + "&mrdToken="
-				+ ServerInterface.token;
+		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + ServerInterface.token;
 
 		Log.i(TAG, "Fetching " + url);
 
@@ -978,100 +986,6 @@ public class ServerInterface
 	}
 
 	/**
-	 * Perform HTTP GET request.
-	 * 
-	 * @param url
-	 * @return
-	 */
-	// http://www.androidsnippets.com/executing-a-http-get-request-with-httpclient
-
-	public String getInputStreamFromUrl(final String url)
-	{
-		if (VariableManager.DEBUG)
-		{
-			Log.d(TAG, "Fetching JSON from " + url);
-		}
-		try
-		{
-			final int CONN_WAIT_TIME = 5000;
-			final int CONN_DATA_WAIT_TIME = 8000;
-
-			HttpParams httpParams = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(httpParams, CONN_WAIT_TIME);
-			HttpConnectionParams.setSoTimeout(httpParams, CONN_DATA_WAIT_TIME);
-
-			HttpGet request = new HttpGet(url);
-
-			// Depends on your web service
-			request.setHeader("Content-type", "application/json");
-
-			// DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-			// DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
-			DefaultHttpClient httpclient = getNewHttpClient();
-
-			HttpResponse response = httpclient.execute(request);
-			HttpEntity entity = response.getEntity();
-
-			InputStream inputStream = entity.getContent();
-
-			// json is UTF-8 by default
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),
-					8);
-			StringBuilder sb = new StringBuilder();
-
-			String line = null;
-			while ((line = reader.readLine()) != null)
-			{
-				sb.append(line + "\n");
-			}
-
-			// Check if token need refreshing
-			ServerInterface.getInstance(context).refreshToken(sb.toString());
-
-			return sb.toString();
-
-		}
-		catch (UnknownHostException e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			// sw.toString();
-			Log.e(TAG, "No connection");
-			Log.e(TAG, sw.toString());
-			return "";
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			// TODO Auto-generated catch block
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return "";
-		}
-		catch (SocketTimeoutException e)
-		{
-			// TODO Auto-generated catch block
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, "Connection timeout");
-			Log.e(TAG, sw.toString());
-			if (VariableManager.DEBUG)
-			{
-				displayToast("SocketTimeoutException");
-			}
-			return "";
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return "";
-		}
-	}
-
-	/**
 	 * Post a delay to API
 	 * 
 	 * @param bagid
@@ -1214,65 +1128,6 @@ public class ServerInterface
 		}
 	}
 
-	/**
-	 * Perform HTTP POST request.
-	 * 
-	 * @param url
-	 * @return
-	 */
-	// http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
-	public String postData(String url)
-	{
-		// Create a new HttpClient and Post Header
-		// HttpClient httpclient = new DefaultHttpClient();
-		HttpClient httpclient = getNewHttpClient();
-		HttpPost httppost = new HttpPost(url);
-
-		try
-		{
-			// Execute HTTP Post Request
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-
-			InputStream inputStream = entity.getContent();
-
-			// json is UTF-8 by default
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),
-					8);
-			StringBuilder sb = new StringBuilder();
-
-			String line = null;
-			while ((line = reader.readLine()) != null)
-			{
-				sb.append(line + "\n");
-			}
-			String result = sb.toString();
-			Log.d(TAG, "postData: " + result);
-
-			// Check if token need refreshing
-			ServerInterface.getInstance(context).refreshToken(sb.toString());
-
-			return result;
-
-		}
-		catch (ClientProtocolException e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return "";
-			// TODO Auto-generated catch block
-		}
-		catch (IOException e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return VariableManager.TEXT_NET_ERROR;
-			// TODO Auto-generated catch block
-		}
-	}
-
 	public String convertInputStreamToString(InputStream is) throws Exception
 	{
 		BufferedReader rd = new BufferedReader(inputStreamToReader(new BufferedInputStream(is)),
@@ -1327,32 +1182,187 @@ public class ServerInterface
 
 	private void refreshToken(String stream)
 	{
+		JSONObject obj;
 		try
 		{
-			JSONObject json = new JSONObject(stream);
-			String error_code = json.getJSONObject("error").getString("code");
-			if (error_code.equals("401")) // Unauthorized
-			{
-				Log.i(TAG, "Token expired");
-				// Token has expired
-				TelephonyManager mngr = (TelephonyManager) context
-						.getSystemService(Context.TELEPHONY_SERVICE);
-				String imei_id = mngr.getDeviceId();
-				ServerInterface.getInstance(context).requestToken(imei_id);
-			}
-			else if (error_code.equals("400")) // Bad request
-			{
+			obj = new JSONObject(stream);
 
-			}
-			else if (error_code.equals("404")) // Not found
+			if (obj.has("errro"))
 			{
+				String error_code = stripErrorCode(stream);
+				if (error_code.equals(VariableManager.API_ERROR_CODE_UNAUTHORISED)) // Unauthorized
+				{
+					Log.i(TAG, "Token expired");
+					// Token has expired
 
-			}
+					ServerInterface.getInstance(context).requestToken();
+				}
+				/*else if (error_code.equals("400")) // Bad request
+				{
+
+				}
+				else if (error_code.equals("404")) // Not found
+				{
+
+				}*/}
 		}
 		catch (JSONException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Perform HTTP GET request.
+	 * 
+	 * @param url
+	 * @return
+	 */
+	// http://www.androidsnippets.com/executing-a-http-get-request-with-httpclient
+
+	public String getInputStreamFromUrl(final String url)
+	{
+		if (VariableManager.DEBUG)
+		{
+			Log.d(TAG, "Fetching JSON from " + url);
+		}
+		try
+		{
+			final int CONN_WAIT_TIME = 5000;
+			final int CONN_DATA_WAIT_TIME = 8000;
+
+			HttpParams httpParams = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParams, CONN_WAIT_TIME);
+			HttpConnectionParams.setSoTimeout(httpParams, CONN_DATA_WAIT_TIME);
+
+			HttpGet request = new HttpGet(url);
+
+			// Depends on your web service
+			request.setHeader("Content-type", "application/json");
+
+			// DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+			// DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
+			DefaultHttpClient httpclient = getNewHttpClient();
+
+			HttpResponse response = httpclient.execute(request);
+			HttpEntity entity = response.getEntity();
+
+			InputStream inputStream = entity.getContent();
+
+			// json is UTF-8 by default
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),
+					8);
+			StringBuilder sb = new StringBuilder();
+
+			String line = null;
+			while ((line = reader.readLine()) != null)
+			{
+				sb.append(line + "\n");
+			}
+
+			// Check if token need refreshing
+			ServerInterface.getInstance(context).refreshToken(sb.toString());
+
+			// return status;
+			return sb.toString();
+		}
+		catch (UnknownHostException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			// sw.toString();
+			Log.e(TAG, "No connection");
+			Log.e(TAG, sw.toString());
+			return "";
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			// TODO Auto-generated catch block
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return "";
+		}
+		catch (SocketTimeoutException e)
+		{
+			// TODO Auto-generated catch block
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, "Connection timeout");
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("SocketTimeoutException");
+			}
+			return "";
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return "";
+		}
+	}
+
+	/**
+	 * Perform HTTP POST request.
+	 * 
+	 * @param url
+	 * @return
+	 */
+	// http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
+	public String postData(String url)
+	{
+		// Create a new HttpClient and Post Header
+		// HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = getNewHttpClient();
+		HttpPost httppost = new HttpPost(url);
+
+		try
+		{
+			// Execute HTTP Post Request
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+
+			InputStream inputStream = entity.getContent();
+
+			// json is UTF-8 by default
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),
+					8);
+			StringBuilder sb = new StringBuilder();
+
+			String line = null;
+			while ((line = reader.readLine()) != null)
+			{
+				sb.append(line + "\n");
+			}
+			// String result = sb.toString();
+			// Log.d(TAG, "postData: " + result);
+
+			// Check if token need refreshing
+			ServerInterface.getInstance(context).refreshToken(sb.toString());
+
+			return sb.toString();
+
+		}
+		catch (ClientProtocolException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return "";
+			// TODO Auto-generated catch block
+		}
+		catch (IOException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			return VariableManager.TEXT_NET_ERROR;
+			// TODO Auto-generated catch block
 		}
 	}
 
