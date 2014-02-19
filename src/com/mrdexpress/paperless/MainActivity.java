@@ -99,21 +99,21 @@ public class MainActivity extends Activity
 
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
-		if (checkPlayServices())
-		{
-			gcm = GoogleCloudMessaging.getInstance(this);
-			regid = getRegistrationId(context);
-
-			if (regid.isEmpty())
-			{
-				//TODO: Uncomment to implement GCM
-				//registerInBackground();
-			}
-		}
-		else
-		{
-			Log.i(TAG, "No valid Google Play Services APK found.");
-		}
+//		if (checkPlayServices())
+//		{
+//			gcm = GoogleCloudMessaging.getInstance(this);
+//			regid = getRegistrationId(context);
+//
+//			if (regid.isEmpty())
+//			{
+//				//TODO: Uncomment to implement GCM
+//				//registerInBackground();
+//			}
+//		}
+//		else
+//		{
+//			Log.i(TAG, "No valid Google Play Services APK found.");
+//		}
 
 		person_item_list = new ArrayList<UserItem>();
 
