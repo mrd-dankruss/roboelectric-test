@@ -176,8 +176,7 @@ public class MainActivity extends Activity
 		protected String doInBackground(Void... urls)
 		{
 			// Log.i(TAG, "Fetching token...");
-			String token = ServerInterface.getInstance(getApplicationContext()).requestToken(
-					imei_id);
+			String token = ServerInterface.getInstance(getApplicationContext()).requestToken();
 			// Log.d(TAG, "zorro token: " + token);
 
 			// VariableManager.token = token; // Security vulnerability?
@@ -308,6 +307,8 @@ public class MainActivity extends Activity
 		protected Boolean doInBackground(Void... urls)
 		{
 			String hash = PinManager.toMD5(holder.text_password.getText().toString());
+			hash = holder.text_password.getText().toString(); // DEBUG *Remove when hashing is
+																// wanted again
 
 			String status = ServerInterface.getInstance(getApplicationContext()).authDriver(hash,
 					selected_user_id, imei_id);
@@ -340,7 +341,7 @@ public class MainActivity extends Activity
 				{
 					dialog.dismiss();
 				}
-				CustomToast toast = new CustomToast(getParent());
+				CustomToast toast = new CustomToast(MainActivity.this);
 				toast.setText(getString(R.string.text_unauthorised));
 				toast.setSuccess(false);
 				toast.show();
