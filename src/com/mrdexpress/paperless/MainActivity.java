@@ -3,8 +3,18 @@ package com.mrdexpress.paperless;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -27,6 +37,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -95,7 +106,8 @@ public class MainActivity extends Activity
 
 			if (regid.isEmpty())
 			{
-				registerInBackground();
+				//TODO: Uncomment to implement GCM
+				//registerInBackground();
 			}
 		}
 		else
@@ -137,16 +149,6 @@ public class MainActivity extends Activity
 			}
 		});
 
-	}
-
-	/**
-	 * Registers the application with GCM servers asynchronously.
-	 * <p>
-	 * Stores the registration ID and app versionCode in the application's shared preferences.
-	 */
-	private void registerInBackground()
-	{
-		// TODO: Add AsyncTask that can registers a new id if needed.
 	}
 
 	/**
@@ -622,6 +624,118 @@ public class MainActivity extends Activity
 			// should never happen
 			throw new RuntimeException("Could not get package name: " + e);
 		}
+	}
+
+	/**
+	 * Registers the application with GCM servers asynchronously.
+	 * <p>
+	 * Stores the registration ID and the app versionCode in the application's shared preferences.
+	 */
+	private void registerInBackground()
+	{
+		new AsyncTask<Void, Void, String>()
+		{
+			@Override
+			protected String doInBackground(Void... params)
+			{
+				String msg = "";
+				try
+				{
+					if (gcm == null)
+					{
+						gcm = GoogleCloudMessaging.getInstance(context);
+					}
+					regid = gcm.register(SENDER_ID);
+					msg = "Device registered, registration ID=" + regid;
+
+					// You should send the registration ID to your server over HTTP, so it
+					// can use GCM/HTTP or CCS to send messages to your app.
+					sendRegistrationIdToBackend(regid);
+
+					// For this demo: we don't need to send it because the device will send
+					// upstream messages to a server that echo back the message using the
+					// 'from' address in the message.
+
+					// Persist the regID - no need to register again.
+					storeRegistrationId(context, regid);
+				}
+				catch (IOException ex)
+				{
+					msg = "Error :" + ex.getMessage();
+					// If there is an error, don't just keep trying to register.
+					// Require the user to click a button again, or perform
+					// exponential back-off.
+				}
+				return msg;
+			}
+
+			@Override
+			protected void onPostExecute(String msg)
+			{
+				Toast.makeText(context, "GCM: " + msg, Toast.LENGTH_LONG).show();
+				;
+			}
+		}.execute(null, null, null);
+	}
+
+	/**
+	 * Sends the registration ID to your server over HTTP, so it can use GCM/HTTP or CCS to send
+	 * messages to your app. Not needed for this demo since the device sends upstream messages
+	 * to a server that echoes back the message using the 'from' address in the message.
+	 */
+	private void sendRegistrationIdToBackend(String regid)
+	{
+		//TODO: Change to paperless api when implemented
+		String url = "http://www.yourwebsitename.com/getregistrationid.php";
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("regid", regid));
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		HttpPost httpPost = new HttpPost(url);
+		try
+		{
+			httpPost.setEntity(new UrlEncodedFormEntity(params));
+		}
+		catch (UnsupportedEncodingException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try
+		{
+			HttpResponse httpResponse = httpClient.execute(httpPost);
+		}
+		catch (ClientProtocolException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Stores the registration ID and the app versionCode in the application's
+	 * {@code SharedPreferences}.
+	 * 
+	 * @param context
+	 *            application's context.
+	 * @param regId
+	 *            registration ID
+	 */
+	private void storeRegistrationId(Context context, String regId)
+	{
+		final SharedPreferences prefs = getGCMPreferences(context);
+		int appVersion = getAppVersion(context);
+		Log.i(TAG, "Saving regId on app version " + appVersion);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(PROPERTY_REG_ID, regId);
+		editor.putInt(PROPERTY_APP_VERSION, appVersion);
+		editor.commit();
 	}
 
 	public void initViewHolder()
