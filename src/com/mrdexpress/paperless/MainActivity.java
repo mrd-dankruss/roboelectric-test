@@ -1,8 +1,6 @@
 package com.mrdexpress.paperless;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +21,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -46,6 +47,7 @@ import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -101,21 +103,21 @@ public class MainActivity extends Activity
 
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
-//		if (checkPlayServices())
-//		{
-//			gcm = GoogleCloudMessaging.getInstance(this);
-//			regid = getRegistrationId(context);
-//
-//			if (regid.isEmpty())
-//			{
-//				//TODO: Uncomment to implement GCM
-//				//registerInBackground();
-//			}
-//		}
-//		else
-//		{
-//			Log.i(TAG, "No valid Google Play Services APK found.");
-//		}
+		if (checkPlayServices())
+		{
+			gcm = GoogleCloudMessaging.getInstance(this);
+			regid = getRegistrationId(context);
+
+			if (regid.isEmpty())
+			{
+				// TODO: Uncomment to implement GCM
+				// registerInBackground();
+			}
+		}
+		else
+		{
+			Log.i(TAG, "No valid Google Play Services APK found.");
+		}
 
 		person_item_list = new ArrayList<UserItem>();
 
@@ -223,63 +225,97 @@ public class MainActivity extends Activity
 		{
 			// Log.i(TAG, "Fetching token...");
 			String token = ServerInterface.getInstance(getApplicationContext()).requestToken();
-			// Log.d(TAG, "zorro token: " + token);
 
-			// VariableManager.token = token; // Security vulnerability?
+			if (token.equals("400"))
+			{
+				return token;
+			}
+			else
+			{
+				// Log.d(TAG, "zorro token: " + token);
 
-			// Download delay reasons
-			// change progress spinner text
-			if (dialog.isShowing())
-			{
-				dialog.setTitle("Retrieving driver list");
-			}
-			ServerInterface.getInstance(getApplicationContext())
-					.getDrivers(getApplicationContext());
-			if (dialog.isShowing())
-			{
-				dialog.setTitle("Retrieving manager list");
-			}
-			ServerInterface.getInstance(getApplicationContext()).getManagers(
-					getApplicationContext());
-			if (dialog.isShowing())
-			{
-				dialog.setTitle("Retrieving delay reasons");
-			}
-			ServerInterface.getInstance(getApplicationContext()).downloadDelays(
-					getApplicationContext());
+				// VariableManager.token = token; // Security vulnerability?
 
-			if (dialog.isShowing())
-			{
-				dialog.setTitle("Retrieving failed handover reasons");
-			}
-			ServerInterface.getInstance(getApplicationContext()).downloadFailedDeliveryReasons(
-					getApplicationContext());
+				// Download delay reasons
+				// change progress spinner text
+				if (dialog.isShowing())
+				{
+					dialog.setTitle("Retrieving driver list");
+				}
+				ServerInterface.getInstance(getApplicationContext()).getDrivers(
+						getApplicationContext());
+				if (dialog.isShowing())
+				{
+					dialog.setTitle("Retrieving manager list");
+				}
+				ServerInterface.getInstance(getApplicationContext()).getManagers(
+						getApplicationContext());
+				if (dialog.isShowing())
+				{
+					dialog.setTitle("Retrieving delay reasons");
+				}
+				ServerInterface.getInstance(getApplicationContext()).downloadDelays(
+						getApplicationContext());
 
-			if (dialog.isShowing())
-			{
-				dialog.setTitle("Retrieving partial delivery reasons");
-			}
-			ServerInterface.getInstance(getApplicationContext()).downloadPartialDeliveryReasons(
-					getApplicationContext());
+				if (dialog.isShowing())
+				{
+					dialog.setTitle("Retrieving failed handover reasons");
+				}
+				ServerInterface.getInstance(getApplicationContext()).downloadFailedDeliveryReasons(
+						getApplicationContext());
 
-			// Log.i(TAG, "Token aquired.");
+				if (dialog.isShowing())
+				{
+					dialog.setTitle("Retrieving partial delivery reasons");
+				}
+				ServerInterface.getInstance(getApplicationContext())
+						.downloadPartialDeliveryReasons(getApplicationContext());
+
+				// Log.i(TAG, "Token aquired.");
+			}
 			return token;
 		}
 
 		@Override
 		protected void onPostExecute(String result)
 		{
-			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
-			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getManagers());
 
-			// Close progress spinner
-			if (dialog.isShowing())
+			if (result.equals("400"))
 			{
-				dialog.dismiss();
-			}
+				UnauthorizedUseDialog dialog = new UnauthorizedUseDialog(MainActivity.this);
+				dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+				dialog.show();
 
-			// Retrieve list of drivers in a thread
-			// new RequestDriverManagerTask().execute();
+				LayoutInflater factory = LayoutInflater.from(MainActivity.this);
+
+				final Button button_ok = (Button) dialog
+						.findViewById(R.id.button_incomplete_scan_ok);
+
+				button_ok.setOnClickListener(new OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						MainActivity.this.finish();
+					}
+				});
+			}
+			else
+			{
+				person_item_list
+						.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
+				person_item_list.addAll(DbHandler.getInstance(getApplicationContext())
+						.getManagers());
+
+				// Close progress spinner
+				if (dialog.isShowing())
+				{
+					dialog.dismiss();
+				}
+
+				// Retrieve list of drivers in a thread
+				// new RequestDriverManagerTask().execute();
+			}
 		}
 	}
 
@@ -700,7 +736,7 @@ public class MainActivity extends Activity
 	 */
 	private void sendRegistrationIdToBackend(String regid)
 	{
-		//TODO: Change to paperless api when implemented
+		// TODO: Change to paperless api when implemented
 		String url = "http://www.yourwebsitename.com/getregistrationid.php";
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("regid", regid));
