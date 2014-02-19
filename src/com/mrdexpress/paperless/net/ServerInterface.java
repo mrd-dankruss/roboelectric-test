@@ -125,13 +125,22 @@ public class ServerInterface
 
 		String url = API_URL + "v1/auth/auth?imei=" + imei_id;
 		String response = getInputStreamFromUrl(url);
-		Log.d(TAG, "zorro - requestToken(): " + response);
-		String token = "";
+		// Log.d(TAG, "zorro - requestToken(): " + response);
+		String status = "";
 
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+			// token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+
+			if (jObject.has("response"))
+			{
+				status = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+			}
+			else if (jObject.has("error"))
+			{
+				status = stripErrorCode(jObject.toString());
+			}
 		}
 		catch (JSONException e)
 		{
@@ -149,14 +158,14 @@ public class ServerInterface
 
 		if (VariableManager.DEBUG)
 		{
-			Log.d(TAG, "token: " + token);
+			Log.d(TAG, "token: " + status);
 		}
 		SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(VariableManager.PREF_TOKEN, token).commit();
+		editor.putString(VariableManager.PREF_TOKEN, status).commit();
 
-		return token;
+		return status;
 	}
 
 	/**
