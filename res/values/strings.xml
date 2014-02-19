@@ -134,8 +134,9 @@
     <string name="title_activity_scan_list">ScanListActivity</string>
 
     <!-- Google Maps API keys -->
-    <string name="key_googlemaps_api_debug">AIzaSyAgcNgAZWz8ivlhJHhsQzUZjTaK9YadroE</string>
-    <string name="key_googlemaps_api_release">AIzaSyCdXJWisT8lPyKasiqKnXSnXhsHvQzSZ6E</string>
+    <string name="key_googlemaps_api_debug">AIzaSyB7Rp0ex2YM7kywAWNxlBO30k0GlyZtQ4s</string>
+    <string name="key_googlemaps_api_release">AIzaSyB7Rp0ex2YM7kywAWNxlBO30k0GlyZtQ4s</string>
+    <string name="key_googlemaps_places">AIzaSyAYfjkc0UaKJyyBQ-uX-gHskhuuqcsgnFQ</string>
     <string name="title_activity_view_bag_manifest">ViewBagManifestActivity</string>
 
     <!-- Manifest -->

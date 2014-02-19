@@ -73,7 +73,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private MarkerOptions marker_options;
 
 	private ArrayList<MapPlacesItem> resultList;
-	private static final String API_KEY = "AIzaSyAG4j23urq6PDPP3MSo_CjjEdTzMJJ3M_Y";
+	private static String API_KEY;
 	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
 	private static final String TYPE_DETAILS = "/details";
 	private static final String OUT_JSON = "/json";
@@ -84,6 +84,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 
+		API_KEY = getResources().getString(R.string.key_googlemaps_places);
+		
 		// Change actionbar title
 		setTitle(R.string.title_actionbar_map);
 
