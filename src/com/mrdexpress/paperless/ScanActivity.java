@@ -875,7 +875,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		protected Void doInBackground(Void... urls)
 		{
 			// Log.i(TAG, "Fetching token...");
-			ServerInterface.getInstance(getApplicationContext()).getManagers(getApplicationContext(), imei_id);
+			ServerInterface.getInstance(getApplicationContext()).getManagers(
+					getApplicationContext());
 
 			return null;
 		}
@@ -950,8 +951,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.getInstance(getApplicationContext()).downloadBag(getApplicationContext(),
-					ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode),
+			ServerInterface.getInstance(getApplicationContext()).downloadBag(
+					getApplicationContext(),
+					ServerInterface.getInstance(getApplicationContext()).scanBag(
+							getApplicationContext(), last_scanned_barcode),
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 			return null;

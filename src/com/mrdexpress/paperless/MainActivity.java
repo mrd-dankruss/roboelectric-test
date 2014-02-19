@@ -69,6 +69,8 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		new RequestTokenTask().execute();
+
 		// Check & store network availability
 		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
@@ -104,11 +106,6 @@ public class MainActivity extends Activity
 		}
 
 		person_item_list = new ArrayList<UserItem>();
-
-		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		imei_id = mngr.getDeviceId();
-
-		new RequestTokenTask().execute();
 
 		initClickListeners();
 
@@ -232,6 +229,18 @@ public class MainActivity extends Activity
 			// change progress spinner text
 			if (dialog.isShowing())
 			{
+				dialog.setTitle("Retrieving driver list");
+			}
+			ServerInterface.getInstance(getApplicationContext())
+					.getDrivers(getApplicationContext());
+			if (dialog.isShowing())
+			{
+				dialog.setTitle("Retrieving manager list");
+			}
+			ServerInterface.getInstance(getApplicationContext()).getManagers(
+					getApplicationContext());
+			if (dialog.isShowing())
+			{
 				dialog.setTitle("Retrieving delay reasons");
 			}
 			ServerInterface.getInstance(getApplicationContext()).downloadDelays(
@@ -258,6 +267,9 @@ public class MainActivity extends Activity
 		@Override
 		protected void onPostExecute(String result)
 		{
+			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
+			person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getManagers());
+
 			// Close progress spinner
 			if (dialog.isShowing())
 			{
@@ -265,7 +277,7 @@ public class MainActivity extends Activity
 			}
 
 			// Retrieve list of drivers in a thread
-			new RequestDriverManagerTask().execute();
+			// new RequestDriverManagerTask().execute();
 		}
 	}
 
@@ -275,60 +287,63 @@ public class MainActivity extends Activity
 	 * @author greg
 	 * 
 	 */
-	private class RequestDriverManagerTask extends AsyncTask<Void, Void, String>
+	/*private class RequestDriverManagerTask extends AsyncTask<Void, Void, String>
 	{
 
 		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
 
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog.setMessage("Retrieving list of drivers/managers");
-			this.dialog.show();
-		}
-
-		@Override
-		protected String doInBackground(Void... urls)
-		{
-			ServerInterface.getInstance(getApplicationContext()).getDrivers(
-					getApplicationContext(), imei_id);
-			ServerInterface.getInstance(getApplicationContext()).getManagers(
-					getApplicationContext(), imei_id);
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result)
-		{
-			// TODO: Initilize person_item_list
-			try
-			{
-				person_item_list
-						.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
-				person_item_list.addAll(DbHandler.getInstance(getApplicationContext())
-						.getManagers());
-				Log.d(TAG, "PersonList: " + person_item_list.size());
-			}
-			catch (NullPointerException e)
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				Log.e(TAG, sw.toString());
-
-				/*CustomToast toast = new CustomToast(getParent());
-				toast.setText("Network error");
-				toast.setSuccess(false);
-				toast.show();*/
-			}
-			// Close progress spinner
-			if (dialog.isShowing())
-			{
-				dialog.dismiss();
-			}
-		}
+		*//** progress dialog to show user that the backup is processing. */
+	/*
+	*//** application context. */
+	/*
+	@Override
+	protected void onPreExecute()
+	{
+	this.dialog.setMessage("Retrieving list of drivers/managers");
+	this.dialog.show();
 	}
+
+	@Override
+	protected String doInBackground(Void... urls)
+	{
+	ServerInterface.getInstance(getApplicationContext()).getDrivers(
+	getApplicationContext(), imei_id);
+	ServerInterface.getInstance(getApplicationContext()).getManagers(
+	getApplicationContext(), imei_id);
+	return null;
+	}
+
+	@Override
+	protected void onPostExecute(String result)
+	{
+	// TODO: Initilize person_item_list
+	try
+	{
+	person_item_list
+	.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
+	person_item_list.addAll(DbHandler.getInstance(getApplicationContext())
+	.getManagers());
+	Log.d(TAG, "PersonList: " + person_item_list.size());
+	}
+	catch (NullPointerException e)
+	{
+	StringWriter sw = new StringWriter();
+	e.printStackTrace(new PrintWriter(sw));
+	Log.e(TAG, sw.toString());
+
+	CustomToast toast = new CustomToast(getParent());
+	toast.setText("Network error");
+	toast.setSuccess(false);
+	toast.show();
+	}
+	// Close progress spinner
+	if (dialog.isShowing())
+	{
+	dialog.dismiss();
+	}
+	}
+	}
+	*/
 
 	/**
 	 * Requests token from server.
@@ -358,7 +373,7 @@ public class MainActivity extends Activity
 																// wanted again
 
 			String status = ServerInterface.getInstance(getApplicationContext()).authDriver(hash,
-					selected_user_id, imei_id);
+					selected_user_id);
 
 			if (status.equals("success"))
 			{
