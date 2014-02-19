@@ -39,6 +39,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.mrdexpress.paperless.MainActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Contact;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -46,17 +56,6 @@ import com.mrdexpress.paperless.db.Driver;
 import com.mrdexpress.paperless.db.Waybill;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
-import com.mrdexpress.paperless.widget.CustomToast;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
-import android.preference.PreferenceManager;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.Toast;
 
 public class ServerInterface
 {
@@ -84,7 +83,7 @@ public class ServerInterface
 			server_interface = new ServerInterface(context.getApplicationContext());
 		}
 
-		if (ServerInterface.token == null)
+		if ((ServerInterface.token == null) | (ServerInterface.token == ""))
 		{
 			SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF,
 					Context.MODE_PRIVATE);
@@ -163,7 +162,8 @@ public class ServerInterface
 		SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(VariableManager.PREF_TOKEN, status).commit();
+		editor.putString(VariableManager.PREF_TOKEN, status);
+		editor.apply();
 
 		return status;
 	}
@@ -221,8 +221,11 @@ public class ServerInterface
 	 * @param token
 	 * @return
 	 */
-	public void getDrivers(Context context, String imei_id)
+	public void getDrivers(Context context)
 	{
+		TelephonyManager mngr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei_id = mngr.getDeviceId();
 
 		String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken="
 				+ ServerInterface.token;
@@ -291,8 +294,12 @@ public class ServerInterface
 	 * 
 	 * @param context
 	 */
-	public void getManagers(Context context, String imei_id)
+	public void getManagers(Context context)
 	{
+		TelephonyManager mngr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei_id = mngr.getDeviceId();
+
 		String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken="
 				+ ServerInterface.token;
 		String response = getInputStreamFromUrl(url);
@@ -352,10 +359,14 @@ public class ServerInterface
 	 * @param PIN
 	 * @return
 	 */
-	public String authDriver(String PIN, String driver_id, String imei_id)
+	public String authDriver(String PIN, String driver_id)
 	{
 		// SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF, 0);
 		// String token = settings.getString(VariableManager.PREF_TOKEN, "");
+
+		TelephonyManager mngr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei_id = mngr.getDeviceId();
 
 		String url = API_URL + "v1/auth/driver?imei=" + imei_id + "&mrdToken="
 				+ ServerInterface.token + "&driverPIN=" + PIN + "&driverID=" + driver_id;
@@ -460,7 +471,7 @@ public class ServerInterface
 	 */
 	public void downloadBags(Context context, String driver_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/bags/driver?id=" + driver_id + "&mrdToken="
+		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken="
 				+ ServerInterface.token;
 
 		Log.i(TAG, "Fetching " + url);
