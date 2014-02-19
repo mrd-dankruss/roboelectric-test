@@ -36,7 +36,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 	public enum DeliveryType
 	{
-		DELIVERY, RETURN, EXCHANGE
+		DELIVERY, RETURN, EXCHANGE, FOOD_DELIVERY
 	}
 
 	public enum Company
@@ -81,13 +81,27 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
+		
+		View rowView;
+		
 		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(), FontHelper
 				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_BOLD));
 
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.row_deliveries, parent, false);
+		
+		//TODO: Uncomment for food deliveries
+		//FIXME: Move all row related items inside if or else blocks
+		/*
+		if (delivery_type == DeliveryType.FOOD_DELIVERY)
+		{
+			rowView = inflater.inflate(R.layout.row_food_deliveries, parent, false);
+		} else {
+			rowView = inflater.inflate(R.layout.row_deliveries, parent, false);
+		}
+		*/
+		rowView = inflater.inflate(R.layout.row_deliveries, parent, false);
 
 		// Reference each view item and set required fonts
 		deliveryType = (ImageView) rowView.findViewById(R.id.deliveries_imageView_deliveryType);
@@ -226,6 +240,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 		case EXCHANGE:
 			return "YOUR NEXT EXCHANGE";
+			
+		case FOOD_DELIVERY:
+			return "YOUR NEXT FOOD DELIVERY";
 
 		default:
 			return "YOUR NEXT DELIVERY";
@@ -244,6 +261,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 		case EXCHANGE:
 			return R.drawable.icon_exchange;
+			
+		case FOOD_DELIVERY:
+			return R.drawable.icon_food;
 
 		default:
 			return R.drawable.icon_delivery;

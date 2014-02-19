@@ -13,14 +13,14 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.helper.FontHelper;
 
-public class OverDeliveryDialog extends Dialog
+public class NoDeliveriesDialog extends Dialog
 {
 	private Activity context;
-	private TextView text_title, text_content_top, text_content_bottom;
+	private TextView text_title, text_content_top;
 	private ImageButton button_close;
 	private Button button_ok;
 
-	public OverDeliveryDialog(Activity activity)
+	public NoDeliveriesDialog(Activity activity)
 	{
 		super(activity);
 		this.context = activity;
@@ -42,13 +42,11 @@ public class OverDeliveryDialog extends Dialog
 		
 		text_title = (TextView) findViewById(R.id.text_over_delivery_name);
 		text_content_top = (TextView) findViewById(R.id.text_over_delivery_content_top);
-		text_content_bottom = (TextView) findViewById(R.id.text_over_delivery_content_bottom);
 		button_close = (ImageButton) findViewById(R.id.button_over_delivery_closeButton);
 		button_ok = (Button) findViewById(R.id.button_over_delivery_ok);
 		
 		text_title.setTypeface(typeface_roboto_bold);
 		text_content_top.setTypeface(typeface_roboto_regular);
-		text_content_bottom.setTypeface(typeface_roboto_regular);
 		
 		button_close.setOnClickListener(new View.OnClickListener()
 		{
@@ -69,15 +67,5 @@ public class OverDeliveryDialog extends Dialog
 				dismiss();
 			}
 		});
-	}
-	
-	public void setTextTop(String msg)
-	{
-		text_content_top.setText(msg);
-	}
-	
-	public void setTextBottom(String msg)
-	{
-		text_content_bottom.setText(msg);
 	}
 }

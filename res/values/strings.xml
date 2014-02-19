@@ -82,6 +82,7 @@
     <string name="title_geofence_enter">Arrived at destination!</string>
     <string name="title_dialog_handover">Update delivery status</string>
     <string name="title_dialog_over_delivery">Over-delivery</string>
+    <string name="title_dialog_no_deliveries">No deliveries</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>
@@ -125,6 +126,7 @@
     <string name="text_unauthorised">Unauthorised</string>
     <string name="text_unauthorised_use">Unauthorized device. The app will now close.</string>
     <string name="text_over_delivery">Parcel 0000234576 is not assigned to this branch.</string>
+    <string name="text_no_deliveries">You do not have any deliveries assigned to you at this moment</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
