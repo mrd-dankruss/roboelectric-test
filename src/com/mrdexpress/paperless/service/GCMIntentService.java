@@ -48,7 +48,7 @@ public class GCMIntentService extends IntentService
 		super("GCMIntentService");
 	}
 
-	public static final String TAG = "GCM Demo";
+	public static final String TAG = "GCM";
 
 	@Override
 	protected void onHandleIntent(Intent intent)
@@ -66,6 +66,7 @@ public class GCMIntentService extends IntentService
 			 * extended in the future with new message types, just ignore any message types you're
 			 * not interested in, or that you don't recognize.
 			 */
+			Log.d(TAG, extras.toString());
 			if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType))
 			{
 				sendNotification("Send error: " + extras.toString());

@@ -169,6 +169,55 @@ public class ServerInterface
 	}
 
 	/**
+	 * Registers the device for GCM
+	 * 
+	 * @param imei
+	 *            IMEI of the device
+	 * @param gcm_id
+	 *            The GCM ID returned by Google GCM Service
+	 * @return
+	 */
+	public String registerDeviceGCM(String imei, String gcm_id)
+	{
+
+		String url = "http://uat.mrdexpress.com/api/v1/push/register?imei=" + imei + "&mrdToken="
+				+ ServerInterface.token + "&gcmID=" + gcm_id;
+		
+		Log.d(TAG, "URL: " + url);
+		
+		String response = getInputStreamFromUrl(url);
+
+		Log.d(TAG, "Response: " + response);
+		
+		String status = "";
+
+		try
+		{
+			JSONObject jObject = new JSONObject(response);
+			status = jObject.getJSONObject("response").getString("push");
+
+		}
+		catch (JSONException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+			if (VariableManager.DEBUG)
+			{
+				displayToast("JSONException: registerDeviceGSM");
+			}
+			return "";
+			// Oops
+		}
+
+		if (VariableManager.DEBUG)
+		{
+			Log.d(TAG, "token: " + status);
+		}
+		return status;
+	}
+
+	/**
 	 * Makes API call to update driver PIN.
 	 * 
 	 * @param ID

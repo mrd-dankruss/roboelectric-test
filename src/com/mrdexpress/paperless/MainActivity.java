@@ -1,18 +1,8 @@
 package com.mrdexpress.paperless;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -26,6 +16,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,18 +54,18 @@ public class MainActivity extends Activity
 	private String selected_user_id;
 	private String selected_user_name;
 	private UserType selected_user_type;
-	private String imei_id;
 
 	public static final String EXTRA_MESSAGE = "message";
 	public static final String PROPERTY_REG_ID = "registration_id";
 	private static final String PROPERTY_APP_VERSION = "appVersion";
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-	private String SENDER_ID = "Your-Sender-ID";
+	private String SENDER_ID = "426772637351";
 	private GoogleCloudMessaging gcm;
 	private String regid;
 	AtomicInteger msgId = new AtomicInteger();
 	Context context;
+	private boolean is_registration_successful;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -107,11 +98,11 @@ public class MainActivity extends Activity
 		{
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = getRegistrationId(context);
+			is_registration_successful = false;
 
 			if (regid.isEmpty())
 			{
-				// TODO: Uncomment to implement GCM
-				// registerInBackground();
+				registerInBackground();
 			}
 		}
 		else
@@ -617,7 +608,7 @@ public class MainActivity extends Activity
 			startActivity(intent);
 		}
 	}
-	
+
 	/**
 	 * Display a toast using the custom Toaster class
 	 * 
@@ -768,8 +759,20 @@ public class MainActivity extends Activity
 			@Override
 			protected void onPostExecute(String msg)
 			{
-				Toast.makeText(context, "GCM: " + msg, Toast.LENGTH_LONG).show();
-				;
+				if (is_registration_successful)
+				{
+					CustomToast toast = new CustomToast(MainActivity.this);
+					toast.setText("Sending device registration ID successful!");
+					toast.setSuccess(true);
+					toast.show();
+				}
+				else
+				{
+					CustomToast toast = new CustomToast(MainActivity.this);
+					toast.setText("Sending device registration ID failed!");
+					toast.setSuccess(false);
+					toast.show();
+				}
 			}
 		}.execute(null, null, null);
 	}
@@ -781,37 +784,18 @@ public class MainActivity extends Activity
 	 */
 	private void sendRegistrationIdToBackend(String regid)
 	{
-		// TODO: Change to paperless api when implemented
-		String url = "http://www.yourwebsitename.com/getregistrationid.php";
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("regid", regid));
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		HttpPost httpPost = new HttpPost(url);
-		try
-		{
-			httpPost.setEntity(new UrlEncodedFormEntity(params));
-		}
-		catch (UnsupportedEncodingException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-		try
-		{
-			HttpResponse httpResponse = httpClient.execute(httpPost);
-		}
-		catch (ClientProtocolException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
+		String token = ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(
+				telephonyManager.getDeviceId(), regid);
+
+		Log.d(TAG, "Token: " + token);
+		
+		if (token.equals("OK"))
+		{
+			is_registration_successful = true;
+		}
 	}
 
 	/**
