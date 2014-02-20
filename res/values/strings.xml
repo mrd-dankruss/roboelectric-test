@@ -128,6 +128,7 @@
     <string name="text_unauthorised_use">Unauthorized device. The app will now close.</string>
     <string name="text_over_delivery">Parcel 0000234576 is not assigned to this branch.</string>
     <string name="text_no_deliveries">You do not have any deliveries assigned to you at this moment</string>
+    <string name="text_consignment_already_scanned">This consignment has already been scanned!</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
