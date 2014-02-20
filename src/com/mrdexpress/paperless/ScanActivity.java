@@ -248,6 +248,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		{
 			if (resultCode == RESULT_OK)
 			{
+				holder.button_start_milkrun.setEnabled(true);
+				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
 				handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
 						null, null, null), null, 0);
 			}
@@ -653,6 +655,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			{
 				dialog.dismiss();
 			}
+		}
+
+		if (holder.list.getCount() == 0)
+		{
+			holder.button_start_milkrun.setEnabled(false);
+			holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+		}
+		else
+		{
+			holder.button_start_milkrun.setEnabled(true);
+			holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
 		}
 	}
 
