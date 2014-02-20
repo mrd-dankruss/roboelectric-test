@@ -98,5 +98,6 @@
     <dimen name="font_size_footnote">10sp</dimen>
     <dimen name="font_size_delivery_details_address">18sp</dimen>
     <dimen name="font_size_delivery_details_id">20sp</dimen>
+    <dimen name="font_size_food_delivery_detail_title">22sp</dimen>
 
 </resources>

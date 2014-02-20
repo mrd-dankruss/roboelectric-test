@@ -83,6 +83,7 @@
     <string name="title_dialog_handover">Update delivery status</string>
     <string name="title_dialog_over_delivery">Over-delivery</string>
     <string name="title_dialog_no_deliveries">No deliveries</string>
+    <string name="title_food_delivery_title">Order list</string>
 
     <!-- Tab titles -->
     <string name="tab_completed">COMPLETED</string>
