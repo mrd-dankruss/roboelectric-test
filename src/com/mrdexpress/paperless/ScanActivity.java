@@ -5,6 +5,7 @@ import java.util.StringTokenizer;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -17,9 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +37,7 @@ import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
 import com.mrdexpress.paperless.adapters.ScanSimpleCursorAdapter;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
@@ -70,7 +70,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private ChangeUserDialog dialog_change_user;
 	private NotAssignedToUserDialog dialog_not_assigned;
 
-	private String imei_id;
 	static final int REQUEST_MANUAL_BARCODE = 1;
 	static final int RESULT_MANAGER_AUTH = 2;
 	static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
@@ -95,15 +94,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		imei_id = mngr.getDeviceId();
-
 		// Store currently selected driver id globally
 		prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		prefs.edit()
+		/*prefs.edit()
 				.putString(VariableManager.EXTRA_DRIVER_ID,
-						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();
+						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();*/
 
 		user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
 
@@ -142,15 +138,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					DbHandler.getInstance(getApplicationContext());
 
 					// Pass info to view manifest activity
-					intent.putExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER,
+					intent.putExtra(VariableManager.EXTRA_BAGID,
 							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_BAG_ID))));
-					intent.putExtra(VariableManager.EXTRA_CONSIGNMENT_DESTINATION, String.valueOf(c
+					intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, String.valueOf(c
 							.getString(c.getColumnIndex(DbHandler.C_BAG_DEST_HUBNAME))));
 					// intent.putExtra(
 					// VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
 					// String.valueOf(manifest_number_items));
-					intent.putExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS, String
-							.valueOf(c.getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
+					intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
+							.getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
+
+					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+							VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
 
 					startActivity(intent);
 				}
@@ -171,7 +170,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
 					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+							getIntent().getStringExtra(VariableManager.PREF_DRIVERID));
 					// EditText editText = (EditText) findViewById(R.id.edit_message);
 					// String message = editText.getText().toString();
 					// intent.putExtra(EXTRA_MESSAGE, message);
@@ -183,7 +182,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 					dialog.show();
 
-					LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+					// LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
 
 					final Button button_continue = (Button) dialog
 							.findViewById(R.id.button_incomplete_scan_continue);
@@ -302,7 +301,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		dialog_change_user.show();
 
-		LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+		// LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
 
 		final ImageButton button_close = (ImageButton) dialog_change_user
 				.findViewById(R.id.button_change_user_closeButton);
@@ -412,25 +411,29 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	 * 
 	 * @param list
 	 *            The selected_items ArrayList
-	 * @param bag_id
-	 *            Currently selected driver ID
+	 * @param barcode
+	 *            Currently selected barcode
 	 * @return true is duplicate.
 	 */
-	private boolean checkSelectedBagDuplicate(ArrayList<String> list, String bag_id)
+	private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode)
 	{
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
 		// Log.d(TAG, "checkDupe bag: " + bag_id);
 		// Iterate through each element until a dupe is found.
 		for (int i = 0; i < list.size(); i++)
 		{
 			// Log.d(TAG, "list: " + list.get(i));
-			if (DbHandler
-					.getInstance(getApplicationContext())
-					.getBagIdAtRow(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
-							Integer.parseInt(list.get(i))).equals(bag_id))
+			if (DbHandler.getInstance(getApplicationContext())
+					.getBarcodeAtRow(driverid, Integer.parseInt(list.get(i))).equals(barcode))
 			{
+				// Log.d(TAG, "zorro checkDupe true");
 				return true;
 			}
 		}
+		// Log.d(TAG, "zorro checkDupe false");
 		return false;
 	}
 
@@ -443,10 +446,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		boolean parcel_in_list = false;
 		// Toast.makeText(this.getApplicationContext(), "Scanned code " + rawResult.getText(),
 		// Toast.LENGTH_LONG).show();
+		final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 		Cursor cursor = null;
-		int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+		int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(driverid);
 
 		if (cursor_adapter != null)
 		{
@@ -472,7 +478,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 				while (!cursor.isAfterLast())
 				{
-					RelativeLayout row = (RelativeLayout) holder.list.getChildAt(i);
+					// Log.d(TAG, "Zorro i: " + i);
+					// RelativeLayout row = (RelativeLayout) holder.list.getChildAt(i);
 
 					if (child != null)
 					{
@@ -485,9 +492,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							StringTokenizer tokenizer = new StringTokenizer(str);
 							String cons_number = tokenizer.nextToken();
 
+							// Compare barcode
+
 							if (cons_number.equals(rawResult.getText()))
 							{
-
+								Log.d(TAG, "Zorro decode barcode: " + cons_number);
 								parcel_in_list = true;
 
 								// Match found. Mark as selected.
@@ -503,11 +512,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 									image_view_tick.setVisibility(View.VISIBLE);
 								}
 
+								// Log.d(TAG, "zorro selected item size: " + selected_items.size());
 								// Check if selected item has already been added.
 								if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
 								{
 									// Add this index to a list
 									selected_items.add(String.valueOf(i));
+									Log.d(TAG, "zorro selected item: " + selected_items.get(i));
 								}
 
 								// Log.d(TAG, selected_items.size() + "/" + total_bags);
@@ -547,14 +558,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
 
 						// Refresh list
-						cursor_adapter.notifyDataSetChanged();
+						// cursor_adapter.notifyDataSetChanged();
 					}
 					else
 					{
 						Log.d(TAG, "handleDecode(): row is null");
 					}
 					// }
-					cursor.moveToNext();
+					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.getPosition());
+					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.moveToNext());
+					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.getPosition());
+					// cursor.moveToNext();
 					i++;
 				}
 			}
@@ -749,12 +763,27 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	public Loader<Cursor> onCreateLoader(int id, Bundle args)
 	{
 		DbHandler.getInstance(this);
-		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
-				+ DbHandler.C_BAG_DRIVER_ID + " LIKE '"
-				+ getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID) + "'" + " ORDER BY "
-				+ DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_ID + " ASC";// +
-		// ","+
-		// DbHandler.C_CONSIGNMENT_NO;
+		String rawQuery = "";
+
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+
+		// If training run is started, load fake data
+		if (training_mode)
+		{
+			// Just keeping it in a DB table to not mess with loader.
+			// Log.d(TAG, "zorro training run");
+			rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS_TRAINING + " ORDER BY "
+					+ DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
+		}
+		else
+		{
+			rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
+					+ DbHandler.C_BAG_DRIVER_ID + " LIKE '" + driverid + "'" + " ORDER BY "
+					+ DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
+		}
 
 		SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
 				DbHandler.getInstance(getApplicationContext()), rawQuery, null);
@@ -964,11 +993,15 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
+			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
 			ServerInterface.getInstance(getApplicationContext()).downloadBag(
 					getApplicationContext(),
 					ServerInterface.getInstance(getApplicationContext()).scanBag(
-							getApplicationContext(), last_scanned_barcode),
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+							getApplicationContext(), last_scanned_barcode), driverid);
 
 			return null;
 		}

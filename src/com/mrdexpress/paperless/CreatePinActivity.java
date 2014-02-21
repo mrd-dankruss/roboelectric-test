@@ -2,7 +2,9 @@ package com.mrdexpress.paperless;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -89,9 +91,14 @@ public class CreatePinActivity extends Activity
 		@Override
 		protected String doInBackground(Void... params)
 		{
+			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			
 			// TODO Auto-generated method stub
 			return ServerInterface.getInstance(getApplicationContext()).updatePIN(
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+					driverid,
 					holder.editText_pin1.getText().toString());
 		}
 
@@ -253,9 +260,13 @@ public class CreatePinActivity extends Activity
 
 		@Override
 		protected Void doInBackground(Void... urls)
-		{
+		{SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		
 			ServerInterface.getInstance(getApplicationContext()).downloadBags(getApplicationContext(),
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+					driverid);
 			return null;
 		}
 

@@ -47,7 +47,7 @@ public class ViewDeliveriesFragment extends Fragment
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
-		final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getBagsByStatus(driverid, Bag.STATUS_TODO));

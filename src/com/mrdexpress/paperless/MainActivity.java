@@ -29,7 +29,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -141,6 +140,20 @@ public class MainActivity extends Activity
 
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume()
+	{
+		// TODO Auto-generated method stub
+		super.onResume();
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
+		editor.apply();
+	}
+
 	/**
 	 * Initiate click listeners for buttons.
 	 */
@@ -154,6 +167,7 @@ public class MainActivity extends Activity
 				// Perform action on click
 				if (checkPin())
 				{
+					Log.d(TAG, "Type: " + selected_user_type);
 					if (selected_user_type == UserType.DRIVER)
 					{
 						new DriverLoginUserTask().execute();
@@ -166,7 +180,7 @@ public class MainActivity extends Activity
 						not_yet_implemented.setSuccess(false);
 						not_yet_implemented.show();
 						*/
-						new DriverLoginUserTask().execute();
+						new ManagerLoginUserTask().execute();
 					}
 				}
 			}
@@ -408,6 +422,13 @@ public class MainActivity extends Activity
 
 			if (status.equals("success"))
 			{
+				// Store currently selected driverid in shared prefs
+				SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+						Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
+				editor.apply();
+
 				return true;
 			}
 
@@ -420,7 +441,16 @@ public class MainActivity extends Activity
 
 			if (result == true)
 			{
-				new RetrieveBagsTask().execute();
+				Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
+
+				DbHandler.getInstance(getApplicationContext());
+				// Pass driver name on
+				intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
+
+				Log.d(TAG, "Driver ID: " + selected_user_id);
+				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+
+				startActivity(intent);
 				// Close progress spinner
 				if (dialog.isShowing())
 				{
@@ -784,14 +814,13 @@ public class MainActivity extends Activity
 	 */
 	private void sendRegistrationIdToBackend(String regid)
 	{
-
 		TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
 		String token = ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(
 				telephonyManager.getDeviceId(), regid);
 
 		Log.d(TAG, "Token: " + token);
-		
+
 		if (token.equals("OK"))
 		{
 			is_registration_successful = true;

@@ -2,7 +2,9 @@ package com.mrdexpress.paperless;
 
 import android.app.ListActivity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -57,12 +59,11 @@ public class ViewBagManifestActivity extends ListActivity implements LoaderCallb
 
 		// Set titles
 		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " #"
-				+ getIntent().getStringExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER) + " ("
-				+ getIntent().getStringExtra(VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS)
-				+ " items)");
+				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " ("
+				+ getIntent().getStringExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS) + " items)");
 		holder.text_view_consignment_destination
 				.setText(getString(R.string.text_destination_branch) + " "
-						+ getIntent().getStringExtra(VariableManager.EXTRA_CONSIGNMENT_DESTINATION));
+						+ getIntent().getStringExtra(VariableManager.EXTRA_BAG_DESTINATION));
 	}
 
 	/**
@@ -73,9 +74,26 @@ public class ViewBagManifestActivity extends ListActivity implements LoaderCallb
 	public Loader<Cursor> onCreateLoader(int id, Bundle args)
 	{
 		DbHandler.getInstance(this);
-		String rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS + " ORDER BY "
-				+ DbHandler.C_WAYBILL_ID + " ASC";
 
+		String rawQuery = "";
+		String bag_id = getIntent().getStringExtra(VariableManager.EXTRA_BAGID);
+
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
+		if (driverid.equals(VariableManager.TRAININGRUN_MILKRUN_DRIVERID))
+		{
+			rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS_TRAINING + " WHERE "
+					+ DbHandler.C_WAYBILL_BAG_ID + " LIKE '" + bag_id + "' " + " ORDER BY "
+					+ DbHandler.C_WAYBILL_ID + " ASC";
+		}
+		else
+		{
+			rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS + " WHERE "
+					+ DbHandler.C_WAYBILL_BAG_ID + " LIKE '" + bag_id + "' " + " ORDER BY "
+					+ DbHandler.C_WAYBILL_ID + " ASC";
+		}
 		SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
 				DbHandler.getInstance(getApplicationContext()), rawQuery, null);
 
@@ -89,7 +107,6 @@ public class ViewBagManifestActivity extends ListActivity implements LoaderCallb
 	{
 		if (cursor != null && cursor.getCount() > 0)
 		{
-
 			cursor.moveToFirst();
 
 			/**

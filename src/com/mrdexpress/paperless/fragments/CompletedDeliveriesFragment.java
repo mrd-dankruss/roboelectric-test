@@ -44,7 +44,7 @@ public class CompletedDeliveriesFragment extends Fragment
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
-		final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 		adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
 				getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
@@ -57,10 +57,8 @@ public class CompletedDeliveriesFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				holder.button_completed
-						.setBackgroundResource(R.drawable.partial_tab_white);
-				holder.button_partial
-						.setBackgroundResource(R.drawable.partial_tab_grey);
+				holder.button_completed.setBackgroundResource(R.drawable.partial_tab_white);
+				holder.button_partial.setBackgroundResource(R.drawable.partial_tab_grey);
 				adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
 						getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
 				holder.list.setAdapter(adapter);
@@ -74,10 +72,8 @@ public class CompletedDeliveriesFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				holder.button_completed
-						.setBackgroundResource(R.drawable.partial_tab_grey);
-				holder.button_partial
-						.setBackgroundResource(R.drawable.partial_tab_white);
+				holder.button_completed.setBackgroundResource(R.drawable.partial_tab_grey);
+				holder.button_partial.setBackgroundResource(R.drawable.partial_tab_white);
 				adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
 						getActivity()).getBagsByStatus(driverid, Bag.STATUS_PARTIAL));
 				holder.list.setAdapter(adapter);
