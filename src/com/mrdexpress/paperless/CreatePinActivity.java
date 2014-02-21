@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.widget.Toaster;
 
 public class CreatePinActivity extends Activity
@@ -95,11 +97,10 @@ public class CreatePinActivity extends Activity
 					Context.MODE_PRIVATE);
 
 			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
-			
-			// TODO Auto-generated method stub
-			return ServerInterface.getInstance(getApplicationContext()).updatePIN(
-					driverid,
-					holder.editText_pin1.getText().toString());
+
+			TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+			return ServerInterface.getInstance(getApplicationContext()).updatePIN(driverid,
+					holder.editText_pin1.getText().toString(), telephonyManager.getDeviceId());
 		}
 
 		/**
@@ -117,6 +118,14 @@ public class CreatePinActivity extends Activity
 				{
 					// Retrieve bags for current driver in a thread
 					new RetrieveConsignmentsTask().execute();
+				}
+				else
+				{
+					//There was a problem
+					CustomToast toast = new CustomToast(CreatePinActivity.this);
+					toast.setText(result);
+					toast.setSuccess(false);
+					toast.show();
 				}
 			}
 			catch (NumberFormatException e)
@@ -192,7 +201,7 @@ public class CreatePinActivity extends Activity
 			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_REGULAR));
-			
+
 			holder.button_create = (Button) root_view.findViewById(R.id.button_create_pin_create);
 			holder.button_change = (Button) root_view
 					.findViewById(R.id.button_create_pin_change_driver);
@@ -202,11 +211,13 @@ public class CreatePinActivity extends Activity
 					.findViewById(R.id.textView_create_pin_toast);
 			holder.relativeLayout_toast = (RelativeLayout) root_view
 					.findViewById(R.id.toast_create_pin);
-			
+
 			holder.button_create.setTypeface(typeface_roboto_bold);
 			holder.button_change.setTypeface(typeface_roboto_bold);
 			holder.editText_pin1.setTypeface(typeface_roboto_regular);
 			holder.editText_pin2.setTypeface(typeface_roboto_regular);
+			
+			holder.button_create.setBackgroundResource(R.drawable.button_custom);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -260,13 +271,14 @@ public class CreatePinActivity extends Activity
 
 		@Override
 		protected Void doInBackground(Void... urls)
-		{SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+		{
+			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
 
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-		
-			ServerInterface.getInstance(getApplicationContext()).downloadBags(getApplicationContext(),
-					driverid);
+			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
+			ServerInterface.getInstance(getApplicationContext()).downloadBags(
+					getApplicationContext(), driverid);
 			return null;
 		}
 

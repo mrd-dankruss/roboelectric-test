@@ -181,7 +181,7 @@ public class ServerInterface
 	public String registerDeviceGCM(String imei, String gcm_id)
 	{
 
-		String url = "http://uat.mrdexpress.com/api/v1/push/register?imei=" + imei + "&mrdToken="
+		String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken="
 				+ ServerInterface.token + "&gcmID=" + gcm_id;
 		
 		Log.d(TAG, "URL: " + url);
@@ -227,11 +227,11 @@ public class ServerInterface
 	 *            PIN number.
 	 * @return
 	 */
-	public String updatePIN(String id, String new_pin)
+	public String updatePIN(String id, String new_pin, String imei)
 	{
 
-		String url = "http://paperlessapp.apiary.io/v1/driver?id=" + id + "&mrdToken="
-				+ ServerInterface.token + "&driverPin=" + PinManager.toMD5(new_pin);
+		String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken="
+				+ ServerInterface.token + "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei=" + imei;
 
 		String response = postData(url);
 
@@ -240,7 +240,14 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			status = jObject.getJSONObject("response").getJSONObject("driver").getString("status");
+			if (jObject.has("response"))
+			{
+				status = jObject.getJSONObject("response").getJSONObject("auth").getString("status");
+			}
+			else if (jObject.has("error"))
+			{
+				status = stripErrorCode(jObject.toString());
+			}
 
 		}
 		catch (JSONException e)

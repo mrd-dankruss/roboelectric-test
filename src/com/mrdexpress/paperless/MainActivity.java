@@ -171,6 +171,7 @@ public class MainActivity extends Activity
 					if (selected_user_type == UserType.DRIVER)
 					{
 						new DriverLoginUserTask().execute();
+						
 					}
 					if (selected_user_type == UserType.MANAGER)
 					{
