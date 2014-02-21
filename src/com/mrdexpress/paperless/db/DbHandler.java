@@ -19,6 +19,7 @@ import com.mrdexpress.paperless.net.CallQueueObject;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -33,13 +34,15 @@ public class DbHandler extends SQLiteOpenHelper
 
 	// DB Info
 	public static final int DB_VERSION = 1;
-	public static final String DB_NAME = "Drivers.db";
+	public static final String DB_NAME = "Paperless.db";
 
 	// Tables
 	public static final String TABLE_DRIVERS = "Drivers";
 	public static final String TABLE_MANAGERS = "Managers";
 	public static final String TABLE_BAGS = "Bag"; // Consignments going to various delivery points
+	public static final String TABLE_BAGS_TRAINING = "BagTrainingRun"; // Training run
 	public static final String TABLE_WAYBILLS = "Waybill";
+	public static final String TABLE_WAYBILLS_TRAINING = "WaybillTrainingRun";
 	public static final String TABLE_CALLQUEUE = "CallQueue"; // Queues API calls if net is down
 	public static final String TABLE_CONTACTS = "Contacts";
 	public static final String TABLE_DELAYS = "Delays";
@@ -166,10 +169,13 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_CALLQUEUE_URL = "callqueue_url";
 	public static final String C_CALLQUEUE_JSON = "callqueue_json";
 
+	private Context context;
+
 	public DbHandler(Context context)
 	{
 		super(context, DB_NAME, null, DB_VERSION);
 		// TODO Auto-generated constructor stub
+		this.context = context;
 	}
 
 	// Return singleton instance of DbHandler
@@ -212,8 +218,19 @@ public class DbHandler extends SQLiteOpenHelper
 					+ " TEXT," + C_BAG_DEST_ADDRESS + " TEXT," + "FOREIGN KEY(" + C_BAG_DRIVER_ID
 					+ ") REFERENCES " + TABLE_DRIVERS + "(" + C_DRIVER_ID + "))";
 			createTable(db, TABLE_BAGS, CREATE_TABLE_BAGS);
+			// Log.d(TAG, CREATE_TABLE_BAGS);
 
-			Log.d(TAG, CREATE_TABLE_BAGS);
+			final String CREATE_TABLE_BAGS_TRAINING = "CREATE TABLE " + TABLE_BAGS_TRAINING + "("
+					+ C_BAG_ID + " TEXT PRIMARY KEY," + C_BAG_SCANNED + " INTEGER,"
+					+ C_BAG_ASSIGNED + " TEXT," + C_BAG_BARCODE + " TEXT," + C_BAG_NUM_ITEMS
+					+ " INTEGER," + C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT,"
+					+ C_BAG_DEST_TOWN + " TEXT," + C_BAG_DEST_SUBURB + " TEXT," + C_BAG_DEST_LONG
+					+ " TEXT," + C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME + " TEXT,"
+					+ C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT," + C_BAG_STATUS
+					+ " TEXT," + C_BAG_DEST_ADDRESS + " TEXT," + "FOREIGN KEY(" + C_BAG_DRIVER_ID
+					+ ") REFERENCES " + TABLE_DRIVERS + "(" + C_DRIVER_ID + "))";
+			createTable(db, TABLE_BAGS_TRAINING, CREATE_TABLE_BAGS_TRAINING);
+			// Log.d(TAG, CREATE_TABLE_BAGS);
 
 			final String CREATE_TABLE_WAYBILL = "CREATE TABLE " + TABLE_WAYBILLS + "("
 					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
@@ -229,6 +246,20 @@ public class DbHandler extends SQLiteOpenHelper
 					+ "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 			// Log.d(TAG, CREATE_TABLE_WAYBILL);
+
+			final String CREATE_TABLE_WAYBILL_TRAINING = "CREATE TABLE " + TABLE_WAYBILLS_TRAINING
+					+ "(" + C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
+					+ C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST_LONG + " TEXT,"
+					+ C_WAYBILL_DEST_LAT + " TEXT," + C_WAYBILL_DEST_TOWN + " TEXT,"
+					+ C_WAYBILL_BARCODE + " TEXT," + C_WAYBILL_DEST_SUBURB + " TEXT,"
+					+ C_WAYBILL_DEST_ADDRESS + " TEXT," + C_WAYBILL_TEL + " TEXT,"
+					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT," + C_WAYBILL_DIMEN + " TEXT,"
+					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_CUSTOMER_ID + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT1
+					+ " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT," + C_WAYBILL_CUSTOMER_EMAIL
+					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS
+					+ "(" + C_BAG_ID + "))";
+			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL_TRAINING);
 
 			final String CREATE_TABLE_DELAYS = "CREATE TABLE " + TABLE_DELAYS + "(" + C_DELAYS_ID
 					+ " INTEGER PRIMARY KEY," + C_DELAYS_REASON + " TEXT," + C_DELAYS_DURATION_ID
@@ -304,7 +335,9 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DRIVERS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANAGERS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BAGS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_BAGS_TRAINING);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYBILLS_TRAINING);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMLOG);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CALLQUEUE);
@@ -1091,18 +1124,22 @@ public class DbHandler extends SQLiteOpenHelper
 	/**
 	 * Return ID of bag at the specified row index.
 	 * 
-	 * @return BagID at specified row
+	 * @return Barcode at specified row
 	 */
-	public String getBagIdAtRow(String driver_id, int row)
+	public String getBarcodeAtRow(String driver_id, int row)
 	{
 		String countQuery = "SELECT  * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID
 				+ " LIKE '" + driver_id + "'" + " LIMIT 1 OFFSET " + row;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
-		cursor.moveToFirst();
-		String bagid = cursor.getString(cursor.getColumnIndex(C_BAG_ID));
+		String barcode = "";
+		if (cursor != null && cursor.moveToFirst())
+		{
+			barcode = cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE));
+		}
+		// Log.d(TAG, "zorro cursor bagid " + barcode);
 		cursor.close();
-		return bagid;
+		return barcode;
 	}
 
 	/**
@@ -1180,8 +1217,26 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_STATUS + " LIKE '"
-					+ status + "' AND " + C_BAG_DRIVER_ID + " LIKE '" + driver_id + "'";
+			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			// final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+					false);
+
+			String sql = "";
+			if (training_mode)
+			{
+				// Log.d(TAG, "Loading training bags");
+				sql = "SELECT * FROM " + TABLE_BAGS_TRAINING + " WHERE " + C_BAG_STATUS + " LIKE '"
+						+ status + "'";
+			}
+			else
+			{
+				// Log.d(TAG, "Loading real bags");
+				sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_STATUS + " LIKE '" + status
+						+ "' AND " + C_BAG_DRIVER_ID + " LIKE '" + driver_id + "'";
+			}
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())

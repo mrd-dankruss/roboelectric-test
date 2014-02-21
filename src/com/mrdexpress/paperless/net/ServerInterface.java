@@ -67,6 +67,7 @@ public class ServerInterface
 	private static ServerInterface server_interface;
 	private static Context context;
 	private static final String API_URL = "http://uat.mrdexpress.com/api/";
+	private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
 	private static String token;
 
 	public ServerInterface(Context ctx)
@@ -474,7 +475,7 @@ public class ServerInterface
 		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken="
 				+ ServerInterface.token;
 
-		Log.i(TAG, "Fetching " + url);
+		// Log.i(TAG, "Fetching " + url);
 
 		try
 		{
@@ -539,9 +540,10 @@ public class ServerInterface
 	 */
 	public void downloadBag(Context context, String bag_id, String driver_id)
 	{
-		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + ServerInterface.token;
+		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken="
+				+ ServerInterface.token;
 
-		Log.i(TAG, "Fetching " + url);
+		// Log.i(TAG, "Fetching " + url);
 
 		try
 		{
@@ -779,10 +781,9 @@ public class ServerInterface
 
 	public void downloadDelays(Context context)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/delays?mrdToken="
-				+ ServerInterface.token;
+		String url = API_URL + "v1/milkruns/delays?mrdToken=" + ServerInterface.token;
 
-		Log.i(TAG, "Fetching " + url);
+		// Log.i(TAG, "Fetching " + url);
 
 		try
 		{
@@ -793,7 +794,6 @@ public class ServerInterface
 			JSONArray result = jObject.getJSONArray("response");
 
 			ContentValues values;
-
 			if (result != null)
 			{
 				// Stores waybill IDs as they are loaded.
@@ -868,7 +868,7 @@ public class ServerInterface
 		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?mrdToken="
 				+ ServerInterface.token;
 
-		Log.i(TAG, "Fetching " + url);
+		// Log.i(TAG, "Fetching " + url);
 
 		try
 		{
@@ -939,7 +939,7 @@ public class ServerInterface
 		String url = "http://paperlessapp.apiary.io/v1/milkruns/partial?mrdToken="
 				+ ServerInterface.token;
 
-		Log.i(TAG, "Fetching " + url);
+		// Log.i(TAG, "Fetching " + url);
 
 		try
 		{
@@ -1205,26 +1205,29 @@ public class ServerInterface
 		JSONObject obj;
 		try
 		{
-			obj = new JSONObject(stream);
-
-			if (obj.has("errro"))
+			if (stream.length() > 0)
 			{
-				String error_code = stripErrorCode(stream);
-				if (error_code.equals(VariableManager.API_ERROR_CODE_UNAUTHORISED)) // Unauthorized
-				{
-					Log.i(TAG, "Token expired");
-					// Token has expired
+				obj = new JSONObject(stream);
 
-					ServerInterface.getInstance(context).requestToken();
-				}
-				/*else if (error_code.equals("400")) // Bad request
+				if (obj.has("errro"))
 				{
+					String error_code = stripErrorCode(stream);
+					if (error_code.equals(VariableManager.API_ERROR_CODE_UNAUTHORISED)) // Unauthorized
+					{
+						Log.i(TAG, "Token expired");
+						// Token has expired
 
-				}
-				else if (error_code.equals("404")) // Not found
-				{
+						ServerInterface.getInstance(context).requestToken();
+					}
+					/*else if (error_code.equals("400")) // Bad request
+					{
 
-				}*/}
+					}
+					else if (error_code.equals("404")) // Not found
+					{
+
+					}*/}
+			}
 		}
 		catch (JSONException e)
 		{
@@ -1245,7 +1248,7 @@ public class ServerInterface
 	{
 		if (VariableManager.DEBUG)
 		{
-			Log.d(TAG, "Fetching JSON from " + url);
+			Log.d(TAG, "Fetching " + url);
 		}
 		try
 		{
@@ -1510,10 +1513,10 @@ public class ServerInterface
 	{
 		String id = "";
 
-		String url = "http://paperlessapp.apiary.io/v1/bags/scan?barcode=" + barcode + "&mrdToken="
+		String url = API_URL_APIARY + "v1/bags/scan?barcode=" + barcode + "&mrdToken="
 				+ ServerInterface.token;
 
-		Log.i(TAG, "Fetching " + url);
+		// Log.i(TAG, "Fetching " + url);
 
 		try
 		{

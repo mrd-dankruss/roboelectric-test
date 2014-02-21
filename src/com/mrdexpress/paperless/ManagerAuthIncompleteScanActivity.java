@@ -81,8 +81,13 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
+			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+
 			list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned(
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+					driverid);
 			System.out.println("list: " + list);
 			return null;
 		}
@@ -177,11 +182,23 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
 
-					String driver_id = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID);
+					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+							Context.MODE_PRIVATE);
 
-					String status = ServerInterface.getInstance(getApplicationContext())
-							.authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
+					final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+					final boolean training_mode = prefs.getBoolean(
+							VariableManager.PREF_TRAINING_MODE, false);
 
+					String status = "";
+					if (training_mode)
+					{
+						status = "success";
+					}
+					else
+					{
+						status = ServerInterface.getInstance(getApplicationContext()).authManager(
+								last_logged_in_manager_id, driver_id, hash, imei_id);
+					}
 					Log.d("Incomplete", "Success: " + status);
 					if (status.equals("success"))
 					{

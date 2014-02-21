@@ -101,21 +101,21 @@ public class MainActivity extends Activity
 
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
-//		if (checkPlayServices())
-//		{
-//			gcm = GoogleCloudMessaging.getInstance(this);
-//			regid = getRegistrationId(context);
-//
-//			if (regid.isEmpty())
-//			{
-//				//TODO: Uncomment to implement GCM
-//				//registerInBackground();
-//			}
-//		}
-//		else
-//		{
-//			Log.i(TAG, "No valid Google Play Services APK found.");
-//		}
+		// if (checkPlayServices())
+		// {
+		// gcm = GoogleCloudMessaging.getInstance(this);
+		// regid = getRegistrationId(context);
+		//
+		// if (regid.isEmpty())
+		// {
+		// //TODO: Uncomment to implement GCM
+		// //registerInBackground();
+		// }
+		// }
+		// else
+		// {
+		// Log.i(TAG, "No valid Google Play Services APK found.");
+		// }
 
 		person_item_list = new ArrayList<UserItem>();
 
@@ -146,6 +146,20 @@ public class MainActivity extends Activity
 			}
 		});
 
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume()
+	{
+		// TODO Auto-generated method stub
+		super.onResume();
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
+		editor.apply();
 	}
 
 	/**
@@ -379,6 +393,13 @@ public class MainActivity extends Activity
 
 			if (status.equals("success"))
 			{
+				// Store currently selected driverid in shared prefs
+				SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+						Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
+				editor.apply();
+
 				return true;
 			}
 
@@ -391,7 +412,16 @@ public class MainActivity extends Activity
 
 			if (result == true)
 			{
-				new RetrieveBagsTask().execute();
+				Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+
+				DbHandler.getInstance(getApplicationContext());
+				// Pass driver name on
+				intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
+
+				Log.d(TAG, "Driver ID: " + selected_user_id);
+				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+
+				startActivity(intent);
 				// Close progress spinner
 				if (dialog.isShowing())
 				{
@@ -700,7 +730,7 @@ public class MainActivity extends Activity
 	 */
 	private void sendRegistrationIdToBackend(String regid)
 	{
-		//TODO: Change to paperless api when implemented
+		// TODO: Change to paperless api when implemented
 		String url = "http://www.yourwebsitename.com/getregistrationid.php";
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("regid", regid));

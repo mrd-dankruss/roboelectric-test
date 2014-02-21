@@ -20,6 +20,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mrdexpress.paperless.LoginActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem;
@@ -29,6 +30,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class LoginFragment extends Fragment
 {
@@ -139,22 +141,33 @@ public class LoginFragment extends Fragment
 		@Override
 		protected Boolean doInBackground(Void... urls)
 		{
-			String hash = PinManager.toMD5(holder.text_manager_pin.getText().toString());
+			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+					false);
 
-			TelephonyManager mngr = (TelephonyManager) getActivity().getSystemService(
-					Context.TELEPHONY_SERVICE);
-
-			final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
-
-			String status = ServerInterface.getInstance(getActivity().getApplicationContext())
-					.authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
-
-			if (status.equals("success"))
+			// If in training run mode, just return true without checking login.
+			if (training_mode)
 			{
 				return true;
 			}
+			else
+			{
+				String hash = PinManager.toMD5(holder.text_manager_pin.getText().toString());
 
-			return false;
+				TelephonyManager mngr = (TelephonyManager) getActivity().getSystemService(
+						Context.TELEPHONY_SERVICE);
+
+				final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+
+				String status = ServerInterface.getInstance(getActivity().getApplicationContext())
+						.authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
+
+				if (status.equals("success"))
+				{
+					return true;
+				}
+
+				return false;
+			}
 		}
 
 		@Override
@@ -176,6 +189,18 @@ public class LoginFragment extends Fragment
 						.commit();
 
 				getActivity().finish();
+			}
+			else
+			{
+				// Close progress spinner
+				if (dialog.isShowing())
+				{
+					dialog.dismiss();
+				}
+				CustomToast toast = new CustomToast(getActivity());
+				toast.setText(getString(R.string.text_unauthorised));
+				toast.setSuccess(false);
+				toast.show();
 			}
 		}
 	}

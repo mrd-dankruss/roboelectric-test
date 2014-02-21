@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.location.Address;
@@ -85,7 +86,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		setContentView(R.layout.activity_map);
 
 		API_KEY = getResources().getString(R.string.key_googlemaps_places);
-		
+
 		// Change actionbar title
 		setTitle(R.string.title_actionbar_map);
 
@@ -139,7 +140,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 							position)).getLocationName();
 					String list_reference = ((MapPlacesItem) holder.autoCompView.getAdapter()
 							.getItem(position)).getLocationReference();
-					
+
 					holder.autoCompView.setText(list_string.replaceAll("\n", ", "));
 
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -186,8 +187,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					/*Uri location = Uri.parse("geo:" + marker_lat + "," + marker_lon + "?z="
 							+ zoom_level);*/
 					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "("
-							+ selected_marker_name + ")"
-							+ "&z=" + zoom_level);
+							+ selected_marker_name + ")" + "&z=" + zoom_level);
 					// Or map point based on latitude/longitude
 					// Uri location = Uri.parse("geo:37.422219,-122.08364?z=14"); // z param is zoom
 					// level
@@ -214,9 +214,13 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	 */
 	private void setupMapMarkers()
 	{
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
 		// Retrieve coords
 		ArrayList<HashMap<String, String>> bags = DbHandler.getInstance(getApplicationContext())
-				.getBagCoords(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+				.getBagCoords(driverid);
 
 		// Check coords of each bags
 		for (int i = 0; i < bags.size(); i++)
@@ -546,10 +550,11 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			LatLng location = new LatLng(lat, lon);
 
 			map.addMarker(new MarkerOptions().title(hubname).position(location));
-			
-			CameraPosition cameraPosition = new CameraPosition.Builder().target(location).zoom(12.0f).build();
+
+			CameraPosition cameraPosition = new CameraPosition.Builder().target(location)
+					.zoom(12.0f).build();
 			CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-			map.moveCamera(cameraUpdate);  
+			map.moveCamera(cameraUpdate);
 		}
 	}
 }

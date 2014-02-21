@@ -10,9 +10,9 @@ public class VariableManager
 	public static final String EXTRA_LIST_SCANNED_ITEMS = "com.mrdexpress.paperless.list_of_scanned_items";
 	public static final String EXTRA_MANAGER_NAME = "com.mrdexpress.paperless.manager_name";
 	public static final String EXTRA_MANAGER_ID = "com.mrdexpress.paperless.manager_id";
-	public static final String EXTRA_CONSIGNMENT_NUMBER_ITEMS = "com.mrdexpress.paperless.cons_number_items";
-	public static final String EXTRA_CONSIGNMENT_NUMBER = "com.mrdexpress.paperless.cons_no";
-	public static final String EXTRA_CONSIGNMENT_DESTINATION = "com.mrdexpress.paperless.cons_sdest";
+	public static final String EXTRA_BAG_NUMBER_ITEMS = "com.mrdexpress.paperless.cons_number_items";
+	public static final String EXTRA_BAGID = "com.mrdexpress.paperless.cons_no";
+	public static final String EXTRA_BAG_DESTINATION = "com.mrdexpress.paperless.cons_sdest";
 	public static final String EXTRA_BAG_NO = "com.mrdexpress.paperless.bag_number";
 	public static final String EXTRA_BAG_LAT = "com.mrdexpress.paperless.bag_lat";
 	public static final String EXTRA_BAG_LON = "com.mrdexpress.paperless.bag_lon";
@@ -34,14 +34,19 @@ public class VariableManager
 
 	// Shared prefs
 	public static final String PREF = "com.mrdexpress.paperless";
-	public static final String PREF_TOKEN = "com.mrdexpress.paperless.token";
-	public static final String PREF_NETWORK_AVAILABLE = "com.mrdexpress.paperless.network.avail";
+	public static final String PREF_TOKEN = PREF + "." + "token";
+	public static final String PREF_NETWORK_AVAILABLE = PREF + "." + "avail";
+	public static final String PREF_DRIVERID = PREF + "." + "driverid";
+	public static final String PREF_TRAINING_MODE = "TrainingRunMode"; // Is a training run
+																		// activated?
 	public static final String IMEI_TEST = "490154203237518";
 
 	public static String next_bag_id;
 	public static String delay_id;
 	public static Context context;
 	public static final String TEXT_NET_ERROR = "Connection error";
+	
+	public static final String TRAININGRUN_MILKRUN_DRIVERID = "TrainingRunMilkrunID";
 
 	// Debug mode
 	public static final boolean DEBUG = true;

@@ -53,10 +53,10 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
-		String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+		String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
+		adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
+				getActivity()).getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
 
 		setListAdapter(adapter);
 	}
@@ -74,7 +74,8 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_unsuccessful_deliveries_content, null, false);
+			rootView = inflater.inflate(R.layout.fragment_unsuccessful_deliveries_content, null,
+					false);
 
 			if (holder == null)
 			{
