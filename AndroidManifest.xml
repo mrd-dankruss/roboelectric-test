@@ -320,7 +320,8 @@
                 <category android:name="com.mrdexpress.paperless" />
             </intent-filter>
         </receiver>
-        <service android:name=".service.GCMIntentService" />
+
+        <service android:name=".service.GCMIntentService" />
     </application>
 
 </manifest>

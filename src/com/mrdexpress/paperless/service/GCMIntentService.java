@@ -1,24 +1,29 @@
 package com.mrdexpress.paperless.service;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.IntentService;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.mrdexpress.paperless.MainActivity;
-import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
 
 public class GCMIntentService extends IntentService
 {
 	public static final int NOTIFICATION_ID = 1;
 	private NotificationManager mNotificationManager;
 	NotificationCompat.Builder builder;
+	
+	public static final String BROADCAST_ACTION = " com.mrdexpress.paperless.service";
+    private final Handler handler = new Handler();
+    Intent intent;
+    int counter = 0;
 
 	public GCMIntentService()
 	{
@@ -47,30 +52,40 @@ public class GCMIntentService extends IntentService
 			}
 			else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType))
 			{
-				
-				//TODO: Handle parcels being scanned by branch.
-				
-				// This loop represents the service doing some work.
-				for (int i = 0; i < 5; i++)
+
+				// TODO: Handle parcels being scanned by branch.
+
+				try
 				{
-					Log.i(TAG, "Working... " + (i + 1) + "/5 @ " + SystemClock.elapsedRealtime());
-					try
+					JSONObject json_object = new JSONObject(extras.getString("data"));
+					String cons_no = json_object.get("waybill_no").toString();
+					String scanned = json_object.get("scanned").toString();
+					
+					boolean bool_scanned = false;
+					
+					if (scanned.equals("true"))
 					{
-						Thread.sleep(5000);
+						bool_scanned = true;
 					}
-					catch (InterruptedException e)
-					{
-					}
+					
+					intent = new Intent(BROADCAST_ACTION);
+					intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, cons_no);
+					intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, bool_scanned);
+	                sendBroadcast(intent);
+	                stopService(intent);
+					
 				}
-				Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
-				// Post notification of received message.
-				sendNotification("Received: " + extras.toString());
-				Log.i(TAG, "Received: " + extras.toString());
+				catch (JSONException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 		GCMBroadcastReceiver.completeWakefulIntent(intent);
 	}
 
+	/*
 	private void sendNotification(String msg)
 	{
 		mNotificationManager = (NotificationManager) this
@@ -86,4 +101,5 @@ public class GCMIntentService extends IntentService
 		mBuilder.setContentIntent(contentIntent);
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 	}
+	*/
 }

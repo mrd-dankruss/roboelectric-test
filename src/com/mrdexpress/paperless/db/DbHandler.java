@@ -119,6 +119,7 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_WAYBILL_ID = "_id"; // ID PK
 	public static final String C_WAYBILL_BAG_ID = "bag_id"; // FK
 	public static final String C_WAYBILL_BARCODE = "waybill_barcode"; // barcode
+	public static final String C_WAYBILL_SCANNED = "waybill_scanned"; // ID PK
 
 	// Waybill dimensions (volumetrics)
 	public static final String C_WAYBILL_DIMEN = "waybill_dimen";
@@ -233,32 +234,32 @@ public class DbHandler extends SQLiteOpenHelper
 			// Log.d(TAG, CREATE_TABLE_BAGS);
 
 			final String CREATE_TABLE_WAYBILL = "CREATE TABLE " + TABLE_WAYBILLS + "("
-					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
-					+ C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST_LONG + " TEXT,"
-					+ C_WAYBILL_DEST_LAT + " TEXT," + C_WAYBILL_DEST_TOWN + " TEXT,"
-					+ C_WAYBILL_BARCODE + " TEXT," + C_WAYBILL_DEST_SUBURB + " TEXT,"
-					+ C_WAYBILL_DEST_ADDRESS + " TEXT," + C_WAYBILL_TEL + " TEXT,"
-					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT," + C_WAYBILL_DIMEN + " TEXT,"
-					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_CUSTOMER_ID + " TEXT,"
-					+ C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT1
-					+ " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT," + C_WAYBILL_CUSTOMER_EMAIL
-					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS
-					+ "(" + C_BAG_ID + "))";
+					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_SCANNED + " INTEGER,"
+					+ C_WAYBILL_BAG_ID + " TEXT," + C_WAYBILL_WEIGHT + " TEXT,"
+					+ C_WAYBILL_DEST_LONG + " TEXT," + C_WAYBILL_DEST_LAT + " TEXT,"
+					+ C_WAYBILL_DEST_TOWN + " TEXT," + C_WAYBILL_BARCODE + " TEXT,"
+					+ C_WAYBILL_DEST_SUBURB + " TEXT," + C_WAYBILL_DEST_ADDRESS + " TEXT,"
+					+ C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
+					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_PARCELCOUNT + " INTEGER,"
+					+ C_WAYBILL_CUSTOMER_ID + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_CONTACT1 + " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_EMAIL + " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
+					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 			// Log.d(TAG, CREATE_TABLE_WAYBILL);
 
 			final String CREATE_TABLE_WAYBILL_TRAINING = "CREATE TABLE " + TABLE_WAYBILLS_TRAINING
-					+ "(" + C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_BAG_ID + " TEXT,"
-					+ C_WAYBILL_WEIGHT + " TEXT," + C_WAYBILL_DEST_LONG + " TEXT,"
-					+ C_WAYBILL_DEST_LAT + " TEXT," + C_WAYBILL_DEST_TOWN + " TEXT,"
-					+ C_WAYBILL_BARCODE + " TEXT," + C_WAYBILL_DEST_SUBURB + " TEXT,"
-					+ C_WAYBILL_DEST_ADDRESS + " TEXT," + C_WAYBILL_TEL + " TEXT,"
-					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT," + C_WAYBILL_DIMEN + " TEXT,"
-					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_CUSTOMER_ID + " TEXT,"
-					+ C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT1
-					+ " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT," + C_WAYBILL_CUSTOMER_EMAIL
-					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS
-					+ "(" + C_BAG_ID + "))";
+					+ "(" + C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_SCANNED
+					+ " INTEGER," + C_WAYBILL_BAG_ID + " TEXT," + C_WAYBILL_WEIGHT + " TEXT,"
+					+ C_WAYBILL_DEST_LONG + " TEXT," + C_WAYBILL_DEST_LAT + " TEXT,"
+					+ C_WAYBILL_DEST_TOWN + " TEXT," + C_WAYBILL_BARCODE + " TEXT,"
+					+ C_WAYBILL_DEST_SUBURB + " TEXT," + C_WAYBILL_DEST_ADDRESS + " TEXT,"
+					+ C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
+					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_PARCELCOUNT + " INTEGER,"
+					+ C_WAYBILL_CUSTOMER_ID + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_CONTACT1 + " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_EMAIL + " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
+					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL_TRAINING);
 
 			final String CREATE_TABLE_DELAYS = "CREATE TABLE " + TABLE_DELAYS + "(" + C_DELAYS_ID
@@ -561,6 +562,52 @@ public class DbHandler extends SQLiteOpenHelper
 			values.put(C_BAG_SCANNED, convertBoolToInt(scanned));
 
 			db.update(TABLE_BAGS, values, C_BAG_ID + "=" + cons_no, null);
+
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sets the value for whether the particular waybill has been
+	 * scanned.
+	 * 
+	 * @param cons_no
+	 * @param scanned
+	 */
+	public void setWaybillScanned(String waybill_no, boolean scanned)
+	{
+		SQLiteDatabase db = null;
+		try
+		{
+
+			db = this.getWritableDatabase(); // Open db
+
+			ContentValues values = new ContentValues();
+			values.put(C_WAYBILL_SCANNED, convertBoolToInt(scanned));
+
+			db.update(TABLE_WAYBILLS, values, C_WAYBILL_BARCODE + "='" + waybill_no + "'", null);
 
 		}
 		catch (SQLiteException e)
@@ -939,8 +986,17 @@ public class DbHandler extends SQLiteOpenHelper
 
 				while (!cursor.isAfterLast())
 				{
+					boolean bool_scanned = false;
+
+					if (cursor.getInt(cursor.getColumnIndex(C_WAYBILL_SCANNED)) == 1)
+					{
+						bool_scanned = true;
+					}
+
+					Log.d(TAG, "DBMANGER: " + bool_scanned);
+					
 					DeliveryHandoverDataObject parcel = new DeliveryHandoverDataObject(
-							cursor.getString(cursor.getColumnIndex(C_WAYBILL_ID)), false);
+							cursor.getString(cursor.getColumnIndex(C_WAYBILL_ID)), bool_scanned);
 
 					parcel.setBarcode(cursor.getString(cursor.getColumnIndex(C_WAYBILL_BARCODE)));
 
