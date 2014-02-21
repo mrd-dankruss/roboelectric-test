@@ -158,7 +158,7 @@ public class EnterPinActivity extends Activity
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
 
 					String status = ServerInterface.getInstance(getApplicationContext())
-							.authDriver(hash, null, imei_id);
+							.authDriver(hash, imei_id);
 
 					if (status.equals("success"))
 					{
