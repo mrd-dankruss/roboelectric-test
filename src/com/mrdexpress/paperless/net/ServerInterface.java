@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -48,7 +49,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mrdexpress.paperless.MainActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Contact;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -56,6 +56,7 @@ import com.mrdexpress.paperless.db.Driver;
 import com.mrdexpress.paperless.db.Waybill;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ServerInterface
 {
@@ -73,7 +74,6 @@ public class ServerInterface
 	public ServerInterface(Context ctx)
 	{
 		context = ctx;
-		// TODO Auto-generated constructor stub
 	}
 
 	// Return singleton instance of DbHandler
@@ -183,13 +183,13 @@ public class ServerInterface
 
 		String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken="
 				+ ServerInterface.token + "&gcmID=" + gcm_id;
-		
+
 		Log.d(TAG, "URL: " + url);
-		
+
 		String response = getInputStreamFromUrl(url);
 
 		Log.d(TAG, "Response: " + response);
-		
+
 		String status = "";
 
 		try
@@ -231,7 +231,8 @@ public class ServerInterface
 	{
 
 		String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken="
-				+ ServerInterface.token + "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei=" + imei;
+				+ ServerInterface.token + "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei="
+				+ imei;
 
 		String response = postData(url);
 
@@ -242,7 +243,8 @@ public class ServerInterface
 			JSONObject jObject = new JSONObject(response);
 			if (jObject.has("response"))
 			{
-				status = jObject.getJSONObject("response").getJSONObject("auth").getString("status");
+				status = jObject.getJSONObject("response").getJSONObject("auth")
+						.getString("status");
 			}
 			else if (jObject.has("error"))
 			{
@@ -294,7 +296,17 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			drivers_jArray = jObject.getJSONObject("response").getJSONArray("driver");
+			if (jObject.has("response"))
+			{
+				drivers_jArray = jObject.getJSONObject("response").getJSONArray("driver");
+			}
+			else if (jObject.has("error"))
+			{
+				CustomToast toast = new CustomToast((Activity) context);
+				toast.setSuccess(true);
+				toast.setText("Error" + stripErrorCode(jObject.toString()));
+				toast.show();
+			}
 		}
 		catch (JSONException e)
 		{
@@ -330,12 +342,10 @@ public class ServerInterface
 				}
 				catch (NumberFormatException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (JSONException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					if (VariableManager.DEBUG)
 					{
@@ -366,7 +376,17 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			managers_jArray = jObject.getJSONObject("response").getJSONArray("manager");
+			if (jObject.has("response"))
+			{
+				managers_jArray = jObject.getJSONObject("response").getJSONArray("manager");
+			}
+			else if (jObject.has("error"))
+			{
+				CustomToast toast = new CustomToast((Activity) context);
+				toast.setSuccess(true);
+				toast.setText("Error" + stripErrorCode(jObject.toString()));
+				toast.show();
+			}
 		}
 		catch (JSONException e)
 		{
@@ -394,12 +414,10 @@ public class ServerInterface
 				}
 				catch (NumberFormatException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (JSONException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					if (VariableManager.DEBUG)
 					{
@@ -561,12 +579,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -596,8 +612,7 @@ public class ServerInterface
 	 */
 	public void downloadBag(Context context, String bag_id, String driver_id)
 	{
-		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken="
-				+ ServerInterface.token;
+		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -892,12 +907,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -921,7 +934,14 @@ public class ServerInterface
 
 	public void downloadFailedDeliveryReasons(Context context)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?mrdToken="
+		/*
+		String url = API_URL + "v1/milkruns/handover?mrdToken="
+				+ ServerInterface.token;
+		*/
+
+		//TODO: uncomment above, delete below.
+		
+		String url = API_URL_APIARY + "v1/milkruns/handover?mrdToken="
 				+ ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
@@ -963,12 +983,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -992,7 +1010,7 @@ public class ServerInterface
 
 	public void downloadPartialDeliveryReasons(Context context)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/partial?mrdToken="
+		String url = API_URL_APIARY + "v1/milkruns/partial?mrdToken="
 				+ ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
@@ -1034,12 +1052,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -1071,7 +1087,7 @@ public class ServerInterface
 	 */
 	public String postDelay(String bagid, String driverid, String delayid)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bagid
+		String url = API_URL_APIARY + "v1/milkruns/delays?bagid=" + bagid
 				+ "&driverid=" + driverid + "&mrdToken=" + ServerInterface.token + "&delayid="
 				+ delayid;
 		String result = postData(url);
@@ -1114,7 +1130,6 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1123,7 +1138,7 @@ public class ServerInterface
 				+ result_string + "&comExtra=" + comExtra.toString());*/
 
 		String status = null;
-		String url = "http://paperlessapp.apiary.io/v1/waybill/communication?id=" + bagid
+		String url = API_URL_APIARY + "v1/waybill/communication?id=" + bagid
 				+ "&comType=" + type + "&mrdToken=" + ServerInterface.token + "&comResult="
 				+ result_string;
 		try
@@ -1132,13 +1147,11 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.e(TAG, e.toString());
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.e(TAG, e.toString());
 		}
@@ -1163,7 +1176,7 @@ public class ServerInterface
 	 */
 	public String postFailedHandover(String bag_id, String reason_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?bagid=" + bag_id
+		String url = API_URL_APIARY + "v1/milkruns/handover?bagid=" + bag_id
 				+ "&handoverid=" + reason_id + "&mrdToken=" + ServerInterface.token;
 
 		String result = postData(url);
@@ -1189,7 +1202,7 @@ public class ServerInterface
 	 */
 	public String postPartialDelivery(String waybill_id, String status_id, String extra)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/waybill/delivery?id=" + waybill_id
+		String url = API_URL_APIARY + "v1/waybill/delivery?id=" + waybill_id
 				+ "&deliveryid=" + status_id + "&mrdToken=" + ServerInterface.token;
 
 		String result = postData(url);
@@ -1287,7 +1300,6 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -1357,7 +1369,6 @@ public class ServerInterface
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
@@ -1365,7 +1376,6 @@ public class ServerInterface
 		}
 		catch (SocketTimeoutException e)
 		{
-			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, "Connection timeout");
@@ -1378,7 +1388,6 @@ public class ServerInterface
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
@@ -1433,7 +1442,6 @@ public class ServerInterface
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
 			return "";
-			// TODO Auto-generated catch block
 		}
 		catch (IOException e)
 		{
@@ -1441,7 +1449,6 @@ public class ServerInterface
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
 			return VariableManager.TEXT_NET_ERROR;
-			// TODO Auto-generated catch block
 		}
 	}
 
@@ -1501,7 +1508,6 @@ public class ServerInterface
 			}
 			catch (JSONException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -1628,7 +1634,7 @@ public class ServerInterface
 	public String setNextDelivery(String id)
 	{
 
-		String url = "http://paperlessapp.apiary.io/v1/waybill/setnext?id=" + id + "&mrdToken="
+		String url = API_URL_APIARY + "v1/waybill/setnext?id=" + id + "&mrdToken="
 				+ ServerInterface.token;
 
 		String response = postData(url);
@@ -1672,7 +1678,6 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
