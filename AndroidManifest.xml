@@ -40,7 +40,6 @@
         android:icon="@drawable/mrd_logo_small"
         android:label="@string/app_name"
         android:theme="@style/Theme.Mrdstyle" >
-
         <activity
             android:name="com.mrdexpress.paperless.MainActivity"
             android:label="@string/app_name"
@@ -323,7 +322,10 @@
         </receiver>
 
         <service android:name=".service.GCMIntentService" />
-        
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

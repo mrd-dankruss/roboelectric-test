@@ -5,7 +5,6 @@ import java.util.StringTokenizer;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -13,12 +12,14 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,8 +37,8 @@ import android.widget.TextView;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
+import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.adapters.ScanSimpleCursorAdapter;
-import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
@@ -86,6 +87,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_scan);
+
+		// FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		int width = (int) (size.x - (size.x * 0.1));
+		int height = (int) (size.y - (size.y * 0.1));
+
+		Intent intent = getIntent();
+		intent.setAction(Intents.Scan.ACTION);
+		intent.putExtra(Intents.Scan.WIDTH, width);
+		intent.putExtra(Intents.Scan.HEIGHT, height);
 
 		// Start rerieving milkruns list from server
 		// Param is driver ID, passed through from DriverListActivity
@@ -417,23 +430,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	 */
 	private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode)
 	{
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-		// Log.d(TAG, "checkDupe bag: " + bag_id);
-		// Iterate through each element until a dupe is found.
 		for (int i = 0; i < list.size(); i++)
 		{
-			// Log.d(TAG, "list: " + list.get(i));
-			if (DbHandler.getInstance(getApplicationContext())
-					.getBarcodeAtRow(driverid, Integer.parseInt(list.get(i))).equals(barcode))
+			if ((list.get(i)).equals(barcode))
 			{
-				// Log.d(TAG, "zorro checkDupe true");
 				return true;
 			}
 		}
-		// Log.d(TAG, "zorro checkDupe false");
 		return false;
 	}
 
@@ -444,8 +447,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
 	{
 		boolean parcel_in_list = false;
-		// Toast.makeText(this.getApplicationContext(), "Scanned code " + rawResult.getText(),
-		// Toast.LENGTH_LONG).show();
+
 		final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
@@ -461,116 +463,87 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		if (cursor != null)
 		{
-
 			cursor.moveToFirst();
-
 			/**
 			 * Start searching through all consignments for ones matching
 			 * barcode just scanned.
 			 */
-			// for (int i = 0; i < cursor.getCount(); i++) {
-
 			ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
 
 			int i = 0;
 			for (View child : all_views_within_top_view)
 			{
-
-				while (!cursor.isAfterLast())
+				if (child != null)
 				{
-					// Log.d(TAG, "Zorro i: " + i);
-					// RelativeLayout row = (RelativeLayout) holder.list.getChildAt(i);
-
-					if (child != null)
+					TextView text_view = (TextView) child // row
+							.findViewById(R.id.textView_row_scan);
+					if (text_view != null)
 					{
-						TextView text_view = (TextView) child // row
-								.findViewById(R.id.textView_row_scan);
-						if (text_view != null)
+
+						String str = text_view.getText().toString();
+						StringTokenizer tokenizer = new StringTokenizer(str);
+						String cons_number = tokenizer.nextToken();
+
+						// Compare barcode
+
+						if (cons_number.equals(rawResult.getText()))
 						{
+							Log.d(TAG, "Zorro decode barcode: " + cons_number);
+							parcel_in_list = true;
 
-							String str = text_view.getText().toString();
-							StringTokenizer tokenizer = new StringTokenizer(str);
-							String cons_number = tokenizer.nextToken();
+							// Match found. Mark as selected.
+							text_view.setTextColor(getResources().getColor(
+									R.color.colour_green_scan)); // Change
+							// colour
 
-							// Compare barcode
-
-							if (cons_number.equals(rawResult.getText()))
+							// Make tick
+							ImageView image_view_tick = (ImageView) child
+									.findViewById(R.id.imageView_row_scan_tick);
+							if (image_view_tick != null)
 							{
-								Log.d(TAG, "Zorro decode barcode: " + cons_number);
-								parcel_in_list = true;
+								image_view_tick.setVisibility(View.VISIBLE);
+							}
 
-								// Match found. Mark as selected.
-								text_view.setTextColor(getResources().getColor(
-										R.color.colour_green_scan)); // Change
-								// colour
-
-								// Make tick
-								ImageView image_view_tick = (ImageView) child
-										.findViewById(R.id.imageView_row_scan_tick);
-								if (image_view_tick != null)
+							if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
+							{
+								selected_items.add(rawResult.getText());
+								if (selected_items.size() == total_bags)
 								{
-									image_view_tick.setVisibility(View.VISIBLE);
-								}
-
-								// Log.d(TAG, "zorro selected item size: " + selected_items.size());
-								// Check if selected item has already been added.
-								if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
-								{
-									// Add this index to a list
-									selected_items.add(String.valueOf(i));
-									Log.d(TAG, "zorro selected item: " + selected_items.get(i));
-								}
-
-								// Log.d(TAG, selected_items.size() + "/" + total_bags);
-
-								// Make toast, with strawberry jam
-								if (selected_items.size() == total_bags) // All bags scanned
-								{
-									// displayToast(getString(R.string.text_scan_successful));
 									CustomToast toast = new CustomToast(this);
 									toast.setSuccess(true);
 									toast.setText(getString(R.string.text_scan_successful));
 									toast.show();
 								}
 								else
-								// Another bag scanned, not everything yet.
 								{
-									// displayToast(getString(R.string.text_scan_next));
 									CustomToast toast = new CustomToast(this);
 									toast.setSuccess(true);
 									toast.setText(getString(R.string.text_scan_next));
 									toast.show();
 								}
 							}
-							else
-							{
-
-								Log.d(TAG, "handleDecode(): no match " + cons_number);
-							}
 						}
-						// // Add this index to a list
-						// selected_items.add(String.valueOf(i));
+						else
+						{
 
-						/*
-						 * Update scanned status in db to reorder list.						 
-						 */
-						DbHandler.getInstance(getApplicationContext()).setScanned(
-								cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
+							Log.d(TAG, "handleDecode(): no match " + cons_number);
+						}
+					}
 
-						// Refresh list
-						// cursor_adapter.notifyDataSetChanged();
-					}
-					else
-					{
-						Log.d(TAG, "handleDecode(): row is null");
-					}
-					// }
-					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.getPosition());
-					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.moveToNext());
-					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.getPosition());
-					// cursor.moveToNext();
-					i++;
+					/*
+					 * Update scanned status in db to reorder list.						 
+					 */
+					DbHandler.getInstance(getApplicationContext()).setScanned(
+							cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
+
+					// Refresh list
+					// cursor_adapter.notifyDataSetChanged();
 				}
+				else
+				{
+					Log.d(TAG, "handleDecode(): row is null");
+				}
+				i++;
 			}
 			if (parcel_in_list == false)
 			{
@@ -812,6 +785,16 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			holder.list.setAdapter(cursor_adapter);
 
 			cursor_adapter.changeCursor(cursor);
+			if (holder.list.getCount() == 0)
+			{
+				holder.button_start_milkrun.setEnabled(false);
+				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+			}
+			else
+			{
+				holder.button_start_milkrun.setEnabled(true);
+				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+			}
 
 		}
 		markScannedItems();
