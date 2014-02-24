@@ -822,14 +822,20 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
-			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putBoolean(VariableManager.PREF_TRAINING_MODE, true);
-
+			boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+			String sql = "";
 			// ArrayList<Bag> bags = null;
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_ID + " LIKE '" + bag_id
-					+ "'";
+
+			if (training_run)
+			{
+				sql = "SELECT * FROM " + TABLE_BAGS_TRAINING + " WHERE " + C_BAG_ID + " LIKE '"
+						+ bag_id + "'";
+			}
+			else
+			{
+				sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_ID + " LIKE '" + bag_id
+						+ "'";
+			}
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
@@ -908,6 +914,8 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
+			
+			
 			// ArrayList<Bag> bags = null;
 			String sql = "SELECT * FROM " + TABLE_WAYBILLS + " WHERE " + C_WAYBILL_BAG_ID
 					+ " LIKE '" + bag_id + "'";
@@ -992,8 +1000,20 @@ public class DbHandler extends SQLiteOpenHelper
 			db = this.getReadableDatabase(); // Open db
 
 			ArrayList<DeliveryHandoverDataObject> bags = null;
-			String sql = "SELECT * FROM " + TABLE_WAYBILLS + " WHERE " + C_WAYBILL_BAG_ID
-					+ " LIKE '" + bag_id + "'";
+
+			boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+			String sql = "";
+
+			if (training_run)
+			{
+				sql = "SELECT * FROM " + TABLE_WAYBILLS_TRAINING + " WHERE " + C_WAYBILL_BAG_ID
+						+ " LIKE '" + bag_id + "'";
+			}
+			else
+			{
+				sql = "SELECT * FROM " + TABLE_WAYBILLS + " WHERE " + C_WAYBILL_BAG_ID + " LIKE '"
+						+ bag_id + "'";
+			}
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
