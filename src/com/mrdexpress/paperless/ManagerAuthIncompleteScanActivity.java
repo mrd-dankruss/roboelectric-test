@@ -84,7 +84,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 					Context.MODE_PRIVATE);
 
-			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 			list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned(
 					driverid);
@@ -181,11 +181,12 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 				{
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
+					hash = holder.editText_pin.getText().toString(); // DEBUG
 
 					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 							Context.MODE_PRIVATE);
 
-					final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+					final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
 					final boolean training_mode = prefs.getBoolean(
 							VariableManager.PREF_TRAINING_MODE, false);
 
@@ -301,8 +302,8 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			Intent intent = new Intent(getApplicationContext(),
 					ViewDeliveriesFragmentActivity.class);
 			// intent.putExtra(EXTRA_MESSAGE, message);
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+		/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 			startActivity(intent);
 
 			// Close progress spinner

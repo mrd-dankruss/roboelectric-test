@@ -96,11 +96,12 @@ public class CreatePinActivity extends Activity
 			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 					Context.MODE_PRIVATE);
 
-			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 			TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 			return ServerInterface.getInstance(getApplicationContext()).updatePIN(driverid,
 					holder.editText_pin1.getText().toString(), telephonyManager.getDeviceId());
+
 		}
 
 		/**
@@ -121,7 +122,7 @@ public class CreatePinActivity extends Activity
 				}
 				else
 				{
-					//There was a problem
+					// There was a problem
 					CustomToast toast = new CustomToast(CreatePinActivity.this);
 					toast.setText(result);
 					toast.setSuccess(false);
@@ -216,7 +217,7 @@ public class CreatePinActivity extends Activity
 			holder.button_change.setTypeface(typeface_roboto_bold);
 			holder.editText_pin1.setTypeface(typeface_roboto_regular);
 			holder.editText_pin2.setTypeface(typeface_roboto_regular);
-			
+
 			holder.button_create.setBackgroundResource(R.drawable.button_custom);
 
 			// Store the holder with the view.
@@ -295,11 +296,11 @@ public class CreatePinActivity extends Activity
 
 			DbHandler.getInstance(getApplicationContext());
 			// Pass driver name on
-			intent.putExtra(VariableManager.EXTRA_DRIVER,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+			/*	intent.putExtra(VariableManager.EXTRA_DRIVER,
+						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+				intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 			startActivity(intent);
 		}

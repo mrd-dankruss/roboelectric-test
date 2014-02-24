@@ -137,7 +137,7 @@ public class ManagerAuthNotAssignedActivity extends Activity
 					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 							Context.MODE_PRIVATE);
 
-					final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+					final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 					String status = ServerInterface.getInstance(getApplicationContext()).authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
 
@@ -241,8 +241,8 @@ public class ManagerAuthNotAssignedActivity extends Activity
 			Intent intent = new Intent(getApplicationContext(),
 					ViewDeliveriesFragmentActivity.class);
 			// intent.putExtra(EXTRA_MESSAGE, message);
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 			startActivity(intent);
 
 			// Close progress spinner

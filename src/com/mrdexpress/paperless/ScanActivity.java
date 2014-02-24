@@ -161,9 +161,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
 							.getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
 
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
-
 					startActivity(intent);
 				}
 			}
@@ -182,8 +179,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					// Go to View Deliveries screen
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(VariableManager.PREF_DRIVERID));
 					// EditText editText = (EditText) findViewById(R.id.edit_message);
 					// String message = editText.getText().toString();
 					// intent.putExtra(EXTRA_MESSAGE, message);
@@ -286,8 +281,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
 					// intent.putExtra(EXTRA_MESSAGE, message);
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
 					startActivity(intent);
 				}
 			}
@@ -940,9 +934,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		intent.putExtra(VariableManager.EXTRA_DRIVER,
 				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
-		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-
 		startActivityForResult(intent, RESULT_MANAGER_AUTH);
 	}
 
@@ -954,9 +945,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Pass driver name on
 		intent.putExtra(VariableManager.EXTRA_DRIVER,
 				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
-
-		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 		startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
 	}

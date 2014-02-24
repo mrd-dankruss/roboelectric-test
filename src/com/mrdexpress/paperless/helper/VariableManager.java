@@ -6,7 +6,7 @@ public class VariableManager
 {
 
 	public static final String EXTRA_DRIVER = "com.mrdexpress.paperless.name";
-	public static final String EXTRA_DRIVER_ID = "com.mrdexpress.paperless.driver_id";
+//	public static final String EXTRA_DRIVER_ID = "com.mrdexpress.paperless.driver_id";
 	public static final String EXTRA_LIST_SCANNED_ITEMS = "com.mrdexpress.paperless.list_of_scanned_items";
 	public static final String EXTRA_MANAGER_NAME = "com.mrdexpress.paperless.manager_name";
 	public static final String EXTRA_MANAGER_ID = "com.mrdexpress.paperless.manager_id";
