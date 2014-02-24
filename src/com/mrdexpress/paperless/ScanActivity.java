@@ -1,10 +1,12 @@
 package com.mrdexpress.paperless;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -39,6 +41,7 @@ import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
 import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.adapters.ScanSimpleCursorAdapter;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
@@ -94,7 +97,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		display.getSize(size);
 		int width = (int) (size.x - (size.x * 0.1));
 		int height = (int) (size.y - (size.y * 0.1));
-		
+
 		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 
 		Intent intent = getIntent();
@@ -282,7 +285,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				{
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
-					// intent.putExtra(EXTRA_MESSAGE, message);
 
 					startActivity(intent);
 				}
@@ -507,8 +509,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								 * Update scanned status in db to reorder list.						 
 								 */
 								Log.d(TAG, "set Scanned: " + rawResult.getText());
-								DbHandler.getInstance(getApplicationContext()).setScanned(rawResult.getText(), true);
-								
+								DbHandler.getInstance(getApplicationContext()).setScanned(
+										rawResult.getText(), true);
+
 								if (selected_items.size() == total_bags)
 								{
 									CustomToast toast = new CustomToast(this);
@@ -567,7 +570,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 									Intent intent = new Intent(getApplicationContext(),
 											LoginActivity.class);
 
-									startActivity(intent);
+									// startActivity(intent);
+									startActivityForResult(intent, RESULT_MANAGER_AUTH);
 									dialog_not_assigned.dismiss();
 								}
 								else
@@ -599,13 +603,14 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								Intent intent = new Intent(getApplicationContext(),
 										LoginActivity.class);
 
-								startActivity(intent);
-								dialog_not_assigned.dismiss();
+								// startActivity(intent);
+								startActivityForResult(intent, RESULT_MANAGER_AUTH);
+								// dialog_not_assigned.dismiss();
 							}
 							else
 							{
 								startNotAssignedActivity();
-								dialog_not_assigned.dismiss();
+								// dialog_not_assigned.dismiss();
 							}
 						}
 					});
@@ -616,6 +621,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		{
 			Log.d(TAG, "handleDecode(): cursor_adapter is null");
 		}
+
+		holder.list.setAdapter(cursor_adapter);
+		cursor_adapter.notifyDataSetChanged();
 
 		// Restart barcode scanner to allow for 'semi-automatic firing'
 		restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
@@ -658,7 +666,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		super.onStop();
 
 		// Set all consignments' scanned state to false
-		//DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+		// DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 	}
 
 	/**
@@ -799,7 +807,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	/**
 	 * This method allows you to release any resources you hold, so that the
 	 * Loader can free them. You can set any references to the cursor object you
-	 * hold to null. But do not close the cursor – the Loader does this for you.
+	 * hold to null. But do not close the cursor - the Loader does this for you.
 	 */
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader)
@@ -911,8 +919,19 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				dialog_progress.dismiss();
 			}
 
-			startIncompleteScanActivity();
-			dialog.dismiss();
+			// Start manager authorization activity
+			if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+			{
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+
+				startActivity(intent);
+				dialog.dismiss();
+			}
+			else
+			{
+				startIncompleteScanActivity();
+				dialog.dismiss();
+			}
 		}
 	}
 
@@ -921,9 +940,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Start manager authorization activity
 		Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
 
-		// Pass driver name on
-		intent.putExtra(VariableManager.EXTRA_DRIVER,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+		// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+		// getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 		startActivityForResult(intent, RESULT_MANAGER_AUTH);
 	}
@@ -933,9 +951,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Start manager authorization activity
 		Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
 
-		// Pass driver name on
-		intent.putExtra(VariableManager.EXTRA_DRIVER,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+		// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+		// getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 		startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
 	}
@@ -959,12 +976,48 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					Context.MODE_PRIVATE);
 
 			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+					false);
 
-			ServerInterface.getInstance(getApplicationContext()).downloadBag(
-					getApplicationContext(),
-					ServerInterface.getInstance(getApplicationContext()).scanBag(
-							getApplicationContext(), last_scanned_barcode), driverid);
+			if (training_mode)
+			{
+				ContentValues values = new ContentValues();
 
+				Random random = new Random();
+				int randomBagID = random.nextInt(1000);
+
+				values.put(DbHandler.C_BAG_ID, randomBagID); // PK
+				values.put(DbHandler.C_BAG_DEST_ADDRESS, "Sesami Street");
+				values.put(DbHandler.C_BAG_DEST_CONTACT, "012469977");
+				values.put(DbHandler.C_BAG_DEST_HUBCODE, "909090");
+				values.put(DbHandler.C_BAG_DEST_HUBNAME, "Philly");
+				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234231");
+				values.put(DbHandler.C_BAG_DEST_LONG, "33.1852100");
+				values.put(DbHandler.C_BAG_DEST_SUBURB, "Bel Air");
+				values.put(DbHandler.C_BAG_DEST_TOWN, "Philledelpia");
+				values.put(DbHandler.C_BAG_BARCODE, last_scanned_barcode);
+				values.put(DbHandler.C_BAG_ASSIGNED, 1);
+				values.put(DbHandler.C_BAG_SCANNED, 1);
+				values.put(DbHandler.C_BAG_CREATION_TIME, "241200B Feb 2014");
+				values.put(DbHandler.C_BAG_NUM_ITEMS, "1");
+				values.put(DbHandler.C_BAG_DRIVER_ID, VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
+				values.put(DbHandler.C_BAG_STATUS, Bag.STATUS_TODO);
+
+				Log.d(TAG,
+						"Added trainingrun bagid: "
+								+ randomBagID
+								+ " "
+								+ DbHandler.getInstance(getApplicationContext()).addRow(
+										DbHandler.TABLE_BAGS_TRAINING, values));
+
+			}
+			else
+			{
+				ServerInterface.getInstance(getApplicationContext()).downloadBag(
+						getApplicationContext(),
+						ServerInterface.getInstance(getApplicationContext()).scanBag(
+								getApplicationContext(), last_scanned_barcode), driverid);
+			}
 			return null;
 		}
 
@@ -972,6 +1025,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		protected void onPostExecute(Void nothing)
 		{
 			handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+			getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
+
+			// Refresh list
+			// cursor_adapter.notifyDataSetChanged();
+			// holder.list.setAdapter(cursor_adapter);
+
 			// Close progress spinner
 			if (dialog_progress.isShowing())
 			{
