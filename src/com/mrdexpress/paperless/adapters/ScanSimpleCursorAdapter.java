@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
@@ -37,18 +38,21 @@ public class ScanSimpleCursorAdapter extends SimpleCursorAdapter
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		TextView text_view_consignment;
+		ImageView image_green_tick;
 
 		if (convertView == null)
 		{
 			convertView = LayoutInflater.from(context).inflate(R.layout.row_scan, null, false);
 			text_view_consignment = (TextView) convertView.findViewById(R.id.textView_row_scan);
-			convertView.setTag(new ViewHolder(text_view_consignment));
+			image_green_tick = (ImageView)convertView.findViewById(R.id.imageView_row_scan_tick);
+			convertView.setTag(new ViewHolder(text_view_consignment, image_green_tick));
 		}
 		else
 		{
 			ViewHolder holder = (ViewHolder) convertView.getTag();
 
 			text_view_consignment = holder.text_view_consignment;
+			image_green_tick = (ImageView)convertView.findViewById(R.id.imageView_row_scan_tick);
 		}
 
 		if (cursor != null)
@@ -64,6 +68,13 @@ public class ScanSimpleCursorAdapter extends SimpleCursorAdapter
 						+ " ( "
 						+ cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))
 						+ " ITEMS )");
+				
+				if (cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_SCANNED)).equals("1"))
+				{
+					image_green_tick.setVisibility(View.VISIBLE);
+					text_view_consignment.setTextColor(context.getResources().getColor(
+							R.color.colour_green_scan)); 
+				}
 			}
 		}
 
@@ -83,11 +94,12 @@ public class ScanSimpleCursorAdapter extends SimpleCursorAdapter
 	{
 
 		public final TextView text_view_consignment;
+		public final ImageView image_green_tick;
 
-		public ViewHolder(TextView text)
+		public ViewHolder(TextView text, ImageView image)
 		{
 			this.text_view_consignment = text;
-
+			this.image_green_tick = image;
 		}
 	}
 

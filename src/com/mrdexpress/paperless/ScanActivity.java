@@ -622,9 +622,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			Log.d(TAG, "handleDecode(): cursor_adapter is null");
 		}
 
-		holder.list.setAdapter(cursor_adapter);
-		cursor_adapter.notifyDataSetChanged();
-
 		// Restart barcode scanner to allow for 'semi-automatic firing'
 		restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
 	}
