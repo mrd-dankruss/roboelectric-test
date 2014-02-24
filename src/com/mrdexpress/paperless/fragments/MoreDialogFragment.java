@@ -131,8 +131,8 @@ public class MoreDialogFragment extends DialogFragment
 				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
 						.getStringExtra(VariableManager.EXTRA_DRIVER));
 
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 				startActivity(intent);
 
@@ -150,8 +150,8 @@ public class MoreDialogFragment extends DialogFragment
 				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
 						.getStringExtra(VariableManager.EXTRA_DRIVER));
 
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+		/*		intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
 

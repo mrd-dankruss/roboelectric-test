@@ -1129,7 +1129,8 @@ public class DbHandler extends SQLiteOpenHelper
 	public String getBarcodeAtRow(String driver_id, int row)
 	{
 		String countQuery = "SELECT  * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID
-				+ " LIKE '" + driver_id + "'" + " LIMIT 1 OFFSET " + row;
+				+ " LIKE '" + driver_id + "'" + " ORDER BY " + DbHandler.C_BAG_SCANNED + " ASC,"
+				+ DbHandler.C_BAG_ID + " ASC" + " LIMIT 1 OFFSET " + row;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
 		String barcode = "";
@@ -1137,7 +1138,7 @@ public class DbHandler extends SQLiteOpenHelper
 		{
 			barcode = cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE));
 		}
-		// Log.d(TAG, "zorro cursor bagid " + barcode);
+//		Log.d(TAG, "zorro cursor bagid " + barcode);
 		cursor.close();
 		return barcode;
 	}

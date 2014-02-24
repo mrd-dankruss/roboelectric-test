@@ -178,8 +178,8 @@ public class DriverHomeFragment extends Fragment
 				// Start scan activity
 				Intent intent = new Intent(getActivity(), ScanActivity.class);
 
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-						VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
+				/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+						VariableManager.TRAININGRUN_MILKRUN_DRIVERID);*/
 
 				startActivity(intent);
 			}
@@ -283,8 +283,8 @@ public class DriverHomeFragment extends Fragment
 			intent.putExtra(VariableManager.EXTRA_DRIVER,
 					getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 			startActivity(intent);
 		}

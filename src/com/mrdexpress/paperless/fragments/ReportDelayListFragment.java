@@ -100,7 +100,7 @@ public class ReportDelayListFragment extends Fragment
 					new ReportDelayTask().execute(
 							getActivity().getIntent().getStringExtra(
 									VariableManager.EXTRA_NEXT_BAG_ID), getActivity().getIntent()
-									.getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+									.getStringExtra(VariableManager.PREF_DRIVERID),
 							VariableManager.delay_id);
 				}
 			}

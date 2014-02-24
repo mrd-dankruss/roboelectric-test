@@ -48,7 +48,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mrdexpress.paperless.MainActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Contact;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -181,15 +180,15 @@ public class ServerInterface
 	public String registerDeviceGCM(String imei, String gcm_id)
 	{
 
-		String url = "http://uat.mrdexpress.com/api/v1/push/register?imei=" + imei + "&mrdToken="
+		String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken="
 				+ ServerInterface.token + "&gcmID=" + gcm_id;
-		
+
 		Log.d(TAG, "URL: " + url);
-		
+
 		String response = getInputStreamFromUrl(url);
 
 		Log.d(TAG, "Response: " + response);
-		
+
 		String status = "";
 
 		try
@@ -589,8 +588,7 @@ public class ServerInterface
 	 */
 	public void downloadBag(Context context, String bag_id, String driver_id)
 	{
-		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken="
-				+ ServerInterface.token;
+		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
 

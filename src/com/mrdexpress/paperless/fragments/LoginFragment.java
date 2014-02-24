@@ -152,11 +152,11 @@ public class LoginFragment extends Fragment
 			else
 			{
 				String hash = PinManager.toMD5(holder.text_manager_pin.getText().toString());
-
+				hash = holder.text_manager_pin.getText().toString(); // DEBUG
 				TelephonyManager mngr = (TelephonyManager) getActivity().getSystemService(
 						Context.TELEPHONY_SERVICE);
 
-				final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+				final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 				String status = ServerInterface.getInstance(getActivity().getApplicationContext())
 						.authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());

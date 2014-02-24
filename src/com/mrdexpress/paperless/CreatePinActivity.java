@@ -94,7 +94,7 @@ public class CreatePinActivity extends Activity
 			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 					Context.MODE_PRIVATE);
 
-			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 			
 			// TODO Auto-generated method stub
 			return ServerInterface.getInstance(getApplicationContext()).updatePIN(
@@ -283,11 +283,11 @@ public class CreatePinActivity extends Activity
 
 			DbHandler.getInstance(getApplicationContext());
 			// Pass driver name on
-			intent.putExtra(VariableManager.EXTRA_DRIVER,
+		/*	intent.putExtra(VariableManager.EXTRA_DRIVER,
 					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
 			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 			startActivity(intent);
 		}
