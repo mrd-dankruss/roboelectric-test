@@ -58,7 +58,11 @@ public class ReportDelayListFragment extends Fragment
 
 		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getMilkrunDelayReasons(), false);
-		holder.list.setAdapter(adapter);
+
+		if ((adapter != null) & (holder.list != null))
+		{
+			holder.list.setAdapter(adapter);
+		}
 
 		holder.list.setOnItemClickListener(new OnItemClickListener()
 		{

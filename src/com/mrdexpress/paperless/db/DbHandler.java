@@ -48,6 +48,7 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String TABLE_DELAYS = "Delays";
 	public static final String TABLE_COMLOG = "ComLog";
 	public static final String TABLE_FAILED_HANDOVER_REASONS = "FailedHandoverReasons";
+	public static final String TABLE_FAILED_HANDOVER_REASONS_TRAINING = "FailedHandoverReasonsTraining";
 	public static final String TABLE_PARTIAL_DELIVERY_REASONS = "PartialDeliveryReasons";
 
 	// ------------ Fields - Drivers ---------
@@ -170,6 +171,8 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_CALLQUEUE_URL = "callqueue_url";
 	public static final String C_CALLQUEUE_JSON = "callqueue_json";
 
+	SharedPreferences prefs;
+
 	private Context context;
 
 	public DbHandler(Context context)
@@ -177,6 +180,7 @@ public class DbHandler extends SQLiteOpenHelper
 		super(context, DB_NAME, null, DB_VERSION);
 		// TODO Auto-generated constructor stub
 		this.context = context;
+		prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 	}
 
 	// Return singleton instance of DbHandler
@@ -280,6 +284,12 @@ public class DbHandler extends SQLiteOpenHelper
 					+ " INTEGER PRIMARY KEY," + C_FAILED_HANDOVER_REASONS_NAME + " TEXT)";
 			createTable(db, TABLE_FAILED_HANDOVER_REASONS, CREATE_TABLE_FAILED_HANDOVER_REASONS);
 
+			final String CREATE_TABLE_FAILED_HANDOVER_REASONS_TRAINING = "CREATE TABLE "
+					+ TABLE_FAILED_HANDOVER_REASONS_TRAINING + "(" + C_FAILED_HANDOVER_REASONS_ID
+					+ " INTEGER PRIMARY KEY," + C_FAILED_HANDOVER_REASONS_NAME + " TEXT)";
+			createTable(db, TABLE_FAILED_HANDOVER_REASONS_TRAINING,
+					CREATE_TABLE_FAILED_HANDOVER_REASONS_TRAINING);
+
 			// Log.d(TAG, CREATE_TABLE_FAILED_HANDOVER_REASONS);
 
 			final String CREATE_TABLE_PARTIAL_DELIVERY_REASONS = "CREATE TABLE "
@@ -344,6 +354,7 @@ public class DbHandler extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CALLQUEUE);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELAYS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAILED_HANDOVER_REASONS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAILED_HANDOVER_REASONS_TRAINING);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTIAL_DELIVERY_REASONS);
 		onCreate(db);
 	}
@@ -994,7 +1005,7 @@ public class DbHandler extends SQLiteOpenHelper
 					}
 
 					Log.d(TAG, "DBMANGER: " + bool_scanned);
-					
+
 					DeliveryHandoverDataObject parcel = new DeliveryHandoverDataObject(
 							cursor.getString(cursor.getColumnIndex(C_WAYBILL_ID)), bool_scanned);
 
@@ -1194,7 +1205,7 @@ public class DbHandler extends SQLiteOpenHelper
 		{
 			barcode = cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE));
 		}
-//		Log.d(TAG, "zorro cursor bagid " + barcode);
+		// Log.d(TAG, "zorro cursor bagid " + barcode);
 		cursor.close();
 		return barcode;
 	}
@@ -1370,8 +1381,25 @@ public class DbHandler extends SQLiteOpenHelper
 			db = this.getReadableDatabase(); // Open db
 
 			ArrayList<HashMap<String, String>> bags = null;
-			String sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
-					+ driver_id + "'";
+
+			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			// final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+					false);
+
+			String sql = "";
+			if (training_mode)
+			{
+				sql = "SELECT * FROM " + TABLE_BAGS_TRAINING;
+			}
+			else
+			{
+				sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_DRIVER_ID + " LIKE '"
+						+ driver_id + "'";
+			}
+
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())
@@ -1522,7 +1550,24 @@ public class DbHandler extends SQLiteOpenHelper
 			db = this.getReadableDatabase(); // Open db
 
 			ArrayList<DialogDataObject> reasons = null;
-			String sql = "SELECT * FROM " + TABLE_FAILED_HANDOVER_REASONS;
+
+			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+
+			// final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+					false);
+
+			String sql = "";
+			if (training_mode)
+			{
+				sql = "SELECT * FROM " + TABLE_FAILED_HANDOVER_REASONS_TRAINING;
+			}
+			else
+			{
+				sql = "SELECT * FROM " + TABLE_FAILED_HANDOVER_REASONS;
+			}
+
 			Cursor cursor = db.rawQuery(sql, null);
 
 			if (cursor != null && cursor.moveToFirst())

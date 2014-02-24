@@ -6,7 +6,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -55,11 +57,13 @@ public class SmsListFragment extends Fragment
 	{
 		super.onResume();
 
-		adapter = new SmsDialogListAdapter(getActivity(),
-				DbHandler.getInstance(getActivity())
-						.getContacts(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID)), false);
+		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
+		adapter = new SmsDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+				.getContacts(driverid), false);
 
 		holder.list.setAdapter(adapter);
 
