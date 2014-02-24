@@ -561,7 +561,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param cons_no
 	 * @param scanned
 	 */
-	public void setScanned(String cons_no, boolean scanned)
+	public void setScanned(String barcode, boolean scanned)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -572,7 +572,7 @@ public class DbHandler extends SQLiteOpenHelper
 			ContentValues values = new ContentValues();
 			values.put(C_BAG_SCANNED, convertBoolToInt(scanned));
 
-			db.update(TABLE_BAGS, values, C_BAG_ID + "=" + cons_no, null);
+			db.update(TABLE_BAGS, values, C_BAG_BARCODE + "='" + barcode + "'", null);
 
 		}
 		catch (SQLiteException e)
@@ -824,6 +824,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 			boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 			String sql = "";
+
 			// ArrayList<Bag> bags = null;
 
 			if (training_run)
@@ -914,8 +915,6 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
-			
-			
 			// ArrayList<Bag> bags = null;
 			String sql = "SELECT * FROM " + TABLE_WAYBILLS + " WHERE " + C_WAYBILL_BAG_ID
 					+ " LIKE '" + bag_id + "'";
@@ -1328,7 +1327,8 @@ public class DbHandler extends SQLiteOpenHelper
 			{
 				// Log.d(TAG, "Loading real bags");
 				sql = "SELECT * FROM " + TABLE_BAGS + " WHERE " + C_BAG_STATUS + " LIKE '" + status
-						+ "' AND " + C_BAG_DRIVER_ID + " LIKE '" + driver_id + "'";
+						+ "' AND " + C_BAG_DRIVER_ID + " LIKE '" + driver_id + "'" + " AND "
+						+ C_BAG_SCANNED + " LIKE '" + convertBoolToInt(true) + "'";
 			}
 			Cursor cursor = db.rawQuery(sql, null);
 

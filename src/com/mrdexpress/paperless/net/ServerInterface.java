@@ -1008,6 +1008,7 @@ public class ServerInterface
 
 	public void downloadPartialDeliveryReasons(Context context)
 	{
+
 		String url = API_URL + "v1/milkruns/partial?mrdToken=" + ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);

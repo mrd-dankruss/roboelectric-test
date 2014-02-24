@@ -116,9 +116,24 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 				null);
 		last_logged_in_manager_id = prefs
 				.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
-
+		
 		// Display name of manager
-		holder.text_name.setText(last_logged_in_manager_name);
+		if (last_logged_in_manager_name == null)
+		{
+			holder.text_name.setText("(Please select \"Select Manager\" below first!)");
+			holder.button_change_manager.setText("Select Manager");
+			holder.button_change_manager.setBackgroundResource(R.drawable.button_custom);
+			holder.button_continue.setBackgroundResource(R.drawable.button_custom_grey);
+			holder.button_continue.setEnabled(false);
+		}
+		else
+		{
+			holder.text_name.setText(last_logged_in_manager_name);
+			holder.button_change_manager.setText("Change Manager");
+			holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
+			holder.button_continue.setBackgroundResource(R.drawable.button_custom);
+			holder.button_continue.setEnabled(true);
+		}
 	}
 
 	@Override
@@ -138,8 +153,6 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		{
 			public void onClick(View v)
 			{
-				// Perform action on click
-				Log.d("Click", "Click");
 				login();
 			}
 		});
@@ -148,8 +161,8 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		{
 			public void onClick(View v)
 			{
-				// Perform action on click
-				finish();
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+				startActivity(intent);
 			}
 		});
 	}
@@ -302,8 +315,8 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			Intent intent = new Intent(getApplicationContext(),
 					ViewDeliveriesFragmentActivity.class);
 			// intent.putExtra(EXTRA_MESSAGE, message);
-		/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
+			/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 			startActivity(intent);
 
 			// Close progress spinner

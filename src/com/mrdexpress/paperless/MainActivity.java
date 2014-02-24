@@ -150,6 +150,8 @@ public class MainActivity extends Activity
 		super.onResume();
 		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_NAME);
+		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
 		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		editor.apply();
 	}

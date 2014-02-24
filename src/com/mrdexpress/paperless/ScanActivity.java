@@ -83,7 +83,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private String last_scanned_barcode;
 
 	SharedPreferences prefs;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -97,6 +97,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		display.getSize(size);
 		int width = (int) (size.x - (size.x * 0.1));
 		int height = (int) (size.y - (size.y * 0.1));
+
+		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 
 		Intent intent = getIntent();
 		intent.setAction(Intents.Scan.ACTION);
@@ -164,9 +166,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
 							.getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
 
-					// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					// VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
-
 					startActivity(intent);
 				}
 			}
@@ -185,8 +184,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					// Go to View Deliveries screen
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
-					// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					// getIntent().getStringExtra(VariableManager.PREF_DRIVERID));
 					// EditText editText = (EditText) findViewById(R.id.edit_message);
 					// String message = editText.getText().toString();
 					// intent.putExtra(EXTRA_MESSAGE, message);
@@ -275,7 +272,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			{
 				if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
 				{
-					Log.d(TAG, "Adding unassigned bag");
 					new AddBagToDriver().execute();
 				}
 			}
@@ -289,9 +285,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				{
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
-					// intent.putExtra(EXTRA_MESSAGE, message);
-					// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					// getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
 					startActivity(intent);
 				}
 			}
@@ -511,6 +505,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
 							{
 								selected_items.add(rawResult.getText());
+								/*
+								 * Update scanned status in db to reorder list.						 
+								 */
+								Log.d(TAG, "set Scanned: " + rawResult.getText());
+								DbHandler.getInstance(getApplicationContext()).setScanned(
+										rawResult.getText(), true);
+
 								if (selected_items.size() == total_bags)
 								{
 									CustomToast toast = new CustomToast(this);
@@ -533,12 +534,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							Log.d(TAG, "handleDecode(): no match " + cons_number);
 						}
 					}
-
-					/*
-					 * Update scanned status in db to reorder list.						 
-					 */
-					DbHandler.getInstance(getApplicationContext()).setScanned(
-							cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
 
 					// Refresh list
 					// cursor_adapter.notifyDataSetChanged();
@@ -603,7 +598,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 						@Override
 						public void onClick(View v)
 						{
-							dialog_not_assigned.dismiss();
 							if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
 							{
 								Intent intent = new Intent(getApplicationContext(),
@@ -672,7 +666,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		super.onStop();
 
 		// Set all consignments' scanned state to false
-		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+		// DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 	}
 
 	/**
@@ -813,7 +807,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	/**
 	 * This method allows you to release any resources you hold, so that the
 	 * Loader can free them. You can set any references to the cursor object you
-	 * hold to null. But do not close the cursor – the Loader does this for you.
+	 * hold to null. But do not close the cursor - the Loader does this for you.
 	 */
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader)
