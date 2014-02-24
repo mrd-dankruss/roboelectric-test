@@ -2,8 +2,10 @@ package com.mrdexpress.paperless.fragments;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -20,8 +22,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.mrdexpress.paperless.LoginActivity;
+import com.mrdexpress.paperless.ManagerAuthNotAssignedActivity;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.datatype.UserItem.UserType;
@@ -188,6 +191,9 @@ public class LoginFragment extends Fragment
 						.putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selected_user_name)
 						.commit();
 
+				Intent intent = new Intent();
+				intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
+				getActivity().setResult(Activity.RESULT_OK, intent);
 				getActivity().finish();
 			}
 			else

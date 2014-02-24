@@ -36,7 +36,7 @@ public class DeliveryHandoverFragment extends Fragment
 	private final String TAG = "DeliveryHandoverFragment";
 	public static String WAYBILL_BARCODE = "com.mrdexpress.waybill_barcode";
 	public static String WAYBILL_SCANNED = "com.mrdexpress.waybill_scanned";
-	
+
 	private ViewHolder holder;
 	private View rootView;
 	private IncompleteScanDialog dialog;
@@ -71,7 +71,11 @@ public class DeliveryHandoverFragment extends Fragment
 		list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 
 		adapter = new DeliveryHandoverAdapter(list);
-		holder.list.setAdapter(adapter);
+
+		if ((adapter != null) & (list != null))
+		{
+			holder.list.setAdapter(adapter);
+		}
 
 		holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -88,73 +92,80 @@ public class DeliveryHandoverFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				if (allParcelsScanned())
+				if (list != null)
 				{
-					getActivity().finish();
-					CustomToast toast = new CustomToast(getActivity());
-					toast.setSuccess(true);
-					toast.setText("Delivery completed successfully!");
-					toast.show();
-
-				}
-				else
-				{
-
-					dialog = new IncompleteScanDialog(getActivity());
-					dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-					dialog.show();
-
-					LayoutInflater factory = LayoutInflater.from(getActivity());
-
-					final Button button_continue = (Button) dialog
-							.findViewById(R.id.button_incomplete_scan_continue);
-
-					button_continue.setOnClickListener(new OnClickListener()
+					if (allParcelsScanned())
 					{
-						@Override
-						public void onClick(View v)
-						{
-							dialog.dismiss();
-							/*
-							FragmentTransaction ft = getActivity().getSupportFragmentManager()
-									.beginTransaction();
-							Fragment reasonFragment = new ReasonPartialDeliveryFragment();
-							ft.replace(R.id.activity_reason_partial_delivery_container,
-									reasonFragment);
-							ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-							ft.addToBackStack(null);
-							ft.commit();*/
-							Intent intent = new Intent(getActivity(),
-									ReasonPartialDeliveryActivity.class);
+						getActivity().finish();
+						CustomToast toast = new CustomToast(getActivity());
+						toast.setSuccess(true);
+						toast.setText("Delivery completed successfully!");
+						toast.show();
 
-							Bundle b = new Bundle();
-							/*b.putParcelableArrayList(
-									VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
-									getUnscannedParcels(list));*/
-							intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
-									getUnscannedParcels(list));
-							intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, getActivity()
-									.getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID));
-							// intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE, b);
-							// intent.putExtra(VariableManager.EXTRA_BAG_NO,
-							// ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
-							// startActivity(intent);
-							getActivity().startActivityForResult(intent,
-									VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
-						}
-					});
-
-					final Button button_scan = (Button) dialog
-							.findViewById(R.id.button_incomplete_scan_scan);
-
-					button_scan.setOnClickListener(new OnClickListener()
+					}
+					else
 					{
-						@Override
-						public void onClick(View v)
+
+						dialog = new IncompleteScanDialog(getActivity());
+						dialog.getWindow().setBackgroundDrawable(
+								new ColorDrawable(Color.TRANSPARENT));
+						dialog.show();
+
+						LayoutInflater factory = LayoutInflater.from(getActivity());
+
+						final Button button_continue = (Button) dialog
+								.findViewById(R.id.button_incomplete_scan_continue);
+
+						button_continue.setOnClickListener(new OnClickListener()
 						{
-							dialog.dismiss();
-						}
-					});
+							@Override
+							public void onClick(View v)
+							{
+								dialog.dismiss();
+								/*
+								FragmentTransaction ft = getActivity().getSupportFragmentManager()
+										.beginTransaction();
+								Fragment reasonFragment = new ReasonPartialDeliveryFragment();
+								ft.replace(R.id.activity_reason_partial_delivery_container,
+										reasonFragment);
+								ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+								ft.addToBackStack(null);
+								ft.commit();*/
+								Intent intent = new Intent(getActivity(),
+										ReasonPartialDeliveryActivity.class);
+
+								Bundle b = new Bundle();
+								/*b.putParcelableArrayList(
+										VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
+										getUnscannedParcels(list));*/
+								intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
+										getUnscannedParcels(list));
+								intent.putExtra(
+										VariableManager.EXTRA_NEXT_BAG_ID,
+										getActivity().getIntent().getStringExtra(
+												VariableManager.EXTRA_NEXT_BAG_ID));
+								// intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
+								// b);
+								// intent.putExtra(VariableManager.EXTRA_BAG_NO,
+								// ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
+								// startActivity(intent);
+								getActivity().startActivityForResult(intent,
+										VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
+							}
+						});
+
+						final Button button_scan = (Button) dialog
+								.findViewById(R.id.button_incomplete_scan_scan);
+
+						button_scan.setOnClickListener(new OnClickListener()
+						{
+							@Override
+							public void onClick(View v)
+							{
+								dialog.dismiss();
+							}
+						});
+					}
 				}
 			}
 		});
@@ -217,13 +228,20 @@ public class DeliveryHandoverFragment extends Fragment
 
 		boolean allScanned = true;
 
-		for (int i = 0; i < list.size(); i++)
+		if (list != null)
 		{
-			if (list.get(i).isParcelScanned() == false)
+			for (int i = 0; i < list.size(); i++)
 			{
-				allScanned = false;
-				break;
+				if (list.get(i).isParcelScanned() == false)
+				{
+					allScanned = false;
+					break;
+				}
 			}
+		}
+		else
+		{
+			return false;
 		}
 
 		return allScanned;
@@ -233,7 +251,7 @@ public class DeliveryHandoverFragment extends Fragment
 	{
 		DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no,
 				scanned);
-		
+
 		for (int i = 0; i < list.size(); i++)
 		{
 			if (list.get(i).getBarcode().equals(waybill_no))
@@ -241,7 +259,7 @@ public class DeliveryHandoverFragment extends Fragment
 				list.get(i).setParcelScanned(scanned);
 			}
 		}
-		
+
 		adapter.notifyDataSetChanged();
 	}
 
@@ -306,7 +324,8 @@ public class DeliveryHandoverFragment extends Fragment
 			Log.d(TAG, "Receiver: " + intent.getAction());
 			if (intent.getAction() == GCMIntentService.BROADCAST_ACTION)
 			{
-				updateFromPushNotification(intent.getExtras().getString(WAYBILL_BARCODE), intent.getExtras().getBoolean(WAYBILL_SCANNED));
+				updateFromPushNotification(intent.getExtras().getString(WAYBILL_BARCODE), intent
+						.getExtras().getBoolean(WAYBILL_SCANNED));
 			}
 		}
 	};

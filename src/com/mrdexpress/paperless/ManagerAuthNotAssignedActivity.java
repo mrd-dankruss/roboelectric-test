@@ -35,7 +35,7 @@ public class ManagerAuthNotAssignedActivity extends Activity
 	private String imei_id;
 	private String last_logged_in_manager_name;
 	private String last_logged_in_manager_id;
-	
+
 	public static String MANAGER_AUTH_SUCCESS = "fi.gfarr.mrd.ManagerAuthNotAssignedActivity.auth_success";
 
 	@Override
@@ -52,10 +52,13 @@ public class ManagerAuthNotAssignedActivity extends Activity
 		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		imei_id = mngr.getDeviceId();
 
+		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
 		// Heading
 		holder.text_content.setText("Assigning consignment "
-				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " to "
-				+ getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " to " + driverid);
 
 		initClickListeners();
 	}
@@ -67,8 +70,10 @@ public class ManagerAuthNotAssignedActivity extends Activity
 
 		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, null);
-		last_logged_in_manager_id = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
+		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME,
+				null);
+		last_logged_in_manager_id = prefs
+				.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
 
 		// Display name of manager
 		holder.text_name.setText(last_logged_in_manager_name);
@@ -101,9 +106,31 @@ public class ManagerAuthNotAssignedActivity extends Activity
 			public void onClick(View v)
 			{
 				// Perform action on click
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+
+				// startActivity(intent);
+				startActivityForResult(intent, ScanActivity.RESULT_MANAGER_AUTH);
 				finish();
 			}
 		});
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if (requestCode == ScanActivity.RESULT_MANAGER_AUTH)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
+				{
+					Intent intent = new Intent();
+					intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
+					setResult(Activity.RESULT_OK, intent);
+					finish();
+				}
+			}
+		}
 	}
 
 	/**
@@ -132,26 +159,39 @@ public class ManagerAuthNotAssignedActivity extends Activity
 				public void run()
 				{
 
-					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
-
 					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 							Context.MODE_PRIVATE);
 
 					final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
+					final boolean training_mode = prefs.getBoolean(
+							VariableManager.PREF_TRAINING_MODE, false);
 
-					String status = ServerInterface.getInstance(getApplicationContext()).authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
+					String status = "";
+
+					if (training_mode)
+					{
+						status = "success";
+					}
+					else
+					{
+						String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
+						hash = holder.editText_pin.getText().toString(); // DEBUG
+
+						status = ServerInterface.getInstance(getApplicationContext()).authManager(
+								last_logged_in_manager_id, driver_id, hash, imei_id);
+					}
 
 					if (status.equals("success"))
 					{
-						//handler.sendEmptyMessage(0);
-						Intent intent = new Intent();              
+						// handler.sendEmptyMessage(0);
+						Intent intent = new Intent();
 						intent.putExtra(MANAGER_AUTH_SUCCESS, true);
 						setResult(Activity.RESULT_OK, intent);
 						finish();
 					}
 					else
 					{
-						//handler.sendEmptyMessage(1);
+						// handler.sendEmptyMessage(1);
 					}
 				}
 			};
@@ -241,8 +281,7 @@ public class ManagerAuthNotAssignedActivity extends Activity
 			Intent intent = new Intent(getApplicationContext(),
 					ViewDeliveriesFragmentActivity.class);
 			// intent.putExtra(EXTRA_MESSAGE, message);
-			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
+
 			startActivity(intent);
 
 			// Close progress spinner

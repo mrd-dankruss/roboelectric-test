@@ -68,7 +68,7 @@ public class ServerInterface
 	private static ServerInterface server_interface;
 	private static Context context;
 	private static final String API_URL = "http://uat.mrdexpress.com/api/";
-	private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
+	// private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
 	private static String token;
 
 	public ServerInterface(Context ctx)
@@ -495,8 +495,7 @@ public class ServerInterface
 	public String authManager(String man_id, String driver_id, String PIN, String imei_id)
 	{
 		String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token + "&managerPIN=" + PIN + "&managerid=" + man_id
-				+ "&driverid=" + driver_id;
+				+ ServerInterface.token + "&managerPIN=" + PIN + "&managerID=" + man_id;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -939,10 +938,9 @@ public class ServerInterface
 				+ ServerInterface.token;
 		*/
 
-		//TODO: uncomment above, delete below.
-		
-		String url = API_URL_APIARY + "v1/milkruns/handover?mrdToken="
-				+ ServerInterface.token;
+		// TODO: uncomment above, delete below.
+
+		String url = API_URL + "v1/milkruns/handover?mrdToken=" + ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1010,8 +1008,7 @@ public class ServerInterface
 
 	public void downloadPartialDeliveryReasons(Context context)
 	{
-		String url = API_URL_APIARY + "v1/milkruns/partial?mrdToken="
-				+ ServerInterface.token;
+		String url = API_URL + "v1/milkruns/partial?mrdToken=" + ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1087,9 +1084,8 @@ public class ServerInterface
 	 */
 	public String postDelay(String bagid, String driverid, String delayid)
 	{
-		String url = API_URL_APIARY + "v1/milkruns/delays?bagid=" + bagid
-				+ "&driverid=" + driverid + "&mrdToken=" + ServerInterface.token + "&delayid="
-				+ delayid;
+		String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + driverid
+				+ "&mrdToken=" + ServerInterface.token + "&delayid=" + delayid;
 		String result = postData(url);
 
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
@@ -1138,9 +1134,8 @@ public class ServerInterface
 				+ result_string + "&comExtra=" + comExtra.toString());*/
 
 		String status = null;
-		String url = API_URL_APIARY + "v1/waybill/communication?id=" + bagid
-				+ "&comType=" + type + "&mrdToken=" + ServerInterface.token + "&comResult="
-				+ result_string;
+		String url = API_URL + "v1/waybill/communication?id=" + bagid + "&comType=" + type
+				+ "&mrdToken=" + ServerInterface.token + "&comResult=" + result_string;
 		try
 		{
 			status = doJSONPOST(url, comExtra, 5000);
@@ -1176,8 +1171,8 @@ public class ServerInterface
 	 */
 	public String postFailedHandover(String bag_id, String reason_id)
 	{
-		String url = API_URL_APIARY + "v1/milkruns/handover?bagid=" + bag_id
-				+ "&handoverid=" + reason_id + "&mrdToken=" + ServerInterface.token;
+		String url = API_URL + "v1/milkruns/handover?bagid=" + bag_id + "&handoverid=" + reason_id
+				+ "&mrdToken=" + ServerInterface.token;
 
 		String result = postData(url);
 
@@ -1202,8 +1197,8 @@ public class ServerInterface
 	 */
 	public String postPartialDelivery(String waybill_id, String status_id, String extra)
 	{
-		String url = API_URL_APIARY + "v1/waybill/delivery?id=" + waybill_id
-				+ "&deliveryid=" + status_id + "&mrdToken=" + ServerInterface.token;
+		String url = API_URL + "v1/waybill/delivery?id=" + waybill_id + "&deliveryid=" + status_id
+				+ "&mrdToken=" + ServerInterface.token;
 
 		String result = postData(url);
 
@@ -1404,6 +1399,8 @@ public class ServerInterface
 	// http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
 	public String postData(String url)
 	{
+		Log.i(TAG, "Posting: " + url);
+
 		// Create a new HttpClient and Post Header
 		// HttpClient httpclient = new DefaultHttpClient();
 		HttpClient httpclient = getNewHttpClient();
@@ -1575,7 +1572,7 @@ public class ServerInterface
 	{
 		String id = "";
 
-		String url = API_URL_APIARY + "v1/bags/scan?barcode=" + barcode + "&mrdToken="
+		String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken="
 				+ ServerInterface.token;
 
 		// Log.i(TAG, "Fetching " + url);
@@ -1629,13 +1626,13 @@ public class ServerInterface
 		}
 
 		return id;
+		// return "success";
 	}
 
 	public String setNextDelivery(String id)
 	{
 
-		String url = API_URL_APIARY + "v1/waybill/setnext?id=" + id + "&mrdToken="
-				+ ServerInterface.token;
+		String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + ServerInterface.token;
 
 		String response = postData(url);
 

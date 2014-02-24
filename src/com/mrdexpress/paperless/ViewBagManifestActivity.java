@@ -80,9 +80,10 @@ public class ViewBagManifestActivity extends ListActivity implements LoaderCallb
 
 		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
-		if (driverid.equals(VariableManager.TRAININGRUN_MILKRUN_DRIVERID))
+		if (training_mode)
 		{
 			rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS_TRAINING + " WHERE "
 					+ DbHandler.C_WAYBILL_BAG_ID + " LIKE '" + bag_id + "' " + " ORDER BY "
