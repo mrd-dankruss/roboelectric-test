@@ -94,6 +94,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		display.getSize(size);
 		int width = (int) (size.x - (size.x * 0.1));
 		int height = (int) (size.y - (size.y * 0.1));
+		
+		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 
 		Intent intent = getIntent();
 		intent.setAction(Intents.Scan.ACTION);
@@ -501,6 +503,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
 							{
 								selected_items.add(rawResult.getText());
+								/*
+								 * Update scanned status in db to reorder list.						 
+								 */
+								Log.d(TAG, "set Scanned: " + rawResult.getText());
+								DbHandler.getInstance(getApplicationContext()).setScanned(rawResult.getText(), true);
+								
 								if (selected_items.size() == total_bags)
 								{
 									CustomToast toast = new CustomToast(this);
@@ -523,12 +531,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							Log.d(TAG, "handleDecode(): no match " + cons_number);
 						}
 					}
-
-					/*
-					 * Update scanned status in db to reorder list.						 
-					 */
-					DbHandler.getInstance(getApplicationContext()).setScanned(
-							cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
 
 					// Refresh list
 					// cursor_adapter.notifyDataSetChanged();
@@ -656,7 +658,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		super.onStop();
 
 		// Set all consignments' scanned state to false
-		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+		//DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 	}
 
 	/**
@@ -909,19 +911,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				dialog_progress.dismiss();
 			}
 
-			// Start manager authorization activity
-			if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-			{
-				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-
-				startActivity(intent);
-				dialog.dismiss();
-			}
-			else
-			{
-				startIncompleteScanActivity();
-				dialog.dismiss();
-			}
+			startIncompleteScanActivity();
+			dialog.dismiss();
 		}
 	}
 

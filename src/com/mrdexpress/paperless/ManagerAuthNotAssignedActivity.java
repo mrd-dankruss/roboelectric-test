@@ -35,7 +35,7 @@ public class ManagerAuthNotAssignedActivity extends Activity
 	private String imei_id;
 	private String last_logged_in_manager_name;
 	private String last_logged_in_manager_id;
-	
+
 	public static String MANAGER_AUTH_SUCCESS = "fi.gfarr.mrd.ManagerAuthNotAssignedActivity.auth_success";
 
 	@Override
@@ -67,8 +67,10 @@ public class ManagerAuthNotAssignedActivity extends Activity
 
 		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, null);
-		last_logged_in_manager_id = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
+		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME,
+				null);
+		last_logged_in_manager_id = prefs
+				.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
 
 		// Display name of manager
 		holder.text_name.setText(last_logged_in_manager_name);
@@ -133,25 +135,27 @@ public class ManagerAuthNotAssignedActivity extends Activity
 				{
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
+					hash = holder.editText_pin.getText().toString(); // FIXME:DEBUG
 
 					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 							Context.MODE_PRIVATE);
 
 					final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-					String status = ServerInterface.getInstance(getApplicationContext()).authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
+					String status = ServerInterface.getInstance(getApplicationContext())
+							.authManager(last_logged_in_manager_id, driver_id, hash, imei_id);
 
 					if (status.equals("success"))
 					{
-						//handler.sendEmptyMessage(0);
-						Intent intent = new Intent();              
+						// handler.sendEmptyMessage(0);
+						Intent intent = new Intent();
 						intent.putExtra(MANAGER_AUTH_SUCCESS, true);
 						setResult(Activity.RESULT_OK, intent);
 						finish();
 					}
 					else
 					{
-						//handler.sendEmptyMessage(1);
+						// handler.sendEmptyMessage(1);
 					}
 				}
 			};
