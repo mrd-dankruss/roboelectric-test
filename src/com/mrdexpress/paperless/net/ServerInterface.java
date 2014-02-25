@@ -886,6 +886,16 @@ public class ServerInterface
 						// Durations
 						JSONArray durations = result.getJSONObject(i).getJSONArray("items");
 
+						values.put(DbHandler.C_DELAYS_REASON_ID, delay_id);
+						values.put(DbHandler.C_DELAYS_REASON, reason);
+
+						Log.d(TAG,
+								"Adding : "
+										+ reason
+										+ " "
+										+ DbHandler.getInstance(context).addRow(
+												DbHandler.TABLE_DELAYS, values));
+
 						for (int d = 0; d < durations.length(); d++)
 						{
 							// Duration ID
@@ -894,14 +904,20 @@ public class ServerInterface
 							// Duration
 							String duration = durations.getJSONObject(d).getString("name");
 
-							values.put(DbHandler.C_DELAYS_ID, delay_id);
-							values.put(DbHandler.C_DELAYS_REASON, reason);
+							values = new ContentValues();
+
 							values.put(DbHandler.C_DELAYS_DURATION_ID, duration_id);
 							values.put(DbHandler.C_DELAYS_DURATION, duration);
+							values.put(DbHandler.C_DELAYS_REASON_ID, delay_id);
 
-							Log.d(TAG, reason + " " + duration);
-
-							DbHandler.getInstance(context).addRow(DbHandler.TABLE_DELAYS, values);
+							Log.d(TAG,
+									"Adding : "
+											+ reason
+											+ " "
+											+ duration
+											+ " "
+											+ DbHandler.getInstance(context).addRow(
+													DbHandler.TABLE_DELAYS_DURATIONS, values));
 						}
 					}
 					catch (NumberFormatException e)
@@ -1088,7 +1104,7 @@ public class ServerInterface
 		String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + driverid
 				+ "&mrdToken=" + ServerInterface.token + "&delayid=" + delayid;
 		String result = postData(url);
-
+		// Log.d(TAG,"zeus: "+ result);
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
 		{
 			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
@@ -1137,6 +1153,9 @@ public class ServerInterface
 		String status = null;
 		String url = API_URL + "v1/waybill/communication?id=" + bagid + "&comType=" + type
 				+ "&mrdToken=" + ServerInterface.token + "&comResult=" + result_string;
+
+		Log.d(TAG, "Zeus: " + url);
+
 		try
 		{
 			status = doJSONPOST(url, comExtra, 5000);
@@ -1274,7 +1293,7 @@ public class ServerInterface
 			{
 				obj = new JSONObject(stream);
 
-				if (obj.has("errro"))
+				if (obj.has("error"))
 				{
 					String error_code = stripErrorCode(stream);
 					if (error_code.equals(VariableManager.API_ERROR_CODE_UNAUTHORISED)) // Unauthorized

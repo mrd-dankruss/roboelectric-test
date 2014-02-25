@@ -4,7 +4,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -98,10 +100,13 @@ public class ReportDelayListFragment extends Fragment
 				// Only perform action if there is a selection made
 				if (VariableManager.delay_id != null)
 				{
+					SharedPreferences prefs = getActivity().getApplicationContext()
+							.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+					String driverid = prefs.getString(VariableManager.PREF_DRIVERID, "");
+
 					new ReportDelayTask().execute(
 							getActivity().getIntent().getStringExtra(
-									VariableManager.EXTRA_NEXT_BAG_ID), getActivity().getIntent()
-									.getStringExtra(VariableManager.PREF_DRIVERID),
+									VariableManager.EXTRA_NEXT_BAG_ID), driverid,
 							VariableManager.delay_id);
 				}
 			}
@@ -155,7 +160,6 @@ public class ReportDelayListFragment extends Fragment
 			}
 			Log.i(TAG, result);
 			VariableManager.delay_id = null;
-			Log.d(TAG, "zorro : postDelay response: " + result);
 
 			CustomToast custom_toast = new CustomToast(getActivity());
 			String status = "";
@@ -170,7 +174,7 @@ public class ReportDelayListFragment extends Fragment
 				e.printStackTrace();
 			}
 
-			if (status.equals("true"))
+			if (status.equals("success"))
 			{
 				custom_toast.setText("Success");
 				custom_toast.setSuccess(true);

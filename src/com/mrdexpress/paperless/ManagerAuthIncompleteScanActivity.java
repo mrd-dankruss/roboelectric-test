@@ -162,7 +162,9 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-				startActivity(intent);
+//				startActivity(intent);
+				startActivityForResult(intent, ScanActivity.RESULT_INCOMPLETE_SCAN_AUTH);
+				finish();
 			}
 		});
 	}

@@ -1,14 +1,14 @@
 package com.mrdexpress.paperless.fragments;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -59,17 +59,14 @@ public class SmsListFragment extends Fragment
 	{
 		super.onResume();
 
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+		// SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+		// Context.MODE_PRIVATE);
 
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		String bagid = getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
 
-		adapter = new SmsDialogListAdapter(getActivity(),
-				DbHandler.getInstance(getActivity())
-						.getContacts(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID)), false);
-		Log.d(TAG, "SMSDialogAdapter: " + adapter.getCount());
+		adapter = new SmsDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+				.getContacts(bagid), false);
 
 		holder.list.setAdapter(adapter);
 
@@ -117,7 +114,6 @@ public class SmsListFragment extends Fragment
 							((DialogDataObject) adapter.getItem(parentItemPosition)).getSubText(),
 							getActivity().getIntent().getStringExtra(
 									VariableManager.EXTRA_NEXT_BAG_ID), "SMS", "true");
-
 				}
 			}
 		});
@@ -184,15 +180,19 @@ public class SmsListFragment extends Fragment
 			try
 			{
 				JSONObject obj = new JSONObject(result);
-				status = obj.getJSONObject("response").getString("status");
+				status = obj.getJSONObject("response").getJSONObject("waybill").getString("status");
+				Log.d(TAG, "zorro : " + status);
 			}
 			catch (JSONException e)
 			{
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
 			}
 
-			if (status.equals("true"))
+			if (status.equals("success"))
 			{
 				custom_toast.setText("Success");
 				custom_toast.setSuccess(true);

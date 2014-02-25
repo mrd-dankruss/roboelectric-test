@@ -22,6 +22,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
 import com.mrdexpress.paperless.ManagerAuthNotAssignedActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
@@ -193,6 +194,7 @@ public class LoginFragment extends Fragment
 
 				Intent intent = new Intent();
 				intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
+				intent.putExtra(ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, true);
 				getActivity().setResult(Activity.RESULT_OK, intent);
 				getActivity().finish();
 			}

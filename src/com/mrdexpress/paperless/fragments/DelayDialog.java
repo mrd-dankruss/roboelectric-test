@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -26,7 +24,7 @@ public class DelayDialog extends DialogFragment
 	private int mNum;
 	public static String DIALOG_TIME_STRING = "DIALOG_TIME_STRING";
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
-	private ArrayList<DialogDataObject> durations;
+//	private ArrayList<DialogDataObject> durations;
 
 	// ID of delay reason passed from previous screen
 	private static String delay_id;
@@ -57,12 +55,12 @@ public class DelayDialog extends DialogFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		durations = new ArrayList<DialogDataObject>();
+	/*	durations = new ArrayList<DialogDataObject>();
 		durations.add(new DialogDataObject("5 min", "5 min"));
 		durations.add(new DialogDataObject("10 min", "10 min"));
 		durations.add(new DialogDataObject("20 min", "20 min"));
 		durations.add(new DialogDataObject("30 min", "30 min"));
-		durations.add(new DialogDataObject("1 hour", "1 hour"));
+		durations.add(new DialogDataObject("1 hour", "1 hour"));*/
 
 	}
 

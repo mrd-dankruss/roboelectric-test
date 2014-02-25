@@ -450,7 +450,7 @@ public class MainActivity extends Activity
 				intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
 
 				Log.d(TAG, "Driver ID: " + selected_user_id);
-//				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+				// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
 
 				startActivity(intent);
 				// Close progress spinner
@@ -592,7 +592,7 @@ public class MainActivity extends Activity
 			intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
 
 			Log.d(TAG, "Driver ID: " + selected_user_id);
-//			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+			// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
 
 			startActivity(intent);
 		}
@@ -635,7 +635,7 @@ public class MainActivity extends Activity
 			intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
 
 			Log.d(TAG, "Driver ID: " + selected_user_id);
-//			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+			// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
 
 			startActivity(intent);
 		}
