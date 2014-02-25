@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,7 +38,6 @@ public class ReportDelayListFragment extends Fragment
 
 	DialogFragment newFragment;
 	TextView subText;
-	ArrayList<DialogDataObject> values;
 	private int parentItemPosition;
 
 	@Override

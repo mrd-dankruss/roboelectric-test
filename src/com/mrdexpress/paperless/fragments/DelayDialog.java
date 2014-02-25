@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +90,7 @@ public class DelayDialog extends DialogFragment
 		// Populate list
 		final GenericDialogListAdapter adapter = new GenericDialogListAdapter(getActivity(),
 				DbHandler.getInstance(getActivity()).getMilkrunDelayDurations(delay_id), true);
+		Log.d("Delay", "Generic Adapter: " + adapter.getCount());
 
 		list.setAdapter(adapter);
 

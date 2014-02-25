@@ -1569,12 +1569,12 @@ public class ServerInterface
 	 * @param c
 	 * @param bag_id
 	 */
-	public String scanBag(Context context, String barcode)
+	public String scanBag(Context context, String barcode, String driver_id)
 	{
 		String id = "";
 
 		String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken="
-				+ ServerInterface.token;
+				+ ServerInterface.token + "driverID=" + driver_id;
 
 		// Log.i(TAG, "Fetching " + url);
 

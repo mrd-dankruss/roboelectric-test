@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
 
 public class GCMIntentService extends IntentService
@@ -72,6 +73,7 @@ public class GCMIntentService extends IntentService
 					intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, cons_no);
 					intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, bool_scanned);
 	                sendBroadcast(intent);
+	                DbHandler.getInstance(getApplicationContext()).setWaybillScanned(cons_no, bool_scanned);
 	                stopService(intent);
 					
 				}

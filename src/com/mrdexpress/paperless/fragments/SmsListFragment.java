@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +64,12 @@ public class SmsListFragment extends Fragment
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		adapter = new SmsDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getContacts(driverid), false);
+		adapter = new SmsDialogListAdapter(getActivity(),
+				DbHandler.getInstance(getActivity())
+						.getContacts(
+								getActivity().getIntent().getStringExtra(
+										VariableManager.EXTRA_NEXT_BAG_ID)), false);
+		Log.d(TAG, "SMSDialogAdapter: " + adapter.getCount());
 
 		holder.list.setAdapter(adapter);
 
@@ -77,13 +83,21 @@ public class SmsListFragment extends Fragment
 				String sms_message = ((DialogDataObject) holder.list.getItemAtPosition(position))
 						.getSubText();
 
-				// Log.d(TAG, "Bag ID: " + bag_id);
+				// TODO: Change to new fragment that has message box.
 
+				SmsMessageFragment fragment_sms = new SmsMessageFragment();
+				FragmentManager fm = getFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.replace(R.id.activity_sms_container, fragment_sms);
+				ft.commit();
+
+				/*
 				FragmentManager fm = getActivity().getSupportFragmentManager();
 				SMSDialog editNameDialog = SMSDialog.newInstance();
 				editNameDialog.setTargetFragment(
 						getFragmentManager().findFragmentById(R.id.activity_sms_container), 1);
 				editNameDialog.show(fm, "SMSFragment");
+				*/
 			}
 		});
 
@@ -244,6 +258,7 @@ public class SmsListFragment extends Fragment
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+			holder.report_button.setVisibility(View.INVISIBLE);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);

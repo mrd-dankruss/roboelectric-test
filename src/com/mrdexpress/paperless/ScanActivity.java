@@ -1013,7 +1013,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				ServerInterface.getInstance(getApplicationContext()).downloadBag(
 						getApplicationContext(),
 						ServerInterface.getInstance(getApplicationContext()).scanBag(
-								getApplicationContext(), last_scanned_barcode), driverid);
+								getApplicationContext(), last_scanned_barcode, driverid), driverid);
 			}
 			return null;
 		}
