@@ -924,7 +924,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			{
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
-				startActivity(intent);
+//				startActivity(intent);
+				startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
 				dialog.dismiss();
 			}
 			else

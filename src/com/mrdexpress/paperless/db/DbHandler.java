@@ -2,20 +2,13 @@ package com.mrdexpress.paperless.db;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.mrdexpress.paperless.datatype.ComLogObject;
-import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
-import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.datatype.UserItem;
-import com.mrdexpress.paperless.datatype.UserItem.UserType;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.CallQueueObject;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,6 +18,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.mrdexpress.paperless.datatype.ComLogObject;
+import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.datatype.UserItem;
+import com.mrdexpress.paperless.datatype.UserItem.UserType;
+import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.CallQueueObject;
 
 public class DbHandler extends SQLiteOpenHelper
 {
@@ -108,6 +109,12 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public static final String C_BAG_STATUS = "bag_status";
 
+	public static final String C_BAG_STATUS_REASON = "bag_status_reason";
+	/*
+	 * Date that a status update was sent
+	 */
+	public static final String C_BAG_SUBMISSION_DATE = "bag_submission_date";
+
 	/*
 	 * Creation date/time
 	 */
@@ -172,6 +179,7 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String C_CALLQUEUE_JSON = "callqueue_json";
 
 	SharedPreferences prefs;
+	boolean training_run;
 
 	private Context context;
 
@@ -181,6 +189,7 @@ public class DbHandler extends SQLiteOpenHelper
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 	}
 
 	// Return singleton instance of DbHandler
@@ -218,7 +227,8 @@ public class DbHandler extends SQLiteOpenHelper
 					+ " TEXT," + C_BAG_BARCODE + " TEXT," + C_BAG_NUM_ITEMS + " INTEGER,"
 					+ C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT," + C_BAG_DEST_TOWN
 					+ " TEXT," + C_BAG_DEST_SUBURB + " TEXT," + C_BAG_DEST_LONG + " TEXT,"
-					+ C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME + " TEXT,"
+					+ C_BAG_STATUS_REASON + " TEXT," + C_BAG_DEST_LAT + " TEXT,"
+					+ C_BAG_DEST_HUBNAME + " TEXT," + C_BAG_SUBMISSION_DATE + " DATETIME,"
 					+ C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT," + C_BAG_STATUS
 					+ " TEXT," + C_BAG_DEST_ADDRESS + " TEXT," + "FOREIGN KEY(" + C_BAG_DRIVER_ID
 					+ ") REFERENCES " + TABLE_DRIVERS + "(" + C_DRIVER_ID + "))";
@@ -229,6 +239,7 @@ public class DbHandler extends SQLiteOpenHelper
 					+ C_BAG_ID + " TEXT PRIMARY KEY," + C_BAG_SCANNED + " INTEGER,"
 					+ C_BAG_ASSIGNED + " TEXT," + C_BAG_BARCODE + " TEXT," + C_BAG_NUM_ITEMS
 					+ " INTEGER," + C_BAG_DRIVER_ID + " TEXT," + C_BAG_CREATION_TIME + " TEXT,"
+					+ C_BAG_STATUS_REASON + " TEXT," + C_BAG_SUBMISSION_DATE + " DATETIME,"
 					+ C_BAG_DEST_TOWN + " TEXT," + C_BAG_DEST_SUBURB + " TEXT," + C_BAG_DEST_LONG
 					+ " TEXT," + C_BAG_DEST_LAT + " TEXT," + C_BAG_DEST_HUBNAME + " TEXT,"
 					+ C_BAG_DEST_HUBCODE + " TEXT," + C_BAG_DEST_CONTACT + " TEXT," + C_BAG_STATUS
@@ -468,7 +479,12 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_BAG_NUM_ITEMS, bag.getNumberItems());
 		values.put(C_BAG_DRIVER_ID, bag.getDriverId());
 		values.put(C_BAG_STATUS, bag.getStatus());
+		values.put(C_BAG_STATUS_REASON, bag.getStatusReason());
 
+		if (bag.getSubmissionDate() != null)
+		{
+			values.put(C_BAG_SUBMISSION_DATE, bag.getSubmissionDate().getTime());
+		}
 		return addRow(TABLE_BAGS, values);
 	}
 
@@ -508,15 +524,12 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public boolean addRow(String table, ContentValues values)
 	{
-
 		SQLiteDatabase db = null;
 		try
 		{
-
 			db = this.getWritableDatabase(); // Open db
 			// Write to db and return success status
 			return db.insertOrThrow(table, null, values) >= 0;
-
 		}
 		catch (SQLiteException e)
 		{ // TODO Auto-generated catch
@@ -598,6 +611,83 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
+	}
+
+	/**
+	 * Changes the delivery status of a bag.
+	 * 
+	 * @param bagid
+	 *            Bag ID
+	 * @param status
+	 *            Delivery status of bag. (TODO, failed, partial, etc...)
+	 * @param reason
+	 *            Explanation of the reason for delivery's status.
+	 * @return Number of rows affected.
+	 */
+	public int setDeliveryStatus(String bagid, String status, String reason)
+	{
+		int no_rows = 0; // Number of rows affected
+
+		SQLiteDatabase db = null;
+		try
+		{
+
+			db = this.getWritableDatabase(); // Open db
+			// db = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
+
+			ContentValues values = new ContentValues();
+			values.put(C_BAG_STATUS, status);
+			values.put(C_BAG_SUBMISSION_DATE, System.currentTimeMillis());
+			values.put(C_BAG_STATUS_REASON, reason);
+
+			if (training_run)
+			{
+				no_rows = db.update(TABLE_BAGS_TRAINING, values, C_BAG_ID + "='" + bagid + "'",
+						null);
+			}
+			else
+			{
+				no_rows = db.update(TABLE_BAGS, values, C_BAG_ID + "='" + bagid + "'", null);
+			}
+		}
+		catch (SQLiteException e)
+		{ // TODO Auto-generated catch
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		catch (IllegalStateException e)
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			Log.e(TAG, sw.toString());
+		}
+		finally
+		{
+
+			if (db != null)
+			{
+				if (db.isOpen()) // check if db is already open
+				{
+					db.close(); // close db
+				}
+			}
+		}
+		return no_rows;
+	}
+
+	/**
+	 * Changes the delivery status of a bag.
+	 * 
+	 * @param bagid
+	 *            Bag ID
+	 * @param status
+	 *            Delivery status of bag. (TODO, failed, partial, etc...)
+	 * @return Number of rows affected.
+	 */
+	public int setDeliveryStatus(String bagid, String status)
+	{
+		return setDeliveryStatus(bagid, status, "");
 	}
 
 	/**
@@ -1358,6 +1448,9 @@ public class DbHandler extends SQLiteOpenHelper
 					bag.setDestinationSuburb(cursor.getString(cursor
 							.getColumnIndex(C_BAG_DEST_SUBURB)));
 					bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
+					bag.setSubmissionDate(new Date(cursor.getLong(cursor
+							.getColumnIndex(C_BAG_SUBMISSION_DATE))));
+					bag.setStatusReason(cursor.getString(cursor.getColumnIndex(C_BAG_STATUS_REASON)));
 					list.add(bag);
 					cursor.moveToNext();
 				}
@@ -1717,55 +1810,71 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
 	{
-		SQLiteDatabase db = null;
-		try
+		if (training_run)
 		{
-
-			db = this.getReadableDatabase(); // Open db
-
-			ArrayList<DialogDataObject> delays = null;
-			String sql = "SELECT * FROM " + TABLE_DELAYS + " WHERE " + C_DELAYS_ID + " LIKE '"
-					+ reason_id + "'";
-			Cursor cursor = db.rawQuery(sql, null);
-
-			if (cursor != null && cursor.moveToFirst())
-			{
-				delays = new ArrayList<DialogDataObject>();
-
-				while (!cursor.isAfterLast())
-				{
-					String duration = cursor.getString(cursor.getColumnIndex(C_DELAYS_DURATION));
-
-					delays.add(new DialogDataObject(duration, ""));
-
-					cursor.moveToNext();
-				}
-			}
+			ArrayList<DialogDataObject> delays = new ArrayList<DialogDataObject>();
+			delays.add(new DialogDataObject("5 minutes", ""));
+			delays.add(new DialogDataObject("10 minutes", ""));
+			delays.add(new DialogDataObject("15 minutes", ""));
+			delays.add(new DialogDataObject("20 minutes", ""));
+			delays.add(new DialogDataObject("25 minutes", ""));
+			delays.add(new DialogDataObject("30 minutes", ""));
 
 			return delays;
 		}
-		catch (SQLiteException e)
-		{ // TODO Auto-generated catch
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		catch (IllegalStateException e)
+		else
 		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		finally
-		{
-
-			if (db != null)
+			SQLiteDatabase db = null;
+			try
 			{
-				if (db.isOpen()) // check if db is already open
+
+				db = this.getReadableDatabase(); // Open db
+
+				ArrayList<DialogDataObject> delays = null;
+				String sql = "SELECT * FROM " + TABLE_DELAYS + " WHERE " + C_DELAYS_ID + " LIKE '"
+						+ reason_id + "'";
+				Cursor cursor = db.rawQuery(sql, null);
+
+				if (cursor != null && cursor.moveToFirst())
 				{
-					db.close(); // close db
+					delays = new ArrayList<DialogDataObject>();
+
+					while (!cursor.isAfterLast())
+					{
+						String duration = cursor
+								.getString(cursor.getColumnIndex(C_DELAYS_DURATION));
+
+						delays.add(new DialogDataObject(duration, ""));
+
+						cursor.moveToNext();
+					}
+				}
+
+				return delays;
+			}
+			catch (SQLiteException e)
+			{ // TODO Auto-generated catch
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
+				return null;
+			}
+			catch (IllegalStateException e)
+			{
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
+				return null;
+			}
+			finally
+			{
+
+				if (db != null)
+				{
+					if (db.isOpen()) // check if db is already open
+					{
+						db.close(); // close db
+					}
 				}
 			}
 		}
@@ -1778,57 +1887,86 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public ArrayList<DialogDataObject> getMilkrunDelayReasons()
 	{
-		SQLiteDatabase db = null;
-		try
+		if (training_run)
 		{
-			db = this.getReadableDatabase(); // Open db
+			ArrayList<DialogDataObject> delays = new ArrayList<DialogDataObject>();
 
-			ArrayList<DialogDataObject> delays = null;
-			String sql = "SELECT * FROM " + TABLE_DELAYS;
-			Cursor cursor = db.rawQuery(sql, null);
+			DialogDataObject dialog_data_object = new DialogDataObject("Traffic", "");
+			dialog_data_object.setThirdText("1");
+			delays.add(dialog_data_object);
 
-			if (cursor != null && cursor.moveToFirst())
-			{
-				delays = new ArrayList<DialogDataObject>();
+			dialog_data_object = new DialogDataObject("Breakdown", "");
+			dialog_data_object.setThirdText("2");
+			delays.add(dialog_data_object);
 
-				while (!cursor.isAfterLast())
-				{
-					String reason = cursor.getString(cursor.getColumnIndex(C_DELAYS_REASON));
-					String delay_id = cursor.getString(cursor.getColumnIndex(C_DELAYS_ID));
+			dialog_data_object = new DialogDataObject("Can't find address", "");
+			dialog_data_object.setThirdText("3");
+			delays.add(dialog_data_object);
 
-					DialogDataObject dialog_data_object = new DialogDataObject(reason, "");
-					dialog_data_object.setThirdText(delay_id);
+			dialog_data_object = new DialogDataObject("Held up at destination", "");
+			dialog_data_object.setThirdText("4");
+			delays.add(dialog_data_object);
 
-					delays.add(dialog_data_object);
-
-					cursor.moveToNext();
-				}
-			}
+			dialog_data_object = new DialogDataObject("Other", "");
+			dialog_data_object.setThirdText("5");
+			delays.add(dialog_data_object);
 
 			return delays;
 		}
-		catch (SQLiteException e)
-		{ // TODO Auto-generated catch
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		catch (IllegalStateException e)
+		else
 		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		finally
-		{
-
-			if (db != null)
+			SQLiteDatabase db = null;
+			try
 			{
-				if (db.isOpen()) // check if db is already open
+				db = this.getReadableDatabase(); // Open db
+
+				ArrayList<DialogDataObject> delays = null;
+				String sql = "SELECT * FROM " + TABLE_DELAYS;
+				Cursor cursor = db.rawQuery(sql, null);
+
+				if (cursor != null && cursor.moveToFirst())
 				{
-					db.close(); // close db
+					delays = new ArrayList<DialogDataObject>();
+
+					while (!cursor.isAfterLast())
+					{
+						String reason = cursor.getString(cursor.getColumnIndex(C_DELAYS_REASON));
+						String delay_id = cursor.getString(cursor.getColumnIndex(C_DELAYS_ID));
+
+						DialogDataObject dialog_data_object = new DialogDataObject(reason, "");
+						dialog_data_object.setThirdText(delay_id);
+
+						delays.add(dialog_data_object);
+
+						cursor.moveToNext();
+					}
+				}
+
+				return delays;
+			}
+			catch (SQLiteException e)
+			{ // TODO Auto-generated catch
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
+				return null;
+			}
+			catch (IllegalStateException e)
+			{
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
+				return null;
+			}
+			finally
+			{
+
+				if (db != null)
+				{
+					if (db.isOpen()) // check if db is already open
+					{
+						db.close(); // close db
+					}
 				}
 			}
 		}

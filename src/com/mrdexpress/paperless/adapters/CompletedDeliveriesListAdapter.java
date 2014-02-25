@@ -1,6 +1,8 @@
 package com.mrdexpress.paperless.adapters;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -40,13 +42,13 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 		Typeface typeface_roboto_regular = Typeface.createFromAsset(activity.getAssets(),
 				FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_REGULAR));
-		
-		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(),
-				FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+
+		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(), FontHelper
+				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_BOLD));
-		
-		Typeface typeface_roboto_italic = Typeface.createFromAsset(activity.getAssets(),
-				FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+
+		Typeface typeface_roboto_italic = Typeface.createFromAsset(activity.getAssets(), FontHelper
+				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_ITALIC));
 
 		LayoutInflater inflater = (LayoutInflater) context
@@ -55,7 +57,8 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 
 		text_address = (TextView) rowView.findViewById(R.id.text_completed_deliveries_address);
 		text_bag_ids = (TextView) rowView.findViewById(R.id.text_completed_deliveries_bags);
-		text_failed_time = (TextView) rowView.findViewById(R.id.text_completed_deliveries_failed_time);
+		text_failed_time = (TextView) rowView
+				.findViewById(R.id.text_completed_deliveries_failed_time);
 
 		text_address.setTypeface(typeface_roboto_regular);
 		text_bag_ids.setTypeface(typeface_roboto_bold);
@@ -63,8 +66,14 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 
 		text_address.setText(values.get(position).getDestinationAddress());
 		text_bag_ids.setText(values.get(position).getBarcode());
-		text_failed_time.setText("Delivery at " + "24/06/2013 15:47"); // TODO: Remove hardcoded
-																			// values
+
+		Date date = values.get(position).getSubmissionDate();
+		// java.text.DateFormat date_format = android.text.format.DateFormat.getDateFormat(activity
+		// .getApplicationContext());
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");		
+
+		text_failed_time.setText("Delivery at " + format.format(date));
+		// values
 
 		return rowView;
 	}

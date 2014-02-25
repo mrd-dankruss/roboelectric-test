@@ -41,7 +41,7 @@ public class GenericDialogListAdapter extends BaseAdapter
 		TextView subText = (TextView) rowView.findViewById(R.id.reportDelay_textView_subText);
 
 		mainText.setText(values.get(position).getMainText());
-		
+
 		if ((values.get(position).getSubText().length() > 0) && (isDialog == false))
 		{
 			subText.setText(values.get(position).getSubText());
@@ -54,7 +54,14 @@ public class GenericDialogListAdapter extends BaseAdapter
 	@Override
 	public int getCount()
 	{
-		return values.size();
+		if (values != null)
+		{
+			return values.size();
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	@Override
