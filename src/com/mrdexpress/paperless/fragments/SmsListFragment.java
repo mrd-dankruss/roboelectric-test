@@ -63,10 +63,11 @@ public class SmsListFragment extends Fragment
 		// Context.MODE_PRIVATE);
 
 		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-		String bagid = getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
+		final String bag_id = getActivity().getIntent().getStringExtra(
+				VariableManager.EXTRA_NEXT_BAG_ID);
 
 		adapter = new SmsDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getContacts(bagid), false);
+				.getContacts(bag_id), false);
 
 		holder.list.setAdapter(adapter);
 
@@ -80,43 +81,17 @@ public class SmsListFragment extends Fragment
 				String sms_message = ((DialogDataObject) holder.list.getItemAtPosition(position))
 						.getSubText();
 
-				// TODO: Change to new fragment that has message box.
-
-				SmsMessageFragment fragment_sms = new SmsMessageFragment();
+				SmsMessageFragment fragment_sms = SmsMessageFragment.newInstance(
+						((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText(),
+						bag_id);
 				FragmentManager fm = getFragmentManager();
 				FragmentTransaction ft = fm.beginTransaction();
 				ft.replace(R.id.activity_sms_container, fragment_sms);
 				ft.commit();
 
-				/*
-				FragmentManager fm = getActivity().getSupportFragmentManager();
-				SMSDialog editNameDialog = SMSDialog.newInstance();
-				editNameDialog.setTargetFragment(
-						getFragmentManager().findFragmentById(R.id.activity_sms_container), 1);
-				editNameDialog.show(fm, "SMSFragment");
-				*/
 			}
 		});
 
-		holder.report_button.setOnClickListener(new View.OnClickListener()
-		{
-
-			@Override
-			public void onClick(View v)
-			{
-				// TODO Auto-generated method stub
-				// Only perform action if there is a selection made
-
-				for (int i = 0; i < adapter.getCount(); i++)
-				{
-					new SendSMSTask().execute(
-							((DialogDataObject) adapter.getItem(parentItemPosition)).getThirdText(),
-							((DialogDataObject) adapter.getItem(parentItemPosition)).getSubText(),
-							getActivity().getIntent().getStringExtra(
-									VariableManager.EXTRA_NEXT_BAG_ID), "SMS", "true");
-				}
-			}
-		});
 		holder.report_button.setVisibility(View.VISIBLE);
 		holder.report_button.setEnabled(false);
 	}

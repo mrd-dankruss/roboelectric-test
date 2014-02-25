@@ -463,6 +463,29 @@ public class DbHandler extends SQLiteOpenHelper
 		return result;
 	}
 
+	public boolean addComLog(String timestamp, String note, String user, String bagid)
+	{
+		ContentValues values = new ContentValues();
+		boolean result = true;
+
+		try
+		{
+			values.put(C_COMLOG_TIMESTAMP, timestamp);
+			values.put(C_COMLOG_NOTE, note);
+			values.put(C_COMLOG_USER, user);
+			values.put(C_COMLOG_BAGID, bagid);
+
+			addRow(TABLE_COMLOG, values);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result = false;
+		}
+		return result;
+	}
+
 	/**
 	 * Add a new consignment to the database.
 	 * 
