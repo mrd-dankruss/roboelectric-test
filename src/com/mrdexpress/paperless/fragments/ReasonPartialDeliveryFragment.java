@@ -159,7 +159,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 		protected String doInBackground(Void... args)
 		{
 			// ServerInterface.postPartialDelivery(waybill_id, status_id, extra)
-			String result = "success";
+			String result = "";
 
 			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 					Context.MODE_PRIVATE);
@@ -178,18 +178,20 @@ public class ReasonPartialDeliveryFragment extends Fragment
 							try
 							{
 								String result_JSON_string = ServerInterface.getInstance(
-										getActivity()).postPartialDelivery(
-										reasons.get(r).getGroupName(),
-										reasons.get(r).getReasonID(), "");
+										getActivity())
+										.postPartialDelivery(reasons.get(r).getGroupName(),
+												reasons.get(r).getReasonID());
+
+								// Log.d(TAG, result_JSON_string);
 
 								JSONObject result_JSON = new JSONObject(result_JSON_string);
 
 								String result_status = result_JSON.getJSONObject("response")
 										.getJSONObject("waybill").getString("status");
 
-								if (!result_status.equalsIgnoreCase("success"))
+								if (result_status.equalsIgnoreCase("success"))
 								{
-									result = "failed";
+									result = "Success";
 								}
 							}
 							catch (JSONException e)
@@ -197,6 +199,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 								StringWriter sw = new StringWriter();
 								e.printStackTrace(new PrintWriter(sw));
 								Log.e(TAG, sw.toString());
+								result = "failed";
 							}
 
 							// Log.d(TAG, "zorro# waybill:" + reasons.get(r).getGroupName()
@@ -226,6 +229,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 						.setDeliveryStatus(
 								getActivity().getIntent().getStringExtra(
 										VariableManager.EXTRA_NEXT_BAG_ID), Bag.STATUS_PARTIAL);
+
 				Log.d(TAG, "Zeus - Partial delivery number rows affected: " + no_rows_affected);
 
 				if (no_rows_affected > 0)
@@ -259,7 +263,10 @@ public class ReasonPartialDeliveryFragment extends Fragment
 				getActivity().setResult(Activity.RESULT_CANCELED);
 			}
 
-			getActivity().finish();
+			if (getActivity() != null)
+			{
+				getActivity().finish();
+			}
 		}
 	}
 

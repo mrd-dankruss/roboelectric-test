@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.service.GCMIntentService;
@@ -96,12 +97,30 @@ public class DeliveryHandoverFragment extends Fragment
 				{
 					if (allParcelsScanned())
 					{
-						getActivity().finish();
-						CustomToast toast = new CustomToast(getActivity());
-						toast.setSuccess(true);
-						toast.setText("Delivery completed successfully!");
-						toast.show();
 
+						int no_rows_affected = DbHandler.getInstance(getActivity())
+								.setDeliveryStatus(bagid, Bag.STATUS_COMPLETED);
+
+						if (no_rows_affected > 0)
+						{
+							CustomToast custom_toast = new CustomToast(getActivity());
+							custom_toast.setText("Success");
+							custom_toast.setSuccess(true);
+							custom_toast.show();
+						}
+						else
+						{
+							CustomToast custom_toast = new CustomToast(getActivity());
+							custom_toast.setText("Successful delivery status update failed");
+							custom_toast.setSuccess(true);
+							custom_toast.show();
+						}
+
+						getActivity().finish();
+						/*	CustomToast toast = new CustomToast(getActivity());
+							toast.setSuccess(true);
+							toast.setText("Delivery completed successfully!");
+							toast.show();	*/
 					}
 					else
 					{

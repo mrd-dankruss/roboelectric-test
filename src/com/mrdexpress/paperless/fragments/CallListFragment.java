@@ -3,7 +3,9 @@ package com.mrdexpress.paperless.fragments;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -23,6 +25,7 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class CallListFragment extends Fragment
 {
@@ -66,33 +69,47 @@ public class CallListFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				parentItemPosition = position;
-				// TODO: Add com log here
+				SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+						Context.MODE_PRIVATE);
+				boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
-				Calendar c = Calendar.getInstance();
-				SimpleDateFormat sdf_date = new SimpleDateFormat("dd:MM:yyyy");
-				String date = sdf_date.format(c.getTime());
-				SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
-				String time = sdf_time.format(c.getTime());
+				if (training_run)
+				{
+					CustomToast toast = new CustomToast(getActivity());
+					toast.setText(getString(R.string.text_trainingrun_call));
+					toast.setSuccess(true);
+					toast.show();
+				}
+				else
+				{
+					parentItemPosition = position;
+					
+					Calendar c = Calendar.getInstance();
+					SimpleDateFormat sdf_date = new SimpleDateFormat("dd:MM:yyyy");
+					String date = sdf_date.format(c.getTime());
+					SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
+					String time = sdf_time.format(c.getTime());
 
-				String note = "Call made to "
-						+ ((DialogDataObject) adapter.getItem(position)).getMainText() + "("
-						+ ((DialogDataObject) adapter.getItem(position)).getSubText() + ")";
+					String note = "Call made to "
+							+ ((DialogDataObject) adapter.getItem(position)).getMainText() + "("
+							+ ((DialogDataObject) adapter.getItem(position)).getSubText() + ")";
 
-				DbHandler.getInstance(getActivity())
-						.addComLog(
-								"Call made at " + date + " at " + time,
-								note,
-								"SMS",
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID));
+					DbHandler.getInstance(getActivity())
+							.addComLog(
+									"Call made at " + date + " at " + time,
+									note,
+									"SMS",
+									getActivity().getIntent().getStringExtra(
+											VariableManager.EXTRA_NEXT_BAG_ID));
+					
+					Intent intent = new Intent(Intent.ACTION_CALL);
 
-				Intent intent = new Intent(Intent.ACTION_CALL);
+					String phone_number = ((DialogDataObject) adapter.getItem(position))
+							.getSubText();
 
-				String phone_number = ((DialogDataObject) adapter.getItem(position)).getSubText();
-
-				intent.setData(Uri.parse("tel:" + phone_number));
-				getActivity().startActivity(intent);
+					intent.setData(Uri.parse("tel:" + phone_number));
+					getActivity().startActivity(intent);
+				}
 			}
 		});
 	}

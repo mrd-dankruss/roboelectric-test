@@ -148,9 +148,13 @@ public class ReasonForFailedHandoverFragment extends Fragment
 				String status = "";
 				try
 				{
-					result_object = new JSONObject(ServerInterface.getInstance(getActivity())
-							.postFailedHandover(args[0], args[1]));
-					status = result_object.getString("response");
+					String json_string = ServerInterface.getInstance(getActivity())
+							.postFailedHandover(args[0], args[1]);
+					Log.d(TAG, json_string);
+					
+					result_object = new JSONObject(json_string);
+					status = result_object.getJSONObject("response").getJSONObject("waybill")
+							.getString("status");
 				}
 				catch (JSONException e)
 				{
