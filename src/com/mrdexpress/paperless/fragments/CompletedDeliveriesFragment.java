@@ -39,7 +39,6 @@ public class CompletedDeliveriesFragment extends Fragment
 	@Override
 	public void onResume()
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
@@ -81,6 +80,23 @@ public class CompletedDeliveriesFragment extends Fragment
 			}
 		});
 
+	}
+
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser)
+	{
+		super.setUserVisibleHint(isVisibleToUser);
+		if (isVisibleToUser)
+		{
+			if (holder != null)
+			{
+				if ((holder.button_completed != null) && (holder.button_partial != null))
+				{
+					holder.button_completed.setBackgroundResource(R.drawable.partial_tab_white);
+					holder.button_partial.setBackgroundResource(R.drawable.partial_tab_grey);
+				}
+			}
+		}
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)

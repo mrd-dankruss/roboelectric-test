@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -58,7 +59,8 @@ public class ManagerAuthNotAssignedActivity extends Activity
 
 		// Heading
 		holder.text_content.setText("Assigning consignment "
-				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " to " + driverid);
+				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " to "
+				+ DbHandler.getInstance(getApplicationContext()).getDriverName(driverid));
 
 		initClickListeners();
 	}

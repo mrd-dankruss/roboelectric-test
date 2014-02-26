@@ -77,6 +77,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	static final int REQUEST_MANUAL_BARCODE = 1;
 	static final int RESULT_MANAGER_AUTH = 2;
 	static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
+	static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
+	static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
 	private Intent intent_manual_barcode;
 	private String user_name;
 
@@ -256,6 +258,27 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
+		if (dialog != null)
+		{
+			if (dialog.isShowing())
+			{
+				dialog.dismiss();
+			}
+		}
+		if (dialog_change_user != null)
+		{
+			if (dialog_change_user.isShowing())
+			{
+				dialog_change_user.dismiss();
+			}
+		}
+		if (dialog_not_assigned != null)
+		{
+			if (dialog_not_assigned.isShowing())
+			{
+				dialog_not_assigned.dismiss();
+			}
+		}
 		if (requestCode == REQUEST_MANUAL_BARCODE)
 		{
 			if (resultCode == RESULT_OK)
@@ -287,6 +310,28 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							ViewDeliveriesFragmentActivity.class);
 
 					startActivity(intent);
+				}
+			}
+		}
+		if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(
+						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+				{
+					startIncompleteScanActivity();
+				}
+			}
+		}
+		if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(
+						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+				{
+					startNotAssignedActivity();
 				}
 			}
 		}
@@ -571,13 +616,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 											LoginActivity.class);
 
 									// startActivity(intent);
-									startActivityForResult(intent, RESULT_MANAGER_AUTH);
 									dialog_not_assigned.dismiss();
+									startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
 								}
 								else
 								{
-									startNotAssignedActivity();
 									dialog_not_assigned.dismiss();
+									startNotAssignedActivity();
 								}
 							}
 						});
@@ -604,13 +649,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 										LoginActivity.class);
 
 								// startActivity(intent);
-								startActivityForResult(intent, RESULT_MANAGER_AUTH);
-								// dialog_not_assigned.dismiss();
+								dialog_not_assigned.dismiss();
+								startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
 							}
 							else
 							{
+								dialog_not_assigned.dismiss();
 								startNotAssignedActivity();
-								// dialog_not_assigned.dismiss();
 							}
 						}
 					});
@@ -642,6 +687,20 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			if (dialog.isShowing())
 			{
 				dialog.dismiss();
+			}
+		}
+		if (dialog_change_user != null)
+		{
+			if (dialog_change_user.isShowing())
+			{
+				dialog_change_user.dismiss();
+			}
+		}
+		if (dialog_not_assigned != null)
+		{
+			if (dialog_not_assigned.isShowing())
+			{
+				dialog_not_assigned.dismiss();
 			}
 		}
 
@@ -922,7 +981,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
 				// startActivity(intent);
-				startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
+				startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
 				dialog.dismiss();
 			}
 			else
@@ -938,8 +997,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Start manager authorization activity
 		Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
 
-		// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-		// getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+		intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
 
 		startActivityForResult(intent, RESULT_MANAGER_AUTH);
 	}

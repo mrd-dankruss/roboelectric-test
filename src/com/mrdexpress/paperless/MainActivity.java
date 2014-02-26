@@ -154,6 +154,9 @@ public class MainActivity extends Activity
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
 		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		editor.apply();
+
+		holder.text_name.setText("");
+		holder.text_password.setText("");
 	}
 
 	/**
@@ -401,6 +404,7 @@ public class MainActivity extends Activity
 	private class DriverLoginUserTask extends AsyncTask<Void, Void, Boolean>
 	{
 
+		boolean isDriverPinSet = false;
 		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
 
 		/** progress dialog to show user that the backup is processing. */
@@ -419,22 +423,30 @@ public class MainActivity extends Activity
 			hash = holder.text_password.getText().toString(); // DEBUG *Remove when hashing is
 																// wanted again
 
-			String status = ServerInterface.getInstance(getApplicationContext()).authDriver(hash,
-					selected_user_id);
-
-			if (status.equals("success"))
+			if (DbHandler.getInstance(getApplicationContext()).isDriverPinSet(selected_user_id) == false)
 			{
-				// Store currently selected driverid in shared prefs
-				SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
-						Context.MODE_PRIVATE);
-				SharedPreferences.Editor editor = prefs.edit();
-				editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
-				editor.apply();
-
+				isDriverPinSet = false;
 				return true;
 			}
+			else
+			{
+				isDriverPinSet = true;
+				String status = ServerInterface.getInstance(getApplicationContext()).authDriver(
+						hash, selected_user_id);
 
-			return false;
+				if (status.equals("success"))
+				{
+					// Store currently selected driverid in shared prefs
+					SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+							Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
+					editor.apply();
+
+					return true;
+				}
+				return false;
+			}
 		}
 
 		@Override
@@ -443,21 +455,30 @@ public class MainActivity extends Activity
 
 			if (result == true)
 			{
-				Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-
-				DbHandler.getInstance(getApplicationContext());
-				// Pass driver name on
-				intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
-
-				Log.d(TAG, "Driver ID: " + selected_user_id);
-				// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
-
-				startActivity(intent);
-				// Close progress spinner
-				if (dialog.isShowing())
+				if (isDriverPinSet)
 				{
-					dialog.dismiss();
+					Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
+
+					DbHandler.getInstance(getApplicationContext());
+					// Pass driver name on
+					intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
+
+					Log.d(TAG, "Driver ID: " + selected_user_id);
+					// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+
+					startActivity(intent);
+					// Close progress spinner
+					if (dialog.isShowing())
+					{
+						dialog.dismiss();
+					}
 				}
+				else
+				{
+					Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
+					startActivity(intent);
+				}
+				
 			}
 			else
 			{

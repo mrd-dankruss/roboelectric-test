@@ -2056,6 +2056,56 @@ public class DbHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * Returns true if the driver has set a PIN.
+	 * 
+	 * @return Barcode at specified row
+	 */
+	public boolean isDriverPinSet(String driver_id)
+	{
+		String countQuery = "SELECT  * FROM " + TABLE_DRIVERS + " WHERE " + C_DRIVER_ID
+				+ " LIKE '" + driver_id + "'";
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+		String driver_pin = "";
+		if (cursor != null && cursor.moveToFirst())
+		{
+			driver_pin = cursor.getString(cursor.getColumnIndex(C_DRIVER_PIN));
+			Log.d(TAG, "PIN: " + driver_pin);
+		}
+		// Log.d(TAG, "zorro cursor bagid " + barcode);
+		cursor.close();
+		boolean isDriverPinSet = true;
+		if (driver_pin.equals("null"))
+		{
+			Log.d(TAG, "inside: " + driver_pin);
+			isDriverPinSet = false;
+		}
+		
+		return isDriverPinSet;
+	}
+	
+	/**
+	 * Return the name of a driver.
+	 * 
+	 * @return Barcode at specified row
+	 */
+	public String getDriverName(String driver_id)
+	{
+		String countQuery = "SELECT  * FROM " + TABLE_DRIVERS + " WHERE " + C_DRIVER_ID
+				+ " LIKE '" + driver_id + "'";
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+		String driver_name = "";
+		if (cursor != null && cursor.moveToFirst())
+		{
+			driver_name = cursor.getString(cursor.getColumnIndex(C_DRIVER_NAME));
+		}
+		// Log.d(TAG, "zorro cursor bagid " + barcode);
+		cursor.close();
+		return driver_name;
+	}
+	
+	/**
 	 * Returns list of drivers
 	 * 
 	 * @return
