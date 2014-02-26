@@ -191,7 +191,6 @@ public class DbHandler extends SQLiteOpenHelper
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 	}
 
 	// Return singleton instance of DbHandler
@@ -674,6 +673,8 @@ public class DbHandler extends SQLiteOpenHelper
 			values.put(C_BAG_SUBMISSION_DATE, System.currentTimeMillis());
 			values.put(C_BAG_STATUS_REASON, reason);
 
+			training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+
 			if (training_run)
 			{
 				no_rows = db.update(TABLE_BAGS_TRAINING, values, C_BAG_ID + "='" + bagid + "'",
@@ -946,7 +947,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 			db = this.getReadableDatabase(); // Open db
 
-			boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+			training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 			String sql = "";
 
 			// ArrayList<Bag> bags = null;
@@ -1124,7 +1125,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 			ArrayList<DeliveryHandoverDataObject> bags = null;
 
-			boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+			training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 			String sql = "";
 
 			if (training_run)
@@ -1201,10 +1202,12 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public ArrayList<DialogDataObject> getContacts(String bag_id)
 	{
+		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+
 		if (training_run)
 		{
 			ArrayList<DialogDataObject> contacts = new ArrayList<DialogDataObject>();
-
+			// Log.d(TAG, "zeus adding fake contacts");
 			contacts.add(new DialogDataObject("Branch Manager", "0822231234"));
 			contacts.add(new DialogDataObject("Dispatch Manager", "083421888"));
 			contacts.add(new DialogDataObject("Supervisor", "076556445"));
@@ -1213,6 +1216,7 @@ public class DbHandler extends SQLiteOpenHelper
 		}
 		else
 		{
+			// Log.d(TAG, "zeus adding real contacts");
 			SQLiteDatabase db = null;
 			ArrayList<DialogDataObject> contacts = new ArrayList<DialogDataObject>();
 			try
@@ -1444,18 +1448,13 @@ public class DbHandler extends SQLiteOpenHelper
 		ArrayList<Bag> list = new ArrayList<Bag>();
 		try
 		{
-
 			db = this.getReadableDatabase(); // Open db
 
-			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-
 			// final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
-			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
-					false);
+			training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
 			String sql = "";
-			if (training_mode)
+			if (training_run)
 			{
 				// Log.d(TAG, "Loading training bags");
 				sql = "SELECT * FROM " + TABLE_BAGS_TRAINING + " WHERE " + C_BAG_STATUS + " LIKE '"
@@ -1858,6 +1857,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
 	{
+		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		if (training_run)
 		{
 			ArrayList<DialogDataObject> delays = new ArrayList<DialogDataObject>();
@@ -1935,6 +1935,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public ArrayList<DialogDataObject> getMilkrunDelayReasons()
 	{
+		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		if (training_run)
 		{
 			ArrayList<DialogDataObject> delays = new ArrayList<DialogDataObject>();

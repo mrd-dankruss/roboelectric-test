@@ -765,6 +765,7 @@ public class MainActivity extends Activity
 						gcm = GoogleCloudMessaging.getInstance(context);
 					}
 					regid = gcm.register(SENDER_ID);
+					Log.i(TAG, "GCM registration ID: "+regid);
 					msg = "Device registered, registration ID=" + regid;
 
 					// You should send the registration ID to your server over HTTP, so it

@@ -1,6 +1,8 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -20,6 +22,7 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class CallListFragment extends Fragment
 {
@@ -63,13 +66,28 @@ public class CallListFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				parentItemPosition = position;// (Integer) adapter.getItem(position);
-				Intent intent = new Intent(Intent.ACTION_CALL);
+				SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+						Context.MODE_PRIVATE);
+				boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
-				String phone_number = ((DialogDataObject) adapter.getItem(position)).getSubText();
+				if (training_run)
+				{
+					CustomToast toast = new CustomToast(getActivity());
+					toast.setText(getString(R.string.text_trainingrun_call));
+					toast.setSuccess(true);
+					toast.show();
+				}
+				else
+				{
+					parentItemPosition = position;// (Integer) adapter.getItem(position);
+					Intent intent = new Intent(Intent.ACTION_CALL);
 
-				intent.setData(Uri.parse("tel:" + phone_number));
-				getActivity().startActivity(intent);
+					String phone_number = ((DialogDataObject) adapter.getItem(position))
+							.getSubText();
+
+					intent.setData(Uri.parse("tel:" + phone_number));
+					getActivity().startActivity(intent);
+				}
 			}
 		});
 	}

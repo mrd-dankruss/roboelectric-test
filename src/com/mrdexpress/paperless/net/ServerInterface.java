@@ -889,12 +889,12 @@ public class ServerInterface
 						values.put(DbHandler.C_DELAYS_REASON_ID, delay_id);
 						values.put(DbHandler.C_DELAYS_REASON, reason);
 
-						Log.d(TAG,
+						/*Log.d(TAG,
 								"Adding : "
 										+ reason
 										+ " "
 										+ DbHandler.getInstance(context).addRow(
-												DbHandler.TABLE_DELAYS, values));
+												DbHandler.TABLE_DELAYS, values));*/
 
 						for (int d = 0; d < durations.length(); d++)
 						{
@@ -1191,9 +1191,35 @@ public class ServerInterface
 	 */
 	public String postFailedHandover(String bag_id, String reason_id)
 	{
-		String url = API_URL + "v1/milkruns/handover?bagid=" + bag_id + "&handoverid=" + reason_id
-				+ "&mrdToken=" + ServerInterface.token;
+		String url = API_URL + "v1/waybill/delivery?id=" + bag_id + "&deliveryID=" + reason_id
+				+ "&mrdToken=" + ServerInterface.token + "&extra=failed";
+		// Log.d(TAG, "Posting failed delivery: " + url);
+		String result = postData(url);
 
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
+
+	}
+
+	/**
+	 * Post failed handover to API.
+	 * 
+	 * @param bag_id
+	 * @param reason_id
+	 *            IDs acquired from /milkrun/handover
+	 * @return
+	 */
+	public String postSuccessfulDelivery(String bag_id)
+	{
+		String url = API_URL + "v1/milkruns/handover?bagid=" + bag_id + "&mrdToken="
+				+ ServerInterface.token + "&extra=successful";
+		// Log.d(TAG, "Posting failed delivery: " + url);
 		String result = postData(url);
 
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
@@ -1215,11 +1241,11 @@ public class ServerInterface
 	 * @param extra
 	 * @return
 	 */
-	public String postPartialDelivery(String waybill_id, String status_id, String extra)
+	public String postPartialDelivery(String waybill_id, String status_id)
 	{
-		String url = API_URL + "v1/waybill/delivery?id=" + waybill_id + "&deliveryid=" + status_id
-				+ "&mrdToken=" + ServerInterface.token;
-
+		String url = API_URL + "v1/waybill/delivery?id=" + waybill_id + "&deliveryID=" + status_id
+				+ "&mrdToken=" + ServerInterface.token + "&extra=partial";
+		// Log.d(TAG, "Posting partial delivery: " + url);
 		String result = postData(url);
 
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
