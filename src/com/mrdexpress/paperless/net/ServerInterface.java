@@ -39,7 +39,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -56,7 +55,6 @@ import com.mrdexpress.paperless.db.Driver;
 import com.mrdexpress.paperless.db.Waybill;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
-import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ServerInterface
 {
@@ -69,7 +67,8 @@ public class ServerInterface
 	private static Context context;
 	private static final String API_URL = "http://uat.mrdexpress.com/api/";
 	// private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
-	private static String token;
+	// private static String token="abcde";
+	private static SharedPreferences prefs;
 
 	public ServerInterface(Context ctx)
 	{
@@ -84,11 +83,16 @@ public class ServerInterface
 			server_interface = new ServerInterface(context.getApplicationContext());
 		}
 
-		if ((ServerInterface.token == null) | (ServerInterface.token == ""))
+		/*if ((ServerInterface.token == null) | (ServerInterface.token == ""))
 		{
-			SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-			ServerInterface.token = settings.getString(VariableManager.PREF_TOKEN, "");
+			 SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF,
+			 Context.MODE_PRIVATE);
+			 ServerInterface.token = settings.getString(VariableManager.PREF_TOKEN, "");
+		}*/
+
+		if (prefs == null)
+		{
+			prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 		}
 		return server_interface;
 	}
@@ -167,6 +171,7 @@ public class ServerInterface
 		editor.apply();
 
 		return status;
+		// return "abcde";
 	}
 
 	/**
@@ -181,8 +186,10 @@ public class ServerInterface
 	public String registerDeviceGCM(String imei, String gcm_id)
 	{
 
-		String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken="
-				+ ServerInterface.token + "&gcmID=" + gcm_id;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+
+		String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken=" + token + "&gcmID="
+				+ gcm_id;
 
 		Log.d(TAG, "URL: " + url);
 
@@ -229,10 +236,9 @@ public class ServerInterface
 	 */
 	public String updatePIN(String id, String new_pin, String imei)
 	{
-
-		String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken="
-				+ ServerInterface.token + "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei="
-				+ imei;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken=" + token
+				+ "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei=" + imei;
 
 		String response = postData(url);
 
@@ -285,9 +291,8 @@ public class ServerInterface
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei_id = mngr.getDeviceId();
-
-		String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken=" + token;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -302,10 +307,10 @@ public class ServerInterface
 			}
 			else if (jObject.has("error"))
 			{
-				CustomToast toast = new CustomToast((Activity) context);
+				/*CustomToast toast = new CustomToast(context);
 				toast.setSuccess(true);
 				toast.setText("Error" + stripErrorCode(jObject.toString()));
-				toast.show();
+				toast.show();*/
 			}
 		}
 		catch (JSONException e)
@@ -366,9 +371,8 @@ public class ServerInterface
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei_id = mngr.getDeviceId();
-
-		String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken=" + token;
 		String response = getInputStreamFromUrl(url);
 
 		JSONArray managers_jArray = null;
@@ -382,10 +386,10 @@ public class ServerInterface
 			}
 			else if (jObject.has("error"))
 			{
-				CustomToast toast = new CustomToast((Activity) context);
+				/*CustomToast toast = new CustomToast((Activity) context);
 				toast.setSuccess(true);
 				toast.setText("Error" + stripErrorCode(jObject.toString()));
-				toast.show();
+				toast.show();*/
 			}
 		}
 		catch (JSONException e)
@@ -442,9 +446,9 @@ public class ServerInterface
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei_id = mngr.getDeviceId();
-
-		String url = API_URL + "v1/auth/driver?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token + "&driverPIN=" + PIN + "&driverID=" + driver_id;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/auth/driver?imei=" + imei_id + "&mrdToken=" + token
+				+ "&driverPIN=" + PIN + "&driverID=" + driver_id;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -494,8 +498,9 @@ public class ServerInterface
 	 */
 	public String authManager(String man_id, String driver_id, String PIN, String imei_id)
 	{
-		String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token + "&managerPIN=" + PIN + "&managerID=" + man_id;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken=" + token
+				+ "&managerPIN=" + PIN + "&managerID=" + man_id;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -545,8 +550,8 @@ public class ServerInterface
 	 */
 	public void downloadBags(Context context, String driver_id)
 	{
-		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -611,7 +616,8 @@ public class ServerInterface
 	 */
 	public void downloadBag(Context context, String bag_id, String driver_id)
 	{
-		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -642,6 +648,9 @@ public class ServerInterface
 					// Status
 					String bag_status = result.getString("status");
 
+					// Status
+					String bag_stopid = result.getString("stopid");
+
 					// Waybill count
 					int waybill_count = result.getInt("waybillcount");
 
@@ -656,8 +665,9 @@ public class ServerInterface
 							.getJSONObject("address").getString("address");
 					String dest_suburb = result.getJSONObject("destination")
 							.getJSONObject("address").getString("suburb");
-					String dest_town = result.getJSONObject("destination").getJSONObject("address")
-							.getString("town");
+					// String dest_town =
+					// result.getJSONObject("destination").getJSONObject("address")
+					// .getString("town");
 					String dest_contact1 = result.getJSONObject("destination")
 							.getJSONObject("address").getString("contact1");
 					String dest_lat = result.getJSONObject("destination").getJSONObject("address")
@@ -672,11 +682,12 @@ public class ServerInterface
 					Bag bag = new Bag(id);
 					bag.setDriverId(driver_id);
 					bag.setBarcode(barcode);
+					bag.setStopId(bag_stopid);
 					bag.setDestinationHubCode(dest_hubcode);
 					bag.setDestinationHubName(dest_hubname);
 					bag.setDestinationAddress(dest_address);
 					bag.setDestinationSuburb(dest_suburb);
-					bag.setDestinationTown(dest_town);
+					// bag.setDestinationTown(dest_town);
 					bag.setDestinationLat(dest_lat);
 					bag.setDestinationLong(dest_long);
 					bag.setDestinationContact(dest_contact1);
@@ -741,7 +752,7 @@ public class ServerInterface
 
 						// ---- Delivery address
 						// Address
-						String address = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
+						/*String address = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
 								.getString("address");
 						String suburb = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
 								.getString("suburb");
@@ -750,10 +761,10 @@ public class ServerInterface
 						String lat = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
 								.getJSONObject("coords").getString("lat");
 						String lon = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getJSONObject("coords").getString("lon");
+								.getJSONObject("coords").getString("lon");*/
 
 						// --- Customer
-						String name = waybills.getJSONObject(j).getJSONObject("customer")
+						/*String name = waybills.getJSONObject(j).getJSONObject("customer")
 								.getString("name");
 						String idnumber = waybills.getJSONObject(j).getJSONObject("customer")
 								.getString("idnumber");
@@ -762,30 +773,30 @@ public class ServerInterface
 						String contact2 = waybills.getJSONObject(j).getJSONObject("customer")
 								.getString("contact2");
 						String email = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("email");
+								.getString("email");*/
 
 						// comlog
 						// comlog is a JSONArray ***
 						// String comlog = waybills.getJSONObject(j).getString("comlog");
 
 						// parcel count
-						int parcel_count = waybills.getJSONObject(j).getInt("parcelcount");
+						String parcel_count = waybills.getJSONObject(j).getString	("parcelcount");
 
 						// Create Waybill object and add values
 						Waybill waybill = new Waybill(waybill_id, id);
-						waybill.setEmail(email);
+//						waybill.setEmail(email);
 						waybill.setBarcode(waybill_barcode);
 						waybill.setDimensions(dimensions);
 						waybill.setStatus(status);
-						waybill.setDeliveryTown(town);
-						waybill.setDeliverySuburb(suburb);
-						waybill.setDeliveryAddress(address);
-						waybill.setDeliveryLat(lat);
-						waybill.setDeliveryLong(lon);
-						waybill.setCustomerContact1(contact1);
-						waybill.setCustomerContact2(contact2);
-						waybill.setCustomerID(idnumber);
-						waybill.setCustomerName(name);
+						// waybill.setDeliveryTown(town);
+//						waybill.setDeliverySuburb(suburb);
+//						waybill.setDeliveryAddress(address);
+//						waybill.setDeliveryLat(lat);
+//						waybill.setDeliveryLong(lon);
+						// waybill.setCustomerContact1(contact1);
+						// waybill.setCustomerContact2(contact2);
+						// waybill.setCustomerID(idnumber);
+						// waybill.setCustomerName(name);
 						// waybill.setComLog(comlog);
 						waybill.setWeight(weight);
 						waybill.setParcelCount(parcel_count);
@@ -851,7 +862,8 @@ public class ServerInterface
 
 	public void downloadDelays(Context context)
 	{
-		String url = API_URL + "v1/milkruns/delays?mrdToken=" + ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/delays?mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -955,8 +967,8 @@ public class ServerInterface
 		*/
 
 		// TODO: uncomment above, delete below.
-
-		String url = API_URL + "v1/milkruns/handover?mrdToken=" + ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/handover?mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1024,8 +1036,8 @@ public class ServerInterface
 
 	public void downloadPartialDeliveryReasons(Context context)
 	{
-
-		String url = API_URL + "v1/milkruns/partial?mrdToken=" + ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/partial?mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1101,8 +1113,9 @@ public class ServerInterface
 	 */
 	public String postDelay(String bagid, String driverid, String delayid)
 	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 		String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + driverid
-				+ "&mrdToken=" + ServerInterface.token + "&delayid=" + delayid;
+				+ "&mrdToken=" + token + "&delayid=" + delayid;
 		String result = postData(url);
 		// Log.d(TAG,"zeus: "+ result);
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
@@ -1151,8 +1164,9 @@ public class ServerInterface
 				+ result_string + "&comExtra=" + comExtra.toString());*/
 
 		String status = null;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 		String url = API_URL + "v1/waybill/communication?id=" + bagid + "&comType=" + type
-				+ "&mrdToken=" + ServerInterface.token + "&comResult=" + result_string;
+				+ "&mrdToken=" + token + "&comResult=" + result_string;
 
 		Log.d(TAG, "Zeus: " + url);
 
@@ -1191,8 +1205,9 @@ public class ServerInterface
 	 */
 	public String postFailedHandover(String bag_id, String reason_id)
 	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 		String url = API_URL + "v1/waybill/delivery?id=" + bag_id + "&deliveryID=" + reason_id
-				+ "&mrdToken=" + ServerInterface.token + "&extra=failed";
+				+ "&mrdToken=" + token + "&extra=failed";
 		// Log.d(TAG, "Posting failed delivery: " + url);
 		String result = postData(url);
 
@@ -1217,8 +1232,9 @@ public class ServerInterface
 	 */
 	public String postSuccessfulDelivery(String bag_id)
 	{
-		String url = API_URL + "v1/milkruns/handover?bagid=" + bag_id + "&mrdToken="
-				+ ServerInterface.token + "&extra=successful";
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/handover?bagid=" + bag_id + "&mrdToken=" + token
+				+ "&extra=successful";
 		// Log.d(TAG, "Posting failed delivery: " + url);
 		String result = postData(url);
 
@@ -1243,8 +1259,9 @@ public class ServerInterface
 	 */
 	public String postPartialDelivery(String waybill_id, String status_id)
 	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 		String url = API_URL + "v1/waybill/delivery?id=" + waybill_id + "&deliveryID=" + status_id
-				+ "&mrdToken=" + ServerInterface.token + "&extra=partial";
+				+ "&mrdToken=" + token + "&extra=partial";
 		// Log.d(TAG, "Posting partial delivery: " + url);
 		String result = postData(url);
 
@@ -1341,7 +1358,7 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -1617,9 +1634,9 @@ public class ServerInterface
 	public String scanBag(Context context, String barcode, String driver_id)
 	{
 		String id = "";
-
-		String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken="
-				+ ServerInterface.token + "driverID=" + driver_id;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken=" + token
+				+ "driverID=" + driver_id;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1677,8 +1694,9 @@ public class ServerInterface
 
 	public String setNextDelivery(String id)
 	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 
-		String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + ServerInterface.token;
+		String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + token;
 
 		String response = postData(url);
 

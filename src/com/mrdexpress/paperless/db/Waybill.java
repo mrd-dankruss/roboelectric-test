@@ -19,7 +19,7 @@ public class Waybill
 	// Nation of Desti
 	private String delivery_address;
 	private String delivery_suburb;
-	private String delivery_town;
+	// private String delivery_town;
 	private String delivery_coords_lat;
 	private String delivery_coords_long;
 
@@ -42,7 +42,7 @@ public class Waybill
 	private String comlog;
 
 	// Parcel count
-	private int parcel_count;
+	private String parcel_count;
 
 	// Parcel sequence number
 	private int parcel_seq;
@@ -66,7 +66,7 @@ public class Waybill
 		setCustomerContact1("000 000 0000");
 		setCustomerContact2("000 000 0000");
 		setComLog("Empty");
-		setParcelCount(0);
+		setParcelCount("0");
 		setParcelSeq(0);
 		setCustomerName("Unknown Customer");
 		setDeliveryAddress("Unknown destination");
@@ -89,7 +89,7 @@ public class Waybill
 	 * 
 	 * @param count
 	 */
-	public void setParcelCount(int count)
+	public void setParcelCount(String count)
 	{
 		parcel_count = count;
 	}
@@ -183,7 +183,7 @@ public class Waybill
 	 * 
 	 * @return Parcel count
 	 */
-	public int getParcelCount()
+	public String getParcelCount()
 	{
 		return parcel_count;
 	}
@@ -307,22 +307,24 @@ public class Waybill
 		this.delivery_suburb = delivery_suburb;
 	}
 
-	/**
+	/*	*//**
 	 * @return the delivery_town
 	 */
+	/*
 	public String getDeliveryTown()
 	{
-		return delivery_town;
+	return delivery_town;
 	}
 
-	/**
+	*//**
 	 * @param delivery_town
 	 *            the delivery_town to set
 	 */
+	/*
 	public void setDeliveryTown(String delivery_town)
 	{
-		this.delivery_town = delivery_town;
-	}
+	this.delivery_town = delivery_town;
+	}*/
 
 	/**
 	 * @return the delivery_coords_lat

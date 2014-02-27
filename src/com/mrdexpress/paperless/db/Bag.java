@@ -11,12 +11,15 @@ public class Bag
 	// Serial number of consignment bag
 	private String bag_number;
 
+	// Part of the workflow
+	private String bag_stopid;
+
 	// Destination of consignment
 	private String dest_hubname;
 	private String dest_hubcode;
 	private String dest_address;
 	private String dest_suburb;
-	private String dest_town;
+//	private String dest_town;
 	private String dest_contact;
 	private String dest_coords_lat;
 	private String dest_coords_long;
@@ -76,7 +79,7 @@ public class Bag
 		setDestinationLat("");
 		setDestinationLong("");
 		setDestinationSuburb("");
-		setDestinationTown("");
+//		setDestinationTown("");
 		setScanned(false);
 		setAssigned(false);
 		setCreationTime("");
@@ -84,6 +87,7 @@ public class Bag
 		setSubmissionDate(null);
 		setStatusReason("");
 		setDriverId("");
+		setStopId("");
 		number_items = 0;
 	}
 
@@ -261,7 +265,7 @@ public class Bag
 		this.dest_suburb = dest_suburb;
 	}
 
-	public String getDestinationTown()
+/*	public String getDestinationTown()
 	{
 		return dest_town;
 	}
@@ -269,7 +273,7 @@ public class Bag
 	public void setDestinationTown(String dest_town)
 	{
 		this.dest_town = dest_town;
-	}
+	}*/
 
 	public String getDestinationContact()
 	{
@@ -396,11 +400,29 @@ public class Bag
 	}
 
 	/**
-	 * @param status_reason the status_reason to set
+	 * @param status_reason
+	 *            the status_reason to set
 	 */
 	public void setStatusReason(String status_reason)
 	{
 		this.status_reason = status_reason;
+	}
+
+	/**
+	 * @return the bag_stopid
+	 */
+	public String getStopId()
+	{
+		return bag_stopid;
+	}
+
+	/**
+	 * @param bag_stopid
+	 *            the bag_stopid to set
+	 */
+	public void setStopId(String bag_stopid)
+	{
+		this.bag_stopid = bag_stopid;
 	}
 
 }

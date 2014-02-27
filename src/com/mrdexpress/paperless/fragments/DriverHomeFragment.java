@@ -123,7 +123,7 @@ public class DriverHomeFragment extends Fragment
 				values = new ContentValues();
 
 				values.put(DbHandler.C_WAYBILL_ID, "123"); // PK
-				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 1);
+//				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 1);
 				values.put(DbHandler.C_wAYBILL_PARCEL_SEQUENCE, 1 + " of " + 1);
 				values.put(DbHandler.C_WAYBILL_DIMEN, "102x13x40cm");
 				values.put(DbHandler.C_WAYBILL_CUSTOMER_CONTACT1, "0123341122");
@@ -141,7 +141,7 @@ public class DriverHomeFragment extends Fragment
 				values = new ContentValues();
 
 				values.put(DbHandler.C_WAYBILL_ID, "321"); // PK
-				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 2);
+//				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 2);
 				values.put(DbHandler.C_wAYBILL_PARCEL_SEQUENCE, 1 + " of " + 2);
 				values.put(DbHandler.C_WAYBILL_DIMEN, "54x131x32cm");
 				values.put(DbHandler.C_WAYBILL_CUSTOMER_CONTACT1, "0123341122");
