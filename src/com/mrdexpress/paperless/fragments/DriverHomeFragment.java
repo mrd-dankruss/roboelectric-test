@@ -85,6 +85,7 @@ public class DriverHomeFragment extends Fragment
 				values.put(DbHandler.C_BAG_DEST_TOWN, "Paradise City");
 				values.put(DbHandler.C_BAG_BARCODE, "XMRDX68322");
 				values.put(DbHandler.C_BAG_ASSIGNED, 1);
+				values.put(DbHandler.C_BAG_STOPID, "1");
 				values.put(DbHandler.C_BAG_SCANNED, 0);
 				values.put(DbHandler.C_BAG_CREATION_TIME, "191645B Feb 2014");
 				values.put(DbHandler.C_BAG_NUM_ITEMS, "1");

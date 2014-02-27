@@ -254,14 +254,14 @@ public class DbHandler extends SQLiteOpenHelper
 					+ C_WAYBILL_ID + " INTEGER PRIMARY KEY," + C_WAYBILL_SCANNED + " INTEGER,"
 					+ C_WAYBILL_BAG_ID + " TEXT," + C_WAYBILL_WEIGHT + " TEXT,"
 					+ C_WAYBILL_DEST_LONG + " TEXT," + C_WAYBILL_DEST_LAT + " TEXT,"
-				 + C_WAYBILL_BARCODE + " TEXT,"
-					+ C_WAYBILL_DEST_SUBURB + " TEXT," + C_WAYBILL_DEST_ADDRESS + " TEXT,"
-					+ C_WAYBILL_TEL + " TEXT," + C_wAYBILL_PARCEL_SEQUENCE + " TEXT,"
-					+ C_WAYBILL_DIMEN + " TEXT," + C_WAYBILL_PARCELCOUNT + " INTEGER,"
-					+ C_WAYBILL_CUSTOMER_ID + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT,"
-					+ C_WAYBILL_CUSTOMER_CONTACT1 + " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT,"
-					+ C_WAYBILL_CUSTOMER_EMAIL + " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID
-					+ ") REFERENCES " + TABLE_BAGS + "(" + C_BAG_ID + "))";
+					+ C_WAYBILL_BARCODE + " TEXT," + C_WAYBILL_DEST_SUBURB + " TEXT,"
+					+ C_WAYBILL_DEST_ADDRESS + " TEXT," + C_WAYBILL_TEL + " TEXT,"
+					+ C_wAYBILL_PARCEL_SEQUENCE + " TEXT," + C_WAYBILL_DIMEN + " TEXT,"
+					+ C_WAYBILL_PARCELCOUNT + " INTEGER," + C_WAYBILL_CUSTOMER_ID + " TEXT,"
+					+ C_WAYBILL_CUSTOMER_CONTACT2 + " TEXT," + C_WAYBILL_CUSTOMER_CONTACT1
+					+ " TEXT," + C_WAYBILL_CUSTOMER_NAME + " TEXT," + C_WAYBILL_CUSTOMER_EMAIL
+					+ " TEXT," + "FOREIGN KEY(" + C_WAYBILL_BAG_ID + ") REFERENCES " + TABLE_BAGS
+					+ "(" + C_BAG_ID + "))";
 			createTable(db, TABLE_WAYBILLS, CREATE_TABLE_WAYBILL);
 			// Log.d(TAG, CREATE_TABLE_WAYBILL);
 
@@ -465,6 +465,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 	/**
 	 * Add commlog record to DB
+	 * 
 	 * @param timestamp
 	 * @param note
 	 * @param user
@@ -1083,8 +1084,8 @@ public class DbHandler extends SQLiteOpenHelper
 							.getColumnIndex(C_WAYBILL_DEST_LONG)));
 					waybill.setDeliverySuburb(cursor.getString(cursor
 							.getColumnIndex(C_WAYBILL_DEST_SUBURB)));
-//					waybill.setDeliveryTown(cursor.getString(cursor
-//							.getColumnIndex(C_WAYBILL_DEST_TOWN)));
+					// waybill.setDeliveryTown(cursor.getString(cursor
+					// .getColumnIndex(C_WAYBILL_DEST_TOWN)));
 					waybill.setDimensions(cursor.getString(cursor.getColumnIndex(C_WAYBILL_DIMEN)));
 					waybill.setWeight(cursor.getString(cursor.getColumnIndex(C_WAYBILL_WEIGHT)));
 					// bags.add(bag);
@@ -2115,6 +2116,38 @@ public class DbHandler extends SQLiteOpenHelper
 		// Log.d(TAG, "zorro cursor bagid " + barcode);
 		cursor.close();
 		return driver_name;
+	}
+
+	/**
+	 * Returns stop id of specified bag
+	 * 
+	 * @param bagid
+	 * @return Stop ID for specified Bag
+	 */
+	public String getStopId()
+	{
+		String bagid = prefs.getString(VariableManager.PREF_CURRENT_BAGID, "");
+		String stopid = "";
+
+		if (training_run)
+		{
+			stopid = "1";
+		}
+		else
+		{
+			String sql = "SELECT  * FROM " + TABLE_BAGS + " WHERE " + C_BAG_ID + " LIKE '" + bagid
+					+ "'";
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.rawQuery(sql, null);
+
+			if (cursor != null && cursor.moveToFirst())
+			{
+				stopid = cursor.getString(cursor.getColumnIndex(C_BAG_STOPID));
+			}
+			// Log.d(TAG, "zorro cursor bagid " + barcode);
+			cursor.close();
+		}
+		return stopid;
 	}
 
 	/**

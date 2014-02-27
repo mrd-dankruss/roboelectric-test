@@ -780,19 +780,19 @@ public class ServerInterface
 						// String comlog = waybills.getJSONObject(j).getString("comlog");
 
 						// parcel count
-						String parcel_count = waybills.getJSONObject(j).getString	("parcelcount");
+						String parcel_count = waybills.getJSONObject(j).getString("parcelcount");
 
 						// Create Waybill object and add values
 						Waybill waybill = new Waybill(waybill_id, id);
-//						waybill.setEmail(email);
+						// waybill.setEmail(email);
 						waybill.setBarcode(waybill_barcode);
 						waybill.setDimensions(dimensions);
 						waybill.setStatus(status);
 						// waybill.setDeliveryTown(town);
-//						waybill.setDeliverySuburb(suburb);
-//						waybill.setDeliveryAddress(address);
-//						waybill.setDeliveryLat(lat);
-//						waybill.setDeliveryLong(lon);
+						// waybill.setDeliverySuburb(suburb);
+						// waybill.setDeliveryAddress(address);
+						// waybill.setDeliveryLat(lat);
+						// waybill.setDeliveryLong(lon);
 						// waybill.setCustomerContact1(contact1);
 						// waybill.setCustomerContact2(contact2);
 						// waybill.setCustomerID(idnumber);
@@ -1694,6 +1694,11 @@ public class ServerInterface
 
 	public String setNextDelivery(String id)
 	{
+		// Store in sharedprefs
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(VariableManager.PREF_CURRENT_BAGID, id);
+		editor.apply();
+
 		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 
 		String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + token;

@@ -153,6 +153,7 @@ public class MainActivity extends Activity
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_NAME);
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
+		editor.remove(VariableManager.PREF_DRIVERID);
 		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		editor.apply();
 
@@ -479,7 +480,7 @@ public class MainActivity extends Activity
 					Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
 					startActivity(intent);
 				}
-				
+
 			}
 			else
 			{
@@ -787,7 +788,7 @@ public class MainActivity extends Activity
 						gcm = GoogleCloudMessaging.getInstance(context);
 					}
 					regid = gcm.register(SENDER_ID);
-					Log.i(TAG, "GCM registration ID: "+regid);
+					Log.i(TAG, "GCM registration ID: " + regid);
 					msg = "Device registered, registration ID=" + regid;
 
 					// You should send the registration ID to your server over HTTP, so it
