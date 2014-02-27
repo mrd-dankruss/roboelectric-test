@@ -17,6 +17,7 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 
@@ -57,20 +58,22 @@ public class LocationBroadcastReceiver extends BroadcastReceiver implements Loca
 		wl.acquire();
 
 		// Put here YOUR code.
-		SharedPreferences prefs = mContext.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-		String bag_id = null;
-		//String bag_id = prefs.getString(VariableManager.PREF_CURRENT_BAGID, null);
-		
-		long time = System.currentTimeMillis()/1000;
-		
+		SharedPreferences prefs = mContext.getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+		String bag_id = prefs.getString(VariableManager.PREF_CURRENT_BAGID, null);
+		long time = System.currentTimeMillis() / 1000;
+
 		if (bag_id != null)
 		{
 			location = getLocation();
-			Log.d("service", "Lat: " + location.getLatitude() + ", Long: " + location.getLongitude()
-					+ "Accuracy: " + location.getAccuracy());
-			//DbHandler.getInstance(mContext).getTripStopID;
-			//ServerInterface.getInstance(mContext).setLocation;
-			
+			Log.d("service",
+					"Lat: " + location.getLatitude() + ", Long: " + location.getLongitude()
+							+ "Accuracy: " + location.getAccuracy());
+			String trip_id = DbHandler.getInstance(mContext).getStopId();
+			String status = ServerInterface.getInstance(mContext).postDriverPosition(bag_id,
+					String.valueOf(location.getAccuracy()), String.valueOf(location.getLatitude()),
+					String.valueOf(location.getLongitude()), trip_id, String.valueOf(time));
+			Log.d("service", "Driver Position API Call: " + status);
 		}
 
 		wl.release();

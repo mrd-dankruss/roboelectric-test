@@ -1104,6 +1104,32 @@ public class ServerInterface
 	}
 
 	/**
+	 * Post driver position
+	 * 
+	 * @param bagid
+	 * @param driverid
+	 * @param delayid
+	 * @return
+	 */
+	public String postDriverPosition(String bagid, String accuracy, String lat, String longn,
+			String trip_stop_id, String time)
+	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/trips/tracking?mrdToken=" + token + "&accuracy=" + accuracy
+				+ "&lat=" + lat + "&lon=" + longn + "&tripstopid=" + trip_stop_id + "&time=" + time;
+		String result = postData(url);
+		// Log.d(TAG,"zeus: "+ result);
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
+	}
+
+	/**
 	 * Post a delay to API
 	 * 
 	 * @param bagid
