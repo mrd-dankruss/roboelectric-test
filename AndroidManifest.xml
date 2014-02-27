@@ -322,6 +322,8 @@
         </receiver>
 
         <service android:name=".service.GCMIntentService" />
+        <service android:name=".service.LocationService" />
+        <receiver  android:process=":remote" android:name=".service.LocationBroadcastReceiver"></receiver>
 
     </application>
 

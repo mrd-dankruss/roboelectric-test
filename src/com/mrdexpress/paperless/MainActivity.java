@@ -42,6 +42,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 public class MainActivity extends Activity
@@ -90,7 +91,7 @@ public class MainActivity extends Activity
 		context = getApplicationContext();
 
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
-
+		
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
 		if (checkPlayServices())

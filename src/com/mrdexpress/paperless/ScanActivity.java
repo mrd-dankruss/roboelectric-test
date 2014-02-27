@@ -49,6 +49,7 @@ import com.mrdexpress.paperless.fragments.NotAssignedToUserDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
@@ -393,6 +394,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			@Override
 			public void onClick(View v)
 			{
+				stopService(new Intent(ScanActivity.this, LocationService.class));
 				dialog_change_user.dismiss();
 				Intent intent = new Intent(ScanActivity.this, MainActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
