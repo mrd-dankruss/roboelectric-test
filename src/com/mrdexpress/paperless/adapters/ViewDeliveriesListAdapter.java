@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.adapters;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -21,6 +22,7 @@ import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.VariableManager;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {
@@ -81,18 +83,18 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		
+
 		View rowView;
-		
+
 		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(), FontHelper
 				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_BOLD));
 
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		//TODO: Uncomment for food deliveries
-		//FIXME: Move all row related items inside if or else blocks
+
+		// TODO: Uncomment for food deliveries
+		// FIXME: Move all row related items inside if or else blocks
 		/*
 		if (delivery_type == DeliveryType.FOOD_DELIVERY)
 		{
@@ -138,6 +140,13 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			// Make ID of current next bag global
 			bag_id = values.get(position).getBagNumber();
 			Log.d(TAG, "Bag ID: " + bag_id);
+
+			// Store in sharedprefs
+			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString(VariableManager.PREF_CURRENT_BAGID, bag_id);
+			editor.apply();
 
 			// Add leading zero
 			if (position < 10)
@@ -240,7 +249,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 		case EXCHANGE:
 			return "YOUR NEXT EXCHANGE";
-			
+
 		case FOOD_DELIVERY:
 			return "YOUR NEXT FOOD DELIVERY";
 
@@ -261,7 +270,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 		case EXCHANGE:
 			return R.drawable.icon_exchange;
-			
+
 		case FOOD_DELIVERY:
 			return R.drawable.icon_food;
 
