@@ -41,9 +41,6 @@ public class ManagerHomeFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-
-				getActivity().startService(new Intent(getActivity(), LocationService.class));
-
 				// Start scan activity
 				Intent intent = new Intent(getActivity(), ScanActivity.class);
 

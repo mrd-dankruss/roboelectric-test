@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -70,10 +71,10 @@ public class LocationBroadcastReceiver extends BroadcastReceiver implements Loca
 					"Lat: " + location.getLatitude() + ", Long: " + location.getLongitude()
 							+ "Accuracy: " + location.getAccuracy());
 			String trip_id = DbHandler.getInstance(mContext).getStopId();
-			String status = ServerInterface.getInstance(mContext).postDriverPosition(bag_id,
-					String.valueOf(location.getAccuracy()), String.valueOf(location.getLatitude()),
+			new PostDriverPosition().execute(bag_id, String.valueOf(location.getAccuracy()),
+					String.valueOf(location.getLatitude()),
 					String.valueOf(location.getLongitude()), trip_id, String.valueOf(time));
-			Log.d("service", "Driver Position API Call: " + status);
+
 		}
 
 		wl.release();
@@ -271,5 +272,30 @@ public class LocationBroadcastReceiver extends BroadcastReceiver implements Loca
 	public IBinder onBind(Intent arg0)
 	{
 		return null;
+	}
+
+	private class PostDriverPosition extends AsyncTask<String, Void, Void>
+	{
+
+		String status = "";
+
+		@Override
+		protected void onPreExecute()
+		{
+		}
+
+		@Override
+		protected Void doInBackground(String... args)
+		{
+			status = ServerInterface.getInstance(mContext).postDriverPosition(args[0], args[1],
+					args[2], args[3], args[4], args[5]);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			Log.d("service", "Driver Position API Call: " + status);
+		}
 	}
 }

@@ -92,6 +92,8 @@ public class MainActivity extends Activity
 
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
 		
+		startService(new Intent(this, LocationService.class));
+		
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
 		if (checkPlayServices())
