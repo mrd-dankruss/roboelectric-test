@@ -110,14 +110,14 @@ public class SmsListFragment extends Fragment
 		adapter.notifyDataSetChanged();
 		holder.report_button.setEnabled(true);
 	}
-
+/*
 	private class SendSMSTask extends AsyncTask<String, Void, String>
 	{
 
 		private ProgressDialog dialog = new ProgressDialog(getActivity());
 
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
+		*//** progress dialog to show user that the backup is processing. *//*
+		*//** application context. *//*
 		@Override
 		protected void onPreExecute()
 		{
@@ -183,7 +183,7 @@ public class SmsListFragment extends Fragment
 			getActivity().finish();
 		}
 	}
-
+*/
 	/*
 	public void sendMessage()
 	{

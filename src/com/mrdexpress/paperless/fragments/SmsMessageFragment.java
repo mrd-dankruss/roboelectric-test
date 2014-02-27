@@ -121,7 +121,7 @@ public class SmsMessageFragment extends Fragment
 					args[0], "SMS", args[2]);
 
 			return ServerInterface.getInstance(getActivity()).postMessage(args[0], args[1],
-					args[2], args[3], result);
+					args[2], "SMS", result);
 			// return ""; // DEBUG
 		}
 
