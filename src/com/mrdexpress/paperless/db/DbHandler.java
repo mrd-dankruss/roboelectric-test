@@ -1298,7 +1298,7 @@ public class DbHandler extends SQLiteOpenHelper
 			{
 				// bags = new ArrayList<Bag>();
 
-				if (!cursor.isAfterLast())
+				while (!cursor.isAfterLast())
 				{
 					ComLogObject comlog = new ComLogObject(cursor.getString(cursor
 							.getColumnIndex(C_COMLOG_TIMESTAMP)), cursor.getString(cursor
