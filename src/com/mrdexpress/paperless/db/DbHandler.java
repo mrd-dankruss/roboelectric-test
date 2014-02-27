@@ -463,6 +463,14 @@ public class DbHandler extends SQLiteOpenHelper
 		return result;
 	}
 
+	/**
+	 * Add commlog record to DB
+	 * @param timestamp
+	 * @param note
+	 * @param user
+	 * @param bagid
+	 * @return
+	 */
 	public boolean addComLog(String timestamp, String note, String user, String bagid)
 	{
 		ContentValues values = new ContentValues();
