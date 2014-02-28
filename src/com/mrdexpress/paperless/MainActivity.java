@@ -156,6 +156,7 @@ public class MainActivity extends Activity
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_NAME);
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
 		editor.remove(VariableManager.PREF_DRIVERID);
+		editor.remove(VariableManager.PREF_CURRENT_BAGID);
 		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		editor.apply();
 

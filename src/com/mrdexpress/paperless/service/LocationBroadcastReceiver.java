@@ -24,7 +24,7 @@ import com.mrdexpress.paperless.net.ServerInterface;
 
 public class LocationBroadcastReceiver extends BroadcastReceiver implements LocationListener
 {
-
+private final String TAG = "LocationBroadcastReceiver";
 	private Context mContext;
 
 	// flag for GPS status
@@ -64,6 +64,7 @@ public class LocationBroadcastReceiver extends BroadcastReceiver implements Loca
 		String bag_id = prefs.getString(VariableManager.PREF_CURRENT_BAGID, null);
 		long time = System.currentTimeMillis() / 1000;
 
+		
 		if (bag_id != null)
 		{
 			location = getLocation();
@@ -75,6 +76,10 @@ public class LocationBroadcastReceiver extends BroadcastReceiver implements Loca
 					String.valueOf(location.getLatitude()),
 					String.valueOf(location.getLongitude()), trip_id, String.valueOf(time));
 
+		}
+		else
+		{
+			Log.d(TAG, "Zeus - locationreciever");
 		}
 
 		wl.release();

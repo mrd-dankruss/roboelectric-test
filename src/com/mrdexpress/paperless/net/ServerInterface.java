@@ -1104,11 +1104,14 @@ public class ServerInterface
 	}
 
 	/**
-	 * Post driver position
+	 * Report driver position.
 	 * 
 	 * @param bagid
-	 * @param driverid
-	 * @param delayid
+	 * @param accuracy
+	 * @param lat
+	 * @param longn
+	 * @param trip_stop_id
+	 * @param time
 	 * @return
 	 */
 	public String postDriverPosition(String bagid, String accuracy, String lat, String longn,
