@@ -82,7 +82,7 @@ public class DriverHomeFragment extends Fragment
 				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234123");
 				values.put(DbHandler.C_BAG_DEST_LONG, "33.1235242");
 				values.put(DbHandler.C_BAG_DEST_SUBURB, "New Orleans");
-				values.put(DbHandler.C_BAG_DEST_TOWN, "Paradise City");
+				//values.put(DbHandler.C_BAG_DEST_TOWN, "Paradise City");
 				values.put(DbHandler.C_BAG_BARCODE, "XMRDX68322");
 				values.put(DbHandler.C_BAG_ASSIGNED, 1);
 				values.put(DbHandler.C_BAG_STOPID, "1");
@@ -107,7 +107,7 @@ public class DriverHomeFragment extends Fragment
 				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1959521");
 				values.put(DbHandler.C_BAG_DEST_LONG, "33.5121201");
 				values.put(DbHandler.C_BAG_DEST_SUBURB, "Brakpan");
-				values.put(DbHandler.C_BAG_DEST_TOWN, "Saigon");
+				//values.put(DbHandler.C_BAG_DEST_TOWN, "Saigon");
 				values.put(DbHandler.C_BAG_BARCODE, "XMRDX68321");
 				values.put(DbHandler.C_BAG_ASSIGNED, 1);
 				values.put(DbHandler.C_BAG_SCANNED, 0);
