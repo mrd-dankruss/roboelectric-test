@@ -295,13 +295,7 @@ public class CreatePinActivity extends Activity
 			Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
 
 			DbHandler.getInstance(getApplicationContext());
-			// Pass driver name on
-			/*	intent.putExtra(VariableManager.EXTRA_DRIVER,
-						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
-
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
-
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 		}
 	}

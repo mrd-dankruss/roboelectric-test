@@ -480,6 +480,13 @@ public class MainActivity extends Activity
 				}
 				else
 				{
+					// Store currently selected driverid in shared prefs
+					SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+							Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
+					editor.apply();
+					
 					Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
 					startActivity(intent);
 				}
