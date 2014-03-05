@@ -396,7 +396,32 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_DRIVER_NAME, driver.getName());
 		values.put(C_DRIVER_PIN, driver.getPin());
 
-		return addRow(TABLE_DRIVERS, values);
+		String where_clause = C_DRIVER_ID + " LIKE '"
+				+ driver.getId() + "'";
+		
+		String countQuery = "SELECT * FROM " + TABLE_DRIVERS + " WHERE " + where_clause;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+
+		if (cursor.getCount() > 0)
+		{
+			cursor.close();
+			int affected_rows = db.update(TABLE_DRIVERS, values, where_clause, null);
+			if (affected_rows > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			
+			return addRow(TABLE_DRIVERS, values);
+		}
+
 	}
 
 	/**
@@ -414,7 +439,32 @@ public class DbHandler extends SQLiteOpenHelper
 		values.put(C_MANAGER_ID, id);
 		values.put(C_MANAGER_NAME, name);
 
-		return addRow(TABLE_MANAGERS, values);
+		String where_clause = C_MANAGER_ID + " LIKE '"
+				+ id + "'";
+		
+		String countQuery = "SELECT * FROM " + TABLE_MANAGERS + " WHERE " + where_clause;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+		
+		if (cursor.getCount() > 0)
+		{
+			cursor.close();
+			int affected_rows = db.update(TABLE_MANAGERS, values, where_clause, null);
+			if (affected_rows > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			
+			return addRow(TABLE_MANAGERS, values);
+		}
+		
 	}
 
 	public boolean addContact(String name, String number, String bagid)

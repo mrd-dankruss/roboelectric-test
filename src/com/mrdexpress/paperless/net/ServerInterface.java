@@ -303,7 +303,7 @@ public class ServerInterface
 			JSONObject jObject = new JSONObject(response);
 			if (jObject.has("response"))
 			{
-				drivers_jArray = jObject.getJSONObject("response").getJSONArray("driver");
+				drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
 			}
 			else if (jObject.has("error"))
 			{

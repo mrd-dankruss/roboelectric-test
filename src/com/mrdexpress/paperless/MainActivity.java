@@ -1,6 +1,16 @@
 package com.mrdexpress.paperless;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,6 +24,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -75,6 +86,8 @@ public class MainActivity extends Activity
 
 		new RequestTokenTask().execute();
 
+		new UpdateApp().execute();
+
 		// Check & store network availability
 		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
@@ -91,9 +104,9 @@ public class MainActivity extends Activity
 		context = getApplicationContext();
 
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
-		
+
 		startService(new Intent(this, LocationService.class));
-		
+
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
 		if (checkPlayServices())
@@ -486,7 +499,7 @@ public class MainActivity extends Activity
 					SharedPreferences.Editor editor = prefs.edit();
 					editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
 					editor.apply();
-					
+
 					Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
 					startActivity(intent);
 				}
@@ -881,6 +894,137 @@ public class MainActivity extends Activity
 		editor.putString(PROPERTY_REG_ID, regId);
 		editor.putInt(PROPERTY_APP_VERSION, appVersion);
 		editor.commit();
+	}
+
+	private class UpdateApp extends AsyncTask<Void, Void, Void>
+	{
+		String path = "/sdcard/paperless.apk";
+		boolean mustInstall = false;
+
+		private ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Checking for updates");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			try
+			{
+				PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+				Log.d("update", "Current version: " + pInfo.versionCode);
+
+				// Create a URL for the desired page
+				URL url = new URL("http://www.htdahms.co.za/version.txt");
+
+				// Read all the text returned by the server
+				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+				String read_line;
+				String[] temp_array;
+				int versionCode = 0;
+
+				while ((read_line = in.readLine()) != null)
+				{
+					Log.d("update", "Line: " + read_line);
+					if (read_line.contains("versionCode:"))
+					{
+						temp_array = read_line.split(":");
+						versionCode = Integer.parseInt(temp_array[1].trim());
+					}
+				}
+				in.close();
+
+				if (versionCode == 0)
+				{
+					// TODO: Error code that update directory on server has problem. Warn
+					// administrator.
+				}
+				else
+				{
+					Log.d("update", "Current version: " + pInfo.versionCode);
+					Log.d("update", "Server version: " + versionCode);
+					if (versionCode > pInfo.versionCode)
+					{
+						Log.d("update", "BOOM");
+						downloadAPK();
+						mustInstall = true;
+					}
+				}
+			}
+			catch (MalformedURLException e)
+			{
+			}
+			catch (IOException e)
+			{
+			}
+			catch (NameNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			if (mustInstall)
+			{
+				Intent i = new Intent();
+				i.setAction(Intent.ACTION_VIEW);
+				i.setDataAndType(Uri.fromFile(new File(path)),
+						"application/vnd.android.package-archive");
+				Log.d("Lofting", "About to install new .apk");
+				startActivity(i);
+			}
+
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
+		}
+	}
+
+	private void downloadAPK()
+	{
+		String path = "/sdcard/paperless.apk";
+		try
+		{
+			URL url = new URL("http://www.htdahms.co.za/paperless.apk");
+			URLConnection connection = url.openConnection();
+			connection.connect();
+
+			int fileLength = connection.getContentLength();
+
+			// download the file
+			InputStream input = new BufferedInputStream(url.openStream());
+			OutputStream output = new FileOutputStream(path);
+
+			byte data[] = new byte[1024];
+			long total = 0;
+			int count;
+			while ((count = input.read(data)) != -1)
+			{
+				total += count;
+				// publishProgress((int) (total * 100 / fileLength));
+				output.write(data, 0, count);
+			}
+
+			output.flush();
+			output.close();
+			input.close();
+		}
+		catch (Exception e)
+		{
+			Log.e("YourApp", "Well that didn't work out so well...");
+			Log.e("YourApp", e.getMessage());
+		}
 	}
 
 	public void initViewHolder()

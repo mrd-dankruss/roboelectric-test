@@ -86,7 +86,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	private String last_scanned_barcode;
 
 	SharedPreferences prefs;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -552,6 +552,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 							if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
 							{
 								selected_items.add(rawResult.getText());
+								holder.button_start_milkrun.setEnabled(true);
+								holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+								
 								/*
 								 * Update scanned status in db to reorder list.						 
 								 */
@@ -706,7 +709,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			}
 		}
 
-		if (holder.list.getCount() == 0)
+		if ((holder.list.getCount() == 0) || (selected_items.size() == 0))
 		{
 			holder.button_start_milkrun.setEnabled(false);
 			holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
@@ -847,7 +850,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			holder.list.setAdapter(cursor_adapter);
 
 			cursor_adapter.changeCursor(cursor);
-			if (holder.list.getCount() == 0)
+			if ((holder.list.getCount() == 0)  || (selected_items.size() == 0))
 			{
 				holder.button_start_milkrun.setEnabled(false);
 				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
