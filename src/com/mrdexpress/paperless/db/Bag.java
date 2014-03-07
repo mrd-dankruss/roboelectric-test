@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless.db;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Bag
 {
@@ -10,12 +11,15 @@ public class Bag
 	// Serial number of consignment bag
 	private String bag_number;
 
+	// Part of the workflow
+	private String bag_stopid;
+
 	// Destination of consignment
 	private String dest_hubname;
 	private String dest_hubcode;
 	private String dest_address;
 	private String dest_suburb;
-	private String dest_town;
+//	private String dest_town;
 	private String dest_contact;
 	private String dest_coords_lat;
 	private String dest_coords_long;
@@ -40,6 +44,9 @@ public class Bag
 	public static final String STATUS_PARTIAL = "partial";
 	public static final String STATUS_TODO = "incomplete";
 	public static final String STATUS_UNSUCCESSFUL = "unsuccessful";
+
+	private Date submission_date; // Date that delivery status was updated (if any)
+	private String status_reason;
 
 	// Has bag been assigned?
 	private boolean assigned;
@@ -72,12 +79,15 @@ public class Bag
 		setDestinationLat("");
 		setDestinationLong("");
 		setDestinationSuburb("");
-		setDestinationTown("");
+//		setDestinationTown("");
 		setScanned(false);
 		setAssigned(false);
 		setCreationTime("");
 		setStatus(STATUS_TODO);
+		setSubmissionDate(null);
+		setStatusReason("");
 		setDriverId("");
+		setStopId("");
 		number_items = 0;
 	}
 
@@ -255,7 +265,7 @@ public class Bag
 		this.dest_suburb = dest_suburb;
 	}
 
-	public String getDestinationTown()
+/*	public String getDestinationTown()
 	{
 		return dest_town;
 	}
@@ -263,7 +273,7 @@ public class Bag
 	public void setDestinationTown(String dest_town)
 	{
 		this.dest_town = dest_town;
-	}
+	}*/
 
 	public String getDestinationContact()
 	{
@@ -362,6 +372,57 @@ public class Bag
 	public void addContact(String name, String number)
 	{
 		this.contacts.add(new Contact(name, number));
+	}
+
+	/**
+	 * @return the submission_date
+	 */
+	public Date getSubmissionDate()
+	{
+		return submission_date;
+	}
+
+	/**
+	 * @param submission_date
+	 *            the submission_date to set
+	 */
+	public void setSubmissionDate(Date submission_date)
+	{
+		this.submission_date = submission_date;
+	}
+
+	/**
+	 * @return the status_reason
+	 */
+	public String getStatusReason()
+	{
+		return status_reason;
+	}
+
+	/**
+	 * @param status_reason
+	 *            the status_reason to set
+	 */
+	public void setStatusReason(String status_reason)
+	{
+		this.status_reason = status_reason;
+	}
+
+	/**
+	 * @return the bag_stopid
+	 */
+	public String getStopId()
+	{
+		return bag_stopid;
+	}
+
+	/**
+	 * @param bag_stopid
+	 *            the bag_stopid to set
+	 */
+	public void setStopId(String bag_stopid)
+	{
+		this.bag_stopid = bag_stopid;
 	}
 
 }

@@ -1,12 +1,15 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -40,7 +43,6 @@ public class ReportDelayListFragment extends Fragment
 
 	DialogFragment newFragment;
 	TextView subText;
-	ArrayList<DialogDataObject> values;
 	private int parentItemPosition;
 
 	@Override
@@ -58,7 +60,11 @@ public class ReportDelayListFragment extends Fragment
 
 		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getMilkrunDelayReasons(), false);
-		holder.list.setAdapter(adapter);
+
+		if ((adapter != null) & (holder.list != null))
+		{
+			holder.list.setAdapter(adapter);
+		}
 
 		holder.list.setOnItemClickListener(new OnItemClickListener()
 		{
@@ -97,10 +103,13 @@ public class ReportDelayListFragment extends Fragment
 				// Only perform action if there is a selection made
 				if (VariableManager.delay_id != null)
 				{
+					SharedPreferences prefs = getActivity().getApplicationContext()
+							.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+					String driverid = prefs.getString(VariableManager.PREF_DRIVERID, "");
+
 					new ReportDelayTask().execute(
 							getActivity().getIntent().getStringExtra(
-									VariableManager.EXTRA_NEXT_BAG_ID), getActivity().getIntent()
-									.getStringExtra(VariableManager.EXTRA_DRIVER_ID),
+									VariableManager.EXTRA_NEXT_BAG_ID), driverid,
 							VariableManager.delay_id);
 				}
 			}
@@ -141,6 +150,25 @@ public class ReportDelayListFragment extends Fragment
 		@Override
 		protected String doInBackground(String... args)
 		{
+
+			// TODO: Add com log here
+
+			Calendar c = Calendar.getInstance();
+			SimpleDateFormat sdf_date = new SimpleDateFormat("dd/MM/yyyy");
+			String date = sdf_date.format(c.getTime());
+			SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
+			String time = sdf_time.format(c.getTime());
+
+			String note = "Running "
+					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
+							.getSubText()
+					+ "late due to "
+					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
+							.getMainText() + "";
+
+			DbHandler.getInstance(getActivity()).addComLog(
+					"Delay reported at " + date + " at " + time, note, "DELAY", args[0]);
+
 			return ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
 		}
 
@@ -154,7 +182,6 @@ public class ReportDelayListFragment extends Fragment
 			}
 			Log.i(TAG, result);
 			VariableManager.delay_id = null;
-			Log.d(TAG, "zorro : postDelay response: " + result);
 
 			CustomToast custom_toast = new CustomToast(getActivity());
 			String status = "";
@@ -169,7 +196,7 @@ public class ReportDelayListFragment extends Fragment
 				e.printStackTrace();
 			}
 
-			if (status.equals("true"))
+			if (status.equals("success"))
 			{
 				custom_toast.setText("Success");
 				custom_toast.setSuccess(true);

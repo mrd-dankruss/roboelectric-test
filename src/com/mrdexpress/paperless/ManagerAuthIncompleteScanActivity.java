@@ -84,7 +84,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 					Context.MODE_PRIVATE);
 
-			final String driverid = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 			list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned(
 					driverid);
@@ -116,9 +116,24 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 				null);
 		last_logged_in_manager_id = prefs
 				.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
-
+		
 		// Display name of manager
-		holder.text_name.setText(last_logged_in_manager_name);
+		if (last_logged_in_manager_name == null)
+		{
+			holder.text_name.setText("(Please select \"Select Manager\" below first!)");
+			holder.button_change_manager.setText("Select Manager");
+			holder.button_change_manager.setBackgroundResource(R.drawable.button_custom);
+			holder.button_continue.setBackgroundResource(R.drawable.button_custom_grey);
+			holder.button_continue.setEnabled(false);
+		}
+		else
+		{
+			holder.text_name.setText(last_logged_in_manager_name);
+			holder.button_change_manager.setText("Change Manager");
+			holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
+			holder.button_continue.setBackgroundResource(R.drawable.button_custom);
+			holder.button_continue.setEnabled(true);
+		}
 	}
 
 	@Override
@@ -138,8 +153,6 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		{
 			public void onClick(View v)
 			{
-				// Perform action on click
-				Log.d("Click", "Click");
 				login();
 			}
 		});
@@ -148,7 +161,9 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 		{
 			public void onClick(View v)
 			{
-				// Perform action on click
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//				startActivity(intent);
+				startActivityForResult(intent, ScanActivity.RESULT_INCOMPLETE_SCAN_AUTH);
 				finish();
 			}
 		});
@@ -181,11 +196,12 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 				{
 
 					String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
+					hash = holder.editText_pin.getText().toString(); // DEBUG
 
 					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 							Context.MODE_PRIVATE);
 
-					final String driver_id = prefs.getString(VariableManager.EXTRA_DRIVER_ID, null);
+					final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
 					final boolean training_mode = prefs.getBoolean(
 							VariableManager.PREF_TRAINING_MODE, false);
 
@@ -301,8 +317,8 @@ public class ManagerAuthIncompleteScanActivity extends Activity
 			Intent intent = new Intent(getApplicationContext(),
 					ViewDeliveriesFragmentActivity.class);
 			// intent.putExtra(EXTRA_MESSAGE, message);
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-					getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 			startActivity(intent);
 
 			// Close progress spinner

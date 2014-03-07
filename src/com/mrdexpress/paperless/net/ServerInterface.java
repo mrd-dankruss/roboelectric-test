@@ -48,7 +48,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mrdexpress.paperless.MainActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Contact;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -67,13 +66,13 @@ public class ServerInterface
 	private static ServerInterface server_interface;
 	private static Context context;
 	private static final String API_URL = "http://uat.mrdexpress.com/api/";
-	private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
-	private static String token;
+	// private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
+	// private static String token="abcde";
+	private static SharedPreferences prefs;
 
 	public ServerInterface(Context ctx)
 	{
 		context = ctx;
-		// TODO Auto-generated constructor stub
 	}
 
 	// Return singleton instance of DbHandler
@@ -84,11 +83,16 @@ public class ServerInterface
 			server_interface = new ServerInterface(context.getApplicationContext());
 		}
 
-		if ((ServerInterface.token == null) | (ServerInterface.token == ""))
+		/*if ((ServerInterface.token == null) | (ServerInterface.token == ""))
 		{
-			SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-			ServerInterface.token = settings.getString(VariableManager.PREF_TOKEN, "");
+			 SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF,
+			 Context.MODE_PRIVATE);
+			 ServerInterface.token = settings.getString(VariableManager.PREF_TOKEN, "");
+		}*/
+
+		if (prefs == null)
+		{
+			prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 		}
 		return server_interface;
 	}
@@ -167,6 +171,7 @@ public class ServerInterface
 		editor.apply();
 
 		return status;
+		// return "abcde";
 	}
 
 	/**
@@ -181,15 +186,17 @@ public class ServerInterface
 	public String registerDeviceGCM(String imei, String gcm_id)
 	{
 
-		String url = "http://uat.mrdexpress.com/api/v1/push/register?imei=" + imei + "&mrdToken="
-				+ ServerInterface.token + "&gcmID=" + gcm_id;
-		
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+
+		String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken=" + token + "&gcmID="
+				+ gcm_id;
+
 		Log.d(TAG, "URL: " + url);
-		
+
 		String response = getInputStreamFromUrl(url);
 
 		Log.d(TAG, "Response: " + response);
-		
+
 		String status = "";
 
 		try
@@ -227,11 +234,11 @@ public class ServerInterface
 	 *            PIN number.
 	 * @return
 	 */
-	public String updatePIN(String id, String new_pin)
+	public String updatePIN(String id, String new_pin, String imei)
 	{
-
-		String url = "http://paperlessapp.apiary.io/v1/driver?id=" + id + "&mrdToken="
-				+ ServerInterface.token + "&driverPin=" + PinManager.toMD5(new_pin);
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken=" + token
+				+ "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei=" + imei;
 
 		String response = postData(url);
 
@@ -240,7 +247,15 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			status = jObject.getJSONObject("response").getJSONObject("driver").getString("status");
+			if (jObject.has("response"))
+			{
+				status = jObject.getJSONObject("response").getJSONObject("auth")
+						.getString("status");
+			}
+			else if (jObject.has("error"))
+			{
+				status = stripErrorCode(jObject.toString());
+			}
 
 		}
 		catch (JSONException e)
@@ -276,9 +291,8 @@ public class ServerInterface
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei_id = mngr.getDeviceId();
-
-		String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken=" + token;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -287,7 +301,17 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			drivers_jArray = jObject.getJSONObject("response").getJSONArray("driver");
+			if (jObject.has("response"))
+			{
+				drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
+			}
+			else if (jObject.has("error"))
+			{
+				/*CustomToast toast = new CustomToast(context);
+				toast.setSuccess(true);
+				toast.setText("Error" + stripErrorCode(jObject.toString()));
+				toast.show();*/
+			}
 		}
 		catch (JSONException e)
 		{
@@ -323,12 +347,10 @@ public class ServerInterface
 				}
 				catch (NumberFormatException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (JSONException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					if (VariableManager.DEBUG)
 					{
@@ -349,9 +371,8 @@ public class ServerInterface
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei_id = mngr.getDeviceId();
-
-		String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken=" + token;
 		String response = getInputStreamFromUrl(url);
 
 		JSONArray managers_jArray = null;
@@ -359,7 +380,17 @@ public class ServerInterface
 		try
 		{
 			JSONObject jObject = new JSONObject(response);
-			managers_jArray = jObject.getJSONObject("response").getJSONArray("manager");
+			if (jObject.has("response"))
+			{
+				managers_jArray = jObject.getJSONObject("response").getJSONArray("manager");
+			}
+			else if (jObject.has("error"))
+			{
+				/*CustomToast toast = new CustomToast((Activity) context);
+				toast.setSuccess(true);
+				toast.setText("Error" + stripErrorCode(jObject.toString()));
+				toast.show();*/
+			}
 		}
 		catch (JSONException e)
 		{
@@ -387,12 +418,10 @@ public class ServerInterface
 				}
 				catch (NumberFormatException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (JSONException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					if (VariableManager.DEBUG)
 					{
@@ -417,9 +446,9 @@ public class ServerInterface
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei_id = mngr.getDeviceId();
-
-		String url = API_URL + "v1/auth/driver?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token + "&driverPIN=" + PIN + "&driverID=" + driver_id;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/auth/driver?imei=" + imei_id + "&mrdToken=" + token
+				+ "&driverPIN=" + PIN + "&driverID=" + driver_id;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -469,9 +498,9 @@ public class ServerInterface
 	 */
 	public String authManager(String man_id, String driver_id, String PIN, String imei_id)
 	{
-		String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken="
-				+ ServerInterface.token + "&managerPIN=" + PIN + "&managerid=" + man_id
-				+ "&driverid=" + driver_id;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken=" + token
+				+ "&managerPIN=" + PIN + "&managerID=" + man_id;
 
 		String response = getInputStreamFromUrl(url);
 
@@ -521,8 +550,8 @@ public class ServerInterface
 	 */
 	public void downloadBags(Context context, String driver_id)
 	{
-		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -554,12 +583,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -589,8 +616,8 @@ public class ServerInterface
 	 */
 	public void downloadBag(Context context, String bag_id, String driver_id)
 	{
-		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -621,6 +648,9 @@ public class ServerInterface
 					// Status
 					String bag_status = result.getString("status");
 
+					// Status
+					String bag_stopid = result.getString("stopid");
+
 					// Waybill count
 					int waybill_count = result.getInt("waybillcount");
 
@@ -635,8 +665,9 @@ public class ServerInterface
 							.getJSONObject("address").getString("address");
 					String dest_suburb = result.getJSONObject("destination")
 							.getJSONObject("address").getString("suburb");
-					String dest_town = result.getJSONObject("destination").getJSONObject("address")
-							.getString("town");
+					// String dest_town =
+					// result.getJSONObject("destination").getJSONObject("address")
+					// .getString("town");
 					String dest_contact1 = result.getJSONObject("destination")
 							.getJSONObject("address").getString("contact1");
 					String dest_lat = result.getJSONObject("destination").getJSONObject("address")
@@ -651,11 +682,12 @@ public class ServerInterface
 					Bag bag = new Bag(id);
 					bag.setDriverId(driver_id);
 					bag.setBarcode(barcode);
+					bag.setStopId(bag_stopid);
 					bag.setDestinationHubCode(dest_hubcode);
 					bag.setDestinationHubName(dest_hubname);
 					bag.setDestinationAddress(dest_address);
 					bag.setDestinationSuburb(dest_suburb);
-					bag.setDestinationTown(dest_town);
+					// bag.setDestinationTown(dest_town);
 					bag.setDestinationLat(dest_lat);
 					bag.setDestinationLong(dest_long);
 					bag.setDestinationContact(dest_contact1);
@@ -720,7 +752,7 @@ public class ServerInterface
 
 						// ---- Delivery address
 						// Address
-						String address = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
+						/*String address = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
 								.getString("address");
 						String suburb = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
 								.getString("suburb");
@@ -729,10 +761,10 @@ public class ServerInterface
 						String lat = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
 								.getJSONObject("coords").getString("lat");
 						String lon = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getJSONObject("coords").getString("lon");
+								.getJSONObject("coords").getString("lon");*/
 
 						// --- Customer
-						String name = waybills.getJSONObject(j).getJSONObject("customer")
+						/*String name = waybills.getJSONObject(j).getJSONObject("customer")
 								.getString("name");
 						String idnumber = waybills.getJSONObject(j).getJSONObject("customer")
 								.getString("idnumber");
@@ -741,30 +773,30 @@ public class ServerInterface
 						String contact2 = waybills.getJSONObject(j).getJSONObject("customer")
 								.getString("contact2");
 						String email = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("email");
+								.getString("email");*/
 
 						// comlog
 						// comlog is a JSONArray ***
 						// String comlog = waybills.getJSONObject(j).getString("comlog");
 
 						// parcel count
-						int parcel_count = waybills.getJSONObject(j).getInt("parcelcount");
+						String parcel_count = waybills.getJSONObject(j).getString("parcelcount");
 
 						// Create Waybill object and add values
 						Waybill waybill = new Waybill(waybill_id, id);
-						waybill.setEmail(email);
+						// waybill.setEmail(email);
 						waybill.setBarcode(waybill_barcode);
 						waybill.setDimensions(dimensions);
 						waybill.setStatus(status);
-						waybill.setDeliveryTown(town);
-						waybill.setDeliverySuburb(suburb);
-						waybill.setDeliveryAddress(address);
-						waybill.setDeliveryLat(lat);
-						waybill.setDeliveryLong(lon);
-						waybill.setCustomerContact1(contact1);
-						waybill.setCustomerContact2(contact2);
-						waybill.setCustomerID(idnumber);
-						waybill.setCustomerName(name);
+						// waybill.setDeliveryTown(town);
+						// waybill.setDeliverySuburb(suburb);
+						// waybill.setDeliveryAddress(address);
+						// waybill.setDeliveryLat(lat);
+						// waybill.setDeliveryLong(lon);
+						// waybill.setCustomerContact1(contact1);
+						// waybill.setCustomerContact2(contact2);
+						// waybill.setCustomerID(idnumber);
+						// waybill.setCustomerName(name);
 						// waybill.setComLog(comlog);
 						waybill.setWeight(weight);
 						waybill.setParcelCount(parcel_count);
@@ -830,7 +862,8 @@ public class ServerInterface
 
 	public void downloadDelays(Context context)
 	{
-		String url = API_URL + "v1/milkruns/delays?mrdToken=" + ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/delays?mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -865,6 +898,16 @@ public class ServerInterface
 						// Durations
 						JSONArray durations = result.getJSONObject(i).getJSONArray("items");
 
+						values.put(DbHandler.C_DELAYS_REASON_ID, delay_id);
+						values.put(DbHandler.C_DELAYS_REASON, reason);
+
+						/*Log.d(TAG,
+								"Adding : "
+										+ reason
+										+ " "
+										+ DbHandler.getInstance(context).addRow(
+												DbHandler.TABLE_DELAYS, values));*/
+
 						for (int d = 0; d < durations.length(); d++)
 						{
 							// Duration ID
@@ -873,24 +916,28 @@ public class ServerInterface
 							// Duration
 							String duration = durations.getJSONObject(d).getString("name");
 
-							values.put(DbHandler.C_DELAYS_ID, delay_id);
-							values.put(DbHandler.C_DELAYS_REASON, reason);
+							values = new ContentValues();
+
 							values.put(DbHandler.C_DELAYS_DURATION_ID, duration_id);
 							values.put(DbHandler.C_DELAYS_DURATION, duration);
+							values.put(DbHandler.C_DELAYS_REASON_ID, delay_id);
 
-							Log.d(TAG, reason + " " + duration);
-
-							DbHandler.getInstance(context).addRow(DbHandler.TABLE_DELAYS, values);
+							Log.d(TAG,
+									"Adding : "
+											+ reason
+											+ " "
+											+ duration
+											+ " "
+											+ DbHandler.getInstance(context).addRow(
+													DbHandler.TABLE_DELAYS_DURATIONS, values));
 						}
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -914,8 +961,14 @@ public class ServerInterface
 
 	public void downloadFailedDeliveryReasons(Context context)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?mrdToken="
+		/*
+		String url = API_URL + "v1/milkruns/handover?mrdToken="
 				+ ServerInterface.token;
+		*/
+
+		// TODO: uncomment above, delete below.
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/handover?mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -956,12 +1009,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -985,8 +1036,8 @@ public class ServerInterface
 
 	public void downloadPartialDeliveryReasons(Context context)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/partial?mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/partial?mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1027,12 +1078,10 @@ public class ServerInterface
 					}
 					catch (NumberFormatException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (JSONException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						if (VariableManager.DEBUG)
 						{
@@ -1055,6 +1104,35 @@ public class ServerInterface
 	}
 
 	/**
+	 * Report driver position.
+	 * 
+	 * @param bagid
+	 * @param accuracy
+	 * @param lat
+	 * @param longn
+	 * @param trip_stop_id
+	 * @param time
+	 * @return
+	 */
+	public String postDriverPosition(String bagid, String accuracy, String lat, String longn,
+			String trip_stop_id, String time)
+	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/trips/tracking?mrdToken=" + token + "&accuracy=" + accuracy
+				+ "&lat=" + lat + "&lon=" + longn + "&tripstopid=" + trip_stop_id + "&time=" + time;
+		String result = postData(url);
+		// Log.d(TAG,"zeus: "+ result);
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
+	}
+
+	/**
 	 * Post a delay to API
 	 * 
 	 * @param bagid
@@ -1064,11 +1142,11 @@ public class ServerInterface
 	 */
 	public String postDelay(String bagid, String driverid, String delayid)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/delays?bagid=" + bagid
-				+ "&driverid=" + driverid + "&mrdToken=" + ServerInterface.token + "&delayid="
-				+ delayid;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + driverid
+				+ "&mrdToken=" + token + "&delayid=" + delayid;
 		String result = postData(url);
-
+		// Log.d(TAG,"zeus: "+ result);
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
 		{
 			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
@@ -1107,7 +1185,6 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1116,22 +1193,23 @@ public class ServerInterface
 				+ result_string + "&comExtra=" + comExtra.toString());*/
 
 		String status = null;
-		String url = "http://paperlessapp.apiary.io/v1/waybill/communication?id=" + bagid
-				+ "&comType=" + type + "&mrdToken=" + ServerInterface.token + "&comResult="
-				+ result_string;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/waybill/communication?id=" + bagid + "&comType=" + type
+				+ "&mrdToken=" + token + "&comResult=" + result_string;
+
+		Log.d(TAG, "Zeus: " + url);
+
 		try
 		{
 			status = doJSONPOST(url, comExtra, 5000);
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.e(TAG, e.toString());
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.e(TAG, e.toString());
 		}
@@ -1156,9 +1234,37 @@ public class ServerInterface
 	 */
 	public String postFailedHandover(String bag_id, String reason_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/milkruns/handover?bagid=" + bag_id
-				+ "&handoverid=" + reason_id + "&mrdToken=" + ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/waybill/delivery?id=" + bag_id + "&deliveryID=" + reason_id
+				+ "&mrdToken=" + token + "&extra=failed";
+		// Log.d(TAG, "Posting failed delivery: " + url);
+		String result = postData(url);
 
+		if (result.equals(VariableManager.TEXT_NET_ERROR))
+		{
+			return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+		}
+		else
+		{
+			return result;
+		}
+
+	}
+
+	/**
+	 * Post failed handover to API.
+	 * 
+	 * @param bag_id
+	 * @param reason_id
+	 *            IDs acquired from /milkrun/handover
+	 * @return
+	 */
+	public String postSuccessfulDelivery(String bag_id)
+	{
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/milkruns/handover?bagid=" + bag_id + "&mrdToken=" + token
+				+ "&extra=successful";
+		// Log.d(TAG, "Posting failed delivery: " + url);
 		String result = postData(url);
 
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
@@ -1180,11 +1286,12 @@ public class ServerInterface
 	 * @param extra
 	 * @return
 	 */
-	public String postPartialDelivery(String waybill_id, String status_id, String extra)
+	public String postPartialDelivery(String waybill_id, String status_id)
 	{
-		String url = "http://paperlessapp.apiary.io/v1/waybill/delivery?id=" + waybill_id
-				+ "&deliveryid=" + status_id + "&mrdToken=" + ServerInterface.token;
-
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/waybill/delivery?id=" + waybill_id + "&deliveryID=" + status_id
+				+ "&mrdToken=" + token + "&extra=partial";
+		// Log.d(TAG, "Posting partial delivery: " + url);
 		String result = postData(url);
 
 		if (result.equals(VariableManager.TEXT_NET_ERROR))
@@ -1258,7 +1365,7 @@ public class ServerInterface
 			{
 				obj = new JSONObject(stream);
 
-				if (obj.has("errro"))
+				if (obj.has("error"))
 				{
 					String error_code = stripErrorCode(stream);
 					if (error_code.equals(VariableManager.API_ERROR_CODE_UNAUTHORISED)) // Unauthorized
@@ -1280,8 +1387,7 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -1350,7 +1456,6 @@ public class ServerInterface
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
@@ -1358,7 +1463,6 @@ public class ServerInterface
 		}
 		catch (SocketTimeoutException e)
 		{
-			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, "Connection timeout");
@@ -1371,7 +1475,6 @@ public class ServerInterface
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
@@ -1388,6 +1491,8 @@ public class ServerInterface
 	// http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
 	public String postData(String url)
 	{
+		Log.i(TAG, "Posting: " + url);
+
 		// Create a new HttpClient and Post Header
 		// HttpClient httpclient = new DefaultHttpClient();
 		HttpClient httpclient = getNewHttpClient();
@@ -1426,7 +1531,6 @@ public class ServerInterface
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
 			return "";
-			// TODO Auto-generated catch block
 		}
 		catch (IOException e)
 		{
@@ -1434,7 +1538,6 @@ public class ServerInterface
 			e.printStackTrace(new PrintWriter(sw));
 			Log.e(TAG, sw.toString());
 			return VariableManager.TEXT_NET_ERROR;
-			// TODO Auto-generated catch block
 		}
 	}
 
@@ -1494,7 +1597,6 @@ public class ServerInterface
 			}
 			catch (JSONException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -1558,12 +1660,12 @@ public class ServerInterface
 	 * @param c
 	 * @param bag_id
 	 */
-	public String scanBag(Context context, String barcode)
+	public String scanBag(Context context, String barcode, String driver_id)
 	{
 		String id = "";
-
-		String url = API_URL_APIARY + "v1/bags/scan?barcode=" + barcode + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+		String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken=" + token
+				+ "driverID=" + driver_id;
 
 		// Log.i(TAG, "Fetching " + url);
 
@@ -1616,13 +1718,19 @@ public class ServerInterface
 		}
 
 		return id;
+		// return "success";
 	}
 
 	public String setNextDelivery(String id)
 	{
+		// Store in sharedprefs
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(VariableManager.PREF_CURRENT_BAGID, id);
+		editor.apply();
 
-		String url = "http://paperlessapp.apiary.io/v1/waybill/setnext?id=" + id + "&mrdToken="
-				+ ServerInterface.token;
+		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+
+		String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + token;
 
 		String response = postData(url);
 
@@ -1665,7 +1773,6 @@ public class ServerInterface
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

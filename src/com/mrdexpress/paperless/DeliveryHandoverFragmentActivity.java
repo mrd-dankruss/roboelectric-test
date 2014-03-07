@@ -47,7 +47,8 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 			// Make sure the request was successful
 			if (resultCode == RESULT_OK)
 			{
-				String bagid = getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
+				finish();
+				/*String bagid = getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
 				Bag bag = DbHandler.getInstance(getApplicationContext()).getBag(bagid);
 				bag.setStatus(Bag.STATUS_PARTIAL);
 				DbHandler.getInstance(getApplicationContext()).addBag(bag);
@@ -55,7 +56,8 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 				// The Intent's data Uri identifies which contact was selected.
 				finish();
 				// Do something with the contact here (bigger example below)
-			}
+				 *
+*/			}
 		}
 	}
 }

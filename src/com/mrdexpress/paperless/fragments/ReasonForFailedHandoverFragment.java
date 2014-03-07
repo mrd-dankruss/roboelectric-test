@@ -6,6 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -36,7 +38,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
 	private ViewHolder holder;
 	private View rootView;
 	private ReasonForFailedHandoverListAdapter adapter;
-	String delay_id;
+	String delay_id, delay_reason;
 
 	DialogFragment newFragment;
 	TextView subText;
@@ -74,6 +76,8 @@ public class ReasonForFailedHandoverFragment extends Fragment
 					setTick(position);
 					delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position))
 							.getSubText();
+					delay_reason = ((DialogDataObject) holder.list.getItemAtPosition(position))
+							.getMainText();
 					holder.report_button.setBackgroundResource(R.drawable.button_custom);
 					holder.report_button.setEnabled(true);
 				}
@@ -130,7 +134,36 @@ public class ReasonForFailedHandoverFragment extends Fragment
 		@Override
 		protected String doInBackground(String... args)
 		{
-			return ServerInterface.getInstance(getActivity()).postFailedHandover(args[0], args[1]);
+			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+					Context.MODE_PRIVATE);
+			boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+
+			if (training_mode)
+			{
+				return "success";
+			}
+			else
+			{
+				JSONObject result_object;
+				String status = "";
+				try
+				{
+					String json_string = ServerInterface.getInstance(getActivity())
+							.postFailedHandover(args[0], args[1]);
+					Log.d(TAG, json_string);
+					
+					result_object = new JSONObject(json_string);
+					status = result_object.getJSONObject("response").getJSONObject("waybill")
+							.getString("status");
+				}
+				catch (JSONException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return status;
+			}
 		}
 
 		@Override
@@ -144,35 +177,40 @@ public class ReasonForFailedHandoverFragment extends Fragment
 
 			// VariableManager.delay_id = null;
 
-			try
+			Log.d(TAG, "postFailedHandover: " + result);
+			if (result.equals("success"))
 			{
-				JSONObject result_object = new JSONObject(result);
-				String status = result_object.getString("response");
-				Log.d(TAG, "postFailedHandover: " + status);
-				if (status.equals("success"))
+				String bagid = getActivity().getIntent().getStringExtra(
+						VariableManager.EXTRA_NEXT_BAG_ID);
+
+				int no_rows_affected = DbHandler.getInstance(getActivity()).setDeliveryStatus(
+						bagid, Bag.STATUS_UNSUCCESSFUL, delay_reason);
+
+				if (no_rows_affected > 0)
 				{
 					CustomToast custom_toast = new CustomToast(getActivity());
 					custom_toast.setText("Success");
 					custom_toast.setSuccess(true);
 					custom_toast.show();
-					String bagid = getActivity().getIntent().getStringExtra(
-							VariableManager.EXTRA_NEXT_BAG_ID);
-					Bag bag = DbHandler.getInstance(getActivity()).getBag(bagid);
-					bag.setStatus(Bag.STATUS_UNSUCCESSFUL);
-					DbHandler.getInstance(getActivity()).addBag(bag);
 				}
 				else
 				{
 					CustomToast custom_toast = new CustomToast(getActivity());
-					custom_toast.setText("Failed");
-					custom_toast.setSuccess(false);
+					custom_toast.setText("Failed delivery status update failed");
+					custom_toast.setSuccess(true);
 					custom_toast.show();
 				}
+
+				/*Bag bag = DbHandler.getInstance(getActivity()).getBag(bagid);
+				bag.setStatus(Bag.STATUS_UNSUCCESSFUL);
+				DbHandler.getInstance(getActivity()).addBag(bag);*/
 			}
-			catch (JSONException e)
+			else
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				CustomToast custom_toast = new CustomToast(getActivity());
+				custom_toast.setText("Failed");
+				custom_toast.setSuccess(false);
+				custom_toast.show();
 			}
 
 			if (getActivity() != null)

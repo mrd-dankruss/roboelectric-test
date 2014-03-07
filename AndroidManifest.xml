@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mrdexpress.paperless"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="1600001"
+    android:versionName="1.0.0" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -79,11 +79,11 @@
             android:alwaysRetainTaskState="true"
             android:label="@string/title_scan_consignments"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.HomeActivity"
+            android:parentActivityName="com.mrdexpress.paperless.DriverHomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.HomeActivity" />
+                android:value="com.mrdexpress.paperless.DriverHomeActivity" />
         </activity>
         <activity
             android:name="com.mrdexpress.paperless.DriverListActivity"
@@ -325,7 +325,11 @@
                 <category android:name="com.mrdexpress.paperless" />
             </intent-filter>
         </receiver>
-        <service android:name=".service.GCMIntentService" />
+
+        <service android:name=".service.GCMIntentService" />
+        <service android:name=".service.LocationService" />
+        <receiver  android:process=":remote" android:name=".service.LocationBroadcastReceiver"></receiver>
+
     </application>
 
 </manifest>

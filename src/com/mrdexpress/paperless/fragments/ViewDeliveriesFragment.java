@@ -77,7 +77,7 @@ public class ViewDeliveriesFragment extends Fragment
 				Intent intent = new Intent(getActivity(),
 						DeliveryDetailsActivity.class);
 				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
+//				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
 				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");
 				startActivity(intent);
 			}

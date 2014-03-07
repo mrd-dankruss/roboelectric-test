@@ -95,8 +95,8 @@ public class ManagerListActivity extends ListActivity implements LoaderCallbacks
 					intent.putExtra(VariableManager.EXTRA_DRIVER,
 							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			/*		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 					startActivity(intent);
 				}

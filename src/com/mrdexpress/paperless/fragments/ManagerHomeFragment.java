@@ -13,6 +13,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.service.LocationService;
 
 public class ManagerHomeFragment extends Fragment
 {
@@ -47,8 +48,8 @@ public class ManagerHomeFragment extends Fragment
 				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
 						.getStringExtra(VariableManager.EXTRA_DRIVER));
 
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+				/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+							.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 				startActivity(intent);
 			}
@@ -82,15 +83,18 @@ public class ManagerHomeFragment extends Fragment
 			Typeface typeface_robotoBold = Typeface.createFromAsset(getActivity().getAssets(),
 					FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_BOLD));
-			
-			holder.button_auth_new_delivery_run = (Button) rootView.findViewById(R.id.button_home_manager_auth_new_delivery_run);
-			holder.button_milkrun = (Button) rootView.findViewById(R.id.button_home_manager_milkrun);
-			holder.button_training_run = (Button) rootView.findViewById(R.id.button_home_manager_training);
+
+			holder.button_auth_new_delivery_run = (Button) rootView
+					.findViewById(R.id.button_home_manager_auth_new_delivery_run);
+			holder.button_milkrun = (Button) rootView
+					.findViewById(R.id.button_home_manager_milkrun);
+			holder.button_training_run = (Button) rootView
+					.findViewById(R.id.button_home_manager_training);
 
 			holder.button_auth_new_delivery_run.setTypeface(typeface_robotoBold);
 			holder.button_milkrun.setTypeface(typeface_robotoBold);
 			holder.button_training_run.setTypeface(typeface_robotoBold);
-			
+
 			// Store the holder with the view.
 			rootView.setTag(holder);
 

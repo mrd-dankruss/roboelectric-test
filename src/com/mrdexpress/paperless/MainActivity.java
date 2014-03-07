@@ -1,6 +1,16 @@
 package com.mrdexpress.paperless;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,6 +24,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -42,6 +53,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 public class MainActivity extends Activity
@@ -74,6 +86,8 @@ public class MainActivity extends Activity
 
 		new RequestTokenTask().execute();
 
+		new UpdateApp().execute();
+
 		// Check & store network availability
 		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
@@ -90,6 +104,8 @@ public class MainActivity extends Activity
 		context = getApplicationContext();
 
 		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
+
+		startService(new Intent(this, LocationService.class));
 
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
@@ -150,8 +166,15 @@ public class MainActivity extends Activity
 		super.onResume();
 		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_NAME);
+		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
+		editor.remove(VariableManager.PREF_DRIVERID);
+		editor.remove(VariableManager.PREF_CURRENT_BAGID);
 		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		editor.apply();
+
+		holder.text_name.setText("");
+		holder.text_password.setText("");
 	}
 
 	/**
@@ -399,6 +422,7 @@ public class MainActivity extends Activity
 	private class DriverLoginUserTask extends AsyncTask<Void, Void, Boolean>
 	{
 
+		boolean isDriverPinSet = false;
 		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
 
 		/** progress dialog to show user that the backup is processing. */
@@ -417,22 +441,30 @@ public class MainActivity extends Activity
 			hash = holder.text_password.getText().toString(); // DEBUG *Remove when hashing is
 																// wanted again
 
-			String status = ServerInterface.getInstance(getApplicationContext()).authDriver(hash,
-					selected_user_id);
-
-			if (status.equals("success"))
+			if (DbHandler.getInstance(getApplicationContext()).isDriverPinSet(selected_user_id) == false)
 			{
-				// Store currently selected driverid in shared prefs
-				SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
-						Context.MODE_PRIVATE);
-				SharedPreferences.Editor editor = prefs.edit();
-				editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
-				editor.apply();
-
+				isDriverPinSet = false;
 				return true;
 			}
+			else
+			{
+				isDriverPinSet = true;
+				String status = ServerInterface.getInstance(getApplicationContext()).authDriver(
+						hash, selected_user_id);
 
-			return false;
+				if (status.equals("success"))
+				{
+					// Store currently selected driverid in shared prefs
+					SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+							Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
+					editor.apply();
+
+					return true;
+				}
+				return false;
+			}
 		}
 
 		@Override
@@ -441,21 +473,37 @@ public class MainActivity extends Activity
 
 			if (result == true)
 			{
-				Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-
-				DbHandler.getInstance(getApplicationContext());
-				// Pass driver name on
-				intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
-
-				Log.d(TAG, "Driver ID: " + selected_user_id);
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
-
-				startActivity(intent);
-				// Close progress spinner
-				if (dialog.isShowing())
+				if (isDriverPinSet)
 				{
-					dialog.dismiss();
+					Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
+
+					DbHandler.getInstance(getApplicationContext());
+					// Pass driver name on
+					intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
+
+					Log.d(TAG, "Driver ID: " + selected_user_id);
+					// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+
+					startActivity(intent);
+					// Close progress spinner
+					if (dialog.isShowing())
+					{
+						dialog.dismiss();
+					}
 				}
+				else
+				{
+					// Store currently selected driverid in shared prefs
+					SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
+							Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString(VariableManager.PREF_DRIVERID, selected_user_id);
+					editor.apply();
+
+					Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
+					startActivity(intent);
+				}
+
 			}
 			else
 			{
@@ -590,7 +638,7 @@ public class MainActivity extends Activity
 			intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
 
 			Log.d(TAG, "Driver ID: " + selected_user_id);
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+			// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
 
 			startActivity(intent);
 		}
@@ -633,7 +681,7 @@ public class MainActivity extends Activity
 			intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user_name);
 
 			Log.d(TAG, "Driver ID: " + selected_user_id);
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
+			// intent.putExtra(VariableManager.EXTRA_DRIVER_ID, selected_user_id);
 
 			startActivity(intent);
 		}
@@ -763,6 +811,7 @@ public class MainActivity extends Activity
 						gcm = GoogleCloudMessaging.getInstance(context);
 					}
 					regid = gcm.register(SENDER_ID);
+					Log.i(TAG, "GCM registration ID: " + regid);
 					msg = "Device registered, registration ID=" + regid;
 
 					// You should send the registration ID to your server over HTTP, so it
@@ -845,6 +894,137 @@ public class MainActivity extends Activity
 		editor.putString(PROPERTY_REG_ID, regId);
 		editor.putInt(PROPERTY_APP_VERSION, appVersion);
 		editor.commit();
+	}
+
+	private class UpdateApp extends AsyncTask<Void, Void, Void>
+	{
+		String path = "/sdcard/paperless.apk";
+		boolean mustInstall = false;
+
+		private ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute()
+		{
+			this.dialog_progress.setMessage("Checking for updates");
+			this.dialog_progress.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... urls)
+		{
+			try
+			{
+				PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+				Log.d("update", "Current version: " + pInfo.versionCode);
+
+				// Create a URL for the desired page
+				URL url = new URL("http://www.htdahms.co.za/version.txt");
+
+				// Read all the text returned by the server
+				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+				String read_line;
+				String[] temp_array;
+				int versionCode = 0;
+
+				while ((read_line = in.readLine()) != null)
+				{
+					Log.d("update", "Line: " + read_line);
+					if (read_line.contains("versionCode:"))
+					{
+						temp_array = read_line.split(":");
+						versionCode = Integer.parseInt(temp_array[1].trim());
+					}
+				}
+				in.close();
+
+				if (versionCode == 0)
+				{
+					// TODO: Error code that update directory on server has problem. Warn
+					// administrator.
+				}
+				else
+				{
+					Log.d("update", "Current version: " + pInfo.versionCode);
+					Log.d("update", "Server version: " + versionCode);
+					if (versionCode > pInfo.versionCode)
+					{
+						Log.d("update", "BOOM");
+						downloadAPK();
+						mustInstall = true;
+					}
+				}
+			}
+			catch (MalformedURLException e)
+			{
+			}
+			catch (IOException e)
+			{
+			}
+			catch (NameNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing)
+		{
+			if (mustInstall)
+			{
+				Intent i = new Intent();
+				i.setAction(Intent.ACTION_VIEW);
+				i.setDataAndType(Uri.fromFile(new File(path)),
+						"application/vnd.android.package-archive");
+				Log.d("Lofting", "About to install new .apk");
+				startActivity(i);
+			}
+
+			// Close progress spinner
+			if (dialog_progress.isShowing())
+			{
+				dialog_progress.dismiss();
+			}
+		}
+	}
+
+	private void downloadAPK()
+	{
+		String path = "/sdcard/paperless.apk";
+		try
+		{
+			URL url = new URL("http://www.htdahms.co.za/paperless.apk");
+			URLConnection connection = url.openConnection();
+			connection.connect();
+
+			int fileLength = connection.getContentLength();
+
+			// download the file
+			InputStream input = new BufferedInputStream(url.openStream());
+			OutputStream output = new FileOutputStream(path);
+
+			byte data[] = new byte[1024];
+			long total = 0;
+			int count;
+			while ((count = input.read(data)) != -1)
+			{
+				total += count;
+				// publishProgress((int) (total * 100 / fileLength));
+				output.write(data, 0, count);
+			}
+
+			output.flush();
+			output.close();
+			input.close();
+		}
+		catch (Exception e)
+		{
+			Log.e("YourApp", "Well that didn't work out so well...");
+			Log.e("YourApp", e.getMessage());
+		}
 	}
 
 	public void initViewHolder()

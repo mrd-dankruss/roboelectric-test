@@ -6,7 +6,7 @@ public class VariableManager
 {
 
 	public static final String EXTRA_DRIVER = "com.mrdexpress.paperless.name";
-	public static final String EXTRA_DRIVER_ID = "com.mrdexpress.paperless.driver_id";
+//	public static final String EXTRA_DRIVER_ID = "com.mrdexpress.paperless.driver_id";
 	public static final String EXTRA_LIST_SCANNED_ITEMS = "com.mrdexpress.paperless.list_of_scanned_items";
 	public static final String EXTRA_MANAGER_NAME = "com.mrdexpress.paperless.manager_name";
 	public static final String EXTRA_MANAGER_ID = "com.mrdexpress.paperless.manager_id";
@@ -35,6 +35,7 @@ public class VariableManager
 	// Shared prefs
 	public static final String PREF = "com.mrdexpress.paperless";
 	public static final String PREF_TOKEN = PREF + "." + "token";
+	public static final String PREF_CURRENT_BAGID = PREF + "." + "currentBagId";
 	public static final String PREF_NETWORK_AVAILABLE = PREF + "." + "avail";
 	public static final String PREF_DRIVERID = PREF + "." + "driverid";
 	public static final String PREF_TRAINING_MODE = "TrainingRunMode"; // Is a training run

@@ -1,5 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -12,6 +14,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,11 +59,15 @@ public class SmsListFragment extends Fragment
 	{
 		super.onResume();
 
-		adapter = new SmsDialogListAdapter(getActivity(),
-				DbHandler.getInstance(getActivity())
-						.getContacts(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID)), false);
+		// SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
+		// Context.MODE_PRIVATE);
+
+		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+		final String bag_id = getActivity().getIntent().getStringExtra(
+				VariableManager.EXTRA_NEXT_BAG_ID);
+
+		adapter = new SmsDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+				.getContacts(bag_id), false);
 
 		holder.list.setAdapter(adapter);
 
@@ -73,36 +81,17 @@ public class SmsListFragment extends Fragment
 				String sms_message = ((DialogDataObject) holder.list.getItemAtPosition(position))
 						.getSubText();
 
-				// Log.d(TAG, "Bag ID: " + bag_id);
+				SmsMessageFragment fragment_sms = SmsMessageFragment.newInstance(
+						((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText(),
+						bag_id);
+				FragmentManager fm = getFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.replace(R.id.activity_sms_container, fragment_sms);
+				ft.commit();
 
-				FragmentManager fm = getActivity().getSupportFragmentManager();
-				SMSDialog editNameDialog = SMSDialog.newInstance();
-				editNameDialog.setTargetFragment(
-						getFragmentManager().findFragmentById(R.id.activity_sms_container), 1);
-				editNameDialog.show(fm, "SMSFragment");
 			}
 		});
 
-		holder.report_button.setOnClickListener(new View.OnClickListener()
-		{
-
-			@Override
-			public void onClick(View v)
-			{
-				// TODO Auto-generated method stub
-				// Only perform action if there is a selection made
-
-				for (int i = 0; i < adapter.getCount(); i++)
-				{
-					new SendSMSTask().execute(
-							((DialogDataObject) adapter.getItem(parentItemPosition)).getThirdText(),
-							((DialogDataObject) adapter.getItem(parentItemPosition)).getSubText(),
-							getActivity().getIntent().getStringExtra(
-									VariableManager.EXTRA_NEXT_BAG_ID), "SMS", "true");
-
-				}
-			}
-		});
 		holder.report_button.setVisibility(View.VISIBLE);
 		holder.report_button.setEnabled(false);
 	}
@@ -121,14 +110,14 @@ public class SmsListFragment extends Fragment
 		adapter.notifyDataSetChanged();
 		holder.report_button.setEnabled(true);
 	}
-
+/*
 	private class SendSMSTask extends AsyncTask<String, Void, String>
 	{
 
 		private ProgressDialog dialog = new ProgressDialog(getActivity());
 
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
+		*//** progress dialog to show user that the backup is processing. *//*
+		*//** application context. *//*
 		@Override
 		protected void onPreExecute()
 		{
@@ -166,15 +155,19 @@ public class SmsListFragment extends Fragment
 			try
 			{
 				JSONObject obj = new JSONObject(result);
-				status = obj.getJSONObject("response").getString("status");
+				status = obj.getJSONObject("response").getJSONObject("waybill").getString("status");
+				Log.d(TAG, "zorro : " + status);
 			}
 			catch (JSONException e)
 			{
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				Log.e(TAG, sw.toString());
 			}
 
-			if (status.equals("true"))
+			if (status.equals("success"))
 			{
 				custom_toast.setText("Success");
 				custom_toast.setSuccess(true);
@@ -190,7 +183,7 @@ public class SmsListFragment extends Fragment
 			getActivity().finish();
 		}
 	}
-
+*/
 	/*
 	public void sendMessage()
 	{
@@ -240,6 +233,7 @@ public class SmsListFragment extends Fragment
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+			holder.report_button.setVisibility(View.INVISIBLE);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);

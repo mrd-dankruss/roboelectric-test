@@ -82,9 +82,10 @@ public class DriverHomeFragment extends Fragment
 				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234123");
 				values.put(DbHandler.C_BAG_DEST_LONG, "33.1235242");
 				values.put(DbHandler.C_BAG_DEST_SUBURB, "New Orleans");
-				values.put(DbHandler.C_BAG_DEST_TOWN, "Paradise City");
-				values.put(DbHandler.C_BAG_BARCODE, "42");
+				//values.put(DbHandler.C_BAG_DEST_TOWN, "Paradise City");
+				values.put(DbHandler.C_BAG_BARCODE, "XMRDX68322");
 				values.put(DbHandler.C_BAG_ASSIGNED, 1);
+				values.put(DbHandler.C_BAG_STOPID, "1");
 				values.put(DbHandler.C_BAG_SCANNED, 0);
 				values.put(DbHandler.C_BAG_CREATION_TIME, "191645B Feb 2014");
 				values.put(DbHandler.C_BAG_NUM_ITEMS, "1");
@@ -106,8 +107,8 @@ public class DriverHomeFragment extends Fragment
 				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1959521");
 				values.put(DbHandler.C_BAG_DEST_LONG, "33.5121201");
 				values.put(DbHandler.C_BAG_DEST_SUBURB, "Brakpan");
-				values.put(DbHandler.C_BAG_DEST_TOWN, "Saigon");
-				values.put(DbHandler.C_BAG_BARCODE, "51423");
+				//values.put(DbHandler.C_BAG_DEST_TOWN, "Saigon");
+				values.put(DbHandler.C_BAG_BARCODE, "XMRDX68321");
 				values.put(DbHandler.C_BAG_ASSIGNED, 1);
 				values.put(DbHandler.C_BAG_SCANNED, 0);
 				values.put(DbHandler.C_BAG_CREATION_TIME, "200844B Feb 2014");
@@ -123,7 +124,7 @@ public class DriverHomeFragment extends Fragment
 				values = new ContentValues();
 
 				values.put(DbHandler.C_WAYBILL_ID, "123"); // PK
-				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 1);
+//				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 1);
 				values.put(DbHandler.C_wAYBILL_PARCEL_SEQUENCE, 1 + " of " + 1);
 				values.put(DbHandler.C_WAYBILL_DIMEN, "102x13x40cm");
 				values.put(DbHandler.C_WAYBILL_CUSTOMER_CONTACT1, "0123341122");
@@ -141,7 +142,7 @@ public class DriverHomeFragment extends Fragment
 				values = new ContentValues();
 
 				values.put(DbHandler.C_WAYBILL_ID, "321"); // PK
-				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 2);
+//				values.put(DbHandler.C_WAYBILL_PARCELCOUNT, 2);
 				values.put(DbHandler.C_wAYBILL_PARCEL_SEQUENCE, 1 + " of " + 2);
 				values.put(DbHandler.C_WAYBILL_DIMEN, "54x131x32cm");
 				values.put(DbHandler.C_WAYBILL_CUSTOMER_CONTACT1, "0123341122");
@@ -174,12 +175,28 @@ public class DriverHomeFragment extends Fragment
 				DbHandler.getInstance(getActivity()).addRow(DbHandler.TABLE_WAYBILLS_TRAINING,
 						values);
 
+				values = new ContentValues();
+
+				values.put(DbHandler.C_FAILED_HANDOVER_REASONS_ID, "9");
+				values.put(DbHandler.C_FAILED_HANDOVER_REASONS_NAME, "Manager not on duty");
+
+				DbHandler.getInstance(getActivity()).addRow(
+						DbHandler.TABLE_FAILED_HANDOVER_REASONS_TRAINING, values);
+
+				values = new ContentValues();
+
+				values.put(DbHandler.C_FAILED_HANDOVER_REASONS_ID, "3");
+				values.put(DbHandler.C_FAILED_HANDOVER_REASONS_NAME, "Branch closed");
+
+				DbHandler.getInstance(getActivity()).addRow(
+						DbHandler.TABLE_FAILED_HANDOVER_REASONS_TRAINING, values);
+
 				// TODO: Implement training runs
 				// Start scan activity
 				Intent intent = new Intent(getActivity(), ScanActivity.class);
 
-				intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-						VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
+				/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+						VariableManager.TRAININGRUN_MILKRUN_DRIVERID);*/
 
 				startActivity(intent);
 			}
@@ -283,8 +300,8 @@ public class DriverHomeFragment extends Fragment
 			intent.putExtra(VariableManager.EXTRA_DRIVER,
 					getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
-			intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 			startActivity(intent);
 		}

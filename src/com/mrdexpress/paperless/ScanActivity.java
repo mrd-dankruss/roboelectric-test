@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import android.app.LoaderManager.LoaderCallbacks;
@@ -13,12 +14,14 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +39,7 @@ import android.widget.TextView;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
+import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.adapters.ScanSimpleCursorAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -45,6 +49,7 @@ import com.mrdexpress.paperless.fragments.NotAssignedToUserDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
@@ -73,19 +78,35 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	static final int REQUEST_MANUAL_BARCODE = 1;
 	static final int RESULT_MANAGER_AUTH = 2;
 	static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
+	static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
+	static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
 	private Intent intent_manual_barcode;
 	private String user_name;
 
 	private String last_scanned_barcode;
 
 	SharedPreferences prefs;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_scan);
+
+		// FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		int width = (int) (size.x - (size.x * 0.1));
+		int height = (int) (size.y - (size.y * 0.1));
+
+		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+
+		Intent intent = getIntent();
+		intent.setAction(Intents.Scan.ACTION);
+		intent.putExtra(Intents.Scan.WIDTH, width);
+		intent.putExtra(Intents.Scan.HEIGHT, height);
 
 		// Start rerieving milkruns list from server
 		// Param is driver ID, passed through from DriverListActivity
@@ -148,9 +169,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
 							.getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
 
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
-
 					startActivity(intent);
 				}
 			}
@@ -169,8 +187,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					// Go to View Deliveries screen
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(VariableManager.PREF_DRIVERID));
 					// EditText editText = (EditText) findViewById(R.id.edit_message);
 					// String message = editText.getText().toString();
 					// intent.putExtra(EXTRA_MESSAGE, message);
@@ -243,6 +259,27 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
+		if (dialog != null)
+		{
+			if (dialog.isShowing())
+			{
+				dialog.dismiss();
+			}
+		}
+		if (dialog_change_user != null)
+		{
+			if (dialog_change_user.isShowing())
+			{
+				dialog_change_user.dismiss();
+			}
+		}
+		if (dialog_not_assigned != null)
+		{
+			if (dialog_not_assigned.isShowing())
+			{
+				dialog_not_assigned.dismiss();
+			}
+		}
 		if (requestCode == REQUEST_MANUAL_BARCODE)
 		{
 			if (resultCode == RESULT_OK)
@@ -272,10 +309,30 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				{
 					Intent intent = new Intent(getApplicationContext(),
 							ViewDeliveriesFragmentActivity.class);
-					// intent.putExtra(EXTRA_MESSAGE, message);
-					intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-							getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+
 					startActivity(intent);
+				}
+			}
+		}
+		if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(
+						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+				{
+					startIncompleteScanActivity();
+				}
+			}
+		}
+		if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				if (data.getBooleanExtra(
+						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+				{
+					startNotAssignedActivity();
 				}
 			}
 		}
@@ -337,6 +394,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			@Override
 			public void onClick(View v)
 			{
+				stopService(new Intent(ScanActivity.this, LocationService.class));
 				dialog_change_user.dismiss();
 				Intent intent = new Intent(ScanActivity.this, MainActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -417,23 +475,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	 */
 	private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode)
 	{
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-		// Log.d(TAG, "checkDupe bag: " + bag_id);
-		// Iterate through each element until a dupe is found.
 		for (int i = 0; i < list.size(); i++)
 		{
-			// Log.d(TAG, "list: " + list.get(i));
-			if (DbHandler.getInstance(getApplicationContext())
-					.getBarcodeAtRow(driverid, Integer.parseInt(list.get(i))).equals(barcode))
+			if ((list.get(i)).equals(barcode))
 			{
-				// Log.d(TAG, "zorro checkDupe true");
 				return true;
 			}
 		}
-		// Log.d(TAG, "zorro checkDupe false");
 		return false;
 	}
 
@@ -444,8 +492,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
 	{
 		boolean parcel_in_list = false;
-		// Toast.makeText(this.getApplicationContext(), "Scanned code " + rawResult.getText(),
-		// Toast.LENGTH_LONG).show();
+
 		final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 
@@ -461,116 +508,91 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 		if (cursor != null)
 		{
-
 			cursor.moveToFirst();
-
 			/**
 			 * Start searching through all consignments for ones matching
 			 * barcode just scanned.
 			 */
-			// for (int i = 0; i < cursor.getCount(); i++) {
-
 			ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
 
 			int i = 0;
 			for (View child : all_views_within_top_view)
 			{
-
-				while (!cursor.isAfterLast())
+				if (child != null)
 				{
-					// Log.d(TAG, "Zorro i: " + i);
-					// RelativeLayout row = (RelativeLayout) holder.list.getChildAt(i);
-
-					if (child != null)
+					TextView text_view = (TextView) child // row
+							.findViewById(R.id.textView_row_scan);
+					if (text_view != null)
 					{
-						TextView text_view = (TextView) child // row
-								.findViewById(R.id.textView_row_scan);
-						if (text_view != null)
+
+						String str = text_view.getText().toString();
+						StringTokenizer tokenizer = new StringTokenizer(str);
+						String cons_number = tokenizer.nextToken();
+
+						// Compare barcode
+
+						if (cons_number.equals(rawResult.getText()))
 						{
+							Log.d(TAG, "Zorro decode barcode: " + cons_number);
+							parcel_in_list = true;
 
-							String str = text_view.getText().toString();
-							StringTokenizer tokenizer = new StringTokenizer(str);
-							String cons_number = tokenizer.nextToken();
+							// Match found. Mark as selected.
+							text_view.setTextColor(getResources().getColor(
+									R.color.colour_green_scan)); // Change
+							// colour
 
-							// Compare barcode
-
-							if (cons_number.equals(rawResult.getText()))
+							// Make tick
+							ImageView image_view_tick = (ImageView) child
+									.findViewById(R.id.imageView_row_scan_tick);
+							if (image_view_tick != null)
 							{
-								Log.d(TAG, "Zorro decode barcode: " + cons_number);
-								parcel_in_list = true;
+								image_view_tick.setVisibility(View.VISIBLE);
+							}
 
-								// Match found. Mark as selected.
-								text_view.setTextColor(getResources().getColor(
-										R.color.colour_green_scan)); // Change
-								// colour
+							if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
+							{
+								selected_items.add(rawResult.getText());
+								holder.button_start_milkrun.setEnabled(true);
+								holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+								
+								/*
+								 * Update scanned status in db to reorder list.						 
+								 */
+								Log.d(TAG, "set Scanned: " + rawResult.getText());
+								DbHandler.getInstance(getApplicationContext()).setScanned(
+										rawResult.getText(), true);
 
-								// Make tick
-								ImageView image_view_tick = (ImageView) child
-										.findViewById(R.id.imageView_row_scan_tick);
-								if (image_view_tick != null)
+								if (selected_items.size() == total_bags)
 								{
-									image_view_tick.setVisibility(View.VISIBLE);
-								}
-
-								// Log.d(TAG, "zorro selected item size: " + selected_items.size());
-								// Check if selected item has already been added.
-								if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
-								{
-									// Add this index to a list
-									selected_items.add(String.valueOf(i));
-									Log.d(TAG, "zorro selected item: " + selected_items.get(i));
-								}
-
-								// Log.d(TAG, selected_items.size() + "/" + total_bags);
-
-								// Make toast, with strawberry jam
-								if (selected_items.size() == total_bags) // All bags scanned
-								{
-									// displayToast(getString(R.string.text_scan_successful));
 									CustomToast toast = new CustomToast(this);
 									toast.setSuccess(true);
 									toast.setText(getString(R.string.text_scan_successful));
 									toast.show();
 								}
 								else
-								// Another bag scanned, not everything yet.
 								{
-									// displayToast(getString(R.string.text_scan_next));
 									CustomToast toast = new CustomToast(this);
 									toast.setSuccess(true);
 									toast.setText(getString(R.string.text_scan_next));
 									toast.show();
 								}
 							}
-							else
-							{
-
-								Log.d(TAG, "handleDecode(): no match " + cons_number);
-							}
 						}
-						// // Add this index to a list
-						// selected_items.add(String.valueOf(i));
+						else
+						{
 
-						/*
-						 * Update scanned status in db to reorder list.						 
-						 */
-						DbHandler.getInstance(getApplicationContext()).setScanned(
-								cursor.getString(cursor.getColumnIndex(DbHandler.C_BAG_ID)), true);
+							Log.d(TAG, "handleDecode(): no match " + cons_number);
+						}
+					}
 
-						// Refresh list
-						// cursor_adapter.notifyDataSetChanged();
-					}
-					else
-					{
-						Log.d(TAG, "handleDecode(): row is null");
-					}
-					// }
-					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.getPosition());
-					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.moveToNext());
-					Log.d(TAG, "Zorro cursor.moveToNext: " + cursor.getPosition());
-					// cursor.moveToNext();
-					i++;
+					// Refresh list
+					// cursor_adapter.notifyDataSetChanged();
 				}
+				else
+				{
+					Log.d(TAG, "handleDecode(): row is null");
+				}
+				i++;
 			}
 			if (parcel_in_list == false)
 			{
@@ -598,13 +620,14 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 									Intent intent = new Intent(getApplicationContext(),
 											LoginActivity.class);
 
-									startActivity(intent);
+									// startActivity(intent);
 									dialog_not_assigned.dismiss();
+									startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
 								}
 								else
 								{
-									startNotAssignedActivity();
 									dialog_not_assigned.dismiss();
+									startNotAssignedActivity();
 								}
 							}
 						});
@@ -630,13 +653,14 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								Intent intent = new Intent(getApplicationContext(),
 										LoginActivity.class);
 
-								startActivity(intent);
+								// startActivity(intent);
 								dialog_not_assigned.dismiss();
+								startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
 							}
 							else
 							{
-								startNotAssignedActivity();
 								dialog_not_assigned.dismiss();
+								startNotAssignedActivity();
 							}
 						}
 					});
@@ -670,8 +694,22 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				dialog.dismiss();
 			}
 		}
+		if (dialog_change_user != null)
+		{
+			if (dialog_change_user.isShowing())
+			{
+				dialog_change_user.dismiss();
+			}
+		}
+		if (dialog_not_assigned != null)
+		{
+			if (dialog_not_assigned.isShowing())
+			{
+				dialog_not_assigned.dismiss();
+			}
+		}
 
-		if (holder.list.getCount() == 0)
+		if ((holder.list.getCount() == 0) || (selected_items.size() == 0))
 		{
 			holder.button_start_milkrun.setEnabled(false);
 			holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
@@ -689,7 +727,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		super.onStop();
 
 		// Set all consignments' scanned state to false
-		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+		// DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 	}
 
 	/**
@@ -812,6 +850,16 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			holder.list.setAdapter(cursor_adapter);
 
 			cursor_adapter.changeCursor(cursor);
+			if ((holder.list.getCount() == 0)  || (selected_items.size() == 0))
+			{
+				holder.button_start_milkrun.setEnabled(false);
+				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+			}
+			else
+			{
+				holder.button_start_milkrun.setEnabled(true);
+				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+			}
 
 		}
 		markScannedItems();
@@ -820,7 +868,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	/**
 	 * This method allows you to release any resources you hold, so that the
 	 * Loader can free them. You can set any references to the cursor object you
-	 * hold to null. But do not close the cursor – the Loader does this for you.
+	 * hold to null. But do not close the cursor - the Loader does this for you.
 	 */
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader)
@@ -937,7 +985,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			{
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
-				startActivity(intent);
+				// startActivity(intent);
+				startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
 				dialog.dismiss();
 			}
 			else
@@ -953,12 +1002,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Start manager authorization activity
 		Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
 
-		// Pass driver name on
-		intent.putExtra(VariableManager.EXTRA_DRIVER,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
-
-		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+		intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
 
 		startActivityForResult(intent, RESULT_MANAGER_AUTH);
 	}
@@ -968,12 +1012,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		// Start manager authorization activity
 		Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
 
-		// Pass driver name on
-		intent.putExtra(VariableManager.EXTRA_DRIVER,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
-
-		intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-				getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+		// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+		// getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
 		startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
 	}
@@ -997,12 +1037,48 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 					Context.MODE_PRIVATE);
 
 			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+					false);
 
-			ServerInterface.getInstance(getApplicationContext()).downloadBag(
-					getApplicationContext(),
-					ServerInterface.getInstance(getApplicationContext()).scanBag(
-							getApplicationContext(), last_scanned_barcode), driverid);
+			if (training_mode)
+			{
+				ContentValues values = new ContentValues();
 
+				Random random = new Random();
+				int randomBagID = random.nextInt(1000);
+
+				values.put(DbHandler.C_BAG_ID, randomBagID); // PK
+				values.put(DbHandler.C_BAG_DEST_ADDRESS, "Sesami Street");
+				values.put(DbHandler.C_BAG_DEST_CONTACT, "012469977");
+				values.put(DbHandler.C_BAG_DEST_HUBCODE, "909090");
+				values.put(DbHandler.C_BAG_DEST_HUBNAME, "Philly");
+				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234231");
+				values.put(DbHandler.C_BAG_DEST_LONG, "33.1852100");
+				values.put(DbHandler.C_BAG_DEST_SUBURB, "Bel Air");
+				values.put(DbHandler.C_BAG_DEST_TOWN, "Philledelpia");
+				values.put(DbHandler.C_BAG_BARCODE, last_scanned_barcode);
+				values.put(DbHandler.C_BAG_ASSIGNED, 1);
+				values.put(DbHandler.C_BAG_SCANNED, 1);
+				values.put(DbHandler.C_BAG_CREATION_TIME, "241200B Feb 2014");
+				values.put(DbHandler.C_BAG_NUM_ITEMS, "1");
+				values.put(DbHandler.C_BAG_DRIVER_ID, VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
+				values.put(DbHandler.C_BAG_STATUS, Bag.STATUS_TODO);
+
+				Log.d(TAG,
+						"Added trainingrun bagid: "
+								+ randomBagID
+								+ " "
+								+ DbHandler.getInstance(getApplicationContext()).addRow(
+										DbHandler.TABLE_BAGS_TRAINING, values));
+
+			}
+			else
+			{
+				ServerInterface.getInstance(getApplicationContext()).downloadBag(
+						getApplicationContext(),
+						ServerInterface.getInstance(getApplicationContext()).scanBag(
+								getApplicationContext(), last_scanned_barcode, driverid), driverid);
+			}
 			return null;
 		}
 
@@ -1010,6 +1086,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		protected void onPostExecute(Void nothing)
 		{
 			handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+			getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
+
+			// Refresh list
+			// cursor_adapter.notifyDataSetChanged();
+			// holder.list.setAdapter(cursor_adapter);
+
 			// Close progress spinner
 			if (dialog_progress.isShowing())
 			{

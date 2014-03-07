@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -58,7 +59,6 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
 		holder.text_delivery_address.setText(bag.getDestinationAddress());
 		holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
-		// TODO: Remove hardcoded values
 
 		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog(
 				bag.getBagNumber());
@@ -67,7 +67,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		for (int i = 0; i < comlogs.size(); i++)
 		{
-			comlog_text = "SMS sent at " + comlog_text + comlogs.get(i).getTimestamp() + "\n"
+			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + "\n"
 					+ comlogs.get(i).getNote() + "\n";
 		}
 		holder.text_delivery_communication_log.setText(comlog_text);

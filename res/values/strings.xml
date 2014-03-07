@@ -133,6 +133,7 @@
     <string name="text_no_deliveries">You do not have any deliveries assigned to you at this moment</string>
     <string name="text_consignment_already_scanned">This consignment has already been scanned!</string>
     <string name="text_cod_delivery">This is a COD delivery</string>
+    <string name="text_trainingrun_call">Pretending to make phonecall</string>
 
     <!-- Abbreviations -->
     <string name="TAL">TAKEALOT</string>
