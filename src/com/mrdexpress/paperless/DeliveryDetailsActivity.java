@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mrdexpress.paperless.datatype.ComLogObject;
+import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment;
@@ -30,6 +32,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	private ViewHolder holder;
 	private View rootView;
 	private Bag bag;
+    private ArrayList<DeliveryHandoverDataObject> waybills;
 	Intent intent;
 
 	@Override
@@ -58,8 +61,18 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		holder.text_delivery_title.setText("CURRENT MILKRUN DELIVERY"); // TODO: Change
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
 		holder.text_delivery_address.setText(bag.getDestinationAddress());
-		holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
-
+		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
+        StringBuilder bagtext = new StringBuilder();
+        //holder.text_delivery_bad_id.setText("Parcel(s) to be delivered for :  " + bag.getBagNumber() + "\n");
+        waybills = DbHandler.getInstance(this).getWaybillsForHandover(intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
+        bagtext.append("Parcel(s) to be delivered for :  " + bag.getBarcode() + "<br />");
+        int teller = 1;
+        while (waybills.size() > 0){
+            DeliveryHandoverDataObject temp = waybills.remove(0);
+            bagtext.append("<b>" + teller + ". " + temp.getBarcode() + "</b><<br />");
+            teller += 1;
+        }
+        holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
 		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog(
 				bag.getBagNumber());
 

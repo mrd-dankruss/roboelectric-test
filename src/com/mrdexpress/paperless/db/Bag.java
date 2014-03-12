@@ -1,5 +1,11 @@
 package com.mrdexpress.paperless.db;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+import com.mrdexpress.paperless.helper.VariableManager;
+
 import java.util.ArrayList;
 import java.util.Date;
 
