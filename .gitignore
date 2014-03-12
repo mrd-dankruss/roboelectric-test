@@ -16,6 +16,8 @@ gen/
 # Ignore gradle files
 .gradle/
 build/
+.idea/
+*.iml
 
 # Local configuration file (sdk path, etc)
 local.properties
