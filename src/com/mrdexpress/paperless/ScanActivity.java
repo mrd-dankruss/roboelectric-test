@@ -57,6 +57,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 	private ViewHolder holder;
 	private View root_view;
+    private int BAG_COUNTER = 0;
+    private int BAG_TOTAL = 0;
 
 	private static final String TAG = "ScanActivity";
 	private static final long BULK_MODE_SCAN_DELAY_MS = 1000L; // Default 1000L
@@ -132,6 +134,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			Log.d(TAG, "restoring savedstate");
 			selected_items = savedInstanceState
 					.getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
+            Log.d(TAG, selected_items.toString());
 		}
 		else
 		{
@@ -139,6 +142,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			selected_items = new ArrayList<String>();
 			Log.d(TAG, "not restoring savedstate");
 		}
+
+
+
 
 		// Set click listener for list items (selecting a driver)
 
@@ -234,6 +240,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		holder.list.setAdapter(cursor_adapter);
 		// holder.list.setOnItemClickListener(AdapterUtils
 		// .createOnItemClickListener(this));
+
+
+
 	}
 
 	@Override
@@ -414,6 +423,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 			if (cursor != null & selected_items != null)
 			{
+                Log.d(TAG , selected_items.toString());
+
+                /* MOB-22 */
+                BAG_COUNTER += selected_items.size();
+                UpdateBagsCounter();
+
 				cursor.moveToFirst();
 				/*
 				 * Start searching through all consignments for ones matching
@@ -491,6 +506,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	@Override
 	public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
 	{
+
 		boolean parcel_in_list = false;
 
 		final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
@@ -559,6 +575,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 								 * Update scanned status in db to reorder list.						 
 								 */
 								Log.d(TAG, "set Scanned: " + rawResult.getText());
+
+                                /* MOB-22 */
+                                BAG_COUNTER += 1;
+                                UpdateBagsCounter();
+
 								DbHandler.getInstance(getApplicationContext()).setScanned(
 										rawResult.getText(), true);
 
@@ -826,6 +847,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
 				DbHandler.getInstance(getApplicationContext()), rawQuery, null);
 
+
 		return loader;
 	}
 
@@ -834,6 +856,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	 */
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
 	{
+        /* MOB-22 */
+        BAG_TOTAL = cursor.getCount();
+        UpdateBagsCounter();
+
 		if (cursor != null && cursor.getCount() > 0)
 		{
 
@@ -911,6 +937,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 			holder.button_start_milkrun.setTypeface(typeface_robotoBold);
 
+            holder.textview_scanstatus = (TextView) root_view.findViewById(R.id.scan_status_bar);
+
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
@@ -939,6 +967,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 		Button button_start_milkrun;
 		TextView textView_toast;
 		RelativeLayout relativeLayout_toast;
+        TextView textview_scanstatus;
 	}
 
 	/**
@@ -1099,5 +1128,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 			}
 		}
 	}
+
+    public void UpdateBagsCounter(){
+        holder.textview_scanstatus.setText( "Bags Scanned : (" + Integer.toString(BAG_COUNTER) + '/' +  Integer.toString(BAG_TOTAL) + ')');
+    }
 
 }

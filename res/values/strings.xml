@@ -181,4 +181,7 @@
     <string name="text_hint_mainmenu_enter_password">Tap here to enter your 4-digit PIN</string>
     <string name="text_hint_enter_barcode">Tap here to enter the barcode</string>
 
+    <!-- SCAN Screen -->
+    <string name="scan_statusbar">Bags Remaining</string><string name="test_scan_status">Bags Remaining</string>
+
 </resources>
