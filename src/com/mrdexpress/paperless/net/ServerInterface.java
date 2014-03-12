@@ -125,7 +125,7 @@ public class ServerInterface
 	{
 		TelephonyManager mngr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		String imei_id = "000000000"; //mngr.getDeviceId();
+		String imei_id = mngr.getDeviceId();
 
 		String url = API_URL + "v1/auth/auth?imei=" + imei_id;
 		String response = getInputStreamFromUrl(url);
