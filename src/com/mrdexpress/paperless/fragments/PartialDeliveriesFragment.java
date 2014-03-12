@@ -9,17 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 
-public class CompletedDeliveriesFragment extends Fragment
+public class PartialDeliveriesFragment extends Fragment
 {
 
-	private static final String TAG = "ViewDeliveriesFragment";
+	private static final String TAG = "ViewPartialDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
 	private CompletedDeliveriesListAdapter adapter;
@@ -40,23 +39,16 @@ public class CompletedDeliveriesFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
 		adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-				getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
+				getActivity()).getBagsByStatus(driverid, Bag.STATUS_PARTIAL));
 
 		holder.list.setAdapter(adapter);
 
-        adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-                getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
-        holder.list.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-
-
-        /*holder.button_completed.setOnClickListener(new View.OnClickListener()
+		/*holder.button_completed.setOnClickListener(new View.OnClickListener()
 		{
 
 			@Override
@@ -84,9 +76,8 @@ public class CompletedDeliveriesFragment extends Fragment
 				holder.list.setAdapter(adapter);
 				adapter.notifyDataSetChanged();
 			}
-		}); */
-
-	}
+		} */
+    }
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser)
@@ -119,12 +110,11 @@ public class CompletedDeliveriesFragment extends Fragment
 				holder = new ViewHolder();
 			}
 
-			holder.list = (ListView) rootView
-					.findViewById(R.id.fragment_successful_deliveries_container);
+			holder.list = (ListView)rootView.findViewById(R.id.fragment_successful_deliveries_container);
 			/*holder.button_completed = (Button) rootView
 					.findViewById(R.id.fragment_successful_deliveries_completed_button);
 			holder.button_partial = (Button) rootView
-					.findViewById(R.id.fragment_successful_deliveries_partial_button);*/
+					.findViewById(R.id.fragment_successful_deliveries_partial_button); */
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -149,6 +139,6 @@ public class CompletedDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
-		//Button button_completed, button_partial;
+		Button button_completed, button_partial;
 	}
 }

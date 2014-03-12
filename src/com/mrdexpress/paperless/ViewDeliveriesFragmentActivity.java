@@ -39,7 +39,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 	/**
 	 * The number of pages (wizard steps) to show in this demo.
 	 */
-	private static final int NUM_PAGES = 3;
+	private static final int NUM_PAGES = 4;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -47,10 +47,10 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_deliveries);
 
-		String[] tabs =
-		{ getResources().getString(R.string.tab_completed),
-				getResources().getString(R.string.tab_todo),
-				getResources().getString(R.string.tab_unsuccessful) };
+		String[] tabs =	{ getResources().getString(R.string.tab_todo),
+                            getResources().getString(R.string.tab_completed),
+                            getResources().getString(R.string.tab_partial),
+                            getResources().getString(R.string.tab_unsuccessful) };
 
 		// Initilization
 		mPager = (ViewPager) findViewById(R.id.view_deliveries_pager);
@@ -58,7 +58,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 		mPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
 		mPager.setAdapter(mPagerAdapter);
-		actionBar.setHomeButtonEnabled(true);
+		actionBar.setHomeButtonEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// Adding Tabs

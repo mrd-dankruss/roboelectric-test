@@ -89,9 +89,10 @@
     <string name="title_food_delivery_title">Order list</string>
 
     <!-- Tab titles -->
-    <string name="tab_completed">COMPLETED</string>
+    <string name="tab_completed">DONE</string>
     <string name="tab_todo">TO DO</string>
-    <string name="tab_unsuccessful">UNSUCCESSFUL</string>
+    <string name="tab_partial">PARTIAL</string>
+    <string name="tab_unsuccessful">FAILED</string>
 
     <!-- Texts -->
     <string name="text_reason_partial_delivery_heading">The following parcel(s) were not scanned. Please select a reason for non-delivery:</string>
