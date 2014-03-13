@@ -55,1079 +55,1087 @@ import com.mrdexpress.paperless.widget.CustomToast;
 public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
 {
 
-	private ViewHolder holder;
-	private View root_view;
+    private ViewHolder holder;
+    private View root_view;
     private int BAG_COUNTER = 0;
     private int BAG_TOTAL = 0;
 
-	private static final String TAG = "ScanActivity";
-	private static final long BULK_MODE_SCAN_DELAY_MS = 1000L; // Default 1000L
+    private static final String TAG = "ScanActivity";
+    private static final long BULK_MODE_SCAN_DELAY_MS = 1000L; // Default 1000L
 
-	private ScanSimpleCursorAdapter cursor_adapter;
-	private static final int URL_LOADER = 1;// Identifies a particular Loader
-											// being used in this component
-	static final String[] FROM =
-	{ DbHandler.C_BAG_BARCODE };
-	static final int[] TO =
-	{ R.id.textView_row_scan };
+    private ScanSimpleCursorAdapter cursor_adapter;
+    private static final int URL_LOADER = 1;// Identifies a particular Loader
+    // being used in this component
+    static final String[] FROM =
+            { DbHandler.C_BAG_BARCODE };
+    static final int[] TO =
+            { R.id.textView_row_scan };
 
-	private ArrayList<String> selected_items;
+    private ArrayList<String> selected_items;
 
-	private IncompleteScanDialog dialog;
-	private ChangeUserDialog dialog_change_user;
-	private NotAssignedToUserDialog dialog_not_assigned;
+    private IncompleteScanDialog dialog;
+    private ChangeUserDialog dialog_change_user;
+    private NotAssignedToUserDialog dialog_not_assigned;
 
-	static final int REQUEST_MANUAL_BARCODE = 1;
-	static final int RESULT_MANAGER_AUTH = 2;
-	static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
-	static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
-	static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
-	private Intent intent_manual_barcode;
-	private String user_name;
+    static final int REQUEST_MANUAL_BARCODE = 1;
+    static final int RESULT_MANAGER_AUTH = 2;
+    static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
+    static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
+    static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
+    private Intent intent_manual_barcode;
+    private String user_name;
 
-	private String last_scanned_barcode;
+    private String last_scanned_barcode;
 
-	SharedPreferences prefs;
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    SharedPreferences prefs;
 
-		setContentView(R.layout.activity_scan);
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-		// FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
-		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-		int width = (int) (size.x - (size.x * 0.1));
-		int height = (int) (size.y - (size.y * 0.1));
+        setContentView(R.layout.activity_scan);
 
-		DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+        // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = (int) (size.x - (size.x * 0.1));
+        int height = (int) (size.y - (size.y * 0.1));
 
-		Intent intent = getIntent();
-		intent.setAction(Intents.Scan.ACTION);
-		intent.putExtra(Intents.Scan.WIDTH, width);
-		intent.putExtra(Intents.Scan.HEIGHT, height);
+        DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 
-		// Start rerieving milkruns list from server
-		// Param is driver ID, passed through from DriverListActivity
-		// new
-		// RetrieveBagsTask().execute(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+        Intent intent = getIntent();
+        intent.setAction(Intents.Scan.ACTION);
+        intent.putExtra(Intents.Scan.WIDTH, width);
+        intent.putExtra(Intents.Scan.HEIGHT, height);
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+        // Start rerieving milkruns list from server
+        // Param is driver ID, passed through from DriverListActivity
+        // new
+        // RetrieveBagsTask().execute(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
-		// Store currently selected driver id globally
-		prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Store currently selected driver id globally
+        prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 		/*prefs.edit()
 				.putString(VariableManager.EXTRA_DRIVER_ID,
 						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();*/
 
-		user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
+        user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
 
-		initViewHolder();
+        initViewHolder();
 
-		if (savedInstanceState != null)
-		{
-			// Restore value of members from saved state
-			Log.d(TAG, "restoring savedstate");
-			selected_items = savedInstanceState
-					.getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
+        if (savedInstanceState != null)
+        {
+            // Restore value of members from saved state
+            Log.d(TAG, "restoring savedstate");
+            selected_items = savedInstanceState
+                    .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
             Log.d(TAG, selected_items.toString());
-		}
-		else
-		{
-			// initialize members with default values for a new instance
-			selected_items = new ArrayList<String>();
-			Log.d(TAG, "not restoring savedstate");
-		}
+        }
+        else
+        {
+            // initialize members with default values for a new instance
+            selected_items = new ArrayList<String>();
+            Log.d(TAG, "not restoring savedstate");
+        }
 
 
 
 
-		// Set click listener for list items (selecting a driver)
+        // Set click listener for list items (selecting a driver)
 
-		holder.list.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-			{
+        holder.list.setOnItemClickListener(new OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
 
-				// View manifest
-				if (holder.list.getItemAtPosition(position) != null)
-				{
-					Cursor c = (Cursor) holder.list.getItemAtPosition(position);
+                // View manifest
+                if (holder.list.getItemAtPosition(position) != null)
+                {
+                    Cursor c = (Cursor) holder.list.getItemAtPosition(position);
 
-					Intent intent = new Intent(getApplicationContext(),
-							ViewBagManifestActivity.class);
+                    Intent intent = new Intent(getApplicationContext(),
+                            ViewBagManifestActivity.class);
 
-					DbHandler.getInstance(getApplicationContext());
+                    DbHandler.getInstance(getApplicationContext());
 
-					// Pass info to view manifest activity
-					intent.putExtra(VariableManager.EXTRA_BAGID,
-							String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_BAG_ID))));
-					intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, String.valueOf(c
-							.getString(c.getColumnIndex(DbHandler.C_BAG_DEST_HUBNAME))));
-					// intent.putExtra(
-					// VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
-					// String.valueOf(manifest_number_items));
-					intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
-							.getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
+                    // Pass info to view manifest activity
+                    intent.putExtra(VariableManager.EXTRA_BAGID,
+                            String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_BAG_ID))));
+                    intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, String.valueOf(c
+                            .getString(c.getColumnIndex(DbHandler.C_BAG_DEST_HUBNAME))));
+                    // intent.putExtra(
+                    // VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
+                    // String.valueOf(manifest_number_items));
+                    intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
+                            .getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
 
-					startActivity(intent);
-				}
-			}
-		});
+                    startActivity(intent);
+                }
+            }
+        });
 
-		// Start Milkrun
-		holder.button_start_milkrun.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				// Check if all bags have been scanned
-				// if (true) // DEBUG
-				if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
-				{
-					// Go to View Deliveries screen
-					Intent intent = new Intent(getApplicationContext(),
-							ViewDeliveriesFragmentActivity.class);
-					// EditText editText = (EditText) findViewById(R.id.edit_message);
-					// String message = editText.getText().toString();
-					// intent.putExtra(EXTRA_MESSAGE, message);
-					startActivity(intent);
-				}
-				else
-				{
-					dialog = new IncompleteScanDialog(ScanActivity.this);
-					dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-					dialog.show();
+        // Start Milkrun
+        holder.button_start_milkrun.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // Check if all bags have been scanned
+                // if (true) // DEBUG
+                if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
+                {
+                    // Go to View Deliveries screen
+                    Intent intent = new Intent(getApplicationContext(),
+                            ViewDeliveriesFragmentActivity.class);
+                    // EditText editText = (EditText) findViewById(R.id.edit_message);
+                    // String message = editText.getText().toString();
+                    // intent.putExtra(EXTRA_MESSAGE, message);
+                    startActivity(intent);
+                }
+                else
+                {
+                    dialog = new IncompleteScanDialog(ScanActivity.this);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.show();
 
-					// LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+                    // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
 
-					final Button button_continue = (Button) dialog
-							.findViewById(R.id.button_incomplete_scan_continue);
+                    final Button button_continue = (Button) dialog
+                            .findViewById(R.id.button_incomplete_scan_continue);
 
-					button_continue.setOnClickListener(new OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							new RetrieveManagersTask().execute();
-						}
-					});
+                    button_continue.setOnClickListener(new OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            new RetrieveManagersTask().execute();
+                        }
+                    });
 
-					final Button button_scan = (Button) dialog
-							.findViewById(R.id.button_incomplete_scan_scan);
+                    final Button button_scan = (Button) dialog
+                            .findViewById(R.id.button_incomplete_scan_scan);
 
-					button_scan.setOnClickListener(new OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							dialog.dismiss();
-						}
-					});
-				}
-			}
-		});
+                    button_scan.setOnClickListener(new OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            dialog.dismiss();
+                        }
+                    });
+                }
+            }
+        });
 
-		// Initiate database
-		getLoaderManager().initLoader(URL_LOADER, null, this);
+        // Initiate database
+        getLoaderManager().initLoader(URL_LOADER, null, this);
 
-		// holder.list.setAdapter(AdapterUtils.createSectionAdapter(this));
-		holder.list.setAdapter(cursor_adapter);
-		// holder.list.setOnItemClickListener(AdapterUtils
-		// .createOnItemClickListener(this));
+        // holder.list.setAdapter(AdapterUtils.createSectionAdapter(this));
+        holder.list.setAdapter(cursor_adapter);
+        // holder.list.setOnItemClickListener(AdapterUtils
+        // .createOnItemClickListener(this));
 
 
 
-	}
+    }
 
-	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState)
-	{
-		super.onSaveInstanceState(savedInstanceState);
-		// Save UI state changes to the savedInstanceState.
-		// This bundle will be passed to onCreate if the process is
-		// killed and restarted.
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
 
-		if (selected_items.size() > 0)
-		{
-			savedInstanceState.putStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS,
-					selected_items);
+        if (selected_items.size() > 0)
+        {
+            savedInstanceState.putStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS,
+                    selected_items);
 
-			String msg = "onSaveInstanceState - "
-					+ savedInstanceState.getStringArrayList(
-							VariableManager.EXTRA_LIST_SCANNED_ITEMS).get(0);
-			Log.d(TAG, msg);
-		}
-	}
+            String msg = "onSaveInstanceState - "
+                    + savedInstanceState.getStringArrayList(
+                    VariableManager.EXTRA_LIST_SCANNED_ITEMS).get(0);
+            Log.d(TAG, msg);
+        }
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		if (dialog != null)
-		{
-			if (dialog.isShowing())
-			{
-				dialog.dismiss();
-			}
-		}
-		if (dialog_change_user != null)
-		{
-			if (dialog_change_user.isShowing())
-			{
-				dialog_change_user.dismiss();
-			}
-		}
-		if (dialog_not_assigned != null)
-		{
-			if (dialog_not_assigned.isShowing())
-			{
-				dialog_not_assigned.dismiss();
-			}
-		}
-		if (requestCode == REQUEST_MANUAL_BARCODE)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				holder.button_start_milkrun.setEnabled(true);
-				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-				handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
-						null, null, null), null, 0);
-			}
-		}
-		if (requestCode == RESULT_MANAGER_AUTH)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
-				{
-					new AddBagToDriver().execute();
-				}
-			}
-		}
-		if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				if (data.getBooleanExtra(
-						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
-				{
-					Intent intent = new Intent(getApplicationContext(),
-							ViewDeliveriesFragmentActivity.class);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Log.e("HANNO:" , "Activity request code : " + Integer.toString(requestCode));
+        Log.e("HANNO:" , "Activity result code : " + Integer.toString(resultCode));
+        Log.e("HANNO:" , "Activity result code : " + data.toString() );
 
-					startActivity(intent);
-				}
-			}
-		}
-		if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				if (data.getBooleanExtra(
-						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
-				{
-					startIncompleteScanActivity();
-				}
-			}
-		}
-		if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				if (data.getBooleanExtra(
-						ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
-				{
-					startNotAssignedActivity();
-				}
-			}
-		}
-	}
 
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState)
-	{
-		super.onRestoreInstanceState(savedInstanceState);
-		// Restore UI state from the savedInstanceState.
-		// This bundle has also been passed to onCreate.
+        if (dialog != null)
+        {
+            if (dialog.isShowing())
+            {
+                dialog.dismiss();
+            }
+        }
+        if (dialog_change_user != null)
+        {
+            if (dialog_change_user.isShowing())
+            {
+                dialog_change_user.dismiss();
+            }
+        }
+        if (dialog_not_assigned != null)
+        {
+            if (dialog_not_assigned.isShowing())
+            {
+                dialog_not_assigned.dismiss();
+            }
+        }
+        if (requestCode == REQUEST_MANUAL_BARCODE)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                holder.button_start_milkrun.setEnabled(true);
+                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+                handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
+                        null, null, null), null, 0);
+            }
+        }
+        if (requestCode == RESULT_MANAGER_AUTH)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
+                {
+                    new AddBagToDriver().execute();
+                }
+            }
+        }
+        if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                if (data.getBooleanExtra(
+                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+                {
+                    Intent intent = new Intent(getApplicationContext(),
+                            ViewDeliveriesFragmentActivity.class);
 
-		selected_items = savedInstanceState
-				.getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
+                    startActivity(intent);
+                }
+            }
+        }
+        if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                if (data.getBooleanExtra(
+                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+                {
+                    startIncompleteScanActivity();
+                }
+            }
+        }
+        if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE)
+        {
 
-		String msg = "onRestoreInstanceState - " + selected_items.get(0);
-		Log.d(TAG, msg);
-	}
+            if (resultCode == RESULT_OK)
+            {
 
-	private void setupChangeUserDialog()
-	{
-		dialog_change_user = new ChangeUserDialog(ScanActivity.this);
-		dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-		dialog_change_user.show();
+                if (data.getBooleanExtra(
+                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+                {
+                    startNotAssignedActivity();
+                }
+            }
+        }
+    }
 
-		// LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
 
-		final ImageButton button_close = (ImageButton) dialog_change_user
-				.findViewById(R.id.button_change_user_closeButton);
-		final Button button_cancel = (Button) dialog_change_user
-				.findViewById(R.id.button_change_user_cancel);
-		final Button button_ok = (Button) dialog_change_user
-				.findViewById(R.id.button_change_user_ok);
-		final TextView dialog_content = (TextView) dialog_change_user
-				.findViewById(R.id.text_change_driver_content);
+        selected_items = savedInstanceState
+                .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
 
-		dialog_content.setText("Are you sure you want to log out " + user_name + "?");
+        String msg = "onRestoreInstanceState - " + selected_items.get(0);
+        Log.d(TAG, msg);
+    }
 
-		button_close.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				dialog_change_user.dismiss();
-			}
-		});
+    private void setupChangeUserDialog()
+    {
+        dialog_change_user = new ChangeUserDialog(ScanActivity.this);
+        dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog_change_user.show();
 
-		button_cancel.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				dialog_change_user.dismiss();
-			}
-		});
+        // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
 
-		button_ok.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				stopService(new Intent(ScanActivity.this, LocationService.class));
-				dialog_change_user.dismiss();
-				Intent intent = new Intent(ScanActivity.this, MainActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-			}
-		});
-	}
+        final ImageButton button_close = (ImageButton) dialog_change_user
+                .findViewById(R.id.button_change_user_closeButton);
+        final Button button_cancel = (Button) dialog_change_user
+                .findViewById(R.id.button_change_user_cancel);
+        final Button button_ok = (Button) dialog_change_user
+                .findViewById(R.id.button_change_user_ok);
+        final TextView dialog_content = (TextView) dialog_change_user
+                .findViewById(R.id.text_change_driver_content);
 
-	/**
-	 * Ticks consignments off as they are scanned.
-	 */
-	private void markScannedItems()
-	{
-		if (cursor_adapter != null)
-		{
-			Cursor cursor = cursor_adapter.getCursor();
+        dialog_content.setText("Are you sure you want to log out " + user_name + "?");
 
-			if (cursor != null & selected_items != null)
-			{
+        button_close.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog_change_user.dismiss();
+            }
+        });
+
+        button_cancel.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog_change_user.dismiss();
+            }
+        });
+
+        button_ok.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                stopService(new Intent(ScanActivity.this, LocationService.class));
+                dialog_change_user.dismiss();
+                Intent intent = new Intent(ScanActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+    }
+
+    /**
+     * Ticks consignments off as they are scanned.
+     */
+    private void markScannedItems()
+    {
+        if (cursor_adapter != null)
+        {
+            Cursor cursor = cursor_adapter.getCursor();
+
+            if (cursor != null & selected_items != null)
+            {
                 Log.d(TAG , selected_items.toString());
 
                 /* MOB-22 */
                 BAG_COUNTER += selected_items.size();
                 UpdateBagsCounter();
 
-				cursor.moveToFirst();
+                cursor.moveToFirst();
 				/*
 				 * Start searching through all consignments for ones matching
 				 * barcode just scanned.
 				 */
-				// for (int i = 0; i < selected_items.size(); i++) {
-				for (int i = 0; i < getAllChildren(holder.list).size(); i++)
-				{
+                // for (int i = 0; i < selected_items.size(); i++) {
+                for (int i = 0; i < getAllChildren(holder.list).size(); i++)
+                {
 					/*
 					 * Extract TextView from cursorAdapter
 					 */
 
-					RelativeLayout row = (RelativeLayout) holder.list.getChildAt(Integer
-							.parseInt(selected_items.get(i)));
-					if (row != null)
-					{
-						TextView text_view = (TextView) row.findViewById(R.id.textView_row_scan);
-						text_view.setTextColor(getResources().getColor(R.color.colour_green_scan)); // Change
-																									// colour
+                    RelativeLayout row = (RelativeLayout) holder.list.getChildAt(Integer
+                            .parseInt(selected_items.get(i)));
+                    if (row != null)
+                    {
+                        TextView text_view = (TextView) row.findViewById(R.id.textView_row_scan);
+                        text_view.setTextColor(getResources().getColor(R.color.colour_green_scan)); // Change
+                        // colour
 
-						// Make tick
-						ImageView image_view_tick = (ImageView) row
-								.findViewById(R.id.imageView_row_scan_tick);
-						image_view_tick.setVisibility(View.VISIBLE);
-					}
-					cursor.moveToNext();
-				}
-			}
-			else
-			{
-				if (cursor == null)
-				{
-					Log.d(TAG, "markScannedItems() - cursor is null");
-				}
-				if (selected_items == null)
-				{
-					Log.d(TAG, "markScannedItems() - selected_items is null");
-				}
+                        // Make tick
+                        ImageView image_view_tick = (ImageView) row
+                                .findViewById(R.id.imageView_row_scan_tick);
+                        image_view_tick.setVisibility(View.VISIBLE);
+                    }
+                    cursor.moveToNext();
+                }
+            }
+            else
+            {
+                if (cursor == null)
+                {
+                    Log.d(TAG, "markScannedItems() - cursor is null");
+                }
+                if (selected_items == null)
+                {
+                    Log.d(TAG, "markScannedItems() - selected_items is null");
+                }
 				/*
 				 * if (selected_items.isEmpty()) { Log.d(TAG,
 				 * "markScannedItems() - selected_items is empty"); }
 				 */
-			}
-		}
-		else
-		{
-			Log.d(TAG, "markScannedItems() - cursor_adapter is null");
-		}
-	}
+            }
+        }
+        else
+        {
+            Log.d(TAG, "markScannedItems() - cursor_adapter is null");
+        }
+    }
 
-	/**
-	 * Search through list of scanned items to find if the current has been scanned already.
-	 * 
-	 * @param list
-	 *            The selected_items ArrayList
-	 * @param barcode
-	 *            Currently selected barcode
-	 * @return true is duplicate.
-	 */
-	private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode)
-	{
-		for (int i = 0; i < list.size(); i++)
-		{
-			if ((list.get(i)).equals(barcode))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Search through list of scanned items to find if the current has been scanned already.
+     *
+     * @param list
+     *            The selected_items ArrayList
+     * @param barcode
+     *            Currently selected barcode
+     * @return true is duplicate.
+     */
+    private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode)
+    {
+        for (int i = 0; i < list.size(); i++)
+        {
+            if ((list.get(i)).equals(barcode))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Barcode has been successfully scanned.
-	 */
-	@Override
-	public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
-	{
+    /**
+     * Barcode has been successfully scanned.
+     */
+    @Override
+    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
+    {
 
-		boolean parcel_in_list = false;
+        boolean parcel_in_list = false;
 
-		final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+        final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+                Context.MODE_PRIVATE);
 
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		Cursor cursor = null;
-		int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(driverid);
+        Cursor cursor = null;
+        int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(driverid);
 
-		if (cursor_adapter != null)
-		{
-			cursor = cursor_adapter.getCursor();
-		}
+        if (cursor_adapter != null)
+        {
+            cursor = cursor_adapter.getCursor();
+        }
 
-		if (cursor != null)
-		{
-			cursor.moveToFirst();
-			/**
-			 * Start searching through all consignments for ones matching
-			 * barcode just scanned.
-			 */
-			ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            /**
+             * Start searching through all consignments for ones matching
+             * barcode just scanned.
+             */
+            ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
 
-			int i = 0;
-			for (View child : all_views_within_top_view)
-			{
-				if (child != null)
-				{
-					TextView text_view = (TextView) child // row
-							.findViewById(R.id.textView_row_scan);
-					if (text_view != null)
-					{
+            int i = 0;
+            for (View child : all_views_within_top_view)
+            {
+                if (child != null)
+                {
+                    TextView text_view = (TextView) child // row
+                            .findViewById(R.id.textView_row_scan);
+                    if (text_view != null)
+                    {
 
-						String str = text_view.getText().toString();
-						StringTokenizer tokenizer = new StringTokenizer(str);
-						String cons_number = tokenizer.nextToken();
+                        String str = text_view.getText().toString();
+                        StringTokenizer tokenizer = new StringTokenizer(str);
+                        String cons_number = tokenizer.nextToken();
 
-						// Compare barcode
+                        // Compare barcode
 
-						if (cons_number.equals(rawResult.getText()))
-						{
-							Log.d(TAG, "Zorro decode barcode: " + cons_number);
-							parcel_in_list = true;
+                        if (cons_number.equals(rawResult.getText()))
+                        {
+                            Log.d(TAG, "Zorro decode barcode: " + cons_number);
+                            parcel_in_list = true;
 
-							// Match found. Mark as selected.
-							text_view.setTextColor(getResources().getColor(
-									R.color.colour_green_scan)); // Change
-							// colour
+                            // Match found. Mark as selected.
+                            text_view.setTextColor(getResources().getColor(
+                                    R.color.colour_green_scan)); // Change
+                            // colour
 
-							// Make tick
-							ImageView image_view_tick = (ImageView) child
-									.findViewById(R.id.imageView_row_scan_tick);
-							if (image_view_tick != null)
-							{
-								image_view_tick.setVisibility(View.VISIBLE);
-							}
+                            // Make tick
+                            ImageView image_view_tick = (ImageView) child
+                                    .findViewById(R.id.imageView_row_scan_tick);
+                            if (image_view_tick != null)
+                            {
+                                image_view_tick.setVisibility(View.VISIBLE);
+                            }
 
-							if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
-							{
-								selected_items.add(rawResult.getText());
-								holder.button_start_milkrun.setEnabled(true);
-								holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+                            if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
+                            {
+                                selected_items.add(rawResult.getText());
+                                holder.button_start_milkrun.setEnabled(true);
+                                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
 								
 								/*
 								 * Update scanned status in db to reorder list.						 
 								 */
-								Log.d(TAG, "set Scanned: " + rawResult.getText());
+                                Log.d(TAG, "set Scanned: " + rawResult.getText());
 
                                 /* MOB-22 */
                                 BAG_COUNTER += 1;
                                 UpdateBagsCounter();
 
-								DbHandler.getInstance(getApplicationContext()).setScanned(
-										rawResult.getText(), true);
+                                DbHandler.getInstance(getApplicationContext()).setScanned(
+                                        rawResult.getText(), true);
 
-								if (selected_items.size() == total_bags)
-								{
-									CustomToast toast = new CustomToast(this);
-									toast.setSuccess(true);
-									toast.setText(getString(R.string.text_scan_successful));
-									toast.show();
-								}
-								else
-								{
-									CustomToast toast = new CustomToast(this);
-									toast.setSuccess(true);
-									toast.setText(getString(R.string.text_scan_next));
-									toast.show();
-								}
-							}
-						}
-						else
-						{
+                                if (selected_items.size() == total_bags)
+                                {
+                                    CustomToast toast = new CustomToast(this);
+                                    toast.setSuccess(true);
+                                    toast.setText(getString(R.string.text_scan_successful));
+                                    toast.show();
+                                }
+                                else
+                                {
+                                    CustomToast toast = new CustomToast(this);
+                                    toast.setSuccess(true);
+                                    toast.setText(getString(R.string.text_scan_next));
+                                    toast.show();
+                                }
+                            }
+                        }
+                        else
+                        {
 
-							Log.d(TAG, "handleDecode(): no match " + cons_number);
-						}
-					}
+                            Log.d(TAG, "handleDecode(): no match " + cons_number);
+                        }
+                    }
 
-					// Refresh list
-					// cursor_adapter.notifyDataSetChanged();
-				}
-				else
-				{
-					Log.d(TAG, "handleDecode(): row is null");
-				}
-				i++;
-			}
-			if (parcel_in_list == false)
-			{
-				last_scanned_barcode = rawResult.getText();
-				if (dialog_not_assigned != null)
-				{
-					if (dialog_not_assigned.isShowing() == false)
-					{
-						dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-						dialog_not_assigned.getWindow().setBackgroundDrawable(
-								new ColorDrawable(Color.TRANSPARENT));
-						dialog_not_assigned.show();
+                    // Refresh list
+                    // cursor_adapter.notifyDataSetChanged();
+                }
+                else
+                {
+                    Log.d(TAG, "handleDecode(): row is null");
+                }
+                i++;
+            }
+            if (parcel_in_list == false)
+            {
+                last_scanned_barcode = rawResult.getText();
+                if (dialog_not_assigned != null)
+                {
+                    if (dialog_not_assigned.isShowing() == false)
+                    {
+                        dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+                        dialog_not_assigned.getWindow().setBackgroundDrawable(
+                                new ColorDrawable(Color.TRANSPARENT));
+                        dialog_not_assigned.show();
+                        final Button button_continue = (Button) dialog_not_assigned
+                                .findViewById(R.id.button_not_assigned_continue);
 
-						final Button button_continue = (Button) dialog_not_assigned
-								.findViewById(R.id.button_not_assigned_continue);
+                        button_continue.setOnClickListener(new OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                dialog_not_assigned.dismiss();
+                                if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+                                {
+                                    Intent intent = new Intent(getApplicationContext(),
+                                            LoginActivity.class);
 
-						button_continue.setOnClickListener(new OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								if (prefs
-										.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-								{
-									Intent intent = new Intent(getApplicationContext(),
-											LoginActivity.class);
+                                    // startActivity(intent);
+                                    dialog_not_assigned.dismiss();
+                                    startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
+                                }
+                                else
+                                {
+                                    dialog_not_assigned.dismiss();
+                                    startNotAssignedActivity();
+                                }
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+                    dialog_not_assigned.getWindow().setBackgroundDrawable(
+                            new ColorDrawable(Color.TRANSPARENT));
+                    dialog_not_assigned.show();
+                    final Button button_continue = (Button) dialog_not_assigned
+                            .findViewById(R.id.button_not_assigned_continue);
 
-									// startActivity(intent);
-									dialog_not_assigned.dismiss();
-									startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-								}
-								else
-								{
-									dialog_not_assigned.dismiss();
-									startNotAssignedActivity();
-								}
-							}
-						});
-					}
-				}
-				else
-				{
-					dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-					dialog_not_assigned.getWindow().setBackgroundDrawable(
-							new ColorDrawable(Color.TRANSPARENT));
-					dialog_not_assigned.show();
+                    button_continue.setOnClickListener(new OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+                            {
+                                Intent intent = new Intent(getApplicationContext(),
+                                        LoginActivity.class);
 
-					final Button button_continue = (Button) dialog_not_assigned
-							.findViewById(R.id.button_not_assigned_continue);
+                                // startActivity(intent);
+                                dialog_not_assigned.dismiss();
+                                startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
+                            }
+                            else
+                            {
+                                dialog_not_assigned.dismiss();
+                                startNotAssignedActivity();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        else
+        {
+            Log.d(TAG, "handleDecode(): cursor_adapter is null");
+        }
 
-					button_continue.setOnClickListener(new OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-							{
-								Intent intent = new Intent(getApplicationContext(),
-										LoginActivity.class);
+        // Restart barcode scanner to allow for 'semi-automatic firing'
+        restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
+    }
 
-								// startActivity(intent);
-								dialog_not_assigned.dismiss();
-								startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-							}
-							else
-							{
-								dialog_not_assigned.dismiss();
-								startNotAssignedActivity();
-							}
-						}
-					});
-				}
-			}
-		}
-		else
-		{
-			Log.d(TAG, "handleDecode(): cursor_adapter is null");
-		}
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (selected_items != null)
+        {
+            Log.d(TAG, "Items selected: " + String.valueOf(selected_items.size()));
+        }
 
-		// Restart barcode scanner to allow for 'semi-automatic firing'
-		restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
-	}
+        // Close dialog if it is showing upon resuming screen.
+        // Or else it is still open when backing out of ManagerAuthIncompleteScanActivity
+        if (dialog != null)
+        {
+            if (dialog.isShowing())
+            {
+                dialog.dismiss();
+            }
+        }
+        if (dialog_change_user != null)
+        {
+            if (dialog_change_user.isShowing())
+            {
+                dialog_change_user.dismiss();
+            }
+        }
+        if (dialog_not_assigned != null)
+        {
+            if (dialog_not_assigned.isShowing())
+            {
+                dialog_not_assigned.dismiss();
+            }
+        }
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		if (selected_items != null)
-		{
-			Log.d(TAG, "Items selected: " + String.valueOf(selected_items.size()));
-		}
+        if ((holder.list.getCount() == 0) || (selected_items.size() == 0))
+        {
+            holder.button_start_milkrun.setEnabled(false);
+            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+        }
+        else
+        {
+            holder.button_start_milkrun.setEnabled(true);
+            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+        }
+    }
 
-		// Close dialog if it is showing upon resuming screen.
-		// Or else it is still open when backing out of ManagerAuthIncompleteScanActivity
-		if (dialog != null)
-		{
-			if (dialog.isShowing())
-			{
-				dialog.dismiss();
-			}
-		}
-		if (dialog_change_user != null)
-		{
-			if (dialog_change_user.isShowing())
-			{
-				dialog_change_user.dismiss();
-			}
-		}
-		if (dialog_not_assigned != null)
-		{
-			if (dialog_not_assigned.isShowing())
-			{
-				dialog_not_assigned.dismiss();
-			}
-		}
+    @Override
+    public void onStop()
+    {
+        super.onStop();
 
-		if ((holder.list.getCount() == 0) || (selected_items.size() == 0))
-		{
-			holder.button_start_milkrun.setEnabled(false);
-			holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
-		}
-		else
-		{
-			holder.button_start_milkrun.setEnabled(true);
-			holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-		}
-	}
+        // Set all consignments' scanned state to false
+        // DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+    }
 
-	@Override
-	public void onStop()
-	{
-		super.onStop();
+    /**
+     * Returns ALL rows in a ListView, not just the visible ones.
+     *
+     * @param v
+     * @return ArrayList<View>
+     */
+    private ArrayList<View> getAllChildren(View v)
+    {
 
-		// Set all consignments' scanned state to false
-		// DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
-	}
+        if (!(v instanceof ViewGroup))
+        {
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            return viewArrayList;
+        }
 
-	/**
-	 * Returns ALL rows in a ListView, not just the visible ones.
-	 * 
-	 * @param v
-	 * @return ArrayList<View>
-	 */
-	private ArrayList<View> getAllChildren(View v)
-	{
+        ArrayList<View> result = new ArrayList<View>();
 
-		if (!(v instanceof ViewGroup))
-		{
-			ArrayList<View> viewArrayList = new ArrayList<View>();
-			viewArrayList.add(v);
-			return viewArrayList;
-		}
+        ViewGroup vg = (ViewGroup) v;
+        for (int i = 0; i < vg.getChildCount(); i++)
+        {
 
-		ArrayList<View> result = new ArrayList<View>();
+            View child = vg.getChildAt(i);
 
-		ViewGroup vg = (ViewGroup) v;
-		for (int i = 0; i < vg.getChildCount(); i++)
-		{
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            viewArrayList.addAll(getAllChildren(child));
 
-			View child = vg.getChildAt(i);
+            result.addAll(viewArrayList);
+        }
+        return result;
+    }
 
-			ArrayList<View> viewArrayList = new ArrayList<View>();
-			viewArrayList.add(v);
-			viewArrayList.addAll(getAllChildren(child));
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.scan, menu);
+        return true;
+    }
 
-			result.addAll(viewArrayList);
-		}
-		return result;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.action_scan_enter_barcode:
+                Log.d(TAG, "Enter barcode manually");
+                intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
+                startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
+                return true;
+            case R.id.action_scan_change_driver:
+                Log.d(TAG, "Change driver");
+                setupChangeUserDialog();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.scan, menu);
-		return true;
-	}
+    /**
+     * Manages your Loaders for you. Responsible for dealing with the Activity
+     * or Fragment lifecycle.
+     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args)
+    {
+        DbHandler.getInstance(this);
+        String rawQuery = "";
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-		// Respond to the action bar's Up/Home button
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		case R.id.action_scan_enter_barcode:
-			Log.d(TAG, "Enter barcode manually");
-			intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
-			startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
-			return true;
-		case R.id.action_scan_change_driver:
-			Log.d(TAG, "Change driver");
-			setupChangeUserDialog();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+        SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-	/**
-	 * Manages your Loaders for you. Responsible for dealing with the Activity
-	 * or Fragment lifecycle.
-	 */
-	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args)
-	{
-		DbHandler.getInstance(this);
-		String rawQuery = "";
+        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+        final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        // If training run is started, load fake data
+        if (training_mode)
+        {
+            // Just keeping it in a DB table to not mess with loader.
+            // Log.d(TAG, "zorro training run");
+            rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS_TRAINING + " ORDER BY "
+                    + DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
+        }
+        else
+        {
+            rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
+                    + DbHandler.C_BAG_DRIVER_ID + " LIKE '" + driverid + "'" + " ORDER BY "
+                    + DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
+        }
 
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-		final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
-
-		// If training run is started, load fake data
-		if (training_mode)
-		{
-			// Just keeping it in a DB table to not mess with loader.
-			// Log.d(TAG, "zorro training run");
-			rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS_TRAINING + " ORDER BY "
-					+ DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
-		}
-		else
-		{
-			rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
-					+ DbHandler.C_BAG_DRIVER_ID + " LIKE '" + driverid + "'" + " ORDER BY "
-					+ DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
-		}
-
-		SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
-				DbHandler.getInstance(getApplicationContext()), rawQuery, null);
+        SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
+                DbHandler.getInstance(getApplicationContext()), rawQuery, null);
 
 
-		return loader;
-	}
+        return loader;
+    }
 
-	/**
-	 * Update the UI based on the results of your query.
-	 */
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
-	{
+    /**
+     * Update the UI based on the results of your query.
+     */
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+    {
         /* MOB-22 */
         BAG_TOTAL = cursor.getCount();
         UpdateBagsCounter();
 
-		if (cursor != null && cursor.getCount() > 0)
-		{
+        if (cursor != null && cursor.getCount() > 0)
+        {
 
-			cursor.moveToFirst();
+            cursor.moveToFirst();
 
-			/**
-			 * Moves the query results into the adapter, causing the ListView
-			 * fronting this adapter to re-display
-			 */
+            /**
+             * Moves the query results into the adapter, causing the ListView
+             * fronting this adapter to re-display
+             */
 
-			cursor_adapter = new ScanSimpleCursorAdapter(this, R.layout.row_scan, cursor, FROM, TO,
-					0);
+            cursor_adapter = new ScanSimpleCursorAdapter(this, R.layout.row_scan, cursor, FROM, TO,
+                    0);
 
-			holder.list.setAdapter(cursor_adapter);
+            holder.list.setAdapter(cursor_adapter);
 
-			cursor_adapter.changeCursor(cursor);
-			if ((holder.list.getCount() == 0)  || (selected_items.size() == 0))
-			{
-				holder.button_start_milkrun.setEnabled(false);
-				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
-			}
-			else
-			{
-				holder.button_start_milkrun.setEnabled(true);
-				holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-			}
+            cursor_adapter.changeCursor(cursor);
+            if ((holder.list.getCount() == 0)  || (selected_items.size() == 0))
+            {
+                holder.button_start_milkrun.setEnabled(false);
+                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+            }
+            else
+            {
+                holder.button_start_milkrun.setEnabled(true);
+                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+            }
 
-		}
-		markScannedItems();
-	}
+        }
+        markScannedItems();
+    }
 
-	/**
-	 * This method allows you to release any resources you hold, so that the
-	 * Loader can free them. You can set any references to the cursor object you
-	 * hold to null. But do not close the cursor - the Loader does this for you.
-	 */
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader)
-	{
+    /**
+     * This method allows you to release any resources you hold, so that the
+     * Loader can free them. You can set any references to the cursor object you
+     * hold to null. But do not close the cursor - the Loader does this for you.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader)
+    {
 		/*
 		 * * Clears out the adapter's reference to the Cursor. This prevents
 		 * memory leaks.
 		 */
-		if (cursor_adapter != null)
-		{
-			cursor_adapter.changeCursor(null);
-		}
-	}
+        if (cursor_adapter != null)
+        {
+            cursor_adapter.changeCursor(null);
+        }
+    }
 
-	public void initViewHolder()
-	{
+    public void initViewHolder()
+    {
 
-		if (root_view == null)
-		{
+        if (root_view == null)
+        {
 
-			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
+            root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-			if (holder == null)
-			{
-				holder = new ViewHolder();
-			}
+            if (holder == null)
+            {
+                holder = new ViewHolder();
+            }
 
-			Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
-					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
-							FontHelper.STYLE_BOLD));
+            Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
+                    .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+                            FontHelper.STYLE_BOLD));
 
-			holder.list = (ListView) root_view.findViewById(R.id.scan_list);
+            holder.list = (ListView) root_view.findViewById(R.id.scan_list);
 
-			holder.button_start_milkrun = (Button) root_view
-					.findViewById(R.id.scan_button_start_milkrun);
+            holder.button_start_milkrun = (Button) root_view
+                    .findViewById(R.id.scan_button_start_milkrun);
 
-			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_scan_toast);
+            holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_scan_toast);
 
-			holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_scan);
+            holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_scan);
 
-			holder.button_start_milkrun.setTypeface(typeface_robotoBold);
+            holder.button_start_milkrun.setTypeface(typeface_robotoBold);
 
             holder.textview_scanstatus = (TextView) root_view.findViewById(R.id.scan_status_bar);
 
-			// Store the holder with the view.
-			root_view.setTag(holder);
+            // Store the holder with the view.
+            root_view.setTag(holder);
 
-		}
-		else
-		{
-			holder = (ViewHolder) root_view.getTag();
+        }
+        else
+        {
+            holder = (ViewHolder) root_view.getTag();
 
-			if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
-			{
-				((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-			}
-			else
-			{
-			}
-		}
-	}
+            if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
+            {
+                ((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
+            }
+            else
+            {
+            }
+        }
+    }
 
-	/**
-	 * Creates static instances of resources. Increases performance by only
-	 * finding and inflating resources only once.
-	 **/
-	static class ViewHolder
-	{
-		ListView list;
-		Button button_start_milkrun;
-		TextView textView_toast;
-		RelativeLayout relativeLayout_toast;
+    /**
+     * Creates static instances of resources. Increases performance by only
+     * finding and inflating resources only once.
+     **/
+    static class ViewHolder
+    {
+        ListView list;
+        Button button_start_milkrun;
+        TextView textView_toast;
+        RelativeLayout relativeLayout_toast;
         TextView textview_scanstatus;
-	}
+    }
 
-	/**
-	 * Retrieve list of managers from API in background
-	 * 
-	 * @author greg
-	 * 
-	 */
-	private class RetrieveManagersTask extends AsyncTask<Void, Void, Void>
-	{
+    /**
+     * Retrieve list of managers from API in background
+     *
+     * @author greg
+     *
+     */
+    private class RetrieveManagersTask extends AsyncTask<Void, Void, Void>
+    {
 
-		private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
+        private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
 
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog_progress.setMessage("Retrieving list of managers");
-			this.dialog_progress.show();
-		}
+        /** progress dialog to show user that the backup is processing. */
+        /** application context. */
+        @Override
+        protected void onPreExecute()
+        {
+            this.dialog_progress.setMessage("Retrieving list of managers");
+            this.dialog_progress.show();
+        }
 
-		@Override
-		protected Void doInBackground(Void... urls)
-		{
-			// Log.i(TAG, "Fetching token...");
-			ServerInterface.getInstance(getApplicationContext()).getManagers(
-					getApplicationContext());
+        @Override
+        protected Void doInBackground(Void... urls)
+        {
+            // Log.i(TAG, "Fetching token...");
+            ServerInterface.getInstance(getApplicationContext()).getManagers(
+                    getApplicationContext());
 
-			return null;
-		}
+            return null;
+        }
 
-		@Override
-		protected void onPostExecute(Void nothing)
-		{
-			// Close progress spinner
-			if (dialog_progress.isShowing())
-			{
-				dialog_progress.dismiss();
-			}
+        @Override
+        protected void onPostExecute(Void nothing)
+        {
+            // Close progress spinner
+            if (dialog_progress.isShowing())
+            {
+                dialog_progress.dismiss();
+            }
 
-			// Start manager authorization activity
-			if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-			{
-				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            // Start manager authorization activity
+            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
+            {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
-				// startActivity(intent);
-				startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
-				dialog.dismiss();
-			}
-			else
-			{
-				startIncompleteScanActivity();
-				dialog.dismiss();
-			}
-		}
-	}
+                // startActivity(intent);
+                startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
+                dialog.dismiss();
+            }
+            else
+            {
+                startIncompleteScanActivity();
+                dialog.dismiss();
+            }
+        }
+    }
 
-	private void startNotAssignedActivity()
-	{
-		// Start manager authorization activity
-		Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
+    private void startNotAssignedActivity()
+    {
+        // Start manager authorization activity
+        Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
 
-		intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
+        intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
 
-		startActivityForResult(intent, RESULT_MANAGER_AUTH);
-	}
+        startActivityForResult(intent, RESULT_MANAGER_AUTH);
+    }
 
-	private void startIncompleteScanActivity()
-	{
-		// Start manager authorization activity
-		Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
+    private void startIncompleteScanActivity()
+    {
+        // Start manager authorization activity
+        Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
 
-		// intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-		// getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+        // intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
+        // getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
-		startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
-	}
+        startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
+    }
 
-	private class AddBagToDriver extends AsyncTask<Void, Void, Void>
-	{
+    private class AddBagToDriver extends AsyncTask<Void, Void, Void>
+    {
 
-		private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
+        private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
 
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog_progress.setMessage("Adding bag");
-			this.dialog_progress.show();
-		}
+        @Override
+        protected void onPreExecute()
+        {
+            this.dialog_progress.setMessage("Adding bag");
+            this.dialog_progress.show();
+        }
 
-		@Override
-		protected Void doInBackground(Void... urls)
-		{
-			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
+        @Override
+        protected Void doInBackground(Void... urls)
+        {
+            SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+                    Context.MODE_PRIVATE);
 
-			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
-					false);
+            final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+            final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+                    false);
 
-			if (training_mode)
-			{
-				ContentValues values = new ContentValues();
+            if (training_mode)
+            {
+                ContentValues values = new ContentValues();
 
-				Random random = new Random();
-				int randomBagID = random.nextInt(1000);
+                Random random = new Random();
+                int randomBagID = random.nextInt(1000);
 
-				values.put(DbHandler.C_BAG_ID, randomBagID); // PK
-				values.put(DbHandler.C_BAG_DEST_ADDRESS, "Sesami Street");
-				values.put(DbHandler.C_BAG_DEST_CONTACT, "012469977");
-				values.put(DbHandler.C_BAG_DEST_HUBCODE, "909090");
-				values.put(DbHandler.C_BAG_DEST_HUBNAME, "Philly");
-				values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234231");
-				values.put(DbHandler.C_BAG_DEST_LONG, "33.1852100");
-				values.put(DbHandler.C_BAG_DEST_SUBURB, "Bel Air");
-				values.put(DbHandler.C_BAG_DEST_TOWN, "Philledelpia");
-				values.put(DbHandler.C_BAG_BARCODE, last_scanned_barcode);
-				values.put(DbHandler.C_BAG_ASSIGNED, 1);
-				values.put(DbHandler.C_BAG_SCANNED, 1);
-				values.put(DbHandler.C_BAG_CREATION_TIME, "241200B Feb 2014");
-				values.put(DbHandler.C_BAG_NUM_ITEMS, "1");
-				values.put(DbHandler.C_BAG_DRIVER_ID, VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
-				values.put(DbHandler.C_BAG_STATUS, Bag.STATUS_TODO);
+                values.put(DbHandler.C_BAG_ID, randomBagID); // PK
+                values.put(DbHandler.C_BAG_DEST_ADDRESS, "Sesami Street");
+                values.put(DbHandler.C_BAG_DEST_CONTACT, "012469977");
+                values.put(DbHandler.C_BAG_DEST_HUBCODE, "909090");
+                values.put(DbHandler.C_BAG_DEST_HUBNAME, "Philly");
+                values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234231");
+                values.put(DbHandler.C_BAG_DEST_LONG, "33.1852100");
+                values.put(DbHandler.C_BAG_DEST_SUBURB, "Bel Air");
+                values.put(DbHandler.C_BAG_DEST_TOWN, "Philledelpia");
+                values.put(DbHandler.C_BAG_BARCODE, last_scanned_barcode);
+                values.put(DbHandler.C_BAG_ASSIGNED, 1);
+                values.put(DbHandler.C_BAG_SCANNED, 1);
+                values.put(DbHandler.C_BAG_CREATION_TIME, "241200B Feb 2014");
+                values.put(DbHandler.C_BAG_NUM_ITEMS, "1");
+                values.put(DbHandler.C_BAG_DRIVER_ID, VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
+                values.put(DbHandler.C_BAG_STATUS, Bag.STATUS_TODO);
 
-				Log.d(TAG,
-						"Added trainingrun bagid: "
-								+ randomBagID
-								+ " "
-								+ DbHandler.getInstance(getApplicationContext()).addRow(
-										DbHandler.TABLE_BAGS_TRAINING, values));
+                Log.d(TAG,
+                        "Added trainingrun bagid: "
+                                + randomBagID
+                                + " "
+                                + DbHandler.getInstance(getApplicationContext()).addRow(
+                                DbHandler.TABLE_BAGS_TRAINING, values));
 
-			}
-			else
-			{
-				ServerInterface.getInstance(getApplicationContext()).downloadBag(
-						getApplicationContext(),
-						ServerInterface.getInstance(getApplicationContext()).scanBag(
-								getApplicationContext(), last_scanned_barcode, driverid), driverid);
-			}
-			return null;
-		}
+            }
+            else
+            {
+                ServerInterface.getInstance(getApplicationContext()).downloadBag(
+                        getApplicationContext(),
+                        ServerInterface.getInstance(getApplicationContext()).scanBag(
+                                getApplicationContext(), last_scanned_barcode, driverid), driverid);
+            }
+            return null;
+        }
 
-		@Override
-		protected void onPostExecute(Void nothing)
-		{
-			handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
-			getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
+        @Override
+        protected void onPostExecute(Void nothing)
+        {
+            /**
+             * TODO: ADDING A NEW BAG TO THE DRIVER CONSIGNMENTS HERE!!! AND THEN UPDATING THE LISTVIEW DISPLAY
+             */
+            handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+            getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
 
-			// Refresh list
-			// cursor_adapter.notifyDataSetChanged();
-			// holder.list.setAdapter(cursor_adapter);
+            // Refresh list
+            // cursor_adapter.notifyDataSetChanged();
+            // holder.list.setAdapter(cursor_adapter);
 
-			// Close progress spinner
-			if (dialog_progress.isShowing())
-			{
-				dialog_progress.dismiss();
-			}
-		}
-	}
+            // Close progress spinner
+            if (dialog_progress.isShowing())
+            {
+                dialog_progress.dismiss();
+            }
+        }
+    }
 
     public void UpdateBagsCounter(){
         try{
