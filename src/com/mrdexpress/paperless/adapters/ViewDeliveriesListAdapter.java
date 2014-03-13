@@ -159,7 +159,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			}
 
 			// Delivery type
-			titleDetail.setText(getTitle(DeliveryType.DELIVERY));
+			titleDetail.setText(getTitle(DeliveryType.DELIVERY, position));
 
 			// Coy logo
 			// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
@@ -215,7 +215,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				deliveryNumber.setText("#" + (position + 1));
 			}
 
-			titleDetail.setText(getTitle(DeliveryType.DELIVERY));
+			titleDetail.setText(getTitle(DeliveryType.DELIVERY, position));
 
 			// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
 			int companyLogoID = getCompanyIcon(Company.NONE);
@@ -237,8 +237,11 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		return rowView;
 	}
 
-	private String getTitle(DeliveryType type)
+	private String getTitle(DeliveryType type, int position)
 	{
+		if (position > 0)
+			return "FOLLOWED BY";
+		
 		switch (type)
 		{
 		case DELIVERY:
