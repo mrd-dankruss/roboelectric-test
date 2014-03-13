@@ -1,4 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-</resources>
+<item name="scan_status_bar" type="id"/><item name="manager_auth_reason" type="id">Reason for requiring manager auth.</item><item name="man_auth_extra" type="id"/><item name="manager_auth_title" type="id"/></resources>

@@ -227,6 +227,7 @@ public class ReportDelayListFragment extends Fragment
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+			holder.report_button.setText(getResources().getString(R.string.delivery_more_reportDelay));
 
 			// Store the holder with the view.
 			rootView.setTag(holder);

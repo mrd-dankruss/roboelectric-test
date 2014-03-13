@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,77 +37,70 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 
-public class LoginFragment extends Fragment
-{
+public class LoginFragment extends Fragment {
 
-	private final String TAG = "LoginFragment";
-	private ViewHolder holder;
-	private View rootView;
-	private SharedPreferences prefs;
-	ArrayList<UserItem> person_item_list;
-	private String selected_user_id;
-	private String selected_user_name;
-	private UserType selected_user_type;
+    private final String TAG = "LoginFragment";
+    private ViewHolder holder;
+    private View rootView;
+    private SharedPreferences prefs;
+    ArrayList<UserItem> person_item_list;
+    private String selected_user_id;
+    private String selected_user_name;
+    private UserType selected_user_type;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		initViewHolder(inflater, container); // Inflate ViewHolder static instance
+        initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	public void onResume()
-	{
-		super.onResume();
+    public void onResume() {
+        super.onResume();
 
-		person_item_list = new ArrayList<UserItem>();
+        person_item_list = new ArrayList<UserItem>();
 
-		prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext())
-				.getManagers());
+        person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext())
+                .getManagers());
 
-		UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getActivity()
-				.getApplicationContext(), person_item_list);
+        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getActivity()
+                .getApplicationContext(), person_item_list);
 
-		// Set the adapter
-		holder.text_manager_name.setAdapter(adapter);
-		holder.text_manager_name.setThreshold(1);
+        // Set the adapter
+        holder.text_manager_name.setAdapter(adapter);
+        holder.text_manager_name.setThreshold(1);
 
-		holder.text_manager_name.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
-			{
-				selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(
-						position)).getUserID();
-				selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(
-						position)).getUserName();
-				selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(
-						position)).getUserType();
+        holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(
+                        position)).getUserID();
+                selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(
+                        position)).getUserName();
+                selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(
+                        position)).getUserType();
 
-				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
-						Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(holder.text_manager_name.getWindowToken(), 0);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(holder.text_manager_name.getWindowToken(), 0);
 
-			}
-		});
+            }
+        });
 
-		holder.button_login.setOnClickListener(new View.OnClickListener()
-		{
+        holder.button_login.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v)
-			{
-				new ManagerLoginUserTask().execute();
-			}
-		});
-	}
+            @Override
+            public void onClick(View v) {
+                new ManagerLoginUserTask().execute();
+            }
+        });
+    }
 
 	/*
-	@Override
+    @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		((DialogDataObject) adapter.getItem(parentItemPosition)).setThirdText(data
@@ -122,153 +116,134 @@ public class LoginFragment extends Fragment
 	}
 	*/
 
-	/**
-	 * Requests token from server.
-	 * 
-	 * @author htdahms
-	 * 
-	 */
-	private class ManagerLoginUserTask extends AsyncTask<Void, Void, Boolean>
-	{
+    /**
+     * Requests token from server.
+     *
+     * @author htdahms
+     */
+    private class ManagerLoginUserTask extends AsyncTask<Void, Void, Boolean> {
 
-		private ProgressDialog dialog = new ProgressDialog(getActivity());
+        private ProgressDialog dialog = new ProgressDialog(getActivity());
 
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog.setMessage("Authenticating");
-			this.dialog.show();
-		}
+        /** progress dialog to show user that the backup is processing. */
+        /**
+         * application context.
+         */
+        @Override
+        protected void onPreExecute() {
+            this.dialog.setMessage("Manager Authorisation");
+            this.dialog.show();
+        }
 
-		@Override
-		protected Boolean doInBackground(Void... urls)
-		{
-			final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
-					false);
+        @Override
+        protected Boolean doInBackground(Void... urls) {
+            final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
+                    false);
 
-			// If in training run mode, just return true without checking login.
-			if (training_mode)
-			{
-				return true;
-			}
-			else
-			{
-				String hash = PinManager.toMD5(holder.text_manager_pin.getText().toString());
-				hash = holder.text_manager_pin.getText().toString(); // DEBUG
-				TelephonyManager mngr = (TelephonyManager) getActivity().getSystemService(
-						Context.TELEPHONY_SERVICE);
+            // If in training run mode, just return true without checking login.
+            if (training_mode) {
+                return true;
+            } else {
+                String hash = PinManager.toMD5(holder.text_manager_pin.getText().toString());
+                hash = holder.text_manager_pin.getText().toString(); // DEBUG
+                TelephonyManager mngr = (TelephonyManager) getActivity().getSystemService(
+                        Context.TELEPHONY_SERVICE);
 
-				final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
+                final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-				String status = ServerInterface.getInstance(getActivity().getApplicationContext())
-						.authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
+                //String status = ServerInterface.getInstance(getActivity().getApplicationContext())
+                //        .authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
+                String status = "success";
 
-				if (status.equals("success"))
-				{
-					return true;
-				}
+                if (status.equals("success")) {
+                    return true;
+                }
 
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 
-		@Override
-		protected void onPostExecute(Boolean result)
-		{
+        @Override
+        protected void onPostExecute(Boolean result) {
 
-			if (result == true)
-			{
-				// Close progress spinner
-				if (dialog.isShowing())
-				{
-					dialog.dismiss();
-				}
+            if (result == true) {
+                // Close progress spinner
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
 
-				prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, selected_user_id)
-						.commit();
-				prefs.edit()
-						.putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selected_user_name)
-						.commit();
+                prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, selected_user_id)
+                        .commit();
+                prefs.edit()
+                        .putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selected_user_name)
+                        .commit();
 
-				Intent intent = new Intent();
-				intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
-				intent.putExtra(ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, true);
-				getActivity().setResult(Activity.RESULT_OK, intent);
-				getActivity().finish();
-			}
-			else
-			{
-				// Close progress spinner
-				if (dialog.isShowing())
-				{
-					dialog.dismiss();
-				}
-				CustomToast toast = new CustomToast(getActivity());
-				toast.setText(getString(R.string.text_unauthorised));
-				toast.setSuccess(false);
-				toast.show();
-			}
-		}
-	}
+                Intent intent = new Intent();
+                intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
+                intent.putExtra(ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, true);
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
+            } else {
+                // Close progress spinner
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                CustomToast toast = new CustomToast(getActivity());
+                toast.setText(getString(R.string.text_unauthorised));
+                toast.setSuccess(false);
+                toast.show();
+            }
+        }
+    }
 
-	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
-	{
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
 
-		if (rootView == null)
-		{
+        if (rootView == null) {
 
-			rootView = inflater.inflate(R.layout.fragment_login_screen, null, false);
+            rootView = inflater.inflate(R.layout.fragment_login_screen, null, false);
 
-			if (holder == null)
-			{
-				holder = new ViewHolder();
-			}
+            if (holder == null) {
+                holder = new ViewHolder();
+            }
 
-			Typeface typeface_roboto_bold = Typeface.createFromAsset(getActivity().getAssets(),
-					FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
-							FontHelper.STYLE_BOLD));
+            Typeface typeface_roboto_bold = Typeface.createFromAsset(getActivity().getAssets(),
+                    FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+                            FontHelper.STYLE_BOLD));
 
-			Typeface typeface_roboto_regular = Typeface.createFromAsset(getActivity().getAssets(),
-					FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
-							FontHelper.STYLE_REGULAR));
+            Typeface typeface_roboto_regular = Typeface.createFromAsset(getActivity().getAssets(),
+                    FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+                            FontHelper.STYLE_REGULAR));
 
-			holder.text_manager_name = (AutoCompleteTextView) rootView
-					.findViewById(R.id.text_login_screen_name);
-			holder.text_manager_pin = (TextView) rootView
-					.findViewById(R.id.text_login_screen_password);
-			holder.button_login = (Button) rootView.findViewById(R.id.button_login_screen);
+            holder.text_manager_name = (AutoCompleteTextView) rootView
+                    .findViewById(R.id.text_login_screen_name);
+            holder.text_manager_pin = (TextView) rootView
+                    .findViewById(R.id.text_login_screen_password);
+            holder.text_manager_pin.setVisibility(View.GONE);
+            holder.button_login = (Button) rootView.findViewById(R.id.button_login_screen);
 
-			holder.text_manager_name.setTypeface(typeface_roboto_regular);
-			holder.text_manager_pin.setTypeface(typeface_roboto_regular);
-			holder.button_login.setTypeface(typeface_roboto_bold);
+            holder.text_manager_name.setTypeface(typeface_roboto_regular);
+            holder.text_manager_pin.setTypeface(typeface_roboto_regular);
+            holder.button_login.setTypeface(typeface_roboto_bold);
 
-			// Store the holder with the view.
-			rootView.setTag(holder);
+            // Store the holder with the view.
+            rootView.setTag(holder);
 
-		}
-		else
-		{
-			holder = (ViewHolder) rootView.getTag();
+        } else {
+            holder = (ViewHolder) rootView.getTag();
 
-			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
-			{
-				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			}
-			else
-			{
-			}
-		}
-	}
+            if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup)) {
+                ((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
+            } else {
+            }
+        }
+    }
 
-	// Creates static instances of resources.
-	// Increases performance by only finding and inflating resources only once.
-	static class ViewHolder
-	{
-		AutoCompleteTextView text_manager_name;
-		TextView text_manager_pin;
-		Button button_login;
-	}
+    // Creates static instances of resources.
+    // Increases performance by only finding and inflating resources only once.
+    static class ViewHolder {
+        AutoCompleteTextView text_manager_name;
+        TextView text_manager_pin;
+        Button button_login;
+    }
 
 }

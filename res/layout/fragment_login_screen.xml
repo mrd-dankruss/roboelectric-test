@@ -16,7 +16,7 @@
         android:ems="10"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:hint="@string/text_hint_mainmenu_enter_name"
+        android:hint="@string/text_hint_mainmenu_enter_manager_name"
         android:background="@color/white"
         android:textColor="@color/text_grey"
         android:paddingLeft="12dp"
@@ -51,7 +51,7 @@
         android:background="@drawable/button_custom"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:text="@string/button_login"
+        android:text="@string/text_hint_login_manager"
         android:textSize="@dimen/font_size_button" />
 
 </LinearLayout>

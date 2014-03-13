@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,7 +121,7 @@ public class ManagerAuthNotAssignedActivity extends Activity
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		if (requestCode == ScanActivity.RESULT_MANAGER_AUTH)
+        if (requestCode == ScanActivity.RESULT_MANAGER_AUTH)
 		{
 			if (resultCode == RESULT_OK)
 			{
@@ -277,7 +278,6 @@ public class ManagerAuthNotAssignedActivity extends Activity
 	 */
 	public void handleMessage(Message msg)
 	{
-
 		if (msg.what == 0)
 		{
 			Intent intent = new Intent(getApplicationContext(),

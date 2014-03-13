@@ -935,12 +935,12 @@ public class ServerInterface
 						values.put(DbHandler.C_DELAYS_REASON_ID, delay_id);
 						values.put(DbHandler.C_DELAYS_REASON, reason);
 
-						/*Log.d(TAG,
+						Log.d(TAG,
 								"Adding : "
 										+ reason
 										+ " "
 										+ DbHandler.getInstance(context).addRow(
-												DbHandler.TABLE_DELAYS, values));*/
+												DbHandler.TABLE_DELAYS, values));
 
 						for (int d = 0; d < durations.length(); d++)
 						{
