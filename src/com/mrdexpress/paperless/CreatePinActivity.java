@@ -280,6 +280,8 @@ public class CreatePinActivity extends Activity
 
 			ServerInterface.getInstance(getApplicationContext()).downloadBags(
 					getApplicationContext(), driverid);
+
+
 			return null;
 		}
 

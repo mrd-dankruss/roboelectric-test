@@ -937,7 +937,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
 			holder.button_start_milkrun.setTypeface(typeface_robotoBold);
 
-            holder.textview_scanstatus = (TextView) root_view.findViewById(R.id.scan_status_bar);
+            holder.textview_scanstatus = (TextView) root_view.findViewById(R.id.activity_scan_textView_scanStatusBar);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);

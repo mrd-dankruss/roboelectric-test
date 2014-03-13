@@ -37,7 +37,7 @@
     <string name="button_change_driver">Change driver</string>
     <string name="button_change_manager">Change Manager</string>
     <string name="button_incomplete_scan_scan">Scan them</string>
-    <string name="button_incomplete_scan_continue">Continue anyway</string>
+    <string name="button_incomplete_scan_continue">Log partial delivery</string>
     <string name="delivery_more_setAsNextDelivery">Set as next delivery</string>
     <string name="delivery_more_viewMap">View Map</string>
     <string name="delivery_more_reportDelay">Report Delay</string>
