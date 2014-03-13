@@ -33,6 +33,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	private View rootView;
 	private Bag bag;
     private ArrayList<DeliveryHandoverDataObject> waybills;
+    private int position;
 	Intent intent;
 
 	@Override
@@ -46,6 +47,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		intent = getIntent();
+		position = Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION));
 
 		bag = DbHandler.getInstance(this).getBag(
 				intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
@@ -56,9 +58,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	{
 		super.onResume();
 
-		holder.text_delivery_number.setText("#"
-				+ Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION)) + 1);
-		holder.text_delivery_title.setText("CURRENT MILKRUN DELIVERY"); // TODO: Change
+		holder.text_delivery_number.setText("#" + (position + 1));
+		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
 		holder.text_delivery_address.setText(bag.getDestinationAddress());
 		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
@@ -108,7 +109,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				DialogFragment newFragment = MoreDialogFragment.newInstance(true,
+				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0),
 						bag.getBagNumber());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
