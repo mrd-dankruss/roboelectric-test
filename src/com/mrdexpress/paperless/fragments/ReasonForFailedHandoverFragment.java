@@ -153,6 +153,11 @@ public class ReasonForFailedHandoverFragment extends Fragment
 					Log.d(TAG, json_string);
 					
 					result_object = new JSONObject(json_string);
+					
+					// <TODO, NB!!>: API returns incorrect values so issue MOB-20 requires the following hardcoded + incorrect code.
+					result_object = new JSONObject("{'response':{'waybill':{'status':'success'}}}");
+					// </TODO, NB!!>
+					
 					status = result_object.getJSONObject("response").getJSONObject("waybill")
 							.getString("status");
 				}
