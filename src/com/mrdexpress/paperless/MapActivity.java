@@ -42,6 +42,9 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,6 +67,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 {
 
 	private final String TAG = "MapActivity";
+	static final int STREET_LEVEL_ZOOM = 14;
+	
 	private ViewHolder holder;
 	private View root_view;
 	private GoogleMap map;
@@ -78,6 +83,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
 	private static final String TYPE_DETAILS = "/details";
 	private static final String OUT_JSON = "/json";
+	
+	LocationClient locationClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -86,7 +93,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		setContentView(R.layout.activity_map);
 
 		API_KEY = getResources().getString(R.string.key_googlemaps_places);
-
+		//API_KEY = getResources().getString(R.string.key_googlemaps_api_debug);
+		
 		// Change actionbar title
 		setTitle(R.string.title_actionbar_map);
 
@@ -108,9 +116,50 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
 			// Enable LocationLayer of Google Map
 			map.setMyLocationEnabled(true);
+
+			// Set default zoom
+			map.moveCamera(CameraUpdateFactory.zoomTo(STREET_LEVEL_ZOOM));
+			// Move camera to my location
+			locationClient = new LocationClient(this,
+					new GooglePlayServicesClient.ConnectionCallbacks()
+					{
+						@Override
+						public void onConnected(Bundle arg0) 
+						{
+							Location location = locationClient.getLastLocation();
+							if (location != null) 
+							{
+						        LatLng myLocation = new LatLng(location.getLatitude(),
+						                location.getLongitude());
+						    
+							    map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
+							            STREET_LEVEL_ZOOM));
+							}
+							
+							locationClient.disconnect();
+						}
+
+						@Override
+						public void onDisconnected() 
+						{						
+							// ignore
+						}
+					}, 
+					new GooglePlayServicesClient.OnConnectionFailedListener()
+					{
+						@Override
+						public void onConnectionFailed(ConnectionResult arg0) 
+						{
+							// ignore
+						}
+					});
+			locationClient.connect();
+			
+
 			// Getting LocationManager object from System Service LOCATION_SERVICE
 			location_manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
+			
+			
 			// Get current location
 			Criteria criteria = new Criteria();
 			String provider = location_manager.getBestProvider(criteria, true);
@@ -179,7 +228,6 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					// Get selected marker coords
 					double marker_lat = selected_marker_lat_long.latitude;
 					double marker_lon = selected_marker_lat_long.longitude;
-					int zoom_level = 14;
 
 					// Convert coords to Uri
 
@@ -187,7 +235,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					/*Uri location = Uri.parse("geo:" + marker_lat + "," + marker_lon + "?z="
 							+ zoom_level);*/
 					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "("
-							+ selected_marker_name + ")" + "&z=" + zoom_level);
+							+ selected_marker_name + ")" + "&z=" + STREET_LEVEL_ZOOM);
 					// Or map point based on latitude/longitude
 					// Uri location = Uri.parse("geo:37.422219,-122.08364?z=14"); // z param is zoom
 					// level
