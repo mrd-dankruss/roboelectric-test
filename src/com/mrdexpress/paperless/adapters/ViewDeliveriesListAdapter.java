@@ -228,7 +228,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			address.setText(values.get(position).getDestinationAddress());
 
 			// ID
-			id.setText(values.get(position).getBarcode() + "("
+			id.setText(values.get(position).getBarcode() + " ("
 					+ values.get(position).getNumberItems() + " items)");
 
 			buttonsHolder.setVisibility(View.GONE);
