@@ -178,6 +178,8 @@
 
     <!-- TextView Hints -->
     <string name="text_hint_mainmenu_enter_name">Enter Name</string>
+    <string name="text_hint_mainmenu_enter_manager_name">Enter Manager Name</string>
+    <string name="text_hint_login_manager">Select Manager</string>
     <string name="text_hint_mainmenu_enter_password">Tap here to enter your 4-digit PIN</string>
     <string name="text_hint_enter_barcode">Tap here to enter the barcode</string>
 

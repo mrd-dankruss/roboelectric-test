@@ -1130,7 +1130,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 	}
 
     public void UpdateBagsCounter(){
-        holder.textview_scanstatus.setText( "Bags Scanned : (" + Integer.toString(BAG_COUNTER) + '/' +  Integer.toString(BAG_TOTAL) + ')');
+        try{
+            holder.textview_scanstatus.setText( "Bags Scanned : (" + Integer.toString(BAG_COUNTER) + '/' +  Integer.toString(BAG_TOTAL) + ')');
+        }catch(Exception e){
+            Log.e("MRDEX:" , e.toString() );
+        }
     }
 
 }
