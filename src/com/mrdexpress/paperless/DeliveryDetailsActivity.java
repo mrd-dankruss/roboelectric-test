@@ -85,7 +85,15 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + " : "
 					+ comlogs.get(i).getNote() + "\n";
 		}
-		holder.text_delivery_communication_log.setText(comlog_text);
+        if (comlog_text.isEmpty()){
+            holder.text_delivery_communication_log.setVisibility(View.GONE);
+            holder.text_delivery_communication_title.setVisibility(View.GONE);
+        } else {
+            holder.text_delivery_communication_log.setText(comlog_text);
+            holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
+            holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
+        }
+
 
 		// TODO:Set image here one day when app is extended.
 		// holder.image_company_logo.setText("");
