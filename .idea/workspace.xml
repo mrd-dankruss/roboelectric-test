@@ -16,14 +16,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="0c82511b-feb7-4204-aade-d1235eabbd03" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/google_play_services.xml" afterPath="$PROJECT_DIR$/.idea/libraries/google_play_services.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/libs1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/libs1.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/mrdexpress/paperless/workflow/Workflow.java" afterPath="$PROJECT_DIR$/src/com/mrdexpress/paperless/workflow/Workflow.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/zxing.xml" afterPath="$PROJECT_DIR$/.idea/libraries/zxing.xml" />
     </list>
     <ignored path="mrd-paperless.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -95,15 +89,8 @@
       <file leaf-file-name="LoginFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/fragments/LoginFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="142" column="80" selection-start="5186" selection-end="5186" vertical-scroll-proportion="-5.769231" vertical-offset="1980" max-vertical-offset="3825">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2737#3586#0" expanded="true" />
-                <element signature="e#3575#3576#0" expanded="true" />
-                <element signature="e#3637#3808#0" expanded="true" />
-                <element signature="e#3797#3798#0" expanded="true" />
-                <element signature="e#7235#7272#0" expanded="true" />
-              </folding>
+            <state line="142" column="80" selection-start="5186" selection-end="5186" vertical-scroll-proportion="0.0" vertical-offset="1980" max-vertical-offset="3825">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -123,7 +110,7 @@
       <file leaf-file-name="NotAssignedToUserDialog.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/fragments/NotAssignedToUserDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="36" selection-start="413" selection-end="436" vertical-scroll-proportion="0.0" vertical-offset="330" max-vertical-offset="810">
+            <state line="15" column="36" selection-start="413" selection-end="436" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="1215">
               <folding />
             </state>
           </provider>
@@ -132,7 +119,7 @@
       <file leaf-file-name="DbHandler.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/db/DbHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1178" column="48" selection-start="36805" selection-end="36842" vertical-scroll-proportion="0.0" vertical-offset="660" max-vertical-offset="34560">
+            <state line="1178" column="48" selection-start="36805" selection-end="36842" vertical-scroll-proportion="0.0" vertical-offset="18135" max-vertical-offset="34560">
               <folding />
             </state>
           </provider>
@@ -141,29 +128,9 @@
       <file leaf-file-name="ScanActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/ScanActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="274" column="0" selection-start="10371" selection-end="10371" vertical-scroll-proportion="-0.1659292" vertical-offset="4185" max-vertical-offset="17295">
+            <state line="465" column="13" selection-start="16928" selection-end="16928" vertical-scroll-proportion="0.59507525" vertical-offset="5925" max-vertical-offset="16530">
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5398#6809#0" expanded="true" />
-                <element signature="e#6798#6799#0" expanded="true" />
-                <element signature="e#6893#8987#0" expanded="true" />
-                <element signature="e#8229#8498#0" expanded="true" />
-                <element signature="e#8475#8476#0" expanded="true" />
-                <element signature="e#8694#8943#0" expanded="true" />
-                <element signature="e#8920#8921#0" expanded="true" />
-                <element signature="e#8976#8977#0" expanded="true" />
-                <element signature="e#14397#14574#0" expanded="true" />
-                <element signature="e#14563#14564#0" expanded="true" />
-                <element signature="e#14619#14796#0" expanded="true" />
-                <element signature="e#14785#14786#0" expanded="true" />
-                <element signature="e#14837#15284#0" expanded="true" />
-                <element signature="e#15273#15274#0" expanded="true" />
-                <element signature="e#21689#21729#0" expanded="true" />
-                <element signature="e#22076#22110#0" expanded="true" />
-                <element signature="e#23504#24598#0" expanded="true" />
-                <element signature="e#24571#24572#0" expanded="true" />
-                <element signature="e#25174#26129#0" expanded="true" />
-                <element signature="e#26106#26107#0" expanded="true" />
                 <element signature="e#28241#28247#0" expanded="true" />
                 <element signature="e#28376#28382#0" expanded="true" />
                 <element signature="e#28590#28596#0" expanded="true" />
@@ -175,7 +142,7 @@
       <file leaf-file-name="ManagerAuthIncompleteScanActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/ManagerAuthIncompleteScanActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="219" column="21" selection-start="6367" selection-end="6367" vertical-scroll-proportion="0.0" vertical-offset="2010" max-vertical-offset="5415">
+            <state line="219" column="21" selection-start="6367" selection-end="6367" vertical-scroll-proportion="0.0" vertical-offset="3285" max-vertical-offset="6135">
               <folding />
             </state>
           </provider>
@@ -184,7 +151,7 @@
       <file leaf-file-name="LoginActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/LoginActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="13" selection-start="268" selection-end="268" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
+            <state line="9" column="13" selection-start="268" selection-end="268" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="540">
               <folding />
             </state>
           </provider>
@@ -193,10 +160,8 @@
       <file leaf-file-name="ManagerAuthNotAssignedActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/ManagerAuthNotAssignedActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="122" column="5" selection-start="3582" selection-end="3582" vertical-scroll-proportion="-5.769231" vertical-offset="1185" max-vertical-offset="4905">
-              <folding>
-                <element signature="e#1529#1579#0" expanded="true" />
-              </folding>
+            <state line="122" column="5" selection-start="3582" selection-end="3582" vertical-scroll-proportion="0.0" vertical-offset="1830" max-vertical-offset="5580">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -228,6 +193,7 @@
         <option value="$PROJECT_DIR$/src/com/mrdexpress/paperless/fragments/LoginFragment.java" />
         <option value="$PROJECT_DIR$/src/com/mrdexpress/paperless/ManagerAuthNotAssignedActivity.java" />
         <option value="$PROJECT_DIR$/src/com/mrdexpress/paperless/ScanActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/mrdexpress/paperless/workflow/Workflow.java" />
       </list>
     </option>
   </component>
@@ -264,8 +230,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -370,30 +334,14 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Application" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="libs" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -405,8 +353,8 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="recentsLimit" value="5" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/libs/android-support-v4.jar!/" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/libs/slf4j-api-1.7.5.jar!/" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="restartRequiresConfirmation" value="true" />
@@ -733,44 +681,45 @@
       <workItem from="1394613699543" duration="187000" />
       <workItem from="1394613892147" duration="17858000" />
       <workItem from="1394695947735" duration="15719000" />
+      <workItem from="1394783273928" duration="4532000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35148000" />
+    <option name="totallyTimeSpent" value="39680000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1280" y="0" width="1600" height="900" extended-state="6" />
+    <frame x="1280" y="0" width="1600" height="900" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992327" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39897698" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992327" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32352942" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20089859" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286445" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992327" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286445" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39897698" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992327" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32352942" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286445" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -796,13 +745,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/net/ServerInterface.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="73" selection-start="5877" selection-end="5877" vertical-scroll-proportion="0.0" vertical-offset="3060" max-vertical-offset="25995">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/DriverListActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="112" column="47" selection-start="3512" selection-end="3512" vertical-scroll-proportion="0.0" vertical-offset="1680" max-vertical-offset="4515">
@@ -1107,13 +1049,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/db/DbHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1178" column="48" selection-start="36805" selection-end="36842" vertical-scroll-proportion="0.0" vertical-offset="660" max-vertical-offset="34560">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/fragment_login_screen.xml">
       <provider editor-type-id="text-editor">
         <state line="16" column="63" selection-start="702" selection-end="702" vertical-scroll-proportion="-9.6" vertical-offset="0" max-vertical-offset="945">
@@ -1149,23 +1084,17 @@
     </entry>
     <entry file="jar://$USER_HOME$/Installs/adt-bundle-mac-x86_64-20131030/sdk/platforms/android-16/android.jar!/android/os/Handler.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="16" selection-start="564" selection-end="564" vertical-scroll-proportion="0.0" vertical-offset="101" max-vertical-offset="1245">
-          <folding />
-        </state>
+        <state line="17" column="16" selection-start="564" selection-end="564" vertical-scroll-proportion="0.0" vertical-offset="101" max-vertical-offset="1245" />
       </provider>
     </entry>
     <entry file="jar://$USER_HOME$/Installs/adt-bundle-mac-x86_64-20131030/sdk/platforms/android-16/android.jar!/android/os/Looper.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="31" selection-start="489" selection-end="489" vertical-scroll-proportion="0.0" vertical-offset="106" max-vertical-offset="525">
-          <folding />
-        </state>
+        <state line="17" column="31" selection-start="489" selection-end="489" vertical-scroll-proportion="0.0" vertical-offset="106" max-vertical-offset="525" />
       </provider>
     </entry>
     <entry file="jar://$USER_HOME$/Installs/adt-bundle-mac-x86_64-20131030/sdk/platforms/android-16/android.jar!/android/app/Activity.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6525">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6525" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/LoginActivity.java">
@@ -1198,59 +1127,44 @@
     </entry>
     <entry file="jar://$USER_HOME$/Installs/adt-bundle-mac-x86_64-20131030/sdk/platforms/android-16/android.jar!/android/os/AsyncTask.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="62" selection-start="1458" selection-end="1458" vertical-scroll-proportion="0.33333334" vertical-offset="340" max-vertical-offset="840">
-          <folding />
-        </state>
+        <state line="34" column="62" selection-start="1458" selection-end="1458" vertical-scroll-proportion="0.33333334" vertical-offset="340" max-vertical-offset="840" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/fragments/LoginFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="80" selection-start="5186" selection-end="5186" vertical-scroll-proportion="-5.769231" vertical-offset="1980" max-vertical-offset="3825">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2737#3586#0" expanded="true" />
-            <element signature="e#3575#3576#0" expanded="true" />
-            <element signature="e#3637#3808#0" expanded="true" />
-            <element signature="e#3797#3798#0" expanded="true" />
-            <element signature="e#7235#7272#0" expanded="true" />
-          </folding>
+        <state line="142" column="80" selection-start="5186" selection-end="5186" vertical-scroll-proportion="0.0" vertical-offset="1980" max-vertical-offset="3825">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/ManagerAuthNotAssignedActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="122" column="5" selection-start="3582" selection-end="3582" vertical-scroll-proportion="-5.769231" vertical-offset="1185" max-vertical-offset="4905">
+        <state line="122" column="5" selection-start="3582" selection-end="3582" vertical-scroll-proportion="0.0" vertical-offset="1830" max-vertical-offset="5580">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/workflow/Workflow.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="40" selection-start="1193" selection-end="1193" vertical-scroll-proportion="0.6511628" vertical-offset="502" max-vertical-offset="975">
           <folding>
-            <element signature="e#1529#1579#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/db/DbHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1178" column="48" selection-start="36805" selection-end="36842" vertical-scroll-proportion="0.0" vertical-offset="660" max-vertical-offset="34560">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdexpress/paperless/ScanActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="274" column="0" selection-start="10371" selection-end="10371" vertical-scroll-proportion="-0.1659292" vertical-offset="4185" max-vertical-offset="17295">
+        <state line="465" column="13" selection-start="16928" selection-end="16928" vertical-scroll-proportion="0.59507525" vertical-offset="5925" max-vertical-offset="16530">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#5398#6809#0" expanded="true" />
-            <element signature="e#6798#6799#0" expanded="true" />
-            <element signature="e#6893#8987#0" expanded="true" />
-            <element signature="e#8229#8498#0" expanded="true" />
-            <element signature="e#8475#8476#0" expanded="true" />
-            <element signature="e#8694#8943#0" expanded="true" />
-            <element signature="e#8920#8921#0" expanded="true" />
-            <element signature="e#8976#8977#0" expanded="true" />
-            <element signature="e#14397#14574#0" expanded="true" />
-            <element signature="e#14563#14564#0" expanded="true" />
-            <element signature="e#14619#14796#0" expanded="true" />
-            <element signature="e#14785#14786#0" expanded="true" />
-            <element signature="e#14837#15284#0" expanded="true" />
-            <element signature="e#15273#15274#0" expanded="true" />
-            <element signature="e#21689#21729#0" expanded="true" />
-            <element signature="e#22076#22110#0" expanded="true" />
-            <element signature="e#23504#24598#0" expanded="true" />
-            <element signature="e#24571#24572#0" expanded="true" />
-            <element signature="e#25174#26129#0" expanded="true" />
-            <element signature="e#26106#26107#0" expanded="true" />
             <element signature="e#28241#28247#0" expanded="true" />
             <element signature="e#28376#28382#0" expanded="true" />
             <element signature="e#28590#28596#0" expanded="true" />

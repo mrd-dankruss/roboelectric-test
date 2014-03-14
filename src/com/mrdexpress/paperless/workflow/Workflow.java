@@ -56,9 +56,6 @@ public class Workflow
     {
         JSONObject test3 = workflow.read("$.response.workflow.workflow.*");
         Log.i("gary", test3.toString());
-        //Log.i("gary", test3.getClass().getField("id").toString() );
-
-
         List<JSONArray> bags = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata.payload == 'bag')]");
         return bags;
     }
