@@ -2,6 +2,7 @@ package com.mrdexpress.paperless.fragments;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.content.Context;
 import android.content.Intent;
@@ -85,10 +86,7 @@ public class CallListFragment extends Fragment
 					parentItemPosition = position;
 					
 					Calendar c = Calendar.getInstance();
-					SimpleDateFormat sdf_date = new SimpleDateFormat("dd:MM:yyyy");
-					String date = sdf_date.format(c.getTime());
-					SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
-					String time = sdf_time.format(c.getTime());
+					Date datetime = c.getTime();
 
 					String note = "Call made to "
 							+ ((DialogDataObject) adapter.getItem(position)).getMainText() + "("
@@ -96,7 +94,7 @@ public class CallListFragment extends Fragment
 
 					DbHandler.getInstance(getActivity())
 							.addComLog(
-									"Call made at " + date + " at " + time,
+									datetime,
 									note,
 									"SMS",
 									getActivity().getIntent().getStringExtra(

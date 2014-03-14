@@ -1,7 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,21 +29,23 @@ public class SmsMessageFragment extends Fragment
 	private ViewHolder holder;
 	private View rootView;
 
+	private static String CONTACT_NAME = "com.mrdexpress.paperless.fragments.contact_name";
 	private static String PHONE_NUMBER = "com.mrdexpress.paperless.fragments.phone_number";
 	private static String BAG_ID = "com.mrdexpress.paperless.fragments.bag_id";
 	private static String MSG_TYPE = "com.mrdexpress.paperless.fragments.msg_type";
 
 	private String msg_type = "SMS";
 
-	private String phone_number, bag_id;
+	private String phone_number, bag_id, contact_name;
 
-	public static SmsMessageFragment newInstance(String phone_number, String bag_id)
+	public static SmsMessageFragment newInstance(String contact_name, String phone_number, String bag_id)
 	{
 		SmsMessageFragment f = new SmsMessageFragment();
 
 		Bundle args = new Bundle();
 		args.putString(PHONE_NUMBER, phone_number);
 		args.putString(BAG_ID, bag_id);
+		args.putString(CONTACT_NAME, contact_name);
 		f.setArguments(args);
 
 		return f;
@@ -73,6 +75,7 @@ public class SmsMessageFragment extends Fragment
 			phone_number = bundle.getString(PHONE_NUMBER);
 			bag_id = bundle.getString(BAG_ID);
 			msg_type = bundle.getString(MSG_TYPE);
+			contact_name = bundle.getString(CONTACT_NAME);
 		}
 
 		holder.button_send.setOnClickListener(new View.OnClickListener()
@@ -82,7 +85,7 @@ public class SmsMessageFragment extends Fragment
 			public void onClick(View v)
 			{
 				new SendSMSTask().execute(holder.edit_text_message.getText().toString(),
-						phone_number, bag_id, msg_type, "true");
+						phone_number, bag_id, msg_type, "true", contact_name);
 			}
 		});
 
@@ -112,13 +115,10 @@ public class SmsMessageFragment extends Fragment
 			}
 
 			Calendar c = Calendar.getInstance();
-			SimpleDateFormat sdf_date = new SimpleDateFormat("dd:MM:yyyy");
-			String date = sdf_date.format(c.getTime());
-			SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
-			String time = sdf_time.format(c.getTime());
+			Date datetime = c.getTime();
+			String note = "SMS sent with content:'" + args[0] + "' to " + args[5] + "(" + args[1] + ")";
 
-			DbHandler.getInstance(getActivity()).addComLog("SMS sent at " + date + " at " + time,
-					args[0], "SMS", args[2]);
+			DbHandler.getInstance(getActivity()).addComLog(datetime, note, "SMS", args[2]);
 
 			return ServerInterface.getInstance(getActivity()).postMessage(args[0], args[1],
 					args[2], "SMS", result);

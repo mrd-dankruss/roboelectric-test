@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.db;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -185,6 +186,10 @@ public class DbHandler extends SQLiteOpenHelper
 	boolean training_run;
 
 	private Context context;
+	
+	static final String COMM_LOG_TIMESTAMP_FORMAT = "dd:MM:yyyy HH:mm";
+	private SimpleDateFormat comm_log_date_formatter = new SimpleDateFormat(COMM_LOG_TIMESTAMP_FORMAT);
+	
 
 	public DbHandler(Context context)
 	{
@@ -522,14 +527,14 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param bagid
 	 * @return
 	 */
-	public boolean addComLog(String timestamp, String note, String user, String bagid)
+	public boolean addComLog(java.util.Date timestamp, String note, String user, String bagid)
 	{
 		ContentValues values = new ContentValues();
 		boolean result = true;
 
 		try
 		{
-			values.put(C_COMLOG_TIMESTAMP, timestamp);
+			values.put(C_COMLOG_TIMESTAMP, comm_log_date_formatter.format(timestamp));
 			values.put(C_COMLOG_NOTE, note);
 			values.put(C_COMLOG_USER, user);
 			values.put(C_COMLOG_BAGID, bagid);

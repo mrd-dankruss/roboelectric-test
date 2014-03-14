@@ -1,7 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,10 +154,7 @@ public class ReportDelayListFragment extends Fragment
 			// TODO: Add com log here
 
 			Calendar c = Calendar.getInstance();
-			SimpleDateFormat sdf_date = new SimpleDateFormat("dd/MM/yyyy");
-			String date = sdf_date.format(c.getTime());
-			SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
-			String time = sdf_time.format(c.getTime());
+			Date datetime = c.getTime();
 
 			String note = "Running "
 					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
@@ -166,8 +163,7 @@ public class ReportDelayListFragment extends Fragment
 					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
 							.getMainText() + "";
 
-			DbHandler.getInstance(getActivity()).addComLog(
-					"Delay reported at " + date + " at " + time, note, "DELAY", args[0]);
+			DbHandler.getInstance(getActivity()).addComLog(datetime, note, "DELAY", args[0]);
 
 			return ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
 		}

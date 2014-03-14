@@ -23,6 +23,7 @@ import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 
@@ -33,6 +34,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	private View rootView;
 	private Bag bag;
     private ArrayList<DeliveryHandoverDataObject> waybills;
+    private int position;
 	Intent intent;
 
 	@Override
@@ -46,6 +48,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		intent = getIntent();
+		position = Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION));
 
 		bag = DbHandler.getInstance(this).getBag(
 				intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
@@ -56,11 +59,10 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	{
 		super.onResume();
 
-		holder.text_delivery_number.setText("#"
-				+ Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION)) + 1);
-		holder.text_delivery_title.setText("CURRENT MILKRUN DELIVERY"); // TODO: Change
+		holder.text_delivery_number.setText("#" + (position + 1));
+		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
-		holder.text_delivery_address.setText(bag.getDestinationAddress());
+		holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
 		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
         StringBuilder bagtext = new StringBuilder();
         //holder.text_delivery_bad_id.setText("Parcel(s) to be delivered for :  " + bag.getBagNumber() + "\n");
@@ -80,7 +82,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		for (int i = 0; i < comlogs.size(); i++)
 		{
-			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + "\n"
+			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + " : "
 					+ comlogs.get(i).getNote() + "\n";
 		}
 		holder.text_delivery_communication_log.setText(comlog_text);
@@ -108,7 +110,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				DialogFragment newFragment = MoreDialogFragment.newInstance(true,
+				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0),
 						bag.getBagNumber());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
