@@ -20,7 +20,7 @@
     <dimen name="font_tab">10dp</dimen>
     <dimen name="tabbar_height">60dp</dimen>
     <dimen name="scanner_width">200dip</dimen>    
-    <dimen name="scanner_height">150dip</dimen>
+    <dimen name="scanner_height">180dip</dimen>
     <dimen name="button_padding_topbottom">10dp</dimen>
     <dimen name="signature_block_gap">167dp</dimen>
     

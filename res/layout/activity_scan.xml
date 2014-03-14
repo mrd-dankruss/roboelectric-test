@@ -80,10 +80,11 @@
             android:textStyle="bold" />
     </RelativeLayout>
     <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="20dp"
             android:text="@string/test_scan_status"
             android:layout_above="@+id/framelayout_scan_bottomframe"
             android:layout_alignRight="@+id/scan_image" android:layout_alignLeft="@+id/scan_image"
-            android:gravity="center" android:id="@+id/activity_scan_textView_scanStatusBar"/>
+            android:gravity="center" android:id="@+id/activity_scan_textView_scanStatusBar"
+            android:background="@color/white"/>
 </RelativeLayout>
