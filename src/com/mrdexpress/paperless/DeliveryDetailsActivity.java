@@ -23,6 +23,7 @@ import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 
@@ -61,7 +62,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		holder.text_delivery_number.setText("#" + (position + 1));
 		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
-		holder.text_delivery_address.setText(bag.getDestinationAddress());
+		holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
 		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
         StringBuilder bagtext = new StringBuilder();
         //holder.text_delivery_bad_id.setText("Parcel(s) to be delivered for :  " + bag.getBagNumber() + "\n");
