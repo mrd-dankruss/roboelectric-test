@@ -1732,8 +1732,11 @@ public class ServerInterface
 
 		String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + token;
 
-		String response = postData(url);
-
+		//<TODO, NB!!> 
+		//String response = postData(url); 
+		String response = "{'response':{'status':'success'}}";
+		//</TODO, NB!!>
+		
 		String status = "";
 
 		try
