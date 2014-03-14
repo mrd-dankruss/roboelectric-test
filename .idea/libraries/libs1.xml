@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="libs1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../dependencies/cwac-loaderex-master/libs/sqlcipher.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cwac-loaderex-master/libs/sqlcipher.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
