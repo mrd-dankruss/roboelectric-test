@@ -559,9 +559,14 @@ public class ServerInterface
         {
             String response = getInputStreamFromUrl(url);
 
-            Workflow.getInstance().setWorkflowFromJSON( response);
+            Workflow.getInstance().setWorkflowFromJSON(response);
 
+            /*net.minidev.json.JSONObject test = Workflow.getInstance().getWorkflow().read("$.response.workflow.workflow");
+            Log.i("gary", test.toString());
+            Log.i("gary", test.get("id").toString() );
 
+            List<net.minidev.json.JSONArray> test2 = Workflow.getInstance().getBags();
+            Log.i("gary", test2.toString());*/
         }
         catch (Exception e)
         {
@@ -585,7 +590,7 @@ public class ServerInterface
 	 */
 	public void downloadBags(Context context, String driver_id)
 	{
-        //getMilkrunWorkflow(context);
+        getMilkrunWorkflow(context);
 
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken=" + token;
