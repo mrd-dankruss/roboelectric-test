@@ -59,6 +59,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 
 		mPager.setAdapter(mPagerAdapter);
 		actionBar.setHomeButtonEnabled(false);
+		actionBar.setDisplayHomeAsUpEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// Adding Tabs
@@ -141,6 +142,13 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 			}
 		}
 	}
+	
+	@Override
+    public void onBackPressed() 
+	{
+		// Do not allow going back
+		return;
+    }
 
 	// Creates static instances of resources.
 	// Increases performance by only finding and inflating resources only once.
