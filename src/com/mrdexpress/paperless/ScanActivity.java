@@ -1,16 +1,8 @@
 package com.mrdexpress.paperless;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.StringTokenizer;
-
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.Loader;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -21,21 +13,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
@@ -52,8 +33,11 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
-public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor>
-{
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.StringTokenizer;
+
+public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor> {
 
     private ViewHolder holder;
     private View root_view;
@@ -67,9 +51,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     private static final int URL_LOADER = 1;// Identifies a particular Loader
     // being used in this component
     static final String[] FROM =
-            { DbHandler.C_BAG_BARCODE };
+            {DbHandler.C_BAG_BARCODE};
     static final int[] TO =
-            { R.id.textView_row_scan };
+            {R.id.textView_row_scan};
 
     private ArrayList<String> selected_items;
 
@@ -90,8 +74,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     SharedPreferences prefs;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_scan);
@@ -121,42 +104,34 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 		/*prefs.edit()
-				.putString(VariableManager.EXTRA_DRIVER_ID,
+                .putString(VariableManager.EXTRA_DRIVER_ID,
 						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();*/
 
         user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
 
         initViewHolder();
 
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             // Restore value of members from saved state
             Log.d(TAG, "restoring savedstate");
             selected_items = savedInstanceState
                     .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
             Log.d(TAG, selected_items.toString());
-        }
-        else
-        {
+        } else {
             // initialize members with default values for a new instance
             selected_items = new ArrayList<String>();
             Log.d(TAG, "not restoring savedstate");
         }
 
 
-
-
         // Set click listener for list items (selecting a driver)
 
-        holder.list.setOnItemClickListener(new OnItemClickListener()
-        {
+        holder.list.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // View manifest
-                if (holder.list.getItemAtPosition(position) != null)
-                {
+                if (holder.list.getItemAtPosition(position) != null) {
                     Cursor c = (Cursor) holder.list.getItemAtPosition(position);
 
                     Intent intent = new Intent(getApplicationContext(),
@@ -181,15 +156,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         });
 
         // Start Milkrun
-        holder.button_start_milkrun.setOnClickListener(new OnClickListener()
-        {
+        holder.button_start_milkrun.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 // Check if all bags have been scanned
                 // if (true) // DEBUG
-                if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0))
-                {
+                if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0)) {
                     // Go to View Deliveries screen
                     Intent intent = new Intent(getApplicationContext(),
                             ViewDeliveriesFragmentActivity.class);
@@ -197,9 +169,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                     // String message = editText.getText().toString();
                     // intent.putExtra(EXTRA_MESSAGE, message);
                     startActivity(intent);
-                }
-                else
-                {
+                } else {
                     dialog = new IncompleteScanDialog(ScanActivity.this);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialog.show();
@@ -209,11 +179,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                     final Button button_continue = (Button) dialog
                             .findViewById(R.id.button_incomplete_scan_continue);
 
-                    button_continue.setOnClickListener(new OnClickListener()
-                    {
+                    button_continue.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onClick(View v)
-                        {
+                        public void onClick(View v) {
                             new RetrieveManagersTask().execute();
                         }
                     });
@@ -221,11 +189,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                     final Button button_scan = (Button) dialog
                             .findViewById(R.id.button_incomplete_scan_scan);
 
-                    button_scan.setOnClickListener(new OnClickListener()
-                    {
+                    button_scan.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onClick(View v)
-                        {
+                        public void onClick(View v) {
                             dialog.dismiss();
                         }
                     });
@@ -242,19 +208,16 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         // .createOnItemClickListener(this));
 
 
-
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
-    {
+    public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
 
-        if (selected_items.size() > 0)
-        {
+        if (selected_items.size() > 0) {
             savedInstanceState.putStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS,
                     selected_items);
 
@@ -266,61 +229,46 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        Log.e("HANNO:" , "Activity request code : " + Integer.toString(requestCode));
-        Log.e("HANNO:" , "Activity result code : " + Integer.toString(resultCode));
-        Log.e("HANNO:" , "Activity result code : " + data.toString() );
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("HANNO:", "Activity request code : " + Integer.toString(requestCode));
+        Log.e("HANNO:", "Activity result code : " + Integer.toString(resultCode));
+        Log.e("HANNO:", "Activity result code : " + data.toString());
 
 
-        if (dialog != null)
-        {
-            if (dialog.isShowing())
-            {
+        if (dialog != null) {
+            if (dialog.isShowing()) {
                 dialog.dismiss();
             }
         }
-        if (dialog_change_user != null)
-        {
-            if (dialog_change_user.isShowing())
-            {
+        if (dialog_change_user != null) {
+            if (dialog_change_user.isShowing()) {
                 dialog_change_user.dismiss();
             }
         }
-        if (dialog_not_assigned != null)
-        {
-            if (dialog_not_assigned.isShowing())
-            {
+        if (dialog_not_assigned != null) {
+            if (dialog_not_assigned.isShowing()) {
                 dialog_not_assigned.dismiss();
             }
         }
-        if (requestCode == REQUEST_MANUAL_BARCODE)
-        {
-            if (resultCode == RESULT_OK)
-            {
+        if (requestCode == REQUEST_MANUAL_BARCODE) {
+            if (resultCode == RESULT_OK) {
                 holder.button_start_milkrun.setEnabled(true);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
                 handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
                         null, null, null), null, 0);
             }
         }
-        if (requestCode == RESULT_MANAGER_AUTH)
-        {
-            if (resultCode == RESULT_OK)
-            {
-                if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
-                {
+        if (requestCode == RESULT_MANAGER_AUTH) {
+            if (resultCode == RESULT_OK) {
+                if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false)) {
                     new AddBagToDriver().execute();
                 }
             }
         }
-        if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH)
-        {
-            if (resultCode == RESULT_OK)
-            {
+        if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH) {
+            if (resultCode == RESULT_OK) {
                 if (data.getBooleanExtra(
-                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
-                {
+                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
                     Intent intent = new Intent(getApplicationContext(),
                             ViewDeliveriesFragmentActivity.class);
 
@@ -328,26 +276,20 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                 }
             }
         }
-        if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
-        {
-            if (resultCode == RESULT_OK)
-            {
+        if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN) {
+            if (resultCode == RESULT_OK) {
                 if (data.getBooleanExtra(
-                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
-                {
+                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
                     startIncompleteScanActivity();
                 }
             }
         }
-        if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE)
-        {
+        if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE) {
 
-            if (resultCode == RESULT_OK)
-            {
+            if (resultCode == RESULT_OK) {
 
                 if (data.getBooleanExtra(
-                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
-                {
+                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
                     startNotAssignedActivity();
                 }
             }
@@ -355,8 +297,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState)
-    {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
@@ -368,8 +309,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         Log.d(TAG, msg);
     }
 
-    private void setupChangeUserDialog()
-    {
+    private void setupChangeUserDialog() {
         dialog_change_user = new ChangeUserDialog(ScanActivity.this);
         dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog_change_user.show();
@@ -387,29 +327,23 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
         dialog_content.setText("Are you sure you want to log out " + user_name + "?");
 
-        button_close.setOnClickListener(new OnClickListener()
-        {
+        button_close.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 dialog_change_user.dismiss();
             }
         });
 
-        button_cancel.setOnClickListener(new OnClickListener()
-        {
+        button_cancel.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 dialog_change_user.dismiss();
             }
         });
 
-        button_ok.setOnClickListener(new OnClickListener()
-        {
+        button_ok.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 stopService(new Intent(ScanActivity.this, LocationService.class));
                 dialog_change_user.dismiss();
                 Intent intent = new Intent(ScanActivity.this, MainActivity.class);
@@ -422,15 +356,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     /**
      * Ticks consignments off as they are scanned.
      */
-    private void markScannedItems()
-    {
-        if (cursor_adapter != null)
-        {
+    private void markScannedItems() {
+        if (cursor_adapter != null) {
             Cursor cursor = cursor_adapter.getCursor();
 
-            if (cursor != null & selected_items != null)
-            {
-                Log.d(TAG , selected_items.toString());
+            if (cursor != null & selected_items != null) {
+                Log.d(TAG, selected_items.toString());
 
                 /* MOB-22 */
                 BAG_COUNTER += selected_items.size();
@@ -442,16 +373,14 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				 * barcode just scanned.
 				 */
                 // for (int i = 0; i < selected_items.size(); i++) {
-                for (int i = 0; i < getAllChildren(holder.list).size(); i++)
-                {
+                for (int i = 0; i < getAllChildren(holder.list).size(); i++) {
 					/*
 					 * Extract TextView from cursorAdapter
 					 */
 
                     RelativeLayout row = (RelativeLayout) holder.list.getChildAt(Integer
                             .parseInt(selected_items.get(i)));
-                    if (row != null)
-                    {
+                    if (row != null) {
                         TextView text_view = (TextView) row.findViewById(R.id.textView_row_scan);
                         text_view.setTextColor(getResources().getColor(R.color.colour_green_scan)); // Change
                         // colour
@@ -463,15 +392,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                     }
                     cursor.moveToNext();
                 }
-            }
-            else
-            {
-                if (cursor == null)
-                {
+            } else {
+                if (cursor == null) {
                     Log.d(TAG, "markScannedItems() - cursor is null");
                 }
-                if (selected_items == null)
-                {
+                if (selected_items == null) {
                     Log.d(TAG, "markScannedItems() - selected_items is null");
                 }
 				/*
@@ -479,9 +404,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 				 * "markScannedItems() - selected_items is empty"); }
 				 */
             }
-        }
-        else
-        {
+        } else {
             Log.d(TAG, "markScannedItems() - cursor_adapter is null");
         }
     }
@@ -489,18 +412,13 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     /**
      * Search through list of scanned items to find if the current has been scanned already.
      *
-     * @param list
-     *            The selected_items ArrayList
-     * @param barcode
-     *            Currently selected barcode
+     * @param list    The selected_items ArrayList
+     * @param barcode Currently selected barcode
      * @return true is duplicate.
      */
-    private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode)
-    {
-        for (int i = 0; i < list.size(); i++)
-        {
-            if ((list.get(i)).equals(barcode))
-            {
+    private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode) {
+        for (int i = 0; i < list.size(); i++) {
+            if ((list.get(i)).equals(barcode)) {
                 return true;
             }
         }
@@ -511,8 +429,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
      * Barcode has been successfully scanned.
      */
     @Override
-    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor)
-    {
+    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
 
         boolean parcel_in_list = false;
 
@@ -524,13 +441,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         Cursor cursor = null;
         int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(driverid);
 
-        if (cursor_adapter != null)
-        {
+        if (cursor_adapter != null) {
             cursor = cursor_adapter.getCursor();
         }
 
-        if (cursor != null)
-        {
+        if (cursor != null) {
             cursor.moveToFirst();
             /**
              * Start searching through all consignments for ones matching
@@ -539,14 +454,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
 
             int i = 0;
-            for (View child : all_views_within_top_view)
-            {
-                if (child != null)
-                {
+            for (View child : all_views_within_top_view) {
+                if (child != null) {
                     TextView text_view = (TextView) child // row
                             .findViewById(R.id.textView_row_scan);
-                    if (text_view != null)
-                    {
+                    if (text_view != null) {
 
                         String str = text_view.getText().toString();
                         StringTokenizer tokenizer = new StringTokenizer(str);
@@ -554,8 +466,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
                         // Compare barcode
 
-                        if (cons_number.equals(rawResult.getText()))
-                        {
+                        if (cons_number.equals(rawResult.getText())) {
                             Log.d(TAG, "Zorro decode barcode: " + cons_number);
                             parcel_in_list = true;
 
@@ -567,13 +478,11 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                             // Make tick
                             ImageView image_view_tick = (ImageView) child
                                     .findViewById(R.id.imageView_row_scan_tick);
-                            if (image_view_tick != null)
-                            {
+                            if (image_view_tick != null) {
                                 image_view_tick.setVisibility(View.VISIBLE);
                             }
 
-                            if (!checkSelectedBagDuplicate(selected_items, rawResult.getText()))
-                            {
+                            if (!checkSelectedBagDuplicate(selected_items, rawResult.getText())) {
                                 selected_items.add(rawResult.getText());
                                 holder.button_start_milkrun.setEnabled(true);
                                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
@@ -590,24 +499,19 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                                 DbHandler.getInstance(getApplicationContext()).setScanned(
                                         rawResult.getText(), true);
 
-                                if (selected_items.size() == total_bags)
-                                {
+                                if (selected_items.size() == total_bags) {
                                     CustomToast toast = new CustomToast(this);
                                     toast.setSuccess(true);
                                     toast.setText(getString(R.string.text_scan_successful));
                                     toast.show();
-                                }
-                                else
-                                {
+                                } else {
                                     CustomToast toast = new CustomToast(this);
                                     toast.setSuccess(true);
                                     toast.setText(getString(R.string.text_scan_next));
                                     toast.show();
                                 }
                             }
-                        }
-                        else
-                        {
+                        } else {
 
                             Log.d(TAG, "handleDecode(): no match " + cons_number);
                         }
@@ -615,20 +519,15 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
                     // Refresh list
                     // cursor_adapter.notifyDataSetChanged();
-                }
-                else
-                {
+                } else {
                     Log.d(TAG, "handleDecode(): row is null");
                 }
                 i++;
             }
-            if (parcel_in_list == false)
-            {
+            if (parcel_in_list == false) {
                 last_scanned_barcode = rawResult.getText();
-                if (dialog_not_assigned != null)
-                {
-                    if (dialog_not_assigned.isShowing() == false)
-                    {
+                if (dialog_not_assigned != null) {
+                    if (dialog_not_assigned.isShowing() == false) {
                         dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
                         dialog_not_assigned.getWindow().setBackgroundDrawable(
                                 new ColorDrawable(Color.TRANSPARENT));
@@ -636,32 +535,25 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                         final Button button_continue = (Button) dialog_not_assigned
                                 .findViewById(R.id.button_not_assigned_continue);
 
-                        button_continue.setOnClickListener(new OnClickListener()
-                        {
+                        button_continue.setOnClickListener(new OnClickListener() {
                             @Override
-                            public void onClick(View v)
-                            {
+                            public void onClick(View v) {
                                 dialog_not_assigned.dismiss();
-                                if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-                                {
+                                if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
                                     Intent intent = new Intent(getApplicationContext(),
                                             LoginActivity.class);
 
                                     // startActivity(intent);
                                     dialog_not_assigned.dismiss();
                                     startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                                }
-                                else
-                                {
+                                } else {
                                     dialog_not_assigned.dismiss();
                                     startNotAssignedActivity();
                                 }
                             }
                         });
                     }
-                }
-                else
-                {
+                } else {
                     dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
                     dialog_not_assigned.getWindow().setBackgroundDrawable(
                             new ColorDrawable(Color.TRANSPARENT));
@@ -669,22 +561,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                     final Button button_continue = (Button) dialog_not_assigned
                             .findViewById(R.id.button_not_assigned_continue);
 
-                    button_continue.setOnClickListener(new OnClickListener()
-                    {
+                    button_continue.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onClick(View v)
-                        {
-                            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-                            {
+                        public void onClick(View v) {
+                            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
                                 Intent intent = new Intent(getApplicationContext(),
                                         LoginActivity.class);
 
                                 // startActivity(intent);
                                 dialog_not_assigned.dismiss();
                                 startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                            }
-                            else
-                            {
+                            } else {
                                 dialog_not_assigned.dismiss();
                                 startNotAssignedActivity();
                             }
@@ -692,9 +579,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                     });
                 }
             }
-        }
-        else
-        {
+        } else {
             Log.d(TAG, "handleDecode(): cursor_adapter is null");
         }
 
@@ -703,53 +588,41 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
-        if (selected_items != null)
-        {
+        if (selected_items != null) {
             Log.d(TAG, "Items selected: " + String.valueOf(selected_items.size()));
         }
 
         // Close dialog if it is showing upon resuming screen.
         // Or else it is still open when backing out of ManagerAuthIncompleteScanActivity
-        if (dialog != null)
-        {
-            if (dialog.isShowing())
-            {
+        if (dialog != null) {
+            if (dialog.isShowing()) {
                 dialog.dismiss();
             }
         }
-        if (dialog_change_user != null)
-        {
-            if (dialog_change_user.isShowing())
-            {
+        if (dialog_change_user != null) {
+            if (dialog_change_user.isShowing()) {
                 dialog_change_user.dismiss();
             }
         }
-        if (dialog_not_assigned != null)
-        {
-            if (dialog_not_assigned.isShowing())
-            {
+        if (dialog_not_assigned != null) {
+            if (dialog_not_assigned.isShowing()) {
                 dialog_not_assigned.dismiss();
             }
         }
 
-        if ((holder.list.getCount() == 0) || (selected_items.size() == 0))
-        {
+        if ((holder.list.getCount() == 0) || (selected_items.size() == 0)) {
             holder.button_start_milkrun.setEnabled(false);
             holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
-        }
-        else
-        {
+        } else {
             holder.button_start_milkrun.setEnabled(true);
             holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
         }
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
 
         // Set all consignments' scanned state to false
@@ -762,11 +635,9 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
      * @param v
      * @return ArrayList<View>
      */
-    private ArrayList<View> getAllChildren(View v)
-    {
+    private ArrayList<View> getAllChildren(View v) {
 
-        if (!(v instanceof ViewGroup))
-        {
+        if (!(v instanceof ViewGroup)) {
             ArrayList<View> viewArrayList = new ArrayList<View>();
             viewArrayList.add(v);
             return viewArrayList;
@@ -775,8 +646,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         ArrayList<View> result = new ArrayList<View>();
 
         ViewGroup vg = (ViewGroup) v;
-        for (int i = 0; i < vg.getChildCount(); i++)
-        {
+        for (int i = 0; i < vg.getChildCount(); i++) {
 
             View child = vg.getChildAt(i);
 
@@ -790,18 +660,15 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.scan, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
@@ -824,8 +691,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
      * or Fragment lifecycle.
      */
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args)
-    {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         DbHandler.getInstance(this);
         String rawQuery = "";
 
@@ -835,15 +701,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
         // If training run is started, load fake data
-        if (training_mode)
-        {
+        if (training_mode) {
             // Just keeping it in a DB table to not mess with loader.
             // Log.d(TAG, "zorro training run");
             rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS_TRAINING + " ORDER BY "
                     + DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
-        }
-        else
-        {
+        } else {
             rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
                     + DbHandler.C_BAG_DRIVER_ID + " LIKE '" + driverid + "'" + " ORDER BY "
                     + DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
@@ -859,14 +722,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     /**
      * Update the UI based on the results of your query.
      */
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
-    {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         /* MOB-22 */
         BAG_TOTAL = cursor.getCount();
         UpdateBagsCounter();
 
-        if (cursor != null && cursor.getCount() > 0)
-        {
+        if (cursor != null && cursor.getCount() > 0) {
 
             cursor.moveToFirst();
 
@@ -881,13 +742,10 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             holder.list.setAdapter(cursor_adapter);
 
             cursor_adapter.changeCursor(cursor);
-            if ((holder.list.getCount() == 0)  || (selected_items.size() == 0))
-            {
+            if ((holder.list.getCount() == 0) || (selected_items.size() == 0)) {
                 holder.button_start_milkrun.setEnabled(false);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
-            }
-            else
-            {
+            } else {
                 holder.button_start_milkrun.setEnabled(true);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
             }
@@ -902,28 +760,23 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
      * hold to null. But do not close the cursor - the Loader does this for you.
      */
     @Override
-    public void onLoaderReset(Loader<Cursor> loader)
-    {
+    public void onLoaderReset(Loader<Cursor> loader) {
 		/*
 		 * * Clears out the adapter's reference to the Cursor. This prevents
 		 * memory leaks.
 		 */
-        if (cursor_adapter != null)
-        {
+        if (cursor_adapter != null) {
             cursor_adapter.changeCursor(null);
         }
     }
 
-    public void initViewHolder()
-    {
+    public void initViewHolder() {
 
-        if (root_view == null)
-        {
+        if (root_view == null) {
 
             root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-            if (holder == null)
-            {
+            if (holder == null) {
                 holder = new ViewHolder();
             }
 
@@ -947,17 +800,12 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             // Store the holder with the view.
             root_view.setTag(holder);
 
-        }
-        else
-        {
+        } else {
             holder = (ViewHolder) root_view.getTag();
 
-            if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
-            {
+            if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup)) {
                 ((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-            }
-            else
-            {
+            } else {
             }
         }
     }
@@ -965,9 +813,8 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     /**
      * Creates static instances of resources. Increases performance by only
      * finding and inflating resources only once.
-     **/
-    static class ViewHolder
-    {
+     */
+    static class ViewHolder {
         ListView list;
         Button button_start_milkrun;
         TextView textView_toast;
@@ -979,25 +826,23 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
      * Retrieve list of managers from API in background
      *
      * @author greg
-     *
      */
-    private class RetrieveManagersTask extends AsyncTask<Void, Void, Void>
-    {
+    private class RetrieveManagersTask extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
 
         /** progress dialog to show user that the backup is processing. */
-        /** application context. */
+        /**
+         * application context.
+         */
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             this.dialog_progress.setMessage("Retrieving list of managers");
             this.dialog_progress.show();
         }
 
         @Override
-        protected Void doInBackground(Void... urls)
-        {
+        protected Void doInBackground(Void... urls) {
             // Log.i(TAG, "Fetching token...");
             ServerInterface.getInstance(getApplicationContext()).getManagers(
                     getApplicationContext());
@@ -1006,33 +851,27 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         }
 
         @Override
-        protected void onPostExecute(Void nothing)
-        {
+        protected void onPostExecute(Void nothing) {
             // Close progress spinner
-            if (dialog_progress.isShowing())
-            {
+            if (dialog_progress.isShowing()) {
                 dialog_progress.dismiss();
             }
 
             // Start manager authorization activity
-            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null)
-            {
+            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
                 // startActivity(intent);
                 startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
                 dialog.dismiss();
-            }
-            else
-            {
+            } else {
                 startIncompleteScanActivity();
                 dialog.dismiss();
             }
         }
     }
 
-    private void startNotAssignedActivity()
-    {
+    private void startNotAssignedActivity() {
         // Start manager authorization activity
         Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
 
@@ -1041,8 +880,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         startActivityForResult(intent, RESULT_MANAGER_AUTH);
     }
 
-    private void startIncompleteScanActivity()
-    {
+    private void startIncompleteScanActivity() {
         // Start manager authorization activity
         Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
 
@@ -1052,21 +890,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
     }
 
-    private class AddBagToDriver extends AsyncTask<Void, Void, Void>
-    {
+    private class AddBagToDriver extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
 
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             this.dialog_progress.setMessage("Adding bag");
             this.dialog_progress.show();
         }
 
         @Override
-        protected Void doInBackground(Void... urls)
-        {
+        protected Void doInBackground(Void... urls) {
             SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
                     Context.MODE_PRIVATE);
 
@@ -1074,8 +909,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
                     false);
 
-            if (training_mode)
-            {
+            if (training_mode) {
                 ContentValues values = new ContentValues();
 
                 Random random = new Random();
@@ -1105,9 +939,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
                                 + DbHandler.getInstance(getApplicationContext()).addRow(
                                 DbHandler.TABLE_BAGS_TRAINING, values));
 
-            }
-            else
-            {
+            } else {
                 ServerInterface.getInstance(getApplicationContext()).downloadBag(
                         getApplicationContext(),
                         ServerInterface.getInstance(getApplicationContext()).scanBag(
@@ -1117,8 +949,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         }
 
         @Override
-        protected void onPostExecute(Void nothing)
-        {
+        protected void onPostExecute(Void nothing) {
             /**
              * TODO: ADDING A NEW BAG TO THE DRIVER CONSIGNMENTS HERE!!! AND THEN UPDATING THE LISTVIEW DISPLAY
              */
@@ -1130,18 +961,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             // holder.list.setAdapter(cursor_adapter);
 
             // Close progress spinner
-            if (dialog_progress.isShowing())
-            {
+            if (dialog_progress.isShowing()) {
                 dialog_progress.dismiss();
             }
         }
     }
 
-    public void UpdateBagsCounter(){
-        try{
-            holder.textview_scanstatus.setText( "Bags Scanned : (" + Integer.toString(BAG_COUNTER) + '/' +  Integer.toString(BAG_TOTAL) + ')');
-        }catch(Exception e){
-            Log.e("MRDEX:" , e.toString() );
+    public void UpdateBagsCounter() {
+        try {
+            holder.textview_scanstatus.setText("Bags Scanned : (" + Integer.toString(BAG_COUNTER) + '/' + Integer.toString(BAG_TOTAL) + ')');
+        } catch (Exception e) {
+            Log.e("MRDEX:", e.toString());
         }
     }
 
