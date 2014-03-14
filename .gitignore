@@ -47,5 +47,6 @@ Icon
 /.classpath
 /.settings
 /.idea
-
-/.idea
+/.idea/scopes
+/.idea/copyright
+/.idea/libraries
