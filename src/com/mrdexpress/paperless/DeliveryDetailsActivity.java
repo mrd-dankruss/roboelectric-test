@@ -82,7 +82,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		for (int i = 0; i < comlogs.size(); i++)
 		{
-			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + "\n"
+			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + " : "
 					+ comlogs.get(i).getNote() + "\n";
 		}
 		holder.text_delivery_communication_log.setText(comlog_text);
