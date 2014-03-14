@@ -22,6 +22,7 @@ import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
@@ -131,12 +132,41 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		more = (Button) rowView.findViewById(R.id.deliveries_button_more);
 		more.setTypeface(typeface_roboto_bold);
 
+		
+		// Icon
+		// Only doing Milkruns for now so hardcode
+		deliveryType.setImageResource(getCompanyIcon(Company.MRD));
+		
+		// Leading zero
+		if (position < 10)
+		{
+			deliveryNumber.setText("#0" + (position + 1));
+		}
+		else
+		{
+			deliveryNumber.setText("#" + (position + 1));
+		}
+
+		// Delivery type
+		titleDetail.setText(getTitle(DeliveryType.DELIVERY, position));
+		
+		// Address
+		address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
+
+		// ID
+		id.setText(values.get(position).getBarcode() + " ("
+				+ values.get(position).getNumberItems() + " items)");
+		
+		// Coy logo
+		// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
+		int companyLogoID = getCompanyIcon(Company.NONE);
+		if (companyLogoID != 0)
+		{
+			companyLogo.setImageResource(companyLogoID);
+		}
+		
 		if (position == 0)
 		{
-			// Icon
-			// Only doing Milkruns for now so hardcode
-			deliveryType.setImageResource(getCompanyIcon(Company.MRD));
-
 			// Make ID of current next bag global
 			bag_id = values.get(position).getBagNumber();
 			Log.d(TAG, "Bag ID: " + bag_id);
@@ -147,34 +177,6 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			SharedPreferences.Editor editor = prefs.edit();
 			editor.putString(VariableManager.PREF_CURRENT_BAGID, bag_id);
 			editor.apply();
-
-			// Add leading zero
-			if (position < 10)
-			{
-				deliveryNumber.setText("#0" + (position + 1));
-			}
-			else
-			{
-				deliveryNumber.setText("#" + (position + 1));
-			}
-
-			// Delivery type
-			titleDetail.setText(getTitle(DeliveryType.DELIVERY, position));
-
-			// Coy logo
-			// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
-			int companyLogoID = getCompanyIcon(Company.NONE);
-			if (companyLogoID != 0)
-			{
-				companyLogo.setImageResource(companyLogoID);
-			}
-
-			// Address
-			address.setText(values.get(position).getDestinationAddress());
-
-			// ID
-			id.setText(values.get(position).getBarcode() + " ("
-					+ values.get(position).getNumberItems() + " items)");
 
 			updateStatus.setOnClickListener(new View.OnClickListener()
 			{
@@ -197,40 +199,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 					newFragment.show(activity.getSupportFragmentManager(), "dialog");
 				}
 			});
-
 		}
 		else
 		{
-
-			// Delivery type
-			deliveryType.setImageResource(getCompanyIcon(Company.MRD));
-
-			// Leading zero
-			if (position < 10)
-			{
-				deliveryNumber.setText("#0" + (position + 1));
-			}
-			else
-			{
-				deliveryNumber.setText("#" + (position + 1));
-			}
-
-			titleDetail.setText(getTitle(DeliveryType.DELIVERY, position));
-
-			// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
-			int companyLogoID = getCompanyIcon(Company.NONE);
-			if (companyLogoID != 0)
-			{
-				companyLogo.setImageResource(companyLogoID);
-			}
-
-			// Address
-			address.setText(values.get(position).getDestinationAddress());
-
-			// ID
-			id.setText(values.get(position).getBarcode() + " ("
-					+ values.get(position).getNumberItems() + " items)");
-
 			buttonsHolder.setVisibility(View.GONE);
 		}
 
@@ -302,6 +273,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			return 0;
 		}
 	}
+	
 
 	@Override
 	public int getCount()
