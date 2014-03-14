@@ -617,8 +617,7 @@ public class MainActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.getInstance(getApplicationContext()).downloadBags(
-					getApplicationContext(), selected_user_id);
+            ServerInterface.getInstance(getApplicationContext()).downloadBags(	getApplicationContext(), selected_user_id);
 			return null;
 		}
 
@@ -660,8 +659,7 @@ public class MainActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.getInstance(getApplicationContext()).downloadBags(
-					getApplicationContext(), selected_user_id);
+            ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), selected_user_id);
 			return null;
 		}
 

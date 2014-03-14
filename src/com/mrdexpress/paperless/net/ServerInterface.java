@@ -14,7 +14,9 @@ import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
+import com.mrdexpress.paperless.workflow.Workflow;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -55,6 +57,7 @@ import com.mrdexpress.paperless.db.Driver;
 import com.mrdexpress.paperless.db.Waybill;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
+
 
 public class ServerInterface
 {
@@ -541,6 +544,38 @@ public class ServerInterface
 		return status;
 	}
 
+
+    /**
+     * Retrieves workflow for current token
+     *
+     * @return
+     */
+    public void getMilkrunWorkflow(Context context)
+    {
+        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token;
+
+        try
+        {
+            String response = getInputStreamFromUrl(url);
+
+            Workflow.getInstance().setWorkflowFromJSON( response);
+
+
+        }
+        catch (Exception e)
+        {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG, sw.toString());
+            if (VariableManager.DEBUG)
+            {
+                displayToast("Exception: workflow/get-milkrun-workflow");
+            }
+        }
+    }
+
+
 	/**
 	 * Retrieves consignments (bags), for the specified driver ID and adds to DB
 	 * 
@@ -550,7 +585,9 @@ public class ServerInterface
 	 */
 	public void downloadBags(Context context, String driver_id)
 	{
-		String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+        //getMilkrunWorkflow(context);
+
+        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 		String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken=" + token;
 
 		// Log.i(TAG, "Fetching " + url);
@@ -645,6 +682,8 @@ public class ServerInterface
 					// Barcode
 					String barcode = result.getString("barcode");
 
+                    String mdx = result.getString("mdx");
+
 					// Status
 					String bag_status = result.getString("status");
 
@@ -661,19 +700,14 @@ public class ServerInterface
 					// Address
 					String dest_hubname = result.getJSONObject("destination").getString("hubname");
 					String dest_hubcode = result.getJSONObject("destination").getString("hubcode");
-					String dest_address = result.getJSONObject("destination")
-							.getJSONObject("address").getString("address");
-					String dest_suburb = result.getJSONObject("destination")
-							.getJSONObject("address").getString("suburb");
+					String dest_address = result.getJSONObject("destination").getJSONObject("address").getString("address");
+					String dest_suburb = result.getJSONObject("destination").getJSONObject("address").getString("suburb");
 					// String dest_town =
 					// result.getJSONObject("destination").getJSONObject("address")
 					// .getString("town");
-					String dest_contact1 = result.getJSONObject("destination")
-							.getJSONObject("address").getString("contact1");
-					String dest_lat = result.getJSONObject("destination").getJSONObject("address")
-							.getJSONObject("coords").getString("lat");
-					String dest_long = result.getJSONObject("destination").getJSONObject("address")
-							.getJSONObject("coords").getString("lon");
+					String dest_contact1 = result.getJSONObject("destination").getJSONObject("address").getString("contact1");
+					String dest_lat = result.getJSONObject("destination").getJSONObject("address").getJSONObject("coords").getString("lat");
+					String dest_long = result.getJSONObject("destination").getJSONObject("address").getJSONObject("coords").getString("lon");
 
 					// Go through temp array to find number of times the
 					// current waybill ID occurs.
