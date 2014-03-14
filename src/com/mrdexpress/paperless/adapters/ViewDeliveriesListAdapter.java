@@ -135,7 +135,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		
 		// Icon
 		// Only doing Milkruns for now so hardcode
-		deliveryType.setImageResource(getCompanyIcon(Company.MRD));
+		deliveryType.setImageResource(this.getDeliveryTypeIcon(DeliveryType.DELIVERY));
 		
 		// Leading zero
 		if (position < 10)
@@ -157,9 +157,10 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		id.setText(values.get(position).getBarcode() + " ("
 				+ values.get(position).getNumberItems() + " items)");
 		
-		// Coy logo
+		// Company logo
+		// Only doing MrD for now so hardcode
 		// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
-		int companyLogoID = getCompanyIcon(Company.NONE);
+		int companyLogoID = getCompanyIcon(Company.MRD);
 		if (companyLogoID != 0)
 		{
 			companyLogo.setImageResource(companyLogoID);
