@@ -78,11 +78,10 @@ public class SmsListFragment extends Fragment
 			{
 				parentItemPosition = position; // (Integer) adapter.getItem(position);
 
-				String sms_message = ((DialogDataObject) holder.list.getItemAtPosition(position))
-						.getSubText();
-
+				DialogDataObject dataObject = (DialogDataObject) holder.list.getItemAtPosition(position);
 				SmsMessageFragment fragment_sms = SmsMessageFragment.newInstance(
-						((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText(),
+						dataObject.getMainText(),
+						dataObject.getSubText(),
 						bag_id);
 				FragmentManager fm = getFragmentManager();
 				FragmentTransaction ft = fm.beginTransaction();
