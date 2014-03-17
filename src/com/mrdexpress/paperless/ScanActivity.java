@@ -1,9 +1,7 @@
 package com.mrdexpress.paperless;
 
-import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
 import android.content.*;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -17,45 +15,33 @@ import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+
 import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
 import com.google.zxing.client.android.Intents;
-import com.mrdexpress.paperless.adapters.ScanSimpleCursorAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
 import com.mrdexpress.paperless.fragments.NotAssignedToUserDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
-import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Random;
-import java.util.StringTokenizer;
 
-public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cursor> {
+public class ScanActivity extends CaptureActivity {
 
     private ViewHolder holder;
     private View root_view;
-    private int BAG_COUNTER = 0;
-    private int BAG_TOTAL = 0;
 
     private static final String TAG = "ScanActivity";
     private static final long BULK_MODE_SCAN_DELAY_MS = 1000L; // Default 1000L
-
-    private ScanSimpleCursorAdapter cursor_adapter;
-    private static final int URL_LOADER = 1;// Identifies a particular Loader
-    // being used in this component
-    static final String[] FROM =
-            {DbHandler.C_BAG_BARCODE};
-    static final int[] TO =
-            {R.id.textView_row_scan};
-
-    private ArrayList<String> selected_items;
 
     private IncompleteScanDialog dialog;
     private ChangeUserDialog dialog_change_user;
@@ -72,12 +58,45 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
     private String last_scanned_barcode;
 
     SharedPreferences prefs;
+    
+    Hashtable<String, Integer> bagsUnscanned;
+    Hashtable<String, Integer> bagsScanned;
+    List<Bag> bags;
+    String driverId;
+    BarcodeListAdapter adapter;
+    
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_scan);
+        
+    	// Store currently selected driver id globally
+        prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        
+        driverId = prefs.getString(VariableManager.PREF_DRIVERID, null);
+        DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+        bags = DbHandler.getInstance(this).getBags(driverId);
+        bagsUnscanned = new Hashtable<String, Integer>();
+        bagsScanned = new Hashtable<String, Integer>();
+        int i = 0;
+        for (Bag bag : bags)
+        {
+        	String barcode = bag.getBarcode();
+        	Hashtable<String, Integer> bagMap;
+        	if (bag.getScanned())
+        	{
+        		bagMap = bagsScanned;
+        	}
+        	else
+        	{
+        		bagMap = bagsUnscanned;
+        	}
+        	
+        	bagMap.put(barcode, i);
+        	i++;
+        }
 
         // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
         Display display = getWindowManager().getDefaultDisplay();
@@ -85,8 +104,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         display.getSize(size);
         int width = (int) (size.x - (size.x * 0.1));
         int height = (int) (size.y - (size.y * 0.1));
-
-        DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
 
         Intent intent = getIntent();
         intent.setAction(Intents.Scan.ACTION);
@@ -100,8 +117,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Store currently selected driver id globally
-        prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        
 
 		/*prefs.edit()
                 .putString(VariableManager.EXTRA_DRIVER_ID,
@@ -111,17 +127,17 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
         initViewHolder();
 
-        if (savedInstanceState != null) {
-            // Restore value of members from saved state
-            Log.d(TAG, "restoring savedstate");
-            selected_items = savedInstanceState
-                    .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
-            Log.d(TAG, selected_items.toString());
-        } else {
-            // initialize members with default values for a new instance
-            selected_items = new ArrayList<String>();
-            Log.d(TAG, "not restoring savedstate");
-        }
+//        if (savedInstanceState != null) {
+//            // Restore value of members from saved state
+//            Log.d(TAG, "restoring savedstate");
+//            selected_items = savedInstanceState
+//                    .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
+//            Log.d(TAG, selected_items.toString());
+//        } else {
+//            // initialize members with default values for a new instance
+//            selected_items = new ArrayList<String>();
+//            Log.d(TAG, "not restoring savedstate");
+//        }
 
 
         // Set click listener for list items (selecting a driver)
@@ -132,25 +148,20 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
 
                 // View manifest
                 if (holder.list.getItemAtPosition(position) != null) {
-                    Cursor c = (Cursor) holder.list.getItemAtPosition(position);
+                	
+                	Bag bag = (Bag) holder.list.getItemAtPosition(position);
+                	if (bag != null)
+                	{
+                		 Intent intent = new Intent(getApplicationContext(),
+                                 ViewBagManifestActivity.class);
+                		 
+                		 // Pass info to view manifest activity
+                         intent.putExtra(VariableManager.EXTRA_BAGID, bag.getBagNumber());
+                         intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, bag.getDestinationHubName());
+                         intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, ""+bag.getNumberItems());
 
-                    Intent intent = new Intent(getApplicationContext(),
-                            ViewBagManifestActivity.class);
-
-                    DbHandler.getInstance(getApplicationContext());
-
-                    // Pass info to view manifest activity
-                    intent.putExtra(VariableManager.EXTRA_BAGID,
-                            String.valueOf(c.getString(c.getColumnIndex(DbHandler.C_BAG_ID))));
-                    intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, String.valueOf(c
-                            .getString(c.getColumnIndex(DbHandler.C_BAG_DEST_HUBNAME))));
-                    // intent.putExtra(
-                    // VariableManager.EXTRA_CONSIGNMENT_NUMBER_ITEMS,
-                    // String.valueOf(manifest_number_items));
-                    intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, String.valueOf(c
-                            .getString(c.getColumnIndex(DbHandler.C_BAG_NUM_ITEMS))));
-
-                    startActivity(intent);
+                         startActivity(intent);
+                	}
                 }
             }
         });
@@ -161,7 +172,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             public void onClick(View v) {
                 // Check if all bags have been scanned
                 // if (true) // DEBUG
-                if ((selected_items.size() == holder.list.getCount()) & (selected_items.size() > 0)) {
+                if ((bagsScanned.size() == holder.list.getCount()) & (bagsScanned.size() > 0)) {
                     // Go to View Deliveries screen
                     Intent intent = new Intent(getApplicationContext(),
                             ViewDeliveriesFragmentActivity.class);
@@ -199,40 +210,34 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             }
         });
 
-        // Initiate database
-        getLoaderManager().initLoader(URL_LOADER, null, this);
-
-        // holder.list.setAdapter(AdapterUtils.createSectionAdapter(this));
-        holder.list.setAdapter(cursor_adapter);
-        // holder.list.setOnItemClickListener(AdapterUtils
-        // .createOnItemClickListener(this));
-
-
+        adapter = new BarcodeListAdapter(this);
+        holder.list.setAdapter(adapter);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        // Save UI state changes to the savedInstanceState.
-        // This bundle will be passed to onCreate if the process is
-        // killed and restarted.
-
-        if (selected_items.size() > 0) {
-            savedInstanceState.putStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS,
-                    selected_items);
-
-            String msg = "onSaveInstanceState - "
-                    + savedInstanceState.getStringArrayList(
-                    VariableManager.EXTRA_LIST_SCANNED_ITEMS).get(0);
-            Log.d(TAG, msg);
-        }
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle savedInstanceState) {
+//        super.onSaveInstanceState(savedInstanceState);
+//        // Save UI state changes to the savedInstanceState.
+//        // This bundle will be passed to onCreate if the process is
+//        // killed and restarted.
+//
+//        if (selected_items.size() > 0) {
+//            savedInstanceState.putStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS,
+//                    selected_items);
+//
+//            String msg = "onSaveInstanceState - "
+//                    + savedInstanceState.getStringArrayList(
+//                    VariableManager.EXTRA_LIST_SCANNED_ITEMS).get(0);
+//            Log.d(TAG, msg);
+//        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("HANNO:", "Activity request code : " + Integer.toString(requestCode));
         Log.e("HANNO:", "Activity result code : " + Integer.toString(resultCode));
-        Log.e("HANNO:", "Activity result code : " + data.toString());
+        // NB, data may be null
+        Log.e("HANNO:", "Activity result code : " + (data != null ? data.toString() : "null"));
 
 
         if (dialog != null) {
@@ -296,18 +301,18 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         }
     }
 
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        // Restore UI state from the savedInstanceState.
-        // This bundle has also been passed to onCreate.
-
-        selected_items = savedInstanceState
-                .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
-
-        String msg = "onRestoreInstanceState - " + selected_items.get(0);
-        Log.d(TAG, msg);
-    }
+//    @Override
+//    public void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//        // Restore UI state from the savedInstanceState.
+//        // This bundle has also been passed to onCreate.
+//
+//        selected_items = savedInstanceState
+//                .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
+//
+//        String msg = "onRestoreInstanceState - " + selected_items.get(0);
+//        Log.d(TAG, msg);
+//    }
 
     private void setupChangeUserDialog() {
         dialog_change_user = new ChangeUserDialog(ScanActivity.this);
@@ -353,245 +358,170 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         });
     }
 
-    /**
-     * Ticks consignments off as they are scanned.
-     */
-    private void markScannedItems() {
-        if (cursor_adapter != null) {
-            Cursor cursor = cursor_adapter.getCursor();
 
-            if (cursor != null & selected_items != null) {
-                Log.d(TAG, selected_items.toString());
+    
+    
+    void onBarcodeMatchSuccess()
+    {
+    	 UpdateBagsCounter();
+		 
+		 adapter.notifyDataSetChanged();
+		 
+		 holder.button_start_milkrun.setEnabled(bagsScanned.size() > 0);
+		 
+		 if (bagsScanned.size() == bags.size()) 
+		 {
+             CustomToast toast = new CustomToast(this);
+             toast.setSuccess(true);
+             toast.setText(getString(R.string.text_scan_successful));
+             toast.show();
+         } 
+		 else 
+		 {
+             CustomToast toast = new CustomToast(this);
+             toast.setSuccess(true);
+             toast.setText(getString(R.string.text_scan_next));
+             toast.show();
+         }
+    }
+    
+    void onBarcodeMatchFail()
+    {
+    	// not sure what this code does...
+    	if (dialog_not_assigned != null) 
+    	{
+            if (dialog_not_assigned.isShowing() == false) 
+            {
+            	
+                dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+                dialog_not_assigned.getWindow().setBackgroundDrawable(
+                        new ColorDrawable(Color.TRANSPARENT));
+                dialog_not_assigned.show();
+                final Button button_continue = (Button) dialog_not_assigned
+                        .findViewById(R.id.button_not_assigned_continue);
 
-                /* MOB-22 */
-                BAG_COUNTER += selected_items.size();
-                UpdateBagsCounter();
+                button_continue.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog_not_assigned.dismiss();
+                        if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
+                            Intent intent = new Intent(getApplicationContext(),
+                                    LoginActivity.class);
 
-                cursor.moveToFirst();
-				/*
-				 * Start searching through all consignments for ones matching
-				 * barcode just scanned.
-				 */
-                // for (int i = 0; i < selected_items.size(); i++) {
-                for (int i = 0; i < getAllChildren(holder.list).size(); i++) {
-					/*
-					 * Extract TextView from cursorAdapter
-					 */
-
-                    RelativeLayout row = (RelativeLayout) holder.list.getChildAt(Integer
-                            .parseInt(selected_items.get(i)));
-                    if (row != null) {
-                        TextView text_view = (TextView) row.findViewById(R.id.textView_row_scan);
-                        text_view.setTextColor(getResources().getColor(R.color.colour_green_scan)); // Change
-                        // colour
-
-                        // Make tick
-                        ImageView image_view_tick = (ImageView) row
-                                .findViewById(R.id.imageView_row_scan_tick);
-                        image_view_tick.setVisibility(View.VISIBLE);
+                            // startActivity(intent);
+                            dialog_not_assigned.dismiss();
+                            startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
+                        } 
+                        else 
+                        {
+                            dialog_not_assigned.dismiss();
+                            startNotAssignedActivity();
+                        }
                     }
-                    cursor.moveToNext();
-                }
-            } else {
-                if (cursor == null) {
-                    Log.d(TAG, "markScannedItems() - cursor is null");
-                }
-                if (selected_items == null) {
-                    Log.d(TAG, "markScannedItems() - selected_items is null");
-                }
-				/*
-				 * if (selected_items.isEmpty()) { Log.d(TAG,
-				 * "markScannedItems() - selected_items is empty"); }
-				 */
+                });
             }
-        } else {
-            Log.d(TAG, "markScannedItems() - cursor_adapter is null");
+        } 
+    	else 
+    	{
+            dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+            dialog_not_assigned.getWindow().setBackgroundDrawable(
+                    new ColorDrawable(Color.TRANSPARENT));
+            dialog_not_assigned.show();
+            final Button button_continue = (Button) dialog_not_assigned
+                    .findViewById(R.id.button_not_assigned_continue);
+
+            button_continue.setOnClickListener(new OnClickListener() 
+            {
+                @Override
+                public void onClick(View v) {
+                    if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
+                        Intent intent = new Intent(getApplicationContext(),
+                                LoginActivity.class);
+
+                        // startActivity(intent);
+                        dialog_not_assigned.dismiss();
+                        startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
+                    } 
+                    else 
+                    {
+                        dialog_not_assigned.dismiss();
+                        startNotAssignedActivity();
+                    }
+                }
+            });
         }
     }
-
-    /**
-     * Search through list of scanned items to find if the current has been scanned already.
-     *
-     * @param list    The selected_items ArrayList
-     * @param barcode Currently selected barcode
-     * @return true is duplicate.
-     */
-    private boolean checkSelectedBagDuplicate(ArrayList<String> list, String barcode) {
-        for (int i = 0; i < list.size(); i++) {
-            if ((list.get(i)).equals(barcode)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
+    
     /**
      * Barcode has been successfully scanned.
      */
     @Override
-    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
-
-        boolean parcel_in_list = false;
-
-        final SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-                Context.MODE_PRIVATE);
-
-        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-        Cursor cursor = null;
-        int total_bags = DbHandler.getInstance(getApplicationContext()).getBagCount(driverid);
-
-        if (cursor_adapter != null) {
-            cursor = cursor_adapter.getCursor();
-        }
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-            /**
-             * Start searching through all consignments for ones matching
-             * barcode just scanned.
-             */
-            ArrayList<View> all_views_within_top_view = getAllChildren(holder.list);
-
-            int i = 0;
-            for (View child : all_views_within_top_view) {
-                if (child != null) {
-                    TextView text_view = (TextView) child // row
-                            .findViewById(R.id.textView_row_scan);
-                    if (text_view != null) {
-
-                        String str = text_view.getText().toString();
-                        StringTokenizer tokenizer = new StringTokenizer(str);
-                        String cons_number = tokenizer.nextToken();
-
-                        // Compare barcode
-
-                        if (cons_number.equals(rawResult.getText())) {
-                            Log.d(TAG, "Zorro decode barcode: " + cons_number);
-                            parcel_in_list = true;
-
-                            // Match found. Mark as selected.
-                            text_view.setTextColor(getResources().getColor(
-                                    R.color.colour_green_scan)); // Change
-                            // colour
-
-                            // Make tick
-                            ImageView image_view_tick = (ImageView) child
-                                    .findViewById(R.id.imageView_row_scan_tick);
-                            if (image_view_tick != null) {
-                                image_view_tick.setVisibility(View.VISIBLE);
-                            }
-
-                            if (!checkSelectedBagDuplicate(selected_items, rawResult.getText())) {
-                                selected_items.add(rawResult.getText());
-                                holder.button_start_milkrun.setEnabled(true);
-                                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-								
-								/*
-								 * Update scanned status in db to reorder list.						 
-								 */
-                                Log.d(TAG, "set Scanned: " + rawResult.getText());
-
-                                /* MOB-22 */
-                                BAG_COUNTER += 1;
-                                UpdateBagsCounter();
-
-                                DbHandler.getInstance(getApplicationContext()).setScanned(
-                                        rawResult.getText(), true);
-
-                                if (selected_items.size() == total_bags) {
-                                    CustomToast toast = new CustomToast(this);
-                                    toast.setSuccess(true);
-                                    toast.setText(getString(R.string.text_scan_successful));
-                                    toast.show();
-                                } else {
-                                    CustomToast toast = new CustomToast(this);
-                                    toast.setSuccess(true);
-                                    toast.setText(getString(R.string.text_scan_next));
-                                    toast.show();
-                                }
-                            }
-                        } else {
-
-                            Log.d(TAG, "handleDecode(): no match " + cons_number);
-                        }
-                    }
-
-                    // Refresh list
-                    // cursor_adapter.notifyDataSetChanged();
-                } else {
-                    Log.d(TAG, "handleDecode(): row is null");
-                }
-                i++;
+    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) 
+    {
+    	String barcodeString = rawResult.getText();
+    	Log.i("JHDV", "handleDecode: barcodeString = " + barcodeString);
+    	
+    	Integer scannedPosition = null;
+    	if (MiscHelper.isNonEmptyString(barcodeString))
+    	{
+    		last_scanned_barcode = barcodeString;
+    		if (bagsUnscanned.containsKey(barcodeString))
+    		{
+    			scannedPosition = bagsUnscanned.get(barcodeString);
+    		}
+    		else
+    		{
+    			scannedPosition = bagsScanned.get(barcodeString);
+    		}
+    	}
+    	
+    	if (scannedPosition != null)
+    	{
+            Bag scannedBag = bags.get(scannedPosition);
+            boolean wasScanned = scannedBag.getScanned();
+            Log.d(TAG, "handleDecode(): set Scanned " + barcodeString + " to " + !wasScanned);
+            
+            Hashtable<String, Integer> removeMap;
+            Hashtable<String, Integer> addMap;
+            if (wasScanned)
+            {
+            	// unscan
+            	removeMap = bagsScanned;
+            	addMap = bagsUnscanned;
             }
-            if (parcel_in_list == false) {
-                last_scanned_barcode = rawResult.getText();
-                if (dialog_not_assigned != null) {
-                    if (dialog_not_assigned.isShowing() == false) {
-                        dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-                        dialog_not_assigned.getWindow().setBackgroundDrawable(
-                                new ColorDrawable(Color.TRANSPARENT));
-                        dialog_not_assigned.show();
-                        final Button button_continue = (Button) dialog_not_assigned
-                                .findViewById(R.id.button_not_assigned_continue);
-
-                        button_continue.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialog_not_assigned.dismiss();
-                                if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
-                                    Intent intent = new Intent(getApplicationContext(),
-                                            LoginActivity.class);
-
-                                    // startActivity(intent);
-                                    dialog_not_assigned.dismiss();
-                                    startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                                } else {
-                                    dialog_not_assigned.dismiss();
-                                    startNotAssignedActivity();
-                                }
-                            }
-                        });
-                    }
-                } else {
-                    dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-                    dialog_not_assigned.getWindow().setBackgroundDrawable(
-                            new ColorDrawable(Color.TRANSPARENT));
-                    dialog_not_assigned.show();
-                    final Button button_continue = (Button) dialog_not_assigned
-                            .findViewById(R.id.button_not_assigned_continue);
-
-                    button_continue.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
-                                Intent intent = new Intent(getApplicationContext(),
-                                        LoginActivity.class);
-
-                                // startActivity(intent);
-                                dialog_not_assigned.dismiss();
-                                startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                            } else {
-                                dialog_not_assigned.dismiss();
-                                startNotAssignedActivity();
-                            }
-                        }
-                    });
-                }
+            else
+            {
+            	// scan
+            	removeMap = bagsUnscanned;
+            	addMap = bagsScanned;
             }
-        } else {
-            Log.d(TAG, "handleDecode(): cursor_adapter is null");
-        }
-
-        // Restart barcode scanner to allow for 'semi-automatic firing'
-        restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
+            
+            removeMap.remove(barcodeString);
+    		scannedBag.setScanned(!wasScanned);
+    		// TODO -- can do this faster since have primary key
+			DbHandler.getInstance(ScanActivity.this).setScanned(barcodeString, !wasScanned);
+    		addMap.put(barcodeString, scannedPosition);
+    		
+    		onBarcodeMatchSuccess();
+    	}
+    	else
+    	{
+    		Log.d(TAG, "handleDecode(): no match " + barcodeString);
+    		
+    		onBarcodeMatchFail();
+    	}
+    	
+    	// Restart barcode scanner to allow for 'semi-automatic firing'
+    	restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        if (selected_items != null) {
-            Log.d(TAG, "Items selected: " + String.valueOf(selected_items.size()));
+        if (bagsScanned != null) {
+            Log.d(TAG, "Items selected: " + String.valueOf(bagsScanned.size()));
         }
 
         // Close dialog if it is showing upon resuming screen.
@@ -612,7 +542,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             }
         }
 
-        if ((holder.list.getCount() == 0) || (selected_items.size() == 0)) {
+        if ((holder.list.getCount() == 0) || (bagsScanned.size() == 0)) {
             holder.button_start_milkrun.setEnabled(false);
             holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
         } else {
@@ -629,35 +559,6 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         // DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
     }
 
-    /**
-     * Returns ALL rows in a ListView, not just the visible ones.
-     *
-     * @param v
-     * @return ArrayList<View>
-     */
-    private ArrayList<View> getAllChildren(View v) {
-
-        if (!(v instanceof ViewGroup)) {
-            ArrayList<View> viewArrayList = new ArrayList<View>();
-            viewArrayList.add(v);
-            return viewArrayList;
-        }
-
-        ArrayList<View> result = new ArrayList<View>();
-
-        ViewGroup vg = (ViewGroup) v;
-        for (int i = 0; i < vg.getChildCount(); i++) {
-
-            View child = vg.getChildAt(i);
-
-            ArrayList<View> viewArrayList = new ArrayList<View>();
-            viewArrayList.add(v);
-            viewArrayList.addAll(getAllChildren(child));
-
-            result.addAll(viewArrayList);
-        }
-        return result;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -686,89 +587,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Manages your Loaders for you. Responsible for dealing with the Activity
-     * or Fragment lifecycle.
-     */
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        DbHandler.getInstance(this);
-        String rawQuery = "";
 
-        SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-        final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
-
-        // If training run is started, load fake data
-        if (training_mode) {
-            // Just keeping it in a DB table to not mess with loader.
-            // Log.d(TAG, "zorro training run");
-            rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS_TRAINING + " ORDER BY "
-                    + DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
-        } else {
-            rawQuery = "SELECT * FROM " + DbHandler.TABLE_BAGS + " WHERE "
-                    + DbHandler.C_BAG_DRIVER_ID + " LIKE '" + driverid + "'" + " ORDER BY "
-                    + DbHandler.C_BAG_SCANNED + " ASC," + DbHandler.C_BAG_BARCODE + " ASC";
-        }
-
-        SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
-                DbHandler.getInstance(getApplicationContext()), rawQuery, null);
-
-
-        return loader;
-    }
-
-    /**
-     * Update the UI based on the results of your query.
-     */
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        /* MOB-22 */
-        BAG_TOTAL = cursor.getCount();
-        UpdateBagsCounter();
-
-        if (cursor != null && cursor.getCount() > 0) {
-
-            cursor.moveToFirst();
-
-            /**
-             * Moves the query results into the adapter, causing the ListView
-             * fronting this adapter to re-display
-             */
-
-            cursor_adapter = new ScanSimpleCursorAdapter(this, R.layout.row_scan, cursor, FROM, TO,
-                    0);
-
-            holder.list.setAdapter(cursor_adapter);
-
-            cursor_adapter.changeCursor(cursor);
-            if ((holder.list.getCount() == 0) || (selected_items.size() == 0)) {
-                holder.button_start_milkrun.setEnabled(false);
-                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
-            } else {
-                holder.button_start_milkrun.setEnabled(true);
-                holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-            }
-
-        }
-        markScannedItems();
-    }
-
-    /**
-     * This method allows you to release any resources you hold, so that the
-     * Loader can free them. You can set any references to the cursor object you
-     * hold to null. But do not close the cursor - the Loader does this for you.
-     */
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-		/*
-		 * * Clears out the adapter's reference to the Cursor. This prevents
-		 * memory leaks.
-		 */
-        if (cursor_adapter != null) {
-            cursor_adapter.changeCursor(null);
-        }
-    }
 
     public void initViewHolder() {
 
@@ -954,7 +773,7 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
              * TODO: ADDING A NEW BAG TO THE DRIVER CONSIGNMENTS HERE!!! AND THEN UPDATING THE LISTVIEW DISPLAY
              */
             handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
-            getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
+//            getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
 
             // Refresh list
             // cursor_adapter.notifyDataSetChanged();
@@ -966,13 +785,75 @@ public class ScanActivity extends CaptureActivity implements LoaderCallbacks<Cur
             }
         }
     }
+    
+    
 
     public void UpdateBagsCounter() {
-        try {
-            holder.textview_scanstatus.setText("Bags Scanned : (" + Integer.toString(BAG_COUNTER) + '/' + Integer.toString(BAG_TOTAL) + ')');
-        } catch (Exception e) {
+        try 
+        {
+            holder.textview_scanstatus.setText("Bags Scanned : (" + bagsScanned.size() + '/' + bags.size() + ')');
+        } 
+        catch (Exception e) 
+        {
             Log.e("MRDEX:", e.toString());
         }
     }
 
+    
+    class BarcodeListAdapter extends ArrayAdapter<Bag>
+    {
+		public BarcodeListAdapter(Context context)
+		{
+			super(context, R.layout.row_scan);
+		}
+		
+		@Override
+		public int getCount ()
+		{
+			return bags.size();
+		}
+		
+		@Override
+		public
+		Bag getItem(int position)
+		{
+			return bags.get(position);
+		}
+		
+		@Override
+		public View getView (int position, View convertView, ViewGroup parent)
+		{
+			Bag bag = getItem(position);
+			Context context = this.getContext();
+			
+			if (convertView == null)
+			{
+				convertView = LayoutInflater.from(context).inflate(R.layout.row_scan, null, false);				
+			}
+			TextView text_view_consignment = (TextView) convertView.findViewById(R.id.textView_row_scan);
+			ImageView image_green_tick = (ImageView)convertView.findViewById(R.id.imageView_row_scan_tick);
+			
+			text_view_consignment.setText(bag.getBarcode()
+					+ " ( "
+					+ bag.getNumberItems()
+					+ " ITEMS )");
+			
+			// re-set styling since view may be re-used
+			if (bag.getScanned())
+			{
+				image_green_tick.setVisibility(View.VISIBLE);
+				text_view_consignment.setTextColor(context.getResources().getColor(
+						R.color.colour_green_scan)); 
+			}
+			else
+			{
+				image_green_tick.setVisibility(View.INVISIBLE);
+				text_view_consignment.setTextColor(context.getResources().getColor(
+						R.color.colour_row_text)); 
+			}
+			
+			return convertView;
+		}
+    }
+    
 }
