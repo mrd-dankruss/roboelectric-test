@@ -212,6 +212,8 @@ public class ScanActivity extends CaptureActivity {
 
         adapter = new BarcodeListAdapter(this);
         holder.list.setAdapter(adapter);
+        
+        UpdateBagsCounter();
     }
 
 //    @Override
