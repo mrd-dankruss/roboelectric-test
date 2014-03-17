@@ -1,7 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,6 +31,9 @@ import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.service.GCMIntentService;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.ObservableJSONObject;
+import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONObject;
 
 public class DeliveryHandoverFragment extends Fragment
 {
@@ -54,7 +56,9 @@ public class DeliveryHandoverFragment extends Fragment
 		bagid = getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
 		// Log.d(TAG, "Zorro - Bag ID: " + bagid);
 
-		list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
+		//list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
+
+        list = Workflow.getInstance().getBagParcelsAsObjects( Integer.parseInt( bagid));
 
 		listAdapter = new DeliveryHandoverAdapter(list);
 
@@ -204,9 +208,9 @@ public class DeliveryHandoverFragment extends Fragment
 	 * @param list
 	 * @return
 	 */
-	private String[] getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list)
+	private Integer[] getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list)
 	{
-		ArrayList<String> arraylist_unscanned = new ArrayList<String>();
+		ArrayList<Integer> arraylist_unscanned = new ArrayList<Integer>();
 
 		// TODO conver arraylist to array properly
 		for (int i = 0; i < list.size(); i++)
@@ -217,7 +221,7 @@ public class DeliveryHandoverFragment extends Fragment
 				arraylist_unscanned.add(list.get(i).getParcelID());
 			}
 		}
-		String[] list_unscanned = new String[arraylist_unscanned.size()];
+		Integer[] list_unscanned = new Integer[arraylist_unscanned.size()];
 
 		for (int i = 0; i < arraylist_unscanned.size(); i++)
 		{
@@ -257,19 +261,27 @@ public class DeliveryHandoverFragment extends Fragment
 		return allScanned;
 	}
 
-	public void updateFromPushNotification(String waybill_no, boolean scanned)
+
+    // TODO: this needs to be changed to send the scanned timestamp instead of just a boolean
+	public void updateFromPushNotification(String parcel_id, boolean scanned)
 	{
-		DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no, scanned);
+		// DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no, scanned);
 
-		for (int i = 0; i < list.size(); i++)
-		{
-			if (list.get(i).getBarcode().equals(waybill_no))
-			{
-				list.get(i).setParcelScanned(scanned);
-			}
-		}
+        JSONObject parcel = Workflow.getInstance().getParcel( Integer.parseInt( parcel_id));
 
-		listAdapter.notifyDataSetChanged();
+        if( parcel != null)
+        {
+            for (int i = 0; i < list.size(); i++)
+            {
+                if (list.get(i).getBarcode().equals( parcel_id))
+                {
+                    int timestamp = (int)(new Date().getTime() / 1000);
+                    list.get(i).setParcelScanned( timestamp);
+                }
+            }
+
+            listAdapter.notifyDataSetChanged();
+        }
 	}
 
 	private class DeliveryHandoverAdapter extends BaseAdapter
@@ -286,18 +298,47 @@ public class DeliveryHandoverFragment extends Fragment
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(R.layout.row_delivery_handover, parent, false);
+            final int thisPosition = position;
 
-			TextView parcelTitle = (TextView) rowView.findViewById(R.id.row_delivery_handover_title);
-			ImageView hasScannedParcel = (ImageView) rowView.findViewById(R.id.row_delivery_handover_image);
+            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.row_delivery_handover, parent, false);
+            TextView parcelTitle = (TextView) rowView.findViewById(R.id.row_delivery_parcel);
+            TextView waybillTile = (TextView) rowView.findViewById(R.id.row_delivery_waybill);
+            ImageView hasScannedParcel = (ImageView) rowView.findViewById(R.id.row_delivery_handover_image);
 
-			parcelTitle.setText(parcelList.get(position).getBarcode());
-			if (parcelList.get(position).isParcelScanned() == true)
-			{
-				parcelTitle.setTextColor(getResources().getColor(R.color.green_tick));
-				hasScannedParcel.setVisibility(View.VISIBLE);
-			}
+            DeliveryHandoverDataObject dhdo = parcelList.get(thisPosition);
+            waybillTile.setText( dhdo.getMDX() + " (" + dhdo.getXof() + ")");
+            parcelTitle.setText( dhdo.getBarcode());
+
+            if( dhdo.isParcelScanned() == true)
+            {
+                parcelTitle.setTextColor(getResources().getColor(R.color.green_tick));
+                hasScannedParcel.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                hasScannedParcel.setVisibility(View.GONE);
+            }
+
+            waybillTile.setOnClickListener( new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    parcelList.get( thisPosition).setParcelScanned((int) new Date().getTime() / 1000);
+                }
+            });
+
+
+            if( parcelList.get( thisPosition).data.countObservers() == 0)
+            {
+                parcelList.get( thisPosition).data.addObserver( new Observer() {
+                    @Override
+                    public void update(Observable observable, Object data) {
+                        listAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            parcelList.get( thisPosition).data.forceNotifyAllObservers();
 
 			return rowView;
 		}
