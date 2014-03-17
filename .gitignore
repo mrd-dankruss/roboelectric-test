@@ -16,6 +16,8 @@ gen/
 # Ignore gradle files
 .gradle/
 build/
+.idea/
+*.iml
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -44,3 +46,8 @@ Icon
 /project.properties
 /.classpath
 /.settings
+/.idea
+/.idea/scopes
+/.idea/copyright
+/.idea/libraries
+.idea

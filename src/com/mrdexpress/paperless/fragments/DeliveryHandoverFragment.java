@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -42,41 +43,36 @@ public class DeliveryHandoverFragment extends Fragment
 	private View rootView;
 	private IncompleteScanDialog dialog;
 	ArrayList<DeliveryHandoverDataObject> list;
-	private DeliveryHandoverAdapter adapter;
+	private DeliveryHandoverAdapter listAdapter;
 	String bagid;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		initViewHolder(inflater, container); // Inflate ViewHolder static
-												// instance
-
-		/*	list = new ArrayList<DeliveryHandoverDataObject>();
-			list.add(new DeliveryHandoverDataObject("GS24SD34D3", true));
-			list.add(new DeliveryHandoverDataObject("4597531024", true));
-			list.add(new DeliveryHandoverDataObject("4564564568", true));
-			list.add(new DeliveryHandoverDataObject("4561234623", true));
-			list.add(new DeliveryHandoverDataObject("1234568764", true));
-			list.add(new DeliveryHandoverDataObject("4612387135", true));
-			list.add(new DeliveryHandoverDataObject("8795431364", true));
-			list.add(new DeliveryHandoverDataObject("4513234687", true));
-			list.add(new DeliveryHandoverDataObject("3456023456", true));
-			list.add(new DeliveryHandoverDataObject("7864313456", true));
-			list.add(new DeliveryHandoverDataObject("1237613554", true));
-			list.add(new DeliveryHandoverDataObject("7789995442", true));
-			list.add(new DeliveryHandoverDataObject("2222346456", true));*/
+		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
 		bagid = getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
 		// Log.d(TAG, "Zorro - Bag ID: " + bagid);
 
 		list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 
-		adapter = new DeliveryHandoverAdapter(list);
+		listAdapter = new DeliveryHandoverAdapter(list);
 
-		if ((adapter != null) & (list != null))
+        listAdapter.registerDataSetObserver( new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                int parcelCount = listAdapter.getScannedCount();
+                holder.parcelsScanned.setText( "PARCEL" + (parcelCount==1?"":"S") + " (" + parcelCount + " / " + listAdapter.getCount() + " SCANNED)");
+            }
+        });
+
+		if ((listAdapter != null) & (list != null))
 		{
-			holder.list.setAdapter(adapter);
+			holder.list.setAdapter(listAdapter);
 		}
+
+        listAdapter.notifyDataSetChanged();
 
 		holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -98,13 +94,12 @@ public class DeliveryHandoverFragment extends Fragment
 					if (allParcelsScanned())
 					{
 
-						int no_rows_affected = DbHandler.getInstance(getActivity())
-								.setDeliveryStatus(bagid, Bag.STATUS_COMPLETED);
+						int no_rows_affected = DbHandler.getInstance(getActivity()).setDeliveryStatus(bagid, Bag.STATUS_COMPLETED);
 
 						if (no_rows_affected > 0)
 						{
 							CustomToast custom_toast = new CustomToast(getActivity());
-							custom_toast.setText("Success");
+							custom_toast.setText("Delivery completed successfully");
 							custom_toast.setSuccess(true);
 							custom_toast.show();
 						}
@@ -126,14 +121,12 @@ public class DeliveryHandoverFragment extends Fragment
 					{
 
 						dialog = new IncompleteScanDialog(getActivity());
-						dialog.getWindow().setBackgroundDrawable(
-								new ColorDrawable(Color.TRANSPARENT));
+						dialog.getWindow().setBackgroundDrawable( new ColorDrawable(Color.TRANSPARENT));
 						dialog.show();
 
 						LayoutInflater factory = LayoutInflater.from(getActivity());
 
-						final Button button_continue = (Button) dialog
-								.findViewById(R.id.button_incomplete_scan_continue);
+						final Button button_continue = (Button) dialog.findViewById(R.id.button_incomplete_scan_continue);
 
 						button_continue.setOnClickListener(new OnClickListener()
 						{
@@ -150,31 +143,24 @@ public class DeliveryHandoverFragment extends Fragment
 								ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 								ft.addToBackStack(null);
 								ft.commit();*/
-								Intent intent = new Intent(getActivity(),
-										ReasonPartialDeliveryActivity.class);
+								Intent intent = new Intent(getActivity(), ReasonPartialDeliveryActivity.class);
 
 								Bundle b = new Bundle();
 								/*b.putParcelableArrayList(
 										VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
 										getUnscannedParcels(list));*/
-								intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
-										getUnscannedParcels(list));
-								intent.putExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID,
-										getActivity().getIntent().getStringExtra(
-												VariableManager.EXTRA_NEXT_BAG_ID));
+								intent.putExtra( VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,	getUnscannedParcels(list));
+								intent.putExtra( VariableManager.EXTRA_NEXT_BAG_ID,	getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
 								// intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
 								// b);
 								// intent.putExtra(VariableManager.EXTRA_BAG_NO,
 								// ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
 								// startActivity(intent);
-								getActivity().startActivityForResult(intent,
-										VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
+								getActivity().startActivityForResult(intent, VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
 							}
 						});
 
-						final Button button_scan = (Button) dialog
-								.findViewById(R.id.button_incomplete_scan_scan);
+						final Button button_scan = (Button) dialog.findViewById(R.id.button_incomplete_scan_scan);
 
 						button_scan.setOnClickListener(new OnClickListener()
 						{
@@ -192,12 +178,17 @@ public class DeliveryHandoverFragment extends Fragment
 		return rootView;
 	}
 
-	@Override
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //listAdapter.unregisterDataSetObserver(); // TODO: is this required?
+    }
+
+    @Override
 	public void onResume()
 	{
 		super.onResume();
-		getActivity().registerReceiver(broadcastReceiver,
-				new IntentFilter(GCMIntentService.BROADCAST_ACTION));
+		getActivity().registerReceiver(broadcastReceiver, new IntentFilter(GCMIntentService.BROADCAST_ACTION));
 	}
 
 	@Override
@@ -268,8 +259,7 @@ public class DeliveryHandoverFragment extends Fragment
 
 	public void updateFromPushNotification(String waybill_no, boolean scanned)
 	{
-		DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no,
-				scanned);
+		DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no, scanned);
 
 		for (int i = 0; i < list.size(); i++)
 		{
@@ -279,7 +269,7 @@ public class DeliveryHandoverFragment extends Fragment
 			}
 		}
 
-		adapter.notifyDataSetChanged();
+		listAdapter.notifyDataSetChanged();
 	}
 
 	private class DeliveryHandoverAdapter extends BaseAdapter
@@ -296,14 +286,11 @@ public class DeliveryHandoverFragment extends Fragment
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(
-					Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.row_delivery_handover, parent, false);
 
-			TextView parcelTitle = (TextView) rowView
-					.findViewById(R.id.row_delivery_handover_title);
-			ImageView hasScannedParcel = (ImageView) rowView
-					.findViewById(R.id.row_delivery_handover_image);
+			TextView parcelTitle = (TextView) rowView.findViewById(R.id.row_delivery_handover_title);
+			ImageView hasScannedParcel = (ImageView) rowView.findViewById(R.id.row_delivery_handover_image);
 
 			parcelTitle.setText(parcelList.get(position).getBarcode());
 			if (parcelList.get(position).isParcelScanned() == true)
@@ -333,6 +320,16 @@ public class DeliveryHandoverFragment extends Fragment
 			return position;
 		}
 
+        public int getScannedCount()
+        {
+            int scanned = 0;
+            for( DeliveryHandoverDataObject item : this.parcelList )
+            {
+                if( item.isParcelScanned())
+                    scanned++;
+            }
+            return scanned;
+        }
 	}
 
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -343,18 +340,15 @@ public class DeliveryHandoverFragment extends Fragment
 			Log.d(TAG, "Receiver: " + intent.getAction());
 			if (intent.getAction() == GCMIntentService.BROADCAST_ACTION)
 			{
-				updateFromPushNotification(intent.getExtras().getString(WAYBILL_BARCODE), intent
-						.getExtras().getBoolean(WAYBILL_SCANNED));
+				updateFromPushNotification(intent.getExtras().getString(WAYBILL_BARCODE), intent.getExtras().getBoolean(WAYBILL_SCANNED));
 			}
 		}
 	};
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
 	{
-
 		if (rootView == null)
 		{
-
 			rootView = inflater.inflate(R.layout.fragment_delivery_handover, null, false);
 
 			if (holder == null)
@@ -362,13 +356,12 @@ public class DeliveryHandoverFragment extends Fragment
 				holder = new ViewHolder();
 			}
 
-			holder.list = (ListView) rootView
-					.findViewById(R.id.deliveryHandover_listView_scannedParcels);
+			holder.list = (ListView) rootView.findViewById(R.id.deliveryHandover_listView_scannedParcels);
 			holder.button = (Button) rootView.findViewById(R.id.button_delivery_handover_complete);
+            holder.parcelsScanned = (TextView) rootView.findViewById(R.id.deliveryHandover_textView_ParcelsScanned);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
-
 		}
 		else
 		{
@@ -390,5 +383,6 @@ public class DeliveryHandoverFragment extends Fragment
 	{
 		ListView list;
 		Button button;
+        TextView parcelsScanned;
 	}
 }

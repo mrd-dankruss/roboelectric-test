@@ -37,7 +37,7 @@
     <string name="button_change_driver">Change driver</string>
     <string name="button_change_manager">Change Manager</string>
     <string name="button_incomplete_scan_scan">Scan them</string>
-    <string name="button_incomplete_scan_continue">Continue anyway</string>
+    <string name="button_incomplete_scan_continue">Log partial delivery</string>
     <string name="delivery_more_setAsNextDelivery">Set as next delivery</string>
     <string name="delivery_more_viewMap">View Map</string>
     <string name="delivery_more_reportDelay">Report Delay</string>
@@ -89,9 +89,10 @@
     <string name="title_food_delivery_title">Order list</string>
 
     <!-- Tab titles -->
-    <string name="tab_completed">COMPLETED</string>
+    <string name="tab_completed">DONE</string>
     <string name="tab_todo">TO DO</string>
-    <string name="tab_unsuccessful">UNSUCCESSFUL</string>
+    <string name="tab_partial">PARTIAL</string>
+    <string name="tab_unsuccessful">FAILED</string>
 
     <!-- Texts -->
     <string name="text_reason_partial_delivery_heading">The following parcel(s) were not scanned. Please select a reason for non-delivery:</string>
@@ -177,7 +178,12 @@
 
     <!-- TextView Hints -->
     <string name="text_hint_mainmenu_enter_name">Enter Name</string>
+    <string name="text_hint_mainmenu_enter_manager_name">Enter Manager Name</string>
+    <string name="text_hint_login_manager">Select Manager</string>
     <string name="text_hint_mainmenu_enter_password">Tap here to enter your 4-digit PIN</string>
     <string name="text_hint_enter_barcode">Tap here to enter the barcode</string>
+
+    <!-- SCAN Screen -->
+    <string name="scan_statusbar">Bags Remaining</string><string name="test_scan_status">Bags Remaining</string>
 
 </resources>

@@ -44,8 +44,7 @@ public class ViewDeliveriesFragment extends Fragment
 	{
 		// TODO Auto-generated method stub
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
@@ -55,15 +54,12 @@ public class ViewDeliveriesFragment extends Fragment
 		if (DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
 		{
 			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(View.GONE);
-			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(
-					View.VISIBLE);
+			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.VISIBLE);
 		}
 		else
 		{
-			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(
-					View.VISIBLE);
-			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(
-					View.GONE);
+			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility( View.VISIBLE);
+			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.GONE);
 		}
 
 		holder.list.setAdapter(adapter);
@@ -74,8 +70,7 @@ public class ViewDeliveriesFragment extends Fragment
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
 				// Go to View Deliveries screen
-				Intent intent = new Intent(getActivity(),
-						DeliveryDetailsActivity.class);
+				Intent intent = new Intent(getActivity(), DeliveryDetailsActivity.class);
 				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
 //				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
 				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");

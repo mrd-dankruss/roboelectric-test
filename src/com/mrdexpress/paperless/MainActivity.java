@@ -190,7 +190,7 @@ public class MainActivity extends Activity
 				// Perform action on click
 				if (checkPin())
 				{
-					Log.d(TAG, "Type: " + selected_user_type);
+					Log.e(TAG, "Type1: " + selected_user_type);
 					if (selected_user_type == UserType.DRIVER)
 					{
 						new DriverLoginUserTask().execute();
@@ -617,8 +617,7 @@ public class MainActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.getInstance(getApplicationContext()).downloadBags(
-					getApplicationContext(), selected_user_id);
+            ServerInterface.getInstance(getApplicationContext()).downloadBags(	getApplicationContext(), selected_user_id);
 			return null;
 		}
 
@@ -660,8 +659,7 @@ public class MainActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			ServerInterface.getInstance(getApplicationContext()).downloadBags(
-					getApplicationContext(), selected_user_id);
+            ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), selected_user_id);
 			return null;
 		}
 

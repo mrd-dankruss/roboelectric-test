@@ -84,7 +84,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_change_driver"
-            android:text="@string/button_incomplete_scan_continue"
+            android:text="@string/button_not_assigned_continue"
             android:textSize="@dimen/font_size_button" />
     </LinearLayout>
 

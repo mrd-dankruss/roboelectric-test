@@ -16,24 +16,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:gravity="center_vertical" >
 
             <ImageView
                 android:id="@+id/deliveries_imageView_deliveryType"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:contentDescription="@string/contentDesc_imageView_deliveryType"
                 android:paddingLeft="14dp"
                 android:paddingRight="10dp"
-                android:paddingTop="16dp"
-                android:src="@drawable/icon_delivery" />
+                android:src="@drawable/icon_delivery" 
+                android:scaleType="centerInside"/>
 
             <TextView
                 android:id="@+id/deliveries_textView_deliveryNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="7dp"
-                android:paddingTop="15dp"
                 android:text="@string/delivery_no"
                 android:textSize="16sp"
                 android:textColor="@color/black" />
@@ -41,9 +41,8 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="16sp"
-                android:layout_marginTop="19dp"
                 android:background="@color/seperator_grey"
-                android:paddingTop="19dp" />
+                 />
 
             <TextView
                 android:id="@+id/deliveries_textView_titleDetail"
@@ -57,16 +56,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
+                android:gravity="right|center_vertical"
                 android:orientation="horizontal" >
 
                 <ImageView
                     android:id="@+id/deliveries_imageView_companyLogo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_height="40dp"
                     android:contentDescription="@string/contentDesc_imageView_deliveryType"
-                    android:paddingRight="6dp" />
+                    android:layout_marginRight="6dp" 
+                    android:src="@drawable/mrd_logo_small"
+                    android:scaleType="centerInside"/>
             </LinearLayout>
         </LinearLayout>
 
