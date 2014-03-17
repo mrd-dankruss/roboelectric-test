@@ -54,10 +54,21 @@ public class Workflow
 
     public List<JSONArray> getBags()
     {
-        JSONObject test3 = workflow.read("$.response.workflow.workflow.*");
-        Log.i("gary", test3.toString());
-        List<JSONArray> bags = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata.payload == 'bag')]");
+        List<JSONArray> bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload=='bag')]");
         return bags;
     }
+
+    public List<JSONArray> getBagParcels( int bagid)
+    {
+        List<JSONArray> parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload=='bag')].flowdata");
+        return parcels;
+    }
+
+    public List<JSONArray> getBagParcelsOnly( int bagid)
+    {
+        List<JSONArray> parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload=='bag')].flowdata.parcels");
+        return parcels;
+    }
+
 
 }
