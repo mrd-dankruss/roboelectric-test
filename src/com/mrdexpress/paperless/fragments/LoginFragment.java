@@ -22,6 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
 import com.mrdexpress.paperless.ManagerAuthNotAssignedActivity;
@@ -155,10 +156,14 @@ public class LoginFragment extends Fragment {
                 //        .authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
                 String status = "success";
 
-                if (status.equals("success")) {
-                    return true;
+                if (selected_user_type == UserType.MANAGER)
+                {
+                    if (status.equals("success")) {
+                        return true;
+                    }
+                } else {
+                    return false;
                 }
-
                 return false;
             }
         }
@@ -225,15 +230,31 @@ public class LoginFragment extends Fragment {
             holder.text_manager_pin.setTypeface(typeface_roboto_regular);
             holder.button_login.setTypeface(typeface_roboto_bold);
 
-            // Store the holder with the view.
-            rootView.setTag(holder);
 
-        } else {
+                holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                        selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
+                                .getUserID();
+                        selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
+                                .getUserName();
+                        selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
+                                .getUserType();
+
+                        //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+
+                    }
+                });
+
+            }
+            else
+        {
             holder = (ViewHolder) rootView.getTag();
-
             if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup)) {
                 ((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
             } else {
+
             }
         }
     }
