@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -396,12 +397,11 @@ public class ReasonPartialDeliveryFragment extends Fragment
 		{
 			data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
 
-			String[] waybill_IDs = getActivity().getIntent().getStringArrayExtra(
-					VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE);
+			String[] waybill_IDs = getActivity().getIntent().getStringArrayExtra( VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE);
 			// Log.d(TAG, "unscanned bagid length: " + bag_IDs.length);
 			// Get reasons
-			ArrayList<DialogDataObject> reasons = DbHandler.getInstance(getActivity())
-					.getPartialDeliveryReasons();
+			//ArrayList<DialogDataObject> reasons = DbHandler.getInstance(getActivity()).getPartialDeliveryReasons();
+            ArrayList<DialogDataObject> reasons = Workflow.getInstance().getPartialDeliveryReasons();
 
 			/*	Log.d(TAG,
 						"zorro - next bag id: "
@@ -421,15 +421,11 @@ public class ReasonPartialDeliveryFragment extends Fragment
 
 				// Bag bag = DbHandler.getInstance(getActivity()).getBag(driver, waybill_IDs[i]);
 
-				Waybill waybill = DbHandler.getInstance(getActivity())
-						.getWaybill(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID));
+				Waybill waybill = DbHandler.getInstance(getActivity()).getWaybill( getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
 				// Log.d(TAG, "zorro - waybill barcode: " + waybill.getBarcode());
 				for (int r = 0; r < reasons.size(); r++)
 				{
-					reason_items.add(new ReasonPartialDeliveryItem(waybill.getBarcode(), reasons
-							.get(r).getSubText(), reasons.get(r).getMainText(), false));
+					reason_items.add(new ReasonPartialDeliveryItem(waybill.getBarcode(), reasons.get(r).getSubText(), reasons.get(r).getMainText(), false));
 				}
 				data.add(reason_items);
 			}

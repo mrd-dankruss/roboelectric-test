@@ -1752,7 +1752,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * 
 	 * @return
 	 */
-	public ArrayList<DialogDataObject> getFailedHandoverReasons()
+	/*public ArrayList<DialogDataObject> getFailedHandoverReasons()
 	{
 		SQLiteDatabase db = null;
 		try
@@ -1827,14 +1827,14 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}    */
 
 	/**
 	 * Return list of reasons for partial delivery
 	 * 
 	 * @return ArrayList<DialogDataObject>
 	 */
-	public ArrayList<DialogDataObject> getPartialDeliveryReasons()
+	/*public ArrayList<DialogDataObject> getPartialDeliveryReasons()
 	{
 		SQLiteDatabase db = null;
 		try
@@ -1892,7 +1892,7 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	} */
 
 	/**
 	 * Return durations of delay reason
@@ -1900,7 +1900,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param reason_id
 	 * @return
 	 */
-	public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
+	/*public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
 	{
 		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		if (training_run)
@@ -1971,14 +1971,14 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}     */
 
 	/**
 	 * Returns list of reasons for milkrun delay
 	 * 
 	 * @return
 	 */
-	public ArrayList<DialogDataObject> getMilkrunDelayReasons()
+	/*public ArrayList<DialogDataObject> getMilkrunDelayReasons()
 	{
 		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		if (training_run)
@@ -2065,7 +2065,7 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	} */
 
 	/**
 	 * Return list of people to be SMSed. Hardcoded for now.

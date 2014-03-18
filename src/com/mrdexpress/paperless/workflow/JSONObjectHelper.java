@@ -42,7 +42,7 @@ public class JSONObjectHelper extends JSONObject
 
     public static JSONArray getJSONArrayDef( JSONObject jso, String key, JSONArray def)
     {
-        if( jso.containsValue( key))
+        if( jso.containsKey( key))
             return (JSONArray)jso.get(key);
         else
             return def;

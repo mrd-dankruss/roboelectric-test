@@ -248,34 +248,30 @@ public class MainActivity extends Activity
 				{
 					dialog.setTitle("Retrieving driver list");
 				}
-				ServerInterface.getInstance(getApplicationContext()).getDrivers(
-						getApplicationContext());
+				ServerInterface.getInstance(getApplicationContext()).getDrivers( getApplicationContext());
 				if (dialog.isShowing())
 				{
 					dialog.setTitle("Retrieving manager list");
 				}
-				ServerInterface.getInstance(getApplicationContext()).getManagers(
-						getApplicationContext());
-				if (dialog.isShowing())
+				ServerInterface.getInstance(getApplicationContext()).getManagers( getApplicationContext());
+				/*if (dialog.isShowing())
 				{
 					dialog.setTitle("Retrieving delay reasons");
 				}
-				ServerInterface.getInstance(getApplicationContext()).downloadDelays(
-						getApplicationContext());
+				ServerInterface.getInstance(getApplicationContext()).downloadDelays( getApplicationContext());*/
 
-				if (dialog.isShowing())
+				/*if (dialog.isShowing())
 				{
 					dialog.setTitle("Retrieving failed handover reasons");
 				}
-				ServerInterface.getInstance(getApplicationContext()).downloadFailedDeliveryReasons(
-						getApplicationContext());
+				ServerInterface.getInstance(getApplicationContext()).downloadFailedDeliveryReasons(	getApplicationContext());*/
 
-				if (dialog.isShowing())
+				/*if (dialog.isShowing())
 				{
 					dialog.setTitle("Retrieving partial delivery reasons");
 				}
-				ServerInterface.getInstance(getApplicationContext())
-						.downloadPartialDeliveryReasons(getApplicationContext());
+				ServerInterface.getInstance(getApplicationContext()).downloadPartialDeliveryReasons(getApplicationContext());
+				*/
 
 				// Log.i(TAG, "Token aquired.");
 			}
@@ -294,8 +290,7 @@ public class MainActivity extends Activity
 
 				LayoutInflater factory = LayoutInflater.from(MainActivity.this);
 
-				final Button button_ok = (Button) dialog
-						.findViewById(R.id.button_incomplete_scan_ok);
+				final Button button_ok = (Button) dialog.findViewById(R.id.button_incomplete_scan_ok);
 
 				button_ok.setOnClickListener(new OnClickListener()
 				{
@@ -308,10 +303,8 @@ public class MainActivity extends Activity
 			}
 			else
 			{
-				person_item_list
-						.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
-				person_item_list.addAll(DbHandler.getInstance(getApplicationContext())
-						.getManagers());
+				person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
+				person_item_list.addAll(DbHandler.getInstance(getApplicationContext()).getManagers());
 
 				// Close progress spinner
 				if (dialog.isShowing())

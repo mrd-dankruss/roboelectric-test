@@ -18,6 +18,7 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class DelayDialog extends DialogFragment
 {
@@ -33,7 +34,7 @@ public class DelayDialog extends DialogFragment
 	 * Create a new instance of MyDialogFragment, providing "num"
 	 * as an argument.
 	 * 
-	 * @param delay_id
+	 * @param delay_reason_id
 	 *            ID of delay reason passed from calling activity.
 	 */
 	public static DelayDialog newInstance(String delay_reason_id)
@@ -86,8 +87,8 @@ public class DelayDialog extends DialogFragment
 		final ListView list = (ListView) v.findViewById(R.id.list_generic_result);
 
 		// Populate list
-		final GenericDialogListAdapter adapter = new GenericDialogListAdapter(getActivity(),
-				DbHandler.getInstance(getActivity()).getMilkrunDelayDurations(delay_id), true);
+		//final GenericDialogListAdapter adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity()).getMilkrunDelayDurations(delay_id), true);
+        final GenericDialogListAdapter adapter = new GenericDialogListAdapter(getActivity(), Workflow.getInstance().getMilkrunDelayDurations( delay_id), true);
 		Log.d("Delay", "Generic Adapter: " + adapter.getCount());
 
 		list.setAdapter(adapter);

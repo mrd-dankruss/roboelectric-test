@@ -69,7 +69,6 @@ public class EnterBarcodeActivity extends FragmentActivity
 			holder.button_ok.setTypeface(typeface_roboto_bold);
 
 			rootView.setTag(holder);
-
 		}
 		else
 		{

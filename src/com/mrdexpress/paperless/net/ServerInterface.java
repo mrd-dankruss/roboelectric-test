@@ -766,7 +766,7 @@ public class ServerInterface {
         }
     }
 
-    public void downloadDelays(Context context) {
+    /*public void downloadDelays(Context context) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/milkruns/delays?mrdToken=" + token;
 
@@ -849,14 +849,10 @@ public class ServerInterface {
                 displayToast("JSONException: milkruns/delays");
             }
         }
-    }
+    }   */
 
+    /*
     public void downloadFailedDeliveryReasons(Context context) {
-		/*
-		String url = API_URL + "v1/milkruns/handover?mrdToken="
-				+ ServerInterface.token;
-		*/
-
         // TODO: uncomment above, delete below.
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/milkruns/handover?mrdToken=" + token;
@@ -912,8 +908,9 @@ public class ServerInterface {
             }
         }
     }
+*/
 
-    public void downloadPartialDeliveryReasons(Context context) {
+    /*public void downloadPartialDeliveryReasons(Context context) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/milkruns/partial?mrdToken=" + token;
 
@@ -967,7 +964,7 @@ public class ServerInterface {
                 displayToast("JSONException: milkruns/partial");
             }
         }
-    }
+    }  */
 
     /**
      * Report driver position.
