@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -119,7 +118,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0),	bag.getBagNumber());
+				boolean isNextBag = bag.getBagNumber().equals(MiscHelper.getNextDeliveryId(DeliveryDetailsActivity.this));
+				DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagNumber());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
@@ -127,7 +127,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	}
 
 	@Override
-	public void onSetNextDelivery(boolean is_successful)
+	public void onSetNextDelivery(boolean is_successful, String bagId)
 	{
 		if (is_successful)
 		{
@@ -135,6 +135,9 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			custom_toast.setSuccess(true);
 			custom_toast.setText("Successfully changed next delivery.");
 			custom_toast.show();
+			
+			MiscHelper.setNextDeliveryId(bagId, this);
+			
 			finish();
 		}
 

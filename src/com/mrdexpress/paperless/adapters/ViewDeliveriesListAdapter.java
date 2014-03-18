@@ -1,9 +1,8 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,19 +22,17 @@ import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final FragmentActivity activity;
 	private final Context context;
-	ArrayList<Bag> values;
+	List<Bag> values;
 	private ImageView deliveryType, companyLogo;
 	private TextView deliveryNumber, titleDetail, address, id;
 	private Button updateStatus, more;
 	private LinearLayout buttonsHolder;
-	private String bag_id;
 
 	public enum DeliveryType
 	{
@@ -73,7 +70,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	 *            temp1.add("00025420254 (6 items)"); <br>
 	 *            values.add(temp1); <br>
 	 */
-	public ViewDeliveriesListAdapter(FragmentActivity activity, ArrayList<Bag> values)
+	public ViewDeliveriesListAdapter(FragmentActivity activity, List<Bag> values)
 	{
 		super();
 		this.activity = activity;
@@ -146,9 +143,6 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		{
 			deliveryNumber.setText("#" + (position + 1));
 		}
-
-		// Delivery type
-		titleDetail.setText(getTitle(DeliveryType.DELIVERY, position));
 		
 		// Address
 		address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
@@ -166,18 +160,24 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			companyLogo.setImageResource(companyLogoID);
 		}
 		
-		if (position == 0)
+		Bag bag = values.get(position);
+		boolean isNextBag = false;
+		String nextBagId = MiscHelper.getNextDeliveryId(activity);
+		if (MiscHelper.isNonEmptyString(nextBagId))
 		{
-			// Make ID of current next bag global
-			bag_id = values.get(position).getBagNumber();
-			Log.d(TAG, "Bag ID: " + bag_id);
-
-			// Store in sharedprefs
-			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putString(VariableManager.PREF_CURRENT_BAGID, bag_id);
-			editor.apply();
+			isNextBag = nextBagId.equals(bag.getBagNumber());
+		}
+		else
+		{
+			isNextBag = (position == 0);
+		}
+		
+		// Delivery type
+		titleDetail.setText(getTitle(DeliveryType.DELIVERY, isNextBag));
+		
+		if (isNextBag)
+		{
+			final String bag_id = bag.getBagNumber();
 
 			updateStatus.setOnClickListener(new View.OnClickListener()
 			{
@@ -209,9 +209,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		return rowView;
 	}
 
-	private String getTitle(DeliveryType type, int position)
+	private String getTitle(DeliveryType type, boolean isNextDelivery)
 	{
-		if (position > 0)
+		if (!isNextDelivery)
 			return "FOLLOWED BY";
 		
 		switch (type)
