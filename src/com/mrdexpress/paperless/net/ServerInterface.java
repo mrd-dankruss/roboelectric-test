@@ -99,11 +99,9 @@ public class ServerInterface {
     /**
      * Makes API call to request a new session token.
      *
-     * @param IMEI number.
      */
     public String requestToken() {
-        TelephonyManager mngr = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager mngr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String imei_id = mngr.getDeviceId();
 
         String url = API_URL + "v1/auth/auth?imei=" + imei_id;
@@ -191,9 +189,6 @@ public class ServerInterface {
     /**
      * Makes API call to update driver PIN.
      *
-     * @param ID  of driver.
-     * @param New PIN number.
-     * @return
      */
     public String updatePIN(String id, String new_pin, String imei) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -234,9 +229,6 @@ public class ServerInterface {
      * Retrieves list of drivers from server. Used to populate the list at
      * login.
      *
-     * @param IMEI
-     * @param token
-     * @return
      */
     public void getDrivers(Context context) {
         TelephonyManager mngr = (TelephonyManager) context
@@ -536,8 +528,6 @@ public class ServerInterface {
     /**
      * Retrieve a single bag object
      *
-     * @param c
-     * @param bag_id
      */
     public void downloadBag(Context context, String bag_id, String driver_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -1091,9 +1081,6 @@ public class ServerInterface {
     /**
      * Post failed handover to API.
      *
-     * @param bag_id
-     * @param reason_id IDs acquired from /milkrun/handover
-     * @return
      */
     public String postSuccessfulDelivery(String bag_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -1113,10 +1100,6 @@ public class ServerInterface {
     /**
      * Post partial delivery to API.
      *
-     * @param waybill_id
-     * @param status_id
-     * @param extra
-     * @return
      */
     public String postPartialDelivery(String waybill_id, String status_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -1432,17 +1415,13 @@ public class ServerInterface {
 
     /**
      * Retrieve a single bag object
-     *
-     * @param c
-     * @param bag_id
      */
     public String scanBag(Context context, String barcode, String driver_id) {
         String id = "";
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken=" + token
-                + "&id=" + driver_id;
+        String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken=" + token + "&id=" + driver_id;
 
-         Log.i(TAG, "Fetching " + url);
+        Log.i(TAG, "Fetching " + url);
 
         try {
             String response = getInputStreamFromUrl(url);

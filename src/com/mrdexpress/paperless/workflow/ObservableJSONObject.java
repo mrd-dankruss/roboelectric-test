@@ -43,17 +43,17 @@ public class ObservableJSONObject extends Observable
     
     public int getInt( String key)
     {
-        return (Integer)_jsonObject.get(key);
+        return Integer.parseInt(_jsonObject.get(key).toString());
     }
 
     public Boolean getBoolean( String key)
     {
-        return (Boolean)_jsonObject.get(key);
+        return Boolean.parseBoolean(_jsonObject.get(key).toString());
     }
 
     public String getString( String key)
     {
-        return (String)_jsonObject.get(key);
+        return _jsonObject.get(key).toString();
     }
 
     public JSONObject getJSONObject( String key)
