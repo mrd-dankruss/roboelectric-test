@@ -15,7 +15,7 @@ import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-
+import android.os.StrictMode;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.CaptureActivity;
 import com.google.zxing.client.android.Intents;
@@ -236,7 +236,7 @@ public class ScanActivity extends CaptureActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        
+
         if (dialog != null) {
             if (dialog.isShowing()) {
                 dialog.dismiss();
@@ -287,9 +287,7 @@ public class ScanActivity extends CaptureActivity {
             }
         }
         if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE) {
-
             if (resultCode == RESULT_OK) {
-
                 if (data.getBooleanExtra(
                         ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
                     startNotAssignedActivity();
@@ -356,7 +354,12 @@ public class ScanActivity extends CaptureActivity {
     }
 
 
-    
+    void barCodeScanFailed(){
+        CustomToast toast = new CustomToast(this);
+        toast.setSuccess(true);
+        toast.setText(getApplicationContext().getString(R.string.manager_login_wrong_password));
+        toast.show();
+    }
     
     void onBarcodeMatchSuccess()
     {
@@ -505,8 +508,20 @@ public class ScanActivity extends CaptureActivity {
     	else
     	{
     		Log.d(TAG, "handleDecode(): no match " + barcodeString);
-    		
-    		onBarcodeMatchFail();
+    		/*
+    		   First lets see if this barcode exists in the system.
+    		 */
+            if (android.os.Build.VERSION.SDK_INT > 9) { StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); StrictMode.setThreadPolicy(policy); }
+            String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, prefs.getString(VariableManager.PREF_DRIVERID, null));
+            if (!new_bag_id.isEmpty()){
+                CustomToast toast = new CustomToast(this);
+                toast.setSuccess(false);
+                toast.setText(getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
+                toast.show();
+            } else {
+                onBarcodeMatchFail();
+            }
+
     	}
     	
     	// Restart barcode scanner to allow for 'semi-automatic firing'
@@ -754,10 +769,13 @@ public class ScanActivity extends CaptureActivity {
                                 DbHandler.TABLE_BAGS_TRAINING, values));
 
             } else {
-                ServerInterface.getInstance(getApplicationContext()).downloadBag(
-                        getApplicationContext(),
-                        ServerInterface.getInstance(getApplicationContext()).scanBag(
-                                getApplicationContext(), last_scanned_barcode, driverid), driverid);
+                String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
+                if (!new_bag_id.isEmpty()){
+                    ServerInterface.getInstance(getApplicationContext()).downloadBag(
+                            getApplicationContext(),new_bag_id,driverid);
+                } else {
+                    barCodeScanFailed();
+                }
             }
             return null;
         }
@@ -767,8 +785,8 @@ public class ScanActivity extends CaptureActivity {
             /**
              * TODO: ADDING A NEW BAG TO THE DRIVER CONSIGNMENTS HERE!!! AND THEN UPDATING THE LISTVIEW DISPLAY
              */
-            handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
-//            getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
+            // handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+            // getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
 
             // Refresh list
             // cursor_adapter.notifyDataSetChanged();

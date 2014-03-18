@@ -542,9 +542,8 @@ public class ServerInterface {
     public void downloadBag(Context context, String bag_id, String driver_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + token;
-
-        // Log.i(TAG, "Fetching " + url);
-
+        Log.i(TAG, "Fetching " + url);
+        if (!bag_id.isEmpty() || bag_id == "null"){
         try {
             String response = getInputStreamFromUrl(url);
 
@@ -763,6 +762,7 @@ public class ServerInterface {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG, sw.toString());
+        }
         }
     }
 
@@ -1443,16 +1443,16 @@ public class ServerInterface {
         String id = "";
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken=" + token
-                + "driverID=" + driver_id;
+                + "&id=" + driver_id;
 
-        // Log.i(TAG, "Fetching " + url);
+         Log.i(TAG, "Fetching " + url);
 
         try {
             String response = getInputStreamFromUrl(url);
 
             JSONObject jObject = new JSONObject(response);
 
-            JSONObject result = jObject.getJSONObject("response").getJSONObject("bag");
+            JSONObject result = jObject.getJSONObject("response").getJSONObject("bags");
 
             if (result != null) {
 

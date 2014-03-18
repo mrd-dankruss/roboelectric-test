@@ -189,5 +189,7 @@
 
     <!-- Exception Management -->
     <string name="manager_login_wrong_password">Password is wrong , please try again.</string>
+    <string name="manager_assign_bag_invalid">The bag cannot be assigned to you, please contact MRD support.</string>
+    <string name="manager_assign_bag_invalid_scan">The barcode does not belong to a MRD bag.</string>
 
 </resources>
