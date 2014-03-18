@@ -481,7 +481,7 @@ public class ScanActivity extends CaptureActivity {
     		}
     	}
     	
-    	Runnable decodeCallback;
+    	Runnable decodeCallback = null;
     	if (scannedPosition != null)
     	{
             Bag scannedBag = bags.get(scannedPosition);
@@ -525,23 +525,27 @@ public class ScanActivity extends CaptureActivity {
     		 */
             if (android.os.Build.VERSION.SDK_INT > 9) { StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); StrictMode.setThreadPolicy(policy); }
             String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, prefs.getString(VariableManager.PREF_DRIVERID, null));
-            if (!new_bag_id.isEmpty()){
+            if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null") ){
                 CustomToast toast = new CustomToast(this);
                 toast.setSuccess(false);
                 toast.setText(getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
                 toast.show();
+                adapter.notifyDataSetChanged();
             } else {
                 decodeCallback = new Runnable()
                 {
-
                     @Override
                     public void run() {
                         onBarcodeMatchFail();
                     }
                 };
-                // post delayed since dialogs do not show if launched directly from onActivityResult method
-                handler.postDelayed(decodeCallback, 10);
             }
+    	}
+    	
+    	// post delayed since dialogs do not show if launched directly from onActivityResult method
+    	if (decodeCallback != null)
+    	{
+    		handler.postDelayed(decodeCallback, 10);
     	}
 
     	// Restart barcode scanner to allow for 'semi-automatic firing'
