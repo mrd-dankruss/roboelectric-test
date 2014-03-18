@@ -1,45 +1,30 @@
 package com.mrdexpress.paperless;
 
-import android.app.ListActivity;
-import android.app.LoaderManager.LoaderCallbacks;
+import android.app.Activity;
 import android.content.Context;
-import android.content.Loader;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 
-import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
-import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
-public class ViewBagManifestActivity extends ListActivity implements LoaderCallbacks<Cursor>
+import java.util.ArrayList;
+import java.util.List;
+
+public class ViewBagManifestActivity extends Activity
 {
-
 	private ViewHolder holder;
 	private View root_view;
+    ArrayList<DeliveryHandoverDataObject> list;
+    private DeliveryHandoverAdapter listAdapter;
 
-	private SimpleCursorAdapter cursor_adapter;
-
-	static final String[] FROM =
-	{ DbHandler.C_WAYBILL_ID, DbHandler.C_BAG_ID, DbHandler.C_WAYBILL_WEIGHT,
-			DbHandler.C_WAYBILL_DIMEN, DbHandler.C_wAYBILL_PARCEL_SEQUENCE };
-	static final int[] TO =
-	{ R.id.textView_manifest_waybill, R.id.textView_manifest_consignment_number,
-			R.id.textView_manifest_weight, R.id.textView_manifest_volume,
-			R.id.textView_manifest_number };
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_bag_manifest);
 
 		// Change actionbar title
@@ -50,100 +35,86 @@ public class ViewBagManifestActivity extends ListActivity implements LoaderCallb
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		// Initiate database
-		getLoaderManager().initLoader(VariableManager.URL_LOADER_BAG_MANIFEST, null, this);
+        list = Workflow.getInstance().getBagParcelsAsObjects( Integer.parseInt( getIntent().getStringExtra(VariableManager.EXTRA_BAGID)));
+        listAdapter = new DeliveryHandoverAdapter(list);
+
+        if ((listAdapter != null) & (list != null))
+        {
+            holder.list.setAdapter(listAdapter);
+        }
+
+        listAdapter.notifyDataSetChanged();
 
 		// Remove padding from textview
 		holder.text_view_consignment_destination.setIncludeFontPadding(false);
 		holder.text_view_consignment_number.setIncludeFontPadding(false);
 
 		// Set titles
-		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " #"
-				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " ("
-				+ getIntent().getStringExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS) + " items)");
-		holder.text_view_consignment_destination
-				.setText(getString(R.string.text_destination_branch) + " "
-						+ getIntent().getStringExtra(VariableManager.EXTRA_BAG_DESTINATION));
+		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " #" + getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " (" + getIntent().getStringExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS) + " items)");
+		holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + getIntent().getStringExtra(VariableManager.EXTRA_BAG_DESTINATION));
 	}
 
-	/**
-	 * Manages your Loaders for you. Responsible for dealing with the Activity
-	 * or Fragment lifecycle.
-	 */
-	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args)
-	{
-		DbHandler.getInstance(this);
+    private class DeliveryHandoverAdapter extends BaseAdapter
+    {
 
-		String rawQuery = "";
-		String bag_id = getIntent().getStringExtra(VariableManager.EXTRA_BAGID);
+        List<DeliveryHandoverDataObject> parcelList;
 
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        public DeliveryHandoverAdapter(ArrayList<DeliveryHandoverDataObject> objects)
+        {
+            super();
+            parcelList = objects;
+        }
 
-		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-		final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            final int thisPosition = position;
 
-		if (training_mode)
-		{
-			rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS_TRAINING + " WHERE "
-					+ DbHandler.C_WAYBILL_BAG_ID + " LIKE '" + bag_id + "' " + " ORDER BY "
-					+ DbHandler.C_WAYBILL_ID + " ASC";
-		}
-		else
-		{
-			rawQuery = "SELECT * FROM " + DbHandler.TABLE_WAYBILLS + " WHERE "
-					+ DbHandler.C_WAYBILL_BAG_ID + " LIKE '" + bag_id + "' " + " ORDER BY "
-					+ DbHandler.C_WAYBILL_ID + " ASC";
-		}
-		SQLiteCursorLoader loader = new SQLiteCursorLoader(getApplicationContext(),
-				DbHandler.getInstance(getApplicationContext()), rawQuery, null);
+            LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.row_manifest, parent, false);
+            //TextView parcelTitle = (TextView) rowView.findViewById(R.id.row_delivery_parcel);
+            TextView waybillTile = (TextView) rowView.findViewById(R.id.textView_manifest_waybill);
+            TextView volumetrics = (TextView) rowView.findViewById(R.id.textView_manifest_volumetrics);
+            TextView barcode = (TextView) rowView.findViewById(R.id.textView_manifest_barcode);
 
-		return loader;
-	}
+            DeliveryHandoverDataObject dhdo = parcelList.get(thisPosition);
 
-	/**
-	 * Update the UI based on the results of your query.
-	 */
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
-	{
-		if (cursor != null && cursor.getCount() > 0)
-		{
-			cursor.moveToFirst();
+            waybillTile.setText( dhdo.getMDX() + " (" + dhdo.getXof() + ")");
+            volumetrics.setText( dhdo.getVolumetrics());
+            barcode.setText( dhdo.getBarcode());
 
-			/**
-			 * Moves the query results into the adapter, causing the ListView
-			 * fronting this adapter to re-display
-			 */
+            return rowView;
+        }
 
-			cursor_adapter = new SimpleCursorAdapter(this, R.layout.row_manifest, cursor, FROM, TO,
-					0);
+        @Override
+        public int getCount()
+        {
+            return parcelList.size();
+        }
 
-			if (cursor_adapter != null)
-			{
-				holder.list.setAdapter(cursor_adapter);
-				cursor_adapter.changeCursor(cursor);
-			}
+        @Override
+        public Object getItem(int position)
+        {
+            return position;
+        }
 
-		}
-	}
+        @Override
+        public long getItemId(int position)
+        {
+            return position;
+        }
 
-	/**
-	 * This method allows you to release any resources you hold, so that the
-	 * Loader can free them. You can set any references to the cursor object you
-	 * hold to null. But do not close the cursor – the Loader does this for you.
-	 */
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader)
-	{
-		/*
-		 * * Clears out the adapter's reference to the Cursor. This prevents
-		 * memory leaks.
-		 */
-		if (cursor_adapter != null)
-		{
-			cursor_adapter.changeCursor(null);
-		}
-	}
+        public int getScannedCount()
+        {
+            int scanned = 0;
+            for( DeliveryHandoverDataObject item : this.parcelList )
+            {
+                if( item.isParcelScanned())
+                    scanned++;
+            }
+            return scanned;
+        }
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -181,11 +152,9 @@ public class ViewBagManifestActivity extends ListActivity implements LoaderCallb
 
 			// holder.list = (ListView)
 			// root_view.findViewById(R.id.listView_manifest_list);
-			holder.list = getListView();
-			holder.text_view_consignment_number = (TextView) root_view
-					.findViewById(R.id.textView_manifest_consignment_number);
-			holder.text_view_consignment_destination = (TextView) root_view
-					.findViewById(R.id.textView_manifest_consignment_destination);
+			holder.list = (ListView) root_view.findViewById(R.id.listView_manifest_consignment);
+			holder.text_view_consignment_number = (TextView) root_view.findViewById(R.id.textView_manifest_consignment_number);
+			holder.text_view_consignment_destination = (TextView) root_view.findViewById(R.id.textView_manifest_consignment_destination);
 			// holder.text_view_manifest_weight = (TextView) root_view
 			// .findViewById(R.id.textView_manifest_weight);
 

@@ -10,42 +10,79 @@ public class JSONObjectHelper extends JSONObject
 {
     public static int getIntDef( JSONObject jso, String key, int def)
     {
-        if( jso.containsKey( key))
-            return (Integer)jso.get(key);
-        else
-            return def;
+        try
+        {
+            if( jso.containsKey( key))
+                return (Integer)jso.get(key);
+        }
+        catch( Exception e){}
+        return def;
     }
 
     public static Boolean getBooleanDef( JSONObject jso, String key, Boolean def)
     {
-        if( jso.containsKey( key))
-            return (Boolean)jso.get(key);
-        else
-            return def;
+        try
+        {
+            if( jso.containsKey( key))
+                return (Boolean)jso.get(key);
+        }
+        catch( Exception e){}
+        return def;
     }
-    
+
+    public static Number getNumberDef( JSONObject jso, String key, Number def)
+    {
+        try
+        {
+            if( jso.containsKey( key))
+            {
+                Object temp = jso.get(key);
+                if( temp instanceof Integer)
+                    return ((Integer) temp).intValue();
+                if( temp instanceof Float)
+                    return ((Float) temp).floatValue();
+                if( temp instanceof String)
+                    return Float.parseFloat( (String)temp);
+            }
+        }
+        catch( Exception e)
+        {
+            return def;
+        }
+        return def;
+    }
+
     public static String getStringDef( JSONObject jso, String key, String def)
     {
-        if( jso.containsKey( key))
-            return (String)jso.get(key);
-        else
-            return def;
+        try
+        {
+            if( jso.containsKey( key))
+                return (String)jso.get(key);
+        }
+        catch( Exception e){}
+        return def;
     }
 
     public static JSONObject getJSONObjectDef( JSONObject jso, String key, JSONObject def)
     {
-        if( jso.containsKey( key))
-            return (JSONObject)jso.get(key);
-        else
-            return def;
+        try
+        {
+            if( jso.containsKey( key))
+                return (JSONObject)jso.get(key);
+        }
+        catch( Exception e){}
+        return def;
     }
 
     public static JSONArray getJSONArrayDef( JSONObject jso, String key, JSONArray def)
     {
-        if( jso.containsKey( key))
-            return (JSONArray)jso.get(key);
-        else
-            return def;
+        try
+        {
+            if( jso.containsKey( key))
+                return (JSONArray)jso.get(key);
+        }
+        catch( Exception e){}
+        return def;
     }
 
 }

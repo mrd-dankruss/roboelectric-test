@@ -51,8 +51,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		intent = getIntent();
 		position = Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION));
 
-		bag = DbHandler.getInstance(this).getBag(
-				intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
+		bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 	}
 
 	@Override
