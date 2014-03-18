@@ -1181,9 +1181,10 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param bag_id
 	 * @return
 	 */
-	public ArrayList<DeliveryHandoverDataObject> getWaybillsForHandover(String bag_id)
+	/*
+    public ArrayList<DeliveryHandoverDataObject> getWaybillsForHandover(String bag_id)
 	{
-		/*SQLiteDatabase db = null;
+		SQLiteDatabase db = null;
 		try
 		{
 
@@ -1257,9 +1258,9 @@ public class DbHandler extends SQLiteOpenHelper
 					db.close(); // close db
 				}
 			}
-		}     */
+		}
         return null;
-	}
+	} */
 
 	/**
 	 * Return contact details linked to the specified bag ID.

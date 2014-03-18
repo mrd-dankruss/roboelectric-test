@@ -57,6 +57,7 @@
     <string name="button_photo_retake">Retake Photo</string>
     <string name="button_photo_continue">Complete Delivery</string>
     <string name="button_photo_take_id_photo">Take ID Photo</string>
+    <string name="button_logout">Logout</string>
 
     <!-- Screen titles -->
     <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>

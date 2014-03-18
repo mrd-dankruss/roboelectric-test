@@ -26,6 +26,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class DeliveryDetailsActivity extends FragmentActivity implements SetNextDeliveryListener
 {
@@ -66,7 +67,10 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
         StringBuilder bagtext = new StringBuilder();
         //holder.text_delivery_bad_id.setText("Parcel(s) to be delivered for :  " + bag.getBagNumber() + "\n");
-        waybills = DbHandler.getInstance(this).getWaybillsForHandover(intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
+        //waybills = DbHandler.getInstance(this).getWaybillsForHandover(intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
+
+        waybills = Workflow.getInstance().getBagParcelsAsObjects( Integer.parseInt( intent.getStringExtra(VariableManager.EXTRA_BAG_NO)));
+
         bagtext.append("Parcel(s) to be delivered for :  " + bag.getBarcode() + "<br />");
         int teller = 1;
         while (waybills.size() > 0){
@@ -75,15 +79,13 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
             teller += 1;
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
-		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog(
-				bag.getBagNumber());
+		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( bag.getBagNumber());
 
 		String comlog_text = "";
 
 		for (int i = 0; i < comlogs.size(); i++)
 		{
-			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + " : "
-					+ comlogs.get(i).getNote() + "\n";
+			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + " : "+ comlogs.get(i).getNote() + "\n";
 		}
         if (comlog_text.isEmpty()){
             holder.text_delivery_communication_log.setVisibility(View.GONE);
@@ -118,8 +120,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0),
-						bag.getBagNumber());
+				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0),	bag.getBagNumber());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
