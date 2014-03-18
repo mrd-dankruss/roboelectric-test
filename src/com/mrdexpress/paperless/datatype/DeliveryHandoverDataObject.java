@@ -8,6 +8,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 
+import java.util.Formatter;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -64,14 +65,12 @@ public class DeliveryHandoverDataObject implements Parcelable
 
     public String getVolumetrics()
     {
-        return "10 x 15 x 20";
-        /*
         JSONObject jsa = JSONObjectHelper.getJSONObjectDef(data.get(), "dimensions", null);
         if( jsa != null)
         {
-            return String.format("%0.1f", JSONObjectHelper.getNumberDef(jsa, "length", 0)) + " x " + String.format("%0.1f", JSONObjectHelper.getNumberDef(jsa, "width", 0)) + " x " + String.format("%0.1f", JSONObjectHelper.getNumberDef(jsa, "height", 0));
+            return  String.valueOf(JSONObjectHelper.getIntDef(jsa, "width", 0)) + " x " + String.valueOf(JSONObjectHelper.getIntDef(jsa, "length", 0)) + " x " + String.valueOf(JSONObjectHelper.getIntDef(jsa, "height", 0));
         }
-        return "";*/
+        return "";
     }
 
     public String getMDX()

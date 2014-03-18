@@ -67,6 +67,35 @@ public class ScanActivity extends CaptureActivity {
     BarcodeListAdapter adapter;
     Handler handler;
 
+    public void UpDateBagsForAdapter(String added_id){
+        driverId = prefs.getString(VariableManager.PREF_DRIVERID, null);
+        DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+        bags = DbHandler.getInstance(this).getBags(driverId);
+        bagsUnscanned = new Hashtable<String, Integer>();
+        bagsScanned = new Hashtable<String, Integer>();
+        int i = 0;
+        for (Bag bag : bags)
+        {
+            if ( added_id.equals(bag.getBarcode()) ){
+                bag.setScanned(true);
+            }
+            String barcode = bag.getBarcode();
+            Hashtable<String, Integer> bagMap;
+            if (bag.getScanned())
+            {
+                bagMap = bagsScanned;
+            }
+            else
+            {
+                bagMap = bagsUnscanned;
+            }
+
+            bagMap.put(barcode, i);
+            i++;
+        }
+        UpdateBagsCounter();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -530,7 +559,7 @@ public class ScanActivity extends CaptureActivity {
                 toast.setSuccess(false);
                 toast.setText(getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
                 toast.show();
-                adapter.notifyDataSetChanged();
+
             } else {
                 decodeCallback = new Runnable()
                 {
@@ -797,6 +826,8 @@ public class ScanActivity extends CaptureActivity {
                 if (!new_bag_id.isEmpty()){
                     ServerInterface.getInstance(getApplicationContext()).downloadBag(
                             getApplicationContext(),new_bag_id,driverid);
+                    adapter.notifyDataSetChanged();
+                    UpDateBagsForAdapter(last_scanned_barcode);
                 } else {
                     barCodeScanFailed();
                 }
