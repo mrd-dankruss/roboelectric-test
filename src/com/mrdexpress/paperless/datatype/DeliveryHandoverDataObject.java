@@ -1,20 +1,37 @@
 package com.mrdexpress.paperless.datatype;
 
+import android.graphics.Path;
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.internal.JsonReader;
+import com.mrdexpress.paperless.workflow.JSONObjectHelper;
+import com.mrdexpress.paperless.workflow.ObservableJSONObject;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONUtil;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
+import org.codehaus.jackson.impl.JsonParserBase;
+
+import java.util.Observable;
+import java.util.Observer;
 
 public class DeliveryHandoverDataObject implements Parcelable
 {
+    public ObservableJSONObject data;
 
-	private String parcelID;
+    //JSONObject data;
+	/*private String parcelID;
 	private boolean parcelScanned;
-	private String barcode;
+	private String barcode;*/
 
-	public DeliveryHandoverDataObject(String parcelID, boolean parcelScanned)
+	//public DeliveryHandoverDataObject(String parcelID, boolean parcelScanned)
+    public DeliveryHandoverDataObject( ObservableJSONObject datain)
 	{
-		this.parcelID = parcelID;
+		/*this.parcelID = parcelID;
 		this.parcelScanned = parcelScanned;
-		setBarcode("No Barcode");
+		setBarcode("No Barcode");*/
+        this.data = datain;
 	}
 
 	public DeliveryHandoverDataObject(Parcel in)
@@ -22,19 +39,24 @@ public class DeliveryHandoverDataObject implements Parcelable
 		readFromParcel(in);
 	}
 
-	public String getParcelID()
+	public int getParcelID()
 	{
-		return parcelID;
+		//return parcelID;
+        return JSONObjectHelper.getIntDef(data.get(), "id", -1);
 	}
 
 	public boolean isParcelScanned()
 	{
-		return parcelScanned;
+        if( data.get().containsKey("scannedtime"))
+            return true;
+        else
+            return false;
 	}
 
-	public void setParcelScanned(boolean newScannedStatus)
+	public void setParcelScanned( int newScannedTime)
 	{
-		parcelScanned = newScannedStatus;
+        data.setInt("scannedtime", newScannedTime);
+		//parcelScanned = newScannedStatus;
 	}
 
 	/**
@@ -42,8 +64,17 @@ public class DeliveryHandoverDataObject implements Parcelable
 	 */
 	public String getBarcode()
 	{
-		return barcode;
+        return JSONObjectHelper.getStringDef(data.get(), "barcode", "");
 	}
+
+    public String getMDX()
+    {
+        return JSONObjectHelper.getStringDef( data.get(), "mdx", "");
+    }
+
+    public String getXof()
+    {
+        return JSONObjectHelper.getStringDef( data.get(), "xof", "");     }
 
 	/**
 	 * @param barcode
@@ -51,7 +82,7 @@ public class DeliveryHandoverDataObject implements Parcelable
 	 */
 	public void setBarcode(String barcode)
 	{
-		this.barcode = barcode;
+        data.setString("barcode", barcode);
 	}
 
 	@Override
@@ -65,18 +96,20 @@ public class DeliveryHandoverDataObject implements Parcelable
 	public void writeToParcel(Parcel dest, int flags)
 	{
 		// TODO Auto-generated method stub
-		dest.writeString(getParcelID());
+		/*dest.writeString(getParcelID());
 		dest.writeByte((byte) (isParcelScanned() ? 1 : 0));
-		dest.writeString(getBarcode());
+		dest.writeString(getBarcode());*/
+        dest.writeString( data.getJSON());
 
 	}
 
 	public void readFromParcel(Parcel in)
 	{
-		parcelID = in.readString();
+		/*parcelID = in.readString();
 		parcelScanned = in.readByte() != 0; // myBoolean == true if byte != 0
-		setBarcode(in.readString());
-	}
+		setBarcode(in.readString());*/
+        data.setJSON( in.readString());
+    }
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator()
 	{

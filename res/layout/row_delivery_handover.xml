@@ -4,16 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/margin_row_NS"
-    android:columnCount="2"
-    android:paddingBottom="16dp"
-    android:paddingTop="16dp" >
+    android:columnCount="1"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp" >
 
     <TextView
-        android:id="@+id/row_delivery_handover_title"
+            android:text="MDX10000003 (1 OF 3)"
+            android:id="@+id/row_delivery_waybill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_marginRight="10dp"
+            android:textSize="14sp" />
+
+    <TextView
+        android:text="PMDX10000003_01"
+        android:id="@+id/row_delivery_parcel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:textSize="18sp" />
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -27,8 +39,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_list_greentick"
-            android:paddingTop="7dp"
-            android:visibility="gone" />
+            android:paddingTop="22dp"
+            android:layout_gravity="top"
+            android:visibility="visible" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -90,9 +89,6 @@ public class SmsListFragment extends Fragment
 
 			}
 		});
-
-		holder.report_button.setVisibility(View.VISIBLE);
-		holder.report_button.setEnabled(false);
 	}
 
 	@Override
@@ -104,10 +100,10 @@ public class SmsListFragment extends Fragment
 		// VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
 
 		// holder.report_button.setVisibility(View.VISIBLE);
-		holder.report_button.setBackgroundResource(R.drawable.button_custom);
+//		holder.report_button.setBackgroundResource(R.drawable.button_custom);
 		holder.list.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
-		holder.report_button.setEnabled(true);
+//		holder.report_button.setEnabled(true);
 	}
 /*
 	private class SendSMSTask extends AsyncTask<String, Void, String>
@@ -231,8 +227,7 @@ public class SmsListFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
-			holder.report_button.setVisibility(View.INVISIBLE);
+			rootView.findViewById(R.id.button_generic_report).setVisibility(View.GONE); // no purpose on sms-list screen
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -257,7 +252,6 @@ public class SmsListFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
-		Button report_button;
 	}
 
 }

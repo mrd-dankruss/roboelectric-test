@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.net;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.DataSetObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
@@ -459,6 +460,12 @@ public class ServerInterface {
 
             Workflow.getInstance().setWorkflowFromJSON(response);
 
+           /* Workflow.getInstance().registerObserver( new DataSetObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                }
+            });*/
 
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -478,7 +485,7 @@ public class ServerInterface {
      * @return
      */
     public void downloadBags(Context context, String driver_id) {
-        //getMilkrunWorkflow(context);
+        getMilkrunWorkflow(context);
 
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/bags/driver?id=" + driver_id + "&mrdToken=" + token;

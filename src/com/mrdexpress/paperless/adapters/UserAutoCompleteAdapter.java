@@ -47,7 +47,7 @@ public class UserAutoCompleteAdapter extends BaseAdapter implements Filterable
 					// Retrieve the autocomplete results.
 					for (int i = 0; i < person_list.size(); i++)
 					{
-						if ((person_list.get(i).getUserName().toLowerCase()).contains(constraint))
+						if ((person_list.get(i).getUserName().toLowerCase()).startsWith(constraint.toString().toLowerCase()))
 						{
 							Log.d(TAG, "person_list: " + person_list.get(i));
 							result_list.add(person_list.get(i));
