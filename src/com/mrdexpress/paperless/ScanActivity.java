@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -64,7 +65,7 @@ public class ScanActivity extends CaptureActivity {
     List<Bag> bags;
     String driverId;
     BarcodeListAdapter adapter;
-    
+    Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,8 @@ public class ScanActivity extends CaptureActivity {
         
     	// Store currently selected driver id globally
         prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        
+        handler = new Handler();
         
         driverId = prefs.getString(VariableManager.PREF_DRIVERID, null);
         DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
@@ -236,12 +239,6 @@ public class ScanActivity extends CaptureActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("HANNO:", "Activity request code : " + Integer.toString(requestCode));
-        Log.e("HANNO:", "Activity result code : " + Integer.toString(resultCode));
-        // NB, data may be null
-        Log.e("HANNO:", "Activity result code : " + (data != null ? data.toString() : "null"));
-
-
         if (dialog != null) {
             if (dialog.isShowing()) {
                 dialog.dismiss();
@@ -389,6 +386,7 @@ public class ScanActivity extends CaptureActivity {
     
     void onBarcodeMatchFail()
     {
+    	Log.d(TAG, "onBarcodeMatchFail, dialog_not_assigned = " + dialog_not_assigned);
     	// not sure what this code does...
     	if (dialog_not_assigned != null) 
     	{
@@ -429,6 +427,7 @@ public class ScanActivity extends CaptureActivity {
             dialog_not_assigned.getWindow().setBackgroundDrawable(
                     new ColorDrawable(Color.TRANSPARENT));
             dialog_not_assigned.show();
+            Log.d(TAG, "SHOW dialog_not_assigned = " + dialog_not_assigned);
             final Button button_continue = (Button) dialog_not_assigned
                     .findViewById(R.id.button_not_assigned_continue);
 
@@ -462,7 +461,7 @@ public class ScanActivity extends CaptureActivity {
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) 
     {
     	String barcodeString = rawResult.getText();
-    	Log.i("JHDV", "handleDecode: barcodeString = " + barcodeString);
+    	Log.d(TAG, "handleDecode: barcodeString = " + barcodeString);
     	
     	Integer scannedPosition = null;
     	if (MiscHelper.isNonEmptyString(barcodeString))
@@ -478,6 +477,7 @@ public class ScanActivity extends CaptureActivity {
     		}
     	}
     	
+    	Runnable decodeCallback;
     	if (scannedPosition != null)
     	{
             Bag scannedBag = bags.get(scannedPosition);
@@ -505,14 +505,30 @@ public class ScanActivity extends CaptureActivity {
 			DbHandler.getInstance(ScanActivity.this).setScanned(barcodeString, !wasScanned);
     		addMap.put(barcodeString, scannedPosition);
     		
-    		onBarcodeMatchSuccess();
+    		decodeCallback = new Runnable()
+    		{
+				@Override
+				public void run() {
+					onBarcodeMatchSuccess();
+				}
+    		};
     	}
     	else
     	{
-    		Log.d(TAG, "handleDecode(): no match " + barcodeString);
+    		Log.d(TAG, "handleDecode(): no match for " + barcodeString);
     		
-    		onBarcodeMatchFail();
+    		decodeCallback = new Runnable()
+    		{
+
+				@Override
+				public void run() {
+					onBarcodeMatchFail();
+				}
+    		};
     	}
+    	
+    	// post delayed since dialogs do not show if launched directly from onActivityResult method
+    	handler.postDelayed(decodeCallback, 10);
     	
     	// Restart barcode scanner to allow for 'semi-automatic firing'
     	restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
@@ -695,9 +711,7 @@ public class ScanActivity extends CaptureActivity {
     private void startNotAssignedActivity() {
         // Start manager authorization activity
         Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
-
         intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
-
         startActivityForResult(intent, RESULT_MANAGER_AUTH);
     }
 

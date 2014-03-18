@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless;
 
-import java.lang.ref.WeakReference;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,14 +10,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
@@ -27,340 +23,293 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 
-public class ManagerAuthNotAssignedActivity extends Activity
-{
+import java.lang.ref.WeakReference;
 
-	private ViewHolder holder;
-	private View root_view;
-	private final String TAG = "ManagerAuthNotAssignedActivity";
-	private ProgressDialog dialog_login;
-	private String imei_id;
-	private String last_logged_in_manager_name;
-	private String last_logged_in_manager_id;
+public class ManagerAuthNotAssignedActivity extends Activity {
 
-	public static String MANAGER_AUTH_SUCCESS = "fi.gfarr.mrd.ManagerAuthNotAssignedActivity.auth_success";
+    private ViewHolder holder;
+    private View root_view;
+    private final String TAG = "ManagerAuthNotAssignedActivity";
+    private ProgressDialog dialog_login;
+    private String imei_id;
+    private String last_logged_in_manager_name;
+    private String last_logged_in_manager_id;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_manager_auth_not_assigned);
+    public static String MANAGER_AUTH_SUCCESS = "fi.gfarr.mrd.ManagerAuthNotAssignedActivity.auth_success";
 
-		setTitle(R.string.title_actionbar_manager_auth_not_assigned); // Change actionbar title
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_manager_auth_not_assigned);
 
-		// Initialize ViewHolder
-		initViewHolder();
+        setTitle(R.string.title_actionbar_manager_auth_not_assigned); // Change actionbar title
 
-		TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		imei_id = mngr.getDeviceId();
+        // Initialize ViewHolder
+        initViewHolder();
 
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+        TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        imei_id = mngr.getDeviceId();
 
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+        SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		// Heading
-		holder.text_content.setText("Assigning consignment "
-				+ getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " to "
-				+ DbHandler.getInstance(getApplicationContext()).getDriverName(driverid));
+        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		initClickListeners();
-	}
+        // Heading
+        holder.text_content.setText("Assigning consignment "
+                + getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " to "
+                + DbHandler.getInstance(getApplicationContext()).getDriverName(driverid));
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
+        initClickListeners();
+    }
 
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME,
-				null);
-		last_logged_in_manager_id = prefs
-				.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
+        SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-		// Display name of manager
-		holder.text_name.setText(last_logged_in_manager_name);
-	}
+        last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME,
+                null);
+        last_logged_in_manager_id = prefs
+                .getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.manager_auth_incomplete_scan, menu);
-		return true;
-	}
+        // Display name of manager
+        holder.text_name.setText(last_logged_in_manager_name);
+    }
 
-	/**
-	 * Initiate click listeners for buttons.
-	 */
-	private void initClickListeners()
-	{
-		holder.button_continue.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				// Perform action on click
-				login();
-			}
-		});
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.manager_auth_incomplete_scan, menu);
+        return true;
+    }
 
-		holder.button_change_manager.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				// Perform action on click
-				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+    /**
+     * Initiate click listeners for buttons.
+     */
+    private void initClickListeners() {
+        holder.button_continue.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                login();
+            }
+        });
 
-				// startActivity(intent);
-				startActivityForResult(intent, ScanActivity.RESULT_MANAGER_AUTH);
-				finish();
-			}
-		});
-	}
+        holder.button_change_manager.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-        if (requestCode == ScanActivity.RESULT_MANAGER_AUTH)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false))
-				{
-					Intent intent = new Intent();
-					intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
-					setResult(Activity.RESULT_OK, intent);
-					finish();
-				}
-			}
-		}
-	}
+                // startActivity(intent);
+                startActivityForResult(intent, ScanActivity.RESULT_MANAGER_AUTH);
+                finish();
+            }
+        });
+    }
 
-	/**
-	 * Perform log in procedure. First check validity of PIN, then wait for API call to finish and
-	 * start next activity.
-	 */
-	public void login()
-	{
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ScanActivity.RESULT_MANAGER_AUTH) {
+            if (resultCode == RESULT_OK) {
+                if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false)) {
+                    Intent intent = new Intent();
+                    intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                }
+            }
+        }
+    }
 
-		if (checkPin())
-		{
-			// Progress spinner
-			dialog_login = new ProgressDialog(ManagerAuthNotAssignedActivity.this);
-			dialog_login.setMessage("Authenticating");
-			dialog_login.show();
+    /**
+     * Perform log in procedure. First check validity of PIN, then wait for API call to finish and
+     * start next activity.
+     */
+    public void login() {
+        class ActivityThread extends Thread {
+            public Activity activity = null;
+        }
+
+        if (checkPin()) {
+            // Progress spinner
+            dialog_login = new ProgressDialog(ManagerAuthNotAssignedActivity.this);
+            dialog_login.setMessage("Authenticating");
+            dialog_login.show();
 
 			/*
-			 * Make API call authenticating driver credentials in a thread. 
+             * Make API call authenticating driver credentials in a thread.
 			 * When finished, send msg to thread handler to start ScanActivity
-			 * 
 			 */
-			final MyHandler handler = new MyHandler(this);
-			Thread t = new Thread()
-			{
-				@Override
-				public void run()
-				{
+            final MyHandler handler = new MyHandler(this) {
+                @Override
+                public void handleMessage(Message msg) {
+                    dialog_login.hide();
+                    displayToast(msg.obj.toString());
+                }
+            };
+            ActivityThread t = new ActivityThread() {
+                @Override
+                public void run() {
+                    SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
+                            Context.MODE_PRIVATE);
+                    final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
+                    final boolean training_mode = prefs.getBoolean(
+                            VariableManager.PREF_TRAINING_MODE, false);
+                    String status = "";
 
-					SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-							Context.MODE_PRIVATE);
+                    if (training_mode) {
+                        status = "success";
+                    } else {
+                        //String hash; //PinManager.toMD5(holder.editText_pin.getText().toString());
+                        String hash = holder.editText_pin.getText().toString(); // DEBUG
+                        status = ServerInterface.getInstance(getApplicationContext()).authManager(
+                                last_logged_in_manager_id, driver_id, hash, imei_id);
+                    }
+                    if (status.equals("success")) {
+                        // handler.sendEmptyMessage(0);
+                        Intent intent = new Intent();
+                        intent.putExtra(MANAGER_AUTH_SUCCESS, true);
+                        setResult(Activity.RESULT_OK, intent);
+                        finish();
+                    } else {
+                        Message msg = handler.obtainMessage();
+                        msg.obj = getApplicationContext().getString(R.string.manager_login_wrong_password);
+                        handler.sendMessage(msg);
+                    }
+                }
+            };
+            t.activity = this;
+            t.start();
+        }
+    }
 
-					final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
-					final boolean training_mode = prefs.getBoolean(
-							VariableManager.PREF_TRAINING_MODE, false);
+    /**
+     * Check PIN's validity (data validation)
+     *
+     * @return True is valid.
+     */
+    private boolean checkPin() {
+        // Check for 4-digit format
+        String msg = PinManager.checkPin(holder.editText_pin.getText().toString(), this);
+        if (msg.equals("OK")) {
+            return true;
+        } else {
+            displayToast(msg);
+            return false;
+        }
+    }
 
-					String status = "";
+    /**
+     * Display a toast using the custom Toaster class
+     *
+     * @param msg
+     */
+    private void displayToast(String msg) {
+        CustomToast toast = new CustomToast(this);
+        toast.setText(msg);
+        toast.setSuccess(false);
+        toast.show();
+    }
 
-					if (training_mode)
-					{
-						status = "success";
-					}
-					else
-					{
-						String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
-						hash = holder.editText_pin.getText().toString(); // DEBUG
+    /**
+     * Custom Handler class that waits for the user authentication API call to complete
+     * before continuing. This class uses weak references to alleviate the HandlerLeak error.
+     *
+     * @author greg
+     */
+    static class MyHandler extends Handler {
+        private WeakReference<ManagerAuthNotAssignedActivity> mActivity;
 
-						status = ServerInterface.getInstance(getApplicationContext()).authManager(
-								last_logged_in_manager_id, driver_id, hash, imei_id);
-					}
+        MyHandler(ManagerAuthNotAssignedActivity activity) {
+            mActivity = new WeakReference<ManagerAuthNotAssignedActivity>(activity);
+        }
 
-					if (status.equals("success"))
-					{
-						// handler.sendEmptyMessage(0);
-						Intent intent = new Intent();
-						intent.putExtra(MANAGER_AUTH_SUCCESS, true);
-						setResult(Activity.RESULT_OK, intent);
-						finish();
-					}
-					else
-					{
-						// handler.sendEmptyMessage(1);
-					}
-				}
-			};
-			t.start();
-		}
-		/*
-		 * if (holder.editText_pin.getText().toString().equals("1111")) { return
-		 * true; } else {
-		 * displayToast(getString(R.string.text_enter_pin_incorrect)); return
-		 * false; }
-		 */
+        @Override
+        public void handleMessage(Message msg) {
+            ManagerAuthNotAssignedActivity activity = mActivity.get();
+            if (activity != null) {
+                activity.handleMessage(msg);
+            }
+        }
+    }
 
-	}
+    /**
+     * Starts the barcode scan activity after user authentication thread has completed.
+     *
+     * @param msg
+     */
+    public void handleMessage(Message msg) {
+        if (msg.what == 0) {
+            Intent intent = new Intent(getApplicationContext(),
+                    ViewDeliveriesFragmentActivity.class);
+            // intent.putExtra(EXTRA_MESSAGE, message);
 
-	/**
-	 * Check PIN's validity (data validation)
-	 * 
-	 * @return True is valid.
-	 */
-	private boolean checkPin()
-	{
+            startActivity(intent);
 
-		// Check for 4-digit format
-		String msg = PinManager.checkPin(holder.editText_pin.getText().toString(), this);
-		if (msg.equals("OK"))
-		{
+            // Close progress spinner
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (dialog_login.isShowing()) dialog_login.dismiss();
+                }
+            });
 
-			return true;
-		}
-		else
-		{
-			displayToast(msg);
-			return false;
-		}
-	}
+            // startActivity(intent);
+        }
+    }
 
-	/**
-	 * Display a toast using the custom Toaster class
-	 * 
-	 * @param msg
-	 */
-	private void displayToast(String msg)
-	{
-		CustomToast toast = new CustomToast(this);
-		toast.setText(msg);
-		toast.setSuccess(false);
-		toast.show();
-	}
+    /**
+     * Allows the views' resources to be found only once, improving performance.
+     */
+    public void initViewHolder() {
+        if (root_view == null) {
+            root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
-	/**
-	 * Custom Handler class that waits for the user authentication API call to complete
-	 * before continuing. This class uses weak references to alleviate the HandlerLeak error.
-	 * 
-	 * @author greg
-	 * 
-	 */
-	static class MyHandler extends Handler
-	{
-		private WeakReference<ManagerAuthNotAssignedActivity> mActivity;
+            if (holder == null) {
+                holder = new ViewHolder();
+            }
 
-		MyHandler(ManagerAuthNotAssignedActivity activity)
-		{
-			mActivity = new WeakReference<ManagerAuthNotAssignedActivity>(activity);
-		}
+            Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+                    .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+                            FontHelper.STYLE_BOLD));
+            Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
+                    .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+                            FontHelper.STYLE_REGULAR));
 
-		@Override
-		public void handleMessage(Message msg)
-		{
-			ManagerAuthNotAssignedActivity activity = mActivity.get();
-			if (activity != null)
-			{
-				activity.handleMessage(msg);
-			}
-		}
-	}
+            holder.button_continue = (Button) root_view
+                    .findViewById(R.id.button_not_assigned_activity_continue);
+            holder.button_change_manager = (Button) root_view
+                    .findViewById(R.id.button_not_assigned_activity_change);
+            holder.editText_pin = (EditText) root_view
+                    .findViewById(R.id.editText_not_assigned_activity_pin);
+            holder.text_name = (TextView) root_view
+                    .findViewById(R.id.text_not_assigned_activity_name);
+            holder.text_content = (TextView) root_view
+                    .findViewById(R.id.textView_not_assigned_activity_heading);
 
-	/**
-	 * Starts the barcode scan activity after user authenication thread has completed.
-	 * 
-	 * @param msg
-	 */
-	public void handleMessage(Message msg)
-	{
-		if (msg.what == 0)
-		{
-			Intent intent = new Intent(getApplicationContext(),
-					ViewDeliveriesFragmentActivity.class);
-			// intent.putExtra(EXTRA_MESSAGE, message);
+            holder.button_continue.setTypeface(typeface_roboto_bold);
+            holder.button_change_manager.setTypeface(typeface_roboto_bold);
+            holder.editText_pin.setTypeface(typeface_roboto_regular);
+            holder.text_name.setTypeface(typeface_roboto_bold);
+            holder.text_content.setTypeface(typeface_roboto_regular);
 
-			startActivity(intent);
+            // Store the holder with the view.
+            root_view.setTag(holder);
+        } else {
+            holder = (ViewHolder) root_view.getTag();
 
-			// Close progress spinner
-			runOnUiThread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					if (dialog_login.isShowing()) dialog_login.dismiss();
-				}
-			});
+            if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup)) {
+                ((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
+            } else {
+            }
+        }
+    }
 
-			// startActivity(intent);
-		}
-	}
-
-	/**
-	 * Allows the views' resources to be found only once, improving performance.
-	 */
-	public void initViewHolder()
-	{
-		if (root_view == null)
-		{
-			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
-
-			if (holder == null)
-			{
-				holder = new ViewHolder();
-			}
-
-			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
-					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
-							FontHelper.STYLE_BOLD));
-			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
-					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
-							FontHelper.STYLE_REGULAR));
-
-			holder.button_continue = (Button) root_view
-					.findViewById(R.id.button_not_assigned_activity_continue);
-			holder.button_change_manager = (Button) root_view
-					.findViewById(R.id.button_not_assigned_activity_change);
-			holder.editText_pin = (EditText) root_view
-					.findViewById(R.id.editText_not_assigned_activity_pin);
-			holder.text_name = (TextView) root_view
-					.findViewById(R.id.text_not_assigned_activity_name);
-			holder.text_content = (TextView) root_view
-					.findViewById(R.id.textView_not_assigned_activity_heading);
-
-			holder.button_continue.setTypeface(typeface_roboto_bold);
-			holder.button_change_manager.setTypeface(typeface_roboto_bold);
-			holder.editText_pin.setTypeface(typeface_roboto_regular);
-			holder.text_name.setTypeface(typeface_roboto_bold);
-			holder.text_content.setTypeface(typeface_roboto_regular);
-
-			// Store the holder with the view.
-			root_view.setTag(holder);
-		}
-		else
-		{
-			holder = (ViewHolder) root_view.getTag();
-
-			if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup))
-			{
-				((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-			}
-			else
-			{
-			}
-		}
-	}
-
-	// ViewHolder stores static instances of views in order to reduce the number
-	// of times that findViewById is called, which affected listview performance
-	static class ViewHolder
-	{
-		Button button_continue, button_change_manager;
-		TextView text_name, text_content;
-		EditText editText_pin;
-	}
+    // ViewHolder stores static instances of views in order to reduce the number
+    // of times that findViewById is called, which affected listview performance
+    static class ViewHolder {
+        Button button_continue, button_change_manager;
+        TextView text_name, text_content;
+        EditText editText_pin;
+    }
 }
