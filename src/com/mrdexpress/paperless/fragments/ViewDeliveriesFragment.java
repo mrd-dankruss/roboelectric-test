@@ -1,5 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,9 +52,12 @@ public class ViewDeliveriesFragment extends Fragment
 		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getBagsByStatus(driverid, Bag.STATUS_TODO));
+		
+		List<Bag> todoBags = DbHandler.getInstance(getActivity())
+				.getBagsByStatus(driverid, Bag.STATUS_TODO);
+		// last nextDeliveryId's bag may have changed status from TODO
+		MiscHelper.validateNextDeliveryId(todoBags, this.getActivity());
+		adapter = new ViewDeliveriesListAdapter(getActivity(), todoBags);
 		
 		if (adapter.getCount() == 0)
 		{
