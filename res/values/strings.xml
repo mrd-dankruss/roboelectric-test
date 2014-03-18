@@ -186,4 +186,7 @@
     <!-- SCAN Screen -->
     <string name="scan_statusbar">Bags Remaining</string><string name="test_scan_status">Bags Remaining</string>
 
+    <!-- Exception Management -->
+    <string name="manager_login_wrong_password">Password is wrong , please try again.</string>
+
 </resources>

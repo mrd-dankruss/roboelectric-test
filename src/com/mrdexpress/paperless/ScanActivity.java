@@ -236,12 +236,7 @@ public class ScanActivity extends CaptureActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("HANNO:", "Activity request code : " + Integer.toString(requestCode));
-        Log.e("HANNO:", "Activity result code : " + Integer.toString(resultCode));
-        // NB, data may be null
-        Log.e("HANNO:", "Activity result code : " + (data != null ? data.toString() : "null"));
-
-
+        
         if (dialog != null) {
             if (dialog.isShowing()) {
                 dialog.dismiss();
@@ -695,9 +690,7 @@ public class ScanActivity extends CaptureActivity {
     private void startNotAssignedActivity() {
         // Start manager authorization activity
         Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
-
         intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
-
         startActivityForResult(intent, RESULT_MANAGER_AUTH);
     }
 
