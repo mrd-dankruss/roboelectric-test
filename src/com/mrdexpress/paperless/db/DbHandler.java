@@ -955,16 +955,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 				while (!cursor.isAfterLast())
 				{
-					Bag bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
-					bag.setDestinationAddress(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_ADDRESS)));
-					bag.setAssigned(convertIntToBool(cursor.getInt(cursor
-							.getColumnIndex(C_BAG_ASSIGNED))));
-					bag.setCreationTime(cursor.getString(cursor.getColumnIndex(C_BAG_CREATION_TIME)));
-					bag.setDriverId(cursor.getString(cursor.getColumnIndex(C_BAG_DRIVER_ID)));
-					bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
-							.getColumnIndex(C_BAG_NUM_ITEMS))));
-					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
+					Bag bag = createBagFromCursor(cursor);
 
 					bags.add(bag);
 					cursor.moveToNext();
@@ -1000,6 +991,40 @@ public class DbHandler extends SQLiteOpenHelper
 		}
 	}
 
+	
+	private Bag createBagFromCursor(Cursor cursor)
+	{
+		Bag bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
+
+		bag.setDestinationAddress(cursor.getString(cursor
+				.getColumnIndex(C_BAG_DEST_ADDRESS)));
+		bag.setAssigned(convertIntToBool(cursor.getInt(cursor
+				.getColumnIndex(C_BAG_ASSIGNED))));
+		bag.setCreationTime(cursor.getString(cursor.getColumnIndex(C_BAG_CREATION_TIME)));
+		bag.setDriverId(cursor.getString(cursor.getColumnIndex(C_BAG_DRIVER_ID)));
+		bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
+				.getColumnIndex(C_BAG_NUM_ITEMS))));
+		bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
+		bag.setDestinationContact(cursor.getString(cursor
+				.getColumnIndex(C_BAG_DEST_CONTACT)));
+		bag.setDestinationHubCode(cursor.getString(cursor
+				.getColumnIndex(C_BAG_DEST_HUBCODE)));
+		bag.setDestinationHubName(cursor.getString(cursor
+				.getColumnIndex(C_BAG_DEST_HUBNAME)));
+		bag.setDestinationLat(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT)));
+		bag.setDestinationLong(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG)));
+		bag.setDestinationSuburb(cursor.getString(cursor
+				.getColumnIndex(C_BAG_DEST_SUBURB)));
+		// bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
+		bag.setStatus(cursor.getString(cursor.getColumnIndex(C_BAG_STATUS)));
+		
+		bag.setSubmissionDate(new Date(cursor.getLong(cursor.getColumnIndex(C_BAG_SUBMISSION_DATE))));
+		bag.setStatusReason(cursor.getString(cursor.getColumnIndex(C_BAG_STATUS_REASON)));
+		bag.setStopId(cursor.getString(cursor.getColumnIndex(C_BAG_STOPID)));
+		
+		return bag;
+	}
+	
 	/**
 	 * Return bag according to bag number
 	 * Should only be one.
@@ -1036,32 +1061,7 @@ public class DbHandler extends SQLiteOpenHelper
 
 				if (!cursor.isAfterLast())
 				{
-					bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
-
-					bag.setDestinationAddress(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_ADDRESS)));
-					bag.setAssigned(convertIntToBool(cursor.getInt(cursor
-							.getColumnIndex(C_BAG_ASSIGNED))));
-					bag.setCreationTime(cursor.getString(cursor.getColumnIndex(C_BAG_CREATION_TIME)));
-					bag.setDriverId(cursor.getString(cursor.getColumnIndex(C_BAG_DRIVER_ID)));
-					bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
-							.getColumnIndex(C_BAG_NUM_ITEMS))));
-					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
-					bag.setDestinationContact(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_CONTACT)));
-					bag.setDestinationHubCode(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_HUBCODE)));
-					bag.setDestinationHubName(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_HUBNAME)));
-					bag.setDestinationLat(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT)));
-					bag.setDestinationLong(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG)));
-					bag.setDestinationSuburb(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_SUBURB)));
-					// bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
-					bag.setStatus(cursor.getString(cursor.getColumnIndex(C_BAG_STATUS)));
-
-					// bags.add(bag);
-					// cursor.moveToNext();
+					bag = createBagFromCursor(cursor);
 				}
 			}
 		}
@@ -1540,32 +1540,8 @@ public class DbHandler extends SQLiteOpenHelper
 			{
 				while (!cursor.isAfterLast())
 				{
-					Bag bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
-
-					bag.setDestinationAddress(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_ADDRESS)));
-					bag.setAssigned(convertIntToBool(cursor.getInt(cursor
-							.getColumnIndex(C_BAG_ASSIGNED))));
-					bag.setCreationTime(cursor.getString(cursor.getColumnIndex(C_BAG_CREATION_TIME)));
-					bag.setDriverId(cursor.getString(cursor.getColumnIndex(C_BAG_DRIVER_ID)));
-					bag.setNumberItems(Integer.parseInt(cursor.getString(cursor
-							.getColumnIndex(C_BAG_NUM_ITEMS))));
-					bag.setBarcode(cursor.getString(cursor.getColumnIndex(C_BAG_BARCODE)));
-					bag.setDestinationContact(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_CONTACT)));
-					bag.setDestinationHubCode(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_HUBCODE)));
-					bag.setDestinationHubName(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_HUBNAME)));
-					bag.setDestinationLat(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT)));
-					bag.setDestinationLong(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG)));
-					bag.setDestinationSuburb(cursor.getString(cursor
-							.getColumnIndex(C_BAG_DEST_SUBURB)));
-					// bag.setDestinationTown(cursor.getString(cursor.getColumnIndex(C_BAG_DEST_TOWN)));
-					bag.setSubmissionDate(new Date(cursor.getLong(cursor
-							.getColumnIndex(C_BAG_SUBMISSION_DATE))));
-					bag.setStatusReason(cursor.getString(cursor.getColumnIndex(C_BAG_STATUS_REASON)));
-					bag.setStopId(cursor.getString(cursor.getColumnIndex(C_BAG_STOPID)));
+					Bag bag = createBagFromCursor(cursor);
+					
 					list.add(bag);
 					cursor.moveToNext();
 				}

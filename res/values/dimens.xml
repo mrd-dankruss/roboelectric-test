@@ -1,6 +1,7 @@
 <resources>
 
     <!-- Margins -->
+    <dimen name="default_button_margin">8dp</dimen>
     <dimen name="margin_scan_image_WE">2.67dp</dimen>
     <dimen name="margin_scan_image_NS">6.67dp</dimen>
     <dimen name="margin_button_NS">16dp</dimen>

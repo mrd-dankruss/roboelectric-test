@@ -80,7 +80,8 @@
             android:label="@string/title_scan_consignments"
             android:launchMode="singleTop"
             android:parentActivityName="com.mrdexpress.paperless.DriverHomeActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" 
+            android:windowSoftInputMode="stateAlwaysHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.DriverHomeActivity" />
@@ -276,7 +277,8 @@
             android:name="com.mrdexpress.paperless.EnterBarcodeActivity"
             android:label="@string/title_actionbar_enter_barcode"
             android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" 
+			android:windowSoftInputMode="stateAlwaysVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.ScanActivity" />
