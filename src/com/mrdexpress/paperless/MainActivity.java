@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,11 +36,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -190,44 +188,22 @@ public class MainActivity extends Activity
 				// Perform action on click
 				if (checkPin())
 				{
-					Log.e(TAG, "Type1: " + selected_user_type);
 					if (selected_user_type == UserType.DRIVER)
 					{
 						new DriverLoginUserTask().execute();
 					}
-					if (selected_user_type == UserType.MANAGER)
+                    else if (selected_user_type == UserType.MANAGER)
 					{
-						/*
-						CustomToast not_yet_implemented = new CustomToast(MainActivity.this);
-						not_yet_implemented.setText("Manager login is not implemented.");
-						not_yet_implemented.setSuccess(false);
-						not_yet_implemented.show();
-						*/
 						new ManagerLoginUserTask().execute();
 					}
+                    else
+                    {
+                        displayCustomToast("Please select valid driver by entering the first letter in his name or surname");
+                    }
 				}
 			}
 		});
 
-		/*
-		// Click Start Trainingrun button
-		holder.button_start_trainingrun.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				// Perform action on click
-
-				new Thread(new Runnable()
-				{
-					public void run()
-					{
-						Intent intent = new Intent(getApplicationContext(), SignatureActivity.class);
-						startActivity(intent);
-					}
-				}).start();
-			}
-		});
-		*/
 	}
 
 	/**
@@ -697,6 +673,14 @@ public class MainActivity extends Activity
 		toast_main_menu.setText("Please check your PIN length");
 		toast_main_menu.show();
 	}
+
+    private void displayCustomToast(String msg)
+    {
+        CustomToast toast_main_menu = new CustomToast(this);
+        toast_main_menu.setSuccess(false);
+        toast_main_menu.setText(msg);
+        toast_main_menu.show();
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)

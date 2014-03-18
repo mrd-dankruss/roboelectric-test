@@ -128,7 +128,7 @@
     <string name="text_process_handover_successful">Process succcessful handover</string>
     <string name="text_process_handover_failed">Process failed handover</string>
     <string name="text_not_assigned_message">This consignment has not been assigned to you!</string>
-    <string name="text_unauthorised">Unauthorised</string>
+    <string name="text_unauthorised">Authorisation Failed, Please Try Again.</string>
     <string name="text_unauthorised_use">Unauthorized device. The app will now close.</string>
     <string name="text_over_delivery">Parcel 0000234576 is not assigned to this branch.</string>
     <string name="text_no_deliveries">You do not have any deliveries assigned to you at this moment</string>
