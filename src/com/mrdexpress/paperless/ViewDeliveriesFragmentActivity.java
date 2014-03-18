@@ -4,13 +4,29 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.fragments.ChangeUserDialog;
+import com.mrdexpress.paperless.helper.MiscHelper;
+import com.mrdexpress.paperless.helper.VariableManager;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements TabListener
 
@@ -111,6 +127,30 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft)
 	{
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.driver, menu);
+        return true;
+    }
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_home:
+                Log.d(TAG, "go Home");
+                Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+                startActivity(intent);
+                return true;
+            case R.id.action_logout:
+                Log.d(TAG, "Logout");
+                setupChangeUserDialog();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 	public void initViewHolder()
 	{
@@ -148,6 +188,61 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 	{
 		// Do not allow going back
 		return;
+    }
+	
+	
+	/**
+	 * display change user dialog
+	 * TODO basically duplicate of code on ScanActivity -- recommend create project activity superclass that include common funcs like this OR make static to helper method
+	 */
+    private void setupChangeUserDialog() {
+    	final ChangeUserDialog dialog_change_user = new ChangeUserDialog(this);
+        dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog_change_user.show();
+
+        // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+
+        final ImageButton button_close = (ImageButton) dialog_change_user
+                .findViewById(R.id.button_change_user_closeButton);
+        final Button button_cancel = (Button) dialog_change_user
+                .findViewById(R.id.button_change_user_cancel);
+        final Button button_ok = (Button) dialog_change_user
+                .findViewById(R.id.button_change_user_ok);
+        final TextView dialog_content = (TextView) dialog_change_user
+                .findViewById(R.id.text_change_driver_content);
+
+        SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF,
+				Context.MODE_PRIVATE);
+        String driverId = prefs.getString(VariableManager.PREF_DRIVERID, "");
+        String user_name = "";
+        if (MiscHelper.isNonEmptyString(driverId))
+        {
+        	user_name = DbHandler.getInstance(this).getDriverName(driverId);
+        }
+        dialog_content.setText("Are you sure you want to log out" + ((MiscHelper.isNonEmptyString(user_name) ? (" "+user_name) : "")) + "?");
+
+        button_close.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_change_user.dismiss();
+            }
+        });
+
+        button_cancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_change_user.dismiss();
+            }
+        });
+
+        button_ok.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewDeliveriesFragmentActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
     }
 
 	// Creates static instances of resources.
