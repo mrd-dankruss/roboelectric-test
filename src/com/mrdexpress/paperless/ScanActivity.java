@@ -481,7 +481,7 @@ public class ScanActivity extends CaptureActivity {
     		}
     	}
     	
-    	Runnable decodeCallback;
+    	Runnable decodeCallback = null;
     	if (scannedPosition != null)
     	{
             Bag scannedBag = bags.get(scannedPosition);
@@ -539,9 +539,13 @@ public class ScanActivity extends CaptureActivity {
                         onBarcodeMatchFail();
                     }
                 };
-                // post delayed since dialogs do not show if launched directly from onActivityResult method
-                handler.postDelayed(decodeCallback, 10);
             }
+    	}
+    	
+    	// post delayed since dialogs do not show if launched directly from onActivityResult method
+    	if (decodeCallback != null)
+    	{
+    		handler.postDelayed(decodeCallback, 10);
     	}
 
     	// Restart barcode scanner to allow for 'semi-automatic firing'
