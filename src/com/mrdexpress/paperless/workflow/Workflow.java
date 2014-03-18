@@ -1,11 +1,13 @@
 package com.mrdexpress.paperless.workflow;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.helper.VariableManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -55,6 +57,146 @@ public class Workflow extends Observable
     {
         workflow = JsonPath.parse( json);
         this.notifyObservers();
+    }
+
+    public ArrayList<DialogDataObject> getFailedHandoverReasons()
+    {
+        ArrayList<DialogDataObject> reasons = null;
+
+        reasons = new ArrayList<DialogDataObject>();
+
+        try
+        {
+            JSONArray r = workflow.read("$.response.workflow.handover[*]");
+
+            if( r instanceof JSONArray)
+            {
+                for( int i=0; i < r.size(); i++)
+                {
+                    JSONObject ro = (JSONObject)r.get(i);
+                    DialogDataObject reason = new DialogDataObject( JSONObjectHelper.getStringDef( ro, "name", ""), Integer.toString( JSONObjectHelper.getIntDef( ro, "id", -1)));
+                    reasons.add(reason);
+                }
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return reasons;
+    }
+
+    public ArrayList<DialogDataObject> getMilkrunDelayReasons()
+    {
+        ArrayList<DialogDataObject> delays = null;
+
+        delays = new ArrayList<DialogDataObject>();
+
+        try
+        {
+            JSONArray r = workflow.read("$.response.workflow.delays");
+
+            if( r instanceof JSONArray)
+            {
+                for( int i=0; i < r.size(); i++)
+                {
+                    JSONObject ro = (JSONObject)r.get(i);
+
+                    DialogDataObject delay = new DialogDataObject( JSONObjectHelper.getStringDef( ro, "name", ""), ""); //Integer.toString( JSONObjectHelper.getIntDef( ro, "id", -1)));
+                    delay.setThirdText( Integer.toString( JSONObjectHelper.getIntDef( ro, "id", -1)));
+                    delays.add(delay);
+                }
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return delays;
+    }
+
+    public ArrayList<DialogDataObject> getMilkrunDelayDurations(String reason_id)
+    {
+        ArrayList<DialogDataObject> delays = null;
+
+        delays = new ArrayList<DialogDataObject>();
+
+        try
+        {
+            JSONArray r = workflow.read("$.response.workflow.delays[?(@.id==" + reason_id + ")]");
+
+            if( r instanceof JSONArray)
+            {
+                for( int i=0; i < r.size(); i++)
+                {
+                    JSONObject ro = (JSONObject)r.get(i);
+
+                    JSONArray items = JSONObjectHelper.getJSONArrayDef( ro, "items", null);
+                    if( items != null)
+                    {
+                        for( int n=0; n < items.size(); n++)
+                        {
+                            JSONObject item = (JSONObject)items.get(n);
+
+                            DialogDataObject delay = new DialogDataObject( JSONObjectHelper.getStringDef( item, "name", ""), ""); //Integer.toString( JSONObjectHelper.getIntDef( item, "id", -1)));
+                            delays.add(delay);
+                        }
+                    }
+                }
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return delays;
+    }
+
+    public ArrayList<DialogDataObject> getPartialDeliveryReasons()
+    {
+        ArrayList<DialogDataObject> reasons = null;
+
+        reasons = new ArrayList<DialogDataObject>();
+
+        try
+        {
+            JSONArray r = workflow.read("$.response.workflow.partial[*]");
+
+            if( r instanceof JSONArray)
+            {
+                for( int i=0; i < r.size(); i++)
+                {
+                    JSONObject ro = (JSONObject)r.get(i);
+                    DialogDataObject reason = new DialogDataObject( JSONObjectHelper.getStringDef( ro, "name", ""), Integer.toString( JSONObjectHelper.getIntDef( ro, "id", -1)));
+                    reasons.add(reason);
+                }
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return reasons;
     }
 
     public List<JSONArray> getBags()

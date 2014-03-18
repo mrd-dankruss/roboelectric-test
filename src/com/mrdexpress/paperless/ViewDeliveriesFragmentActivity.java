@@ -140,8 +140,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
         switch (item.getItemId()) {
             case R.id.action_home:
                 Log.d(TAG, "go Home");
-                Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+                Intent intent = MiscHelper.getGoHomeIntent(ViewDeliveriesFragmentActivity.this);
                 startActivity(intent);
                 return true;
             case R.id.action_logout:

@@ -2,6 +2,7 @@ package com.mrdexpress.paperless.fragments;
 
 import java.util.ArrayList;
 
+import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,7 +59,8 @@ public class ReasonForFailedHandoverFragment extends Fragment
 	{
 		super.onResume();
 
-		values = DbHandler.getInstance(getActivity()).getFailedHandoverReasons();
+		//values = DbHandler.getInstance(getActivity()).getFailedHandoverReasons();
+        values = Workflow.getInstance().getFailedHandoverReasons();
 
 		adapter = new ReasonForFailedHandoverListAdapter(getActivity(), values, false);
 		holder.list.setAdapter(adapter);

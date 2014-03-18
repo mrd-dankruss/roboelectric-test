@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.fragments;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,8 +59,8 @@ public class ReportDelayListFragment extends Fragment
 	{
 		super.onResume();
 
-		adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getMilkrunDelayReasons(), false);
+		//adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity()).getMilkrunDelayReasons(), false);
+        adapter = new GenericDialogListAdapter(getActivity(), Workflow.getInstance().getMilkrunDelayReasons(), false);
 
 		if ((adapter != null) & (holder.list != null))
 		{
@@ -79,15 +80,12 @@ public class ReportDelayListFragment extends Fragment
 				{
 					// Cursor c = (Cursor) getListView().getItemAtPosition(position);
 					// String delay_id = c.getString(c.getColumnIndex(DbHandler.C_DELAYS_ID));
-					String delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position))
-							.getThirdText();
+					String delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText();
 
 					// String delay_id = (String) getListView().getItemAtPosition(position);
 
 					DelayDialog editNameDialog = DelayDialog.newInstance(delay_id);
-					editNameDialog.setTargetFragment(
-							getFragmentManager().findFragmentById(
-									R.id.activity_report_delay_container), 1);
+					editNameDialog.setTargetFragment( getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
 					editNameDialog.show(fm, "reportDelayFragment");
 				}
 			}
