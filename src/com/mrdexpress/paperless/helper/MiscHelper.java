@@ -1,5 +1,9 @@
 package com.mrdexpress.paperless.helper;
 
+import android.app.Activity;
+import android.content.Intent;
+
+import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.db.Bag;
 
 public class MiscHelper {
@@ -40,5 +44,13 @@ public class MiscHelper {
 		return (MiscHelper.isNonEmptyString(destinationHubName) ? destinationHubName + subAddressSeparator: "") +
 				(MiscHelper.isNonEmptyString(formattedDestination) ? formattedDestination : "") +
 				(MiscHelper.isNonEmptyString(suburb) ? suburb : "");
+	}
+	
+	
+	public static Intent getGoHomeIntent(Activity activity)
+	{
+		Intent intent = new Intent(activity, DriverHomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+        return intent;
 	}
 }

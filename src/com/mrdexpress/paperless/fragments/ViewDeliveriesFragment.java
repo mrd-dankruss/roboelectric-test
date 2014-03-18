@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.mrdexpress.paperless.DeliveryDetailsActivity;
@@ -17,6 +19,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 
 public class ViewDeliveriesFragment extends Fragment
@@ -50,6 +53,17 @@ public class ViewDeliveriesFragment extends Fragment
 
 		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
 				.getBagsByStatus(driverid, Bag.STATUS_TODO));
+		
+		if (adapter.getCount() == 0)
+		{
+			holder.button.setVisibility(View.VISIBLE);
+			holder.button.setEnabled(true);
+		}
+		else
+		{
+			holder.button.setVisibility(View.GONE);
+			holder.button.setEnabled(false);
+		}
 
 		if (DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
 		{
@@ -77,6 +91,8 @@ public class ViewDeliveriesFragment extends Fragment
 				startActivity(intent);
 			}
 		});
+		
+		
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -93,10 +109,24 @@ public class ViewDeliveriesFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
+			
+			holder.button = (Button) rootView.findViewById(R.id.button_generic_report);
+			holder.button.setText(this.getResources().getString(R.string.button_ok));
+			holder.button.setBackgroundResource(R.drawable.button_custom);
+			holder.button.setEnabled(false);
+			holder.button.setVisibility(View.GONE);
+			holder.button.setOnClickListener(new OnClickListener() 
+			{
+				@Override
+				public void onClick(View arg0) 
+				{
+					Intent intent = MiscHelper.getGoHomeIntent(getActivity());
+	                startActivity(intent);
+				}
+			});
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
-
 		}
 		else
 		{
@@ -117,5 +147,6 @@ public class ViewDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
+		Button button;
 	}
 }
