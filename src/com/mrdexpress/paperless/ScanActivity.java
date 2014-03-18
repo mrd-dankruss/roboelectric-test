@@ -76,9 +76,9 @@ public class ScanActivity extends CaptureActivity {
         int i = 0;
         for (Bag bag : bags)
         {
-            if ( added_id.equals(bag.getBarcode()) ){
-                bag.setScanned(true);
-            }
+            //if ( added_id.equals(bag.getBarcode()) ){
+            //    bag.setScanned(true);
+            //}
             String barcode = bag.getBarcode();
             Hashtable<String, Integer> bagMap;
             if (bag.getScanned())
@@ -94,6 +94,7 @@ public class ScanActivity extends CaptureActivity {
             i++;
         }
         UpdateBagsCounter();
+
     }
 
     @Override
@@ -828,6 +829,8 @@ public class ScanActivity extends CaptureActivity {
                             getApplicationContext(),new_bag_id,driverid);
                     adapter.notifyDataSetChanged();
                     UpDateBagsForAdapter(last_scanned_barcode);
+                    handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+
                 } else {
                     barCodeScanFailed();
                 }
