@@ -92,8 +92,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 
-		API_KEY = getResources().getString(R.string.key_googlemaps_places);
-		//API_KEY = getResources().getString(R.string.key_googlemaps_api_debug);
+		//API_KEY = getResources().getString(R.string.key_googlemaps_places);
+		API_KEY = getResources().getString(R.string.key_googlemaps_api_debug);
 		
 		// Change actionbar title
 		setTitle(R.string.title_actionbar_map);

@@ -1,17 +1,12 @@
 package com.mrdexpress.paperless.datatype;
 
-import android.graphics.Path;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.internal.JsonReader;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONUtil;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.codehaus.jackson.impl.JsonParserBase;
+
 
 import java.util.Observable;
 import java.util.Observer;
@@ -66,6 +61,18 @@ public class DeliveryHandoverDataObject implements Parcelable
 	{
         return JSONObjectHelper.getStringDef(data.get(), "barcode", "");
 	}
+
+    public String getVolumetrics()
+    {
+        return "10 x 15 x 20";
+        /*
+        JSONObject jsa = JSONObjectHelper.getJSONObjectDef(data.get(), "dimensions", null);
+        if( jsa != null)
+        {
+            return String.format("%0.1f", JSONObjectHelper.getNumberDef(jsa, "length", 0)) + " x " + String.format("%0.1f", JSONObjectHelper.getNumberDef(jsa, "width", 0)) + " x " + String.format("%0.1f", JSONObjectHelper.getNumberDef(jsa, "height", 0));
+        }
+        return "";*/
+    }
 
     public String getMDX()
     {
