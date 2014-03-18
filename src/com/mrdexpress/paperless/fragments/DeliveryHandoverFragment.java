@@ -83,7 +83,8 @@ public class DeliveryHandoverFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> parent, final View view, int position, long id)
 			{
-
+                // for debugging only, to simulate a GCM call
+                list.get( position).setParcelScanned((int) new Date().getTime() / 1000);
 			}
 		});
 
@@ -320,12 +321,12 @@ public class DeliveryHandoverFragment extends Fragment
                 hasScannedParcel.setVisibility(View.GONE);
             }
 
-            waybillTile.setOnClickListener( new OnClickListener() {
+            /*waybillTile.setOnClickListener( new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     parcelList.get( thisPosition).setParcelScanned((int) new Date().getTime() / 1000);
                 }
-            });
+            });*/
 
 
             if( parcelList.get( thisPosition).data.countObservers() == 0)
