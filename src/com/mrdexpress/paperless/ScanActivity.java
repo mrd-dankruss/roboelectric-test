@@ -3,7 +3,6 @@ package com.mrdexpress.paperless;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.*;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -20,8 +19,6 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.os.StrictMode;
 
-import com.google.zxing.Result;
-import com.google.zxing.client.android.CaptureActivity;
 import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -45,7 +42,6 @@ public class ScanActivity extends FragmentActivity {
     private View root_view;
 
     private static final String TAG = "ScanActivity";
-    private static final long BULK_MODE_SCAN_DELAY_MS = 1000L; // Default 1000L
 
     private IncompleteScanDialog dialog;
     private ChangeUserDialog dialog_change_user;
@@ -292,8 +288,7 @@ public class ScanActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 holder.button_start_milkrun.setEnabled(true);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-                handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
-                        null, null, null), null, 0);
+                handleDecode(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE));
             }
         }
         if (requestCode == RESULT_MANAGER_AUTH) {
@@ -339,8 +334,7 @@ public class ScanActivity extends FragmentActivity {
 				if (contents != null) 
 				{
 					String upc = contents;
-					handleDecode(new Result(upc,
-	                        null, null, null), null, 0);
+					handleDecode(upc);
 				}
 			}
 			else if (resultCode == Activity.RESULT_CANCELED)
@@ -520,9 +514,8 @@ public class ScanActivity extends FragmentActivity {
      * Barcode has been successfully scanned.
      */
     //@Override
-    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) 
+    public void handleDecode(String barcodeString) 
     {
-    	String barcodeString = rawResult.getText();
     	Log.d(TAG, "handleDecode: barcodeString = " + barcodeString);
     	
     	Integer scannedPosition = null;
@@ -857,7 +850,7 @@ public class ScanActivity extends FragmentActivity {
                             getApplicationContext(),new_bag_id,driverid);
                     adapter.notifyDataSetChanged();
                     UpDateBagsForAdapter(last_scanned_barcode);
-                    handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+                    handleDecode(last_scanned_barcode);
 
                 } else {
                     barCodeScanFailed();
