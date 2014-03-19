@@ -598,9 +598,6 @@ public class ScanActivity extends FragmentActivity {
     	{
     		handler.postDelayed(decodeCallback, 10);
     	}
-
-//    	// Restart barcode scanner to allow for 'semi-automatic firing'
-//    	restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
     }
 
 
