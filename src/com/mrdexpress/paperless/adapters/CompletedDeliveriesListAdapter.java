@@ -67,12 +67,12 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 		text_address.setText(values.get(position).getDestinationAddress());
 		text_bag_ids.setText(values.get(position).getBarcode());
 
-		Date date = values.get(position).getSubmissionDate();
+		/*Date date = values.get(position).getSubmissionDate();
 		// java.text.DateFormat date_format = android.text.format.DateFormat.getDateFormat(activity
 		// .getApplicationContext());
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");		
 
-		text_failed_time.setText("Delivery at " + format.format(date));
+		text_failed_time.setText("Delivery at " + format.format(date));*/
 		// values
 
 		return rowView;

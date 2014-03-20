@@ -24,6 +24,9 @@ import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.JSONObjectHelper;
+import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONObject;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {
@@ -35,7 +38,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	private TextView deliveryNumber, titleDetail, address, id;
 	private Button updateStatus, more;
 	private LinearLayout buttonsHolder;
-	private String bag_id;
+	private int bag_id;
 
 	public enum DeliveryType
 	{
@@ -48,8 +51,6 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	}
 
 	/**
-	 * @param context
-	 *            The current context.
 	 * @param values
 	 *            The values to be used in the list in a two-dimensional
 	 *            arrayList (to enable onSetDataChanged).
@@ -169,14 +170,14 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		if (position == 0)
 		{
 			// Make ID of current next bag global
-			bag_id = values.get(position).getBagNumber();
-			Log.d(TAG, "Bag ID: " + bag_id);
+			bag_id = values.get(position).getBagID();
+
+            JSONObject stop = Workflow.getInstance().getStopForBagId( bag_id);
 
 			// Store in sharedprefs
-			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
+			SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
-			editor.putString(VariableManager.PREF_CURRENT_BAGID, bag_id);
+			editor.putInt(VariableManager.PREF_CURRENT_STOPID, JSONObjectHelper.getIntDef( stop, "id", -1));
 			editor.apply();
 
 			updateStatus.setOnClickListener(new View.OnClickListener()

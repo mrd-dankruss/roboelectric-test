@@ -201,17 +201,12 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 
         // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
 
-        final ImageButton button_close = (ImageButton) dialog_change_user
-                .findViewById(R.id.button_change_user_closeButton);
-        final Button button_cancel = (Button) dialog_change_user
-                .findViewById(R.id.button_change_user_cancel);
-        final Button button_ok = (Button) dialog_change_user
-                .findViewById(R.id.button_change_user_ok);
-        final TextView dialog_content = (TextView) dialog_change_user
-                .findViewById(R.id.text_change_driver_content);
+        final ImageButton button_close = (ImageButton) dialog_change_user.findViewById(R.id.button_change_user_closeButton);
+        final Button button_cancel = (Button) dialog_change_user.findViewById(R.id.button_change_user_cancel);
+        final Button button_ok = (Button) dialog_change_user.findViewById(R.id.button_change_user_ok);
+        final TextView dialog_content = (TextView) dialog_change_user.findViewById(R.id.text_change_driver_content);
 
-        SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
+        SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
         String driverId = prefs.getString(VariableManager.PREF_DRIVERID, "");
         String user_name = "";
         if (MiscHelper.isNonEmptyString(driverId))

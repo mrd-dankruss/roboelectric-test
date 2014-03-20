@@ -27,6 +27,7 @@ import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONObject;
 
 public class DeliveryDetailsActivity extends FragmentActivity implements SetNextDeliveryListener
 {
@@ -50,8 +51,9 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		intent = getIntent();
 		position = Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION));
-
-		bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
+        JSONObject jso =  Workflow.getInstance().getBag( Integer.parseInt( intent.getStringExtra(VariableManager.EXTRA_BAG_NO)));
+        bag = new Bag( jso);
+		//bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		holder.text_delivery_number.setText("#" + (position + 1));
 		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
-		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestinationHubName());
+		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestination());
 		holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
 		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
         StringBuilder bagtext = new StringBuilder();
@@ -78,7 +80,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
             teller += 1;
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
-		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( bag.getBagNumber());
+		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( Integer.toString(bag.getBagID()));
 
 		String comlog_text = "";
 
@@ -108,7 +110,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagNumber());
+				DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
@@ -119,7 +121,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0),	bag.getBagNumber());
+				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0), bag.getBagID());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});

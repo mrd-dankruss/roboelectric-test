@@ -266,9 +266,10 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
+
+        // TODO: gary!!!!
 		// Retrieve coords
-		ArrayList<HashMap<String, String>> bags = DbHandler.getInstance(getApplicationContext())
-				.getBagCoords(driverid);
+		/*ArrayList<HashMap<int, int>> bags = DbHandler.getInstance(getApplicationContext()).getBagCoords(driverid);
 
 		// Check coords of each bags
 		for (int i = 0; i < bags.size(); i++)
@@ -291,7 +292,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				e.printStackTrace(new PrintWriter(sw));
 				Log.e(TAG, sw.toString());
 			}
-		}
+		} */
 	}
 
 	/**

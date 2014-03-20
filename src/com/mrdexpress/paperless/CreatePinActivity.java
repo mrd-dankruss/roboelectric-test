@@ -266,21 +266,19 @@ public class CreatePinActivity extends Activity
 		@Override
 		protected void onPreExecute()
 		{
-			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.setMessage("Retrieving Workflow");
 			this.dialog_progress.show();
 		}
 
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
+			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
 			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-			ServerInterface.getInstance(getApplicationContext()).downloadBags(
-					getApplicationContext(), driverid);
-
+            ServerInterface.getInstance(getApplicationContext()).getMilkrunWorkflow(context);
+			//ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), driverid);
 
 			return null;
 		}

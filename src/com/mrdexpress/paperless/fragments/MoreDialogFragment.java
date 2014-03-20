@@ -27,7 +27,7 @@ public class MoreDialogFragment extends DialogFragment
 	private final String TAG = "MoreDialogFragment";
 	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
 	private boolean isExtendedDialaog;
-	private static String bagid;
+	private static int bagid;
 	private Activity activity;
 
 	public interface SetNextDeliveryListener {
@@ -50,7 +50,7 @@ public class MoreDialogFragment extends DialogFragment
 		return f;
 	}
 
-	public static MoreDialogFragment newInstance(boolean isExtendedDialog, String bag_id)
+	public static MoreDialogFragment newInstance(boolean isExtendedDialog, int bag_id)
 	{
 		MoreDialogFragment f = new MoreDialogFragment();
 

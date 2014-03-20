@@ -26,7 +26,7 @@ public class MiscHelper {
 		String subAddressSplit = ",";
 		String subAddressSeparator = subAddressSplit+"\n";
 		
-		String destinationHubName = bag.getDestinationHubName() ;
+		String destinationHubName = bag.getDestination();
 		String destination = bag.getDestinationAddress();
 		String formattedDestination = "";
 		if (MiscHelper.isNonEmptyString(destination))
@@ -39,7 +39,7 @@ public class MiscHelper {
 			}
 			formattedDestination = destBuffer.toString();
 		}
-		String suburb = bag.getDestinationSuburb();
+		String suburb = bag.getDestination();
 		
 		return (MiscHelper.isNonEmptyString(destinationHubName) ? destinationHubName + subAddressSeparator: "") +
 				(MiscHelper.isNonEmptyString(formattedDestination) ? formattedDestination : "") +

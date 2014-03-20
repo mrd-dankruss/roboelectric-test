@@ -432,10 +432,6 @@ public class DbHandler extends SQLiteOpenHelper
 	/**
 	 * Add a manager to the DB.
 	 * 
-	 * @param id
-	 * @param first_name
-	 * @param last_name
-	 * @return Success. True or false.
 	 */
 	public boolean addManager(String id, String name)
 	{
@@ -486,11 +482,6 @@ public class DbHandler extends SQLiteOpenHelper
 	/**
 	 * Add entry into ComLog table
 	 * 
-	 * @param timestamp
-	 * @param user
-	 * @param note
-	 * @param bagid
-	 * @return
 	 */
 	public boolean addComLog(JSONArray comlog, String bagid)
 	{
@@ -557,7 +548,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * 
 	 * Returns boolean of whether the database transaction was successful
 	 */
-	public boolean addBag(Bag bag)
+	/*public boolean addBag(Bag bag)
 	{
 		ContentValues values = new ContentValues();
 
@@ -585,7 +576,7 @@ public class DbHandler extends SQLiteOpenHelper
 			values.put(C_BAG_SUBMISSION_DATE, bag.getSubmissionDate().getTime());
 		}
 		return addRow(TABLE_BAGS, values);
-	}
+	}   */
 
 	/**
 	 * Add a new item to the database which corrosponds to a consignment.
@@ -670,8 +661,6 @@ public class DbHandler extends SQLiteOpenHelper
 	 * Sets the value for whether the particular consingment (number) has been
 	 * scanned.
 	 * 
-	 * @param cons_no
-	 * @param scanned
 	 */
 	public void setScanned(String barcode, boolean scanned)
 	{
@@ -715,13 +704,6 @@ public class DbHandler extends SQLiteOpenHelper
 	/**
 	 * Changes the delivery status of a bag.
 	 * 
-	 * @param bagid
-	 *            Bag ID
-	 * @param status
-	 *            Delivery status of bag. (TODO, failed, partial, etc...)
-	 * @param reason
-	 *            Explanation of the reason for delivery's status.
-	 * @return Number of rows affected.
 	 */
 	public int setDeliveryStatus(String bagid, String status, String reason)
 	{
@@ -798,7 +780,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param cons_no
 	 * @param scanned
 	 */
-	public void setWaybillScanned(String waybill_no, boolean scanned)
+	/*public void setWaybillScanned(String waybill_no, boolean scanned)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -835,16 +817,14 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}    */
 
 	/**
 	 * Sets the value for whether a consignment has been scanned for ALL
 	 * consignments.
 	 * 
-	 * @param cons_no
-	 * @param scanned
 	 */
-	public void setScannedAll(boolean scanned)
+	/*public void setScannedAll(boolean scanned)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -881,7 +861,7 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}    */
 
 	/**
 	 * Returns database filename
@@ -936,7 +916,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * 
 	 * @return ArrayList<Bag>
 	 */
-	public ArrayList<Bag> getBags(String driver_id)
+	/*public ArrayList<Bag> getBags(String driver_id)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -989,10 +969,10 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}    */
 
 	
-	private Bag createBagFromCursor(Cursor cursor)
+	/*private Bag createBagFromCursor(Cursor cursor)
 	{
 		Bag bag = new Bag(cursor.getString(cursor.getColumnIndex(C_BAG_ID)));
 
@@ -1023,13 +1003,13 @@ public class DbHandler extends SQLiteOpenHelper
 		bag.setStopId(cursor.getString(cursor.getColumnIndex(C_BAG_STOPID)));
 		
 		return bag;
-	}
+	}    */
 	
 	/**
 	 * Return bag according to bag number
 	 * Should only be one.
 	 */
-	public Bag getBag(String bag_id)
+	/*public Bag getBag(String bag_id)
 	{
 		SQLiteDatabase db = null;
 		Bag bag = null;
@@ -1089,7 +1069,7 @@ public class DbHandler extends SQLiteOpenHelper
 			}
 		}
 		return bag;
-	}
+	}    */
 
 	/**
 	 * Return Waybill according to bag ID.
@@ -1510,7 +1490,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param status
 	 * @return
 	 */
-	public ArrayList<Bag> getBagsByStatus(String driver_id, String status)
+	/*public ArrayList<Bag> getBagsByStatus(String driver_id, String status)
 	{
 		SQLiteDatabase db = null;
 		ArrayList<Bag> list = new ArrayList<Bag>();
@@ -1574,7 +1554,7 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}  */
 
 	/**
 	 * Returns coords of all bags
@@ -1582,7 +1562,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param driver_id
 	 * @return ArrayList of HashMaps
 	 */
-	public ArrayList<HashMap<String, String>> getBagCoords(String driver_id)
+	/*public ArrayList<HashMap<String, String>> getBagCoords(String driver_id)
 	{
 		SQLiteDatabase db = null;
 		try
@@ -1664,7 +1644,7 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}   */
 
 	/**
 	 * Pushes attempted API call to the queue in case of network unavailability.
@@ -2157,7 +2137,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * @param bagid
 	 * @return Stop ID for specified Bag
 	 */
-	public String getStopId()
+	/*public String getStopId()
 	{
 		String bagid = prefs.getString(VariableManager.PREF_CURRENT_BAGID, "");
 		String stopid = "";
@@ -2181,7 +2161,7 @@ public class DbHandler extends SQLiteOpenHelper
 			cursor.close();
 		}
 		return stopid;
-	}
+	}  */
 
 	/**
 	 * Returns list of drivers

@@ -61,20 +61,16 @@ private final String TAG = "LocationBroadcastReceiver";
 		// Put here YOUR code.
 		SharedPreferences prefs = mContext.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
-		String bag_id = prefs.getString(VariableManager.PREF_CURRENT_BAGID, null);
+		int stop_id = prefs.getInt(VariableManager.PREF_CURRENT_STOPID, -1);
 		long time = System.currentTimeMillis() / 1000;
 
 		
-		if (bag_id != null)
+		if (stop_id != -1)
 		{
 			location = getLocation();
-			Log.d("service",
-					"Lat: " + location.getLatitude() + ", Long: " + location.getLongitude()
-							+ "Accuracy: " + location.getAccuracy());
-			String trip_id = DbHandler.getInstance(mContext).getStopId();
-			new PostDriverPosition().execute(bag_id, String.valueOf(location.getAccuracy()),
+			new PostDriverPosition().execute( Integer.toString(stop_id), String.valueOf(location.getAccuracy()),
 					String.valueOf(location.getLatitude()),
-					String.valueOf(location.getLongitude()), trip_id, String.valueOf(time));
+					String.valueOf(location.getLongitude()), Integer.toString(stop_id), String.valueOf(time));
 
 		}
 		else
@@ -292,8 +288,7 @@ private final String TAG = "LocationBroadcastReceiver";
 		@Override
 		protected Void doInBackground(String... args)
 		{
-			status = ServerInterface.getInstance(mContext).postDriverPosition(args[0], args[1],
-					args[2], args[3], args[4], args[5]);
+			status = ServerInterface.getInstance(mContext).postDriverPosition(args[0], args[1],	args[2], args[3], args[4], args[5]);
 			return null;
 		}
 

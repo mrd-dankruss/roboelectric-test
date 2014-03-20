@@ -251,19 +251,19 @@ public class DriverHomeFragment extends Fragment {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving consignments");
+            this.dialog_progress.setMessage("Retrieving consignments2");
             this.dialog_progress.show();
         }
 
         @Override
         protected Void doInBackground(Void... urls) {
-            SharedPreferences prefs = getActivity().getApplicationContext().getSharedPreferences(
-                    VariableManager.PREF, Context.MODE_PRIVATE);
+            SharedPreferences prefs = getActivity().getApplicationContext().getSharedPreferences( VariableManager.PREF, Context.MODE_PRIVATE);
 
             final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-            ServerInterface.getInstance(getActivity().getApplicationContext()).downloadBags(
-                    getActivity().getApplicationContext(), driverid);
+            ServerInterface.getInstance(getActivity().getApplicationContext()).getMilkrunWorkflow( getActivity().getApplicationContext());
+            //ServerInterface.getInstance(getActivity().getApplicationContext()).downloadBags( getActivity().getApplicationContext(), driverid);
+
             return null;
         }
 
@@ -277,8 +277,7 @@ public class DriverHomeFragment extends Fragment {
             Intent intent = new Intent(getActivity(), ScanActivity.class);
 
             // Pass driver name on
-            intent.putExtra(VariableManager.EXTRA_DRIVER,
-                    getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+            intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
 
 			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
 					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/

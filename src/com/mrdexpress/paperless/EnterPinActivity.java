@@ -298,15 +298,14 @@ public class EnterPinActivity extends Activity {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving consignments");
+            this.dialog_progress.setMessage("Retrieving consignments3");
             this.dialog_progress.show();
         }
 
         @Override
         protected Void doInBackground(Void... urls) {
-            ServerInterface.getInstance(getApplicationContext()).downloadBags(
-                    getApplicationContext(),
-                    getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+            //ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+            ServerInterface.getInstance(getApplicationContext()).getMilkrunWorkflow( getApplicationContext());
             return null;
         }
 

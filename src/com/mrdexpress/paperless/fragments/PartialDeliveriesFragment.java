@@ -14,6 +14,7 @@ import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class PartialDeliveriesFragment extends Fragment
 {
@@ -43,8 +44,7 @@ public class PartialDeliveriesFragment extends Fragment
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-				getActivity()).getBagsByStatus(driverid, Bag.STATUS_PARTIAL));
+		adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_PARTIAL));
 
 		holder.list.setAdapter(adapter);
 

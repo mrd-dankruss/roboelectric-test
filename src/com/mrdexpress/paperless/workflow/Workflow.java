@@ -3,11 +3,10 @@ package com.mrdexpress.paperless.workflow;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
-import com.jayway.jsonpath.ReadContext;
+import com.jayway.jsonpath.*;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -199,12 +198,12 @@ public class Workflow extends Observable
         return reasons;
     }
 
-    public List<JSONArray> getBags()
+    public List<JSONArray> getBagsAsJSONArray()
     {
         List<JSONArray> bags = null;
         try
         {
-            bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload=='bag')]");
+            bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag')]");
         }
         catch( PathNotFoundException e)
         {
@@ -222,7 +221,9 @@ public class Workflow extends Observable
         JSONObject bag = null;
         try
         {
-            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload=='bag')].flowdata");
+            //JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload eq 'bag')].flowdata");
+            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata",
+                    Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
             bag = (JSONObject)bags.get(0);
         }
         catch( PathNotFoundException e)
@@ -241,7 +242,9 @@ public class Workflow extends Observable
         JSONObject parcel = null;
         try
         {
-            parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?(@.id==" + Integer.toString( parcelid) + "])");
+            //parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?(@.id==" + Integer.toString( parcelid) + "])");
+            parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?]",
+                    Filter.filter(Criteria.where("id").eq(parcelid)));
         }
         catch( PathNotFoundException e)
         {
@@ -259,7 +262,9 @@ public class Workflow extends Observable
         List<JSONArray> parcels = null;
         try
         {
-            parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload=='bag')].flowdata.parcels");
+            //parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload eq 'bag')].flowdata.parcels");
+            parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.parcels",
+                    Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
         }
         catch( PathNotFoundException e)
         {
@@ -295,5 +300,114 @@ public class Workflow extends Observable
         }
 
         return parcels;
+    }
+
+	public ArrayList<Bag> getBags()
+	{
+        ArrayList<Bag> bags = new ArrayList<Bag>();
+
+        try
+        {
+            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload == 'bag')]");
+            JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
+                    Filter.filter(Criteria.where("payload").eq("bag")));
+
+            for( int i=0; i < rawbags.size(); i++)
+            {
+                Bag bag = new Bag( (JSONObject)rawbags.get(i));
+                bags.add(bag);
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return bags;
+    }
+
+    public JSONObject getStopForBagId( int bagid)
+    {
+        JSONObject stop = null;
+        try
+        {
+            JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata[0].payload=='bag' && @.tripstopdata[0].payloadid==" + Integer.toString( bagid) + ")]");
+            //JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?]",
+            //        Filter.filter(Criteria.where("payload").eq("bag").and("payloadid").eq(bagid)));
+            if( stops.size() > 0)
+                stop = (JSONObject) stops.get(0);
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+        return stop;
+        //$.response.workflow.workflow.tripstops[?(@.id==20)]
+        // $.response.workflow.workflow.tripstops[?(@.tripstopdata[0].id==22)]
+    }
+
+    public JSONArray getBagsScanned()
+    {
+        try
+        {
+            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag' && @.flowdata.scannedtime)]");
+            JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
+                    Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
+            return rawbags;
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+        return new JSONArray();
+    }
+
+    public ArrayList<String> getBagBarcodesScanned()
+    {
+        ArrayList<String> ret = new ArrayList<String>();
+        try
+        {
+            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag' && @.flowdata.scannedtime)]");
+            ret = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.barcode",
+                    Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
+
+            /*for( int i=0; i < rawbags.size(); i++)
+            {
+                JSONObject flowdata = JSONObjectHelper.getJSONObjectDef( (JSONObject)rawbags.get(i), "flowdata", null);
+                if ( flowdata != null)
+                    ret.add( JSONObjectHelper.getStringDef( flowdata, "barcode", "!"));
+            } */
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+        return ret;
+    }
+
+    public ArrayList<Bag> getBagsByStatus( String status)
+    {
+        return getBags();
+    }
+
+    public void setWaybillScanned( String barcode, int scanned)
+    {
+
     }
 }

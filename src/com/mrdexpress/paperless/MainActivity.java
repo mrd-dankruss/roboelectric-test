@@ -167,7 +167,7 @@ public class MainActivity extends Activity
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_NAME);
 		editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
 		editor.remove(VariableManager.PREF_DRIVERID);
-		editor.remove(VariableManager.PREF_CURRENT_BAGID);
+		editor.remove(VariableManager.PREF_CURRENT_STOPID);
 		editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
 		editor.apply();
 
@@ -579,14 +579,15 @@ public class MainActivity extends Activity
 		@Override
 		protected void onPreExecute()
 		{
-			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.setMessage("Retrieving consignments 4");
 			this.dialog_progress.show();
 		}
 
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-            ServerInterface.getInstance(getApplicationContext()).downloadBags(	getApplicationContext(), selected_user_id);
+            //ServerInterface.getInstance(getApplicationContext()).downloadBags(	getApplicationContext(), selected_user_id);
+            ServerInterface.getInstance(getApplicationContext()).getMilkrunWorkflow( getApplicationContext());
 			return null;
 		}
 
@@ -621,14 +622,15 @@ public class MainActivity extends Activity
 		@Override
 		protected void onPreExecute()
 		{
-			this.dialog_progress.setMessage("Retrieving consignments");
+			this.dialog_progress.setMessage("Retrieving consignments 5");
 			this.dialog_progress.show();
 		}
 
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-            ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), selected_user_id);
+            //ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), selected_user_id);
+            ServerInterface.getInstance(getApplicationContext()).getMilkrunWorkflow( getApplicationContext());
 			return null;
 		}
 

@@ -26,7 +26,7 @@ import com.mrdexpress.paperless.helper.VariableManager;
 
 public class UpdateStatusDialog extends DialogFragment
 {
-	private static String bagid;
+	private static int bagid;
 	public static String DIALOG_TIME_STRING = "DIALOG_TIME_STRING";
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
 	private ArrayList<DialogDataObject> temp;
@@ -35,7 +35,7 @@ public class UpdateStatusDialog extends DialogFragment
 	 * Create a new instance of MyDialogFragment, providing "num"
 	 * as an argument.
 	 */
-	public static UpdateStatusDialog newInstance(String bag_id)
+	public static UpdateStatusDialog newInstance(int bag_id)
 	{
 		UpdateStatusDialog f = new UpdateStatusDialog();
 

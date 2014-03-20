@@ -476,7 +476,7 @@ public class ServerInterface {
      * @param driver_id of driver.
      * @return
      */
-    public void downloadBags(Context context, String driver_id) {
+    /*public void downloadBags(Context context, String driver_id) {
         getMilkrunWorkflow(context);
 
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -523,12 +523,14 @@ public class ServerInterface {
                 displayToast("JSONException: bags/driver");
             }
         }
-    }
+    } */
 
     /**
      * Retrieve a single bag object
      *
      */
+
+    /*
     public void downloadBag(Context context, String bag_id, String driver_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/bag/bag?id=" + bag_id + "&mrdToken=" + token;
@@ -657,28 +659,8 @@ public class ServerInterface {
 
                         // ---- Delivery address
                         // Address
-						/*String address = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getString("address");
-						String suburb = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getString("suburb");
-						String town = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getString("town");
-						String lat = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getJSONObject("coords").getString("lat");
-						String lon = waybills.getJSONObject(j).getJSONObject("deliveryaddress")
-								.getJSONObject("coords").getString("lon");*/
 
                         // --- Customer
-						/*String name = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("name");
-						String idnumber = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("idnumber");
-						String contact1 = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("contact1");
-						String contact2 = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("contact2");
-						String email = waybills.getJSONObject(j).getJSONObject("customer")
-								.getString("email");*/
 
                         // comlog
                         // comlog is a JSONArray ***
@@ -754,7 +736,7 @@ public class ServerInterface {
             Log.e(TAG, sw.toString());
         }
         }
-    }
+    } */
 
     /*public void downloadDelays(Context context) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -1465,15 +1447,17 @@ public class ServerInterface {
         // return "success";
     }
 
-    public String setNextDelivery(String id) {
+    public String setNextDelivery( int stopid) {
         // Store in sharedprefs
+        //TODO: gary!!! this is a stop, not a bag -- check for ripples
+
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(VariableManager.PREF_CURRENT_BAGID, id);
+        editor.putInt(VariableManager.PREF_CURRENT_STOPID, stopid);
         editor.apply();
 
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
 
-        String url = API_URL + "v1/waybill/setnext?id=" + id + "&mrdToken=" + token;
+        String url = API_URL + "v1/waybill/setnext?id=" + Integer.toString(stopid) + "&mrdToken=" + token;
 
         //<TODO, NB!!>
         //String response = postData(url);

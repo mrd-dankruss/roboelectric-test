@@ -21,6 +21,7 @@ import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class ViewDeliveriesFragment extends Fragment
 {
@@ -51,10 +52,11 @@ public class ViewDeliveriesFragment extends Fragment
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getBagsByStatus(driverid, Bag.STATUS_TODO));
-		
-		if (adapter.getCount() == 0)
+		//adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
+		//		.getBagsByStatus(driverid, Bag.STATUS_TODO));
+
+        adapter = new ViewDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_TODO));
+ 		if (adapter.getCount() == 0)
 		{
 			holder.button.setVisibility(View.VISIBLE);
 			holder.button.setEnabled(true);
@@ -65,7 +67,8 @@ public class ViewDeliveriesFragment extends Fragment
 			holder.button.setEnabled(false);
 		}
 
-		if (DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
+		//if(DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
+        if( adapter.getCount() == 0)
 		{
 			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(View.GONE);
 			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.VISIBLE);
@@ -85,7 +88,7 @@ public class ViewDeliveriesFragment extends Fragment
 			{
 				// Go to View Deliveries screen
 				Intent intent = new Intent(getActivity(), DeliveryDetailsActivity.class);
-				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
+				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagID());
 //				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
 				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");
 				startActivity(intent);

@@ -15,6 +15,7 @@ import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class CompletedDeliveriesFragment extends Fragment
 {
@@ -45,14 +46,13 @@ public class CompletedDeliveriesFragment extends Fragment
 
 		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-				getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
+		//adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
+		//		getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
+
+        adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus( Bag.STATUS_COMPLETED));
 
 		holder.list.setAdapter(adapter);
 
-        adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-                getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
-        holder.list.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
 

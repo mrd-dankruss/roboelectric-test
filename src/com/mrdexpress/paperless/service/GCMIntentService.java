@@ -1,5 +1,6 @@
 package com.mrdexpress.paperless.service;
 
+import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +15,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
+
+import java.util.Date;
 
 public class GCMIntentService extends IntentService
 {
@@ -59,21 +62,22 @@ public class GCMIntentService extends IntentService
 				try
 				{
 					JSONObject json_object = new JSONObject(extras.getString("data"));
-					String cons_no = json_object.get("waybill_no").toString();
+					String barcode = json_object.get("waybill_no").toString();
 					String scanned = json_object.get("scanned").toString();
 					
-					boolean bool_scanned = false;
+					int unix = 0;
 					
 					if (scanned.equals("true"))
 					{
-						bool_scanned = true;
+						unix = (int) new Date().getTime() / 1000;
 					}
 					
 					intent = new Intent(BROADCAST_ACTION);
-					intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, cons_no);
-					intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, bool_scanned);
+					intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, barcode);
+					intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, unix);
 	                sendBroadcast(intent);
-	                DbHandler.getInstance(getApplicationContext()).setWaybillScanned(cons_no, bool_scanned);
+                    Workflow.getInstance().setWaybillScanned( barcode, unix);
+	                //DbHandler.getInstance(getApplicationContext()).setWaybillScanned(cons_no, bool_scanned);
 	                stopService(intent);
 					
 				}

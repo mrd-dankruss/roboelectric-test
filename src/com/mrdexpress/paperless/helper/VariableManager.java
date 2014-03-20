@@ -35,7 +35,7 @@ public class VariableManager
 	// Shared prefs
 	public static final String PREF = "com.mrdexpress.paperless";
 	public static final String PREF_TOKEN = PREF + "." + "token";
-	public static final String PREF_CURRENT_BAGID = PREF + "." + "currentBagId";
+	public static final String PREF_CURRENT_STOPID = PREF + "." + "currentStopId";
 	public static final String PREF_NETWORK_AVAILABLE = PREF + "." + "avail";
 	public static final String PREF_DRIVERID = PREF + "." + "driverid";
 	public static final String PREF_TRAINING_MODE = "TrainingRunMode"; // Is a training run

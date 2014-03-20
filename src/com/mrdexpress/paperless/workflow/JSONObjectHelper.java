@@ -62,4 +62,18 @@ public class JSONObjectHelper extends JSONObject
         return def;
     }
 
+    public static boolean exists( JSONObject jso, String key)
+    {
+        return jso.containsKey( key);
+    }
+
+    public static boolean empty( JSONObject jso, String key)
+    {
+        if( jso.containsKey( key))
+        {
+            return ( jso.get( key).toString().isEmpty());
+        }
+        return true;
+    }
+
 }

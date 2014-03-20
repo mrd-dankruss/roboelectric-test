@@ -16,6 +16,7 @@ import com.mrdexpress.paperless.adapters.UnsuccessfulDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class UnsuccessfulDeliveriesFragment extends ListFragment
 {
@@ -55,8 +56,10 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 
 		String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-		adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-				getActivity()).getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
+		//adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
+		//		getActivity()).getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
+
+        adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus( Bag.STATUS_UNSUCCESSFUL));
 
 		setListAdapter(adapter);
 	}

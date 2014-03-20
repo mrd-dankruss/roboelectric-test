@@ -35,7 +35,7 @@ public class ViewBagManifestActivity extends Activity
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        list = Workflow.getInstance().getBagParcelsAsObjects( Integer.parseInt( getIntent().getStringExtra(VariableManager.EXTRA_BAGID)));
+        list = Workflow.getInstance().getBagParcelsAsObjects( getIntent().getIntExtra(VariableManager.EXTRA_BAGID, -1));
         listAdapter = new DeliveryHandoverAdapter(list);
 
         if ((listAdapter != null) & (list != null))
@@ -50,7 +50,7 @@ public class ViewBagManifestActivity extends Activity
 		holder.text_view_consignment_number.setIncludeFontPadding(false);
 
 		// Set titles
-		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " #" + getIntent().getStringExtra(VariableManager.EXTRA_BAGID) + " (" + getIntent().getStringExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS) + " items)");
+		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( getIntent().getIntExtra(VariableManager.EXTRA_BAGID,-1)) + " (" +  Integer.toString( getIntent().getIntExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS,-1)) + " items)");
 		holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + getIntent().getStringExtra(VariableManager.EXTRA_BAG_DESTINATION));
 	}
 
