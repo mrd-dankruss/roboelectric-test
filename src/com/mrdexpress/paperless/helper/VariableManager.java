@@ -58,6 +58,7 @@ public class VariableManager
 
 	// Activity result codes
 	public static final int ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY = 0;
+	public static final int CALLBACK_SCAN_BARCODE_GENERAL = 8;
 
 	// API error codes
 	public static final String API_ERROR_CODE_BADREQUEST = "400";

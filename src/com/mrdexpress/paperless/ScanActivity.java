@@ -1,8 +1,8 @@
 package com.mrdexpress.paperless;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.*;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -17,8 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.os.StrictMode;
-import com.google.zxing.Result;
-import com.google.zxing.client.android.CaptureActivity;
+
 import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -36,13 +36,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 
-public class ScanActivity extends CaptureActivity {
+public class ScanActivity extends FragmentActivity {
 
     private ViewHolder holder;
     private View root_view;
 
     private static final String TAG = "ScanActivity";
-    private static final long BULK_MODE_SCAN_DELAY_MS = 1000L; // Default 1000L
 
     private IncompleteScanDialog dialog;
     private ChangeUserDialog dialog_change_user;
@@ -289,8 +288,7 @@ public class ScanActivity extends CaptureActivity {
             if (resultCode == RESULT_OK) {
                 holder.button_start_milkrun.setEnabled(true);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-                handleDecode(new Result(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE),
-                        null, null, null), null, 0);
+                handleDecode(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE));
             }
         }
         if (requestCode == RESULT_MANAGER_AUTH) {
@@ -327,6 +325,23 @@ public class ScanActivity extends CaptureActivity {
                 }
             }
         }
+        if (requestCode == VariableManager.CALLBACK_SCAN_BARCODE_GENERAL)
+		{
+			if (resultCode == RESULT_OK)
+			{
+				String contents = data.getStringExtra("SCAN_RESULT");
+				
+				if (contents != null) 
+				{
+					String upc = contents;
+					handleDecode(upc);
+				}
+			}
+			else if (resultCode == Activity.RESULT_CANCELED)
+			{
+				// Handle cancel
+			}
+		}
     }
 
 //    @Override
@@ -488,13 +503,19 @@ public class ScanActivity extends CaptureActivity {
     }
     
     
+    public void onBarcodeClick(View v) 
+    {
+    	Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+		intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+		startActivityForResult(intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+    }
+    
     /**
      * Barcode has been successfully scanned.
      */
-    @Override
-    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) 
+    //@Override
+    public void handleDecode(String barcodeString) 
     {
-    	String barcodeString = rawResult.getText();
     	Log.d(TAG, "handleDecode: barcodeString = " + barcodeString);
     	
     	Integer scannedPosition = null;
@@ -577,9 +598,6 @@ public class ScanActivity extends CaptureActivity {
     	{
     		handler.postDelayed(decodeCallback, 10);
     	}
-
-    	// Restart barcode scanner to allow for 'semi-automatic firing'
-    	restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
     }
 
 
@@ -829,7 +847,7 @@ public class ScanActivity extends CaptureActivity {
                             getApplicationContext(),new_bag_id,driverid);
                     adapter.notifyDataSetChanged();
                     UpDateBagsForAdapter(last_scanned_barcode);
-                    handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
+                    handleDecode(last_scanned_barcode);
 
                 } else {
                     barCodeScanFailed();

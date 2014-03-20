@@ -8,7 +8,6 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="16" />
 
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,6 +21,22 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    
+    <!-- <barcode> -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+  	<uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <!-- Don't require camera, as this requires a rear camera. This allows it to work on the Nexus 7 -->
+	<uses-feature android:name="android.hardware.camera" android:required="false"/>
+	<uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+	<!-- TODO replace above two with next line after Android 4.2 -->
+	<!-- <uses-feature android:name="android.hardware.camera.any"/> -->
+	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+	<uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+	<uses-feature android:name="android.hardware.screen.landscape"/>
+	<uses-feature android:name="android.hardware.wifi" android:required="false"/>
+	<!-- TODO make this not required again after android.hardware.camera.any is available -->
+	<!-- </barcode> -->
 
     <permission
         android:name="com.mrdexpress.paperless.permission.C2D_MESSAGE"
@@ -29,8 +44,6 @@
 
     <uses-permission android:name="com.mrdexpress.paperless.permission.C2D_MESSAGE" />
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -64,12 +77,6 @@
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="com.google.zxing.client.android.SCAN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.ScanActivity" />
@@ -311,6 +318,36 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.MainActivity" />
         </activity>
+        
+        <!--  <barcode> -->
+        <activity
+            android:name="com.google.zxing.client.android.CaptureActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" >  
+ 	        <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.zxing.client.android.SCAN" /> 
+                <category android:name="android.intent.category.DEFAULT" /> 
+            </intent-filter>
+        </activity>
+		<activity android:name="com.google.zxing.client.android.history.HistoryActivity"
+              android:label="@string/history_title"
+              android:stateNotNeeded="true">
+			<intent-filter>
+	        	<action android:name="android.intent.action.VIEW"/>
+	        	<category android:name="android.intent.category.DEFAULT"/>
+      	</intent-filter>
+    	</activity>
+     	<activity android:name="com.google.zxing.client.android.PreferencesActivity"
+			android:label="@string/preferences_name"
+			android:stateNotNeeded="true">
+		</activity>
+		<!--  </barcode> -->
 
         <receiver android:name="com.mrdexpress.paperless.net.NetworkStateReceiver" >
             <intent-filter>
