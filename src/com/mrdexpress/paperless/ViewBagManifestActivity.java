@@ -150,13 +150,9 @@ public class ViewBagManifestActivity extends Activity
 				holder = new ViewHolder();
 			}
 
-			// holder.list = (ListView)
-			// root_view.findViewById(R.id.listView_manifest_list);
 			holder.list = (ListView) root_view.findViewById(R.id.listView_manifest_consignment);
 			holder.text_view_consignment_number = (TextView) root_view.findViewById(R.id.textView_manifest_consignment_number);
 			holder.text_view_consignment_destination = (TextView) root_view.findViewById(R.id.textView_manifest_consignment_destination);
-			// holder.text_view_manifest_weight = (TextView) root_view
-			// .findViewById(R.id.textView_manifest_weight);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -172,6 +168,7 @@ public class ViewBagManifestActivity extends Activity
 			}
 			else
 			{
+
 			}
 		}
 	}

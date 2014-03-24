@@ -63,6 +63,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		holder.text_delivery_number.setText("#" + (position + 1));
 		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
+
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestination());
 		holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
 		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
@@ -80,6 +81,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
             teller += 1;
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
+
 		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( Integer.toString(bag.getBagID()));
 
 		String comlog_text = "";
@@ -121,6 +123,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
+				boolean isNextBag = bag.getBagNumber().equals(MiscHelper.getNextDeliveryId(DeliveryDetailsActivity.this));
+				DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagNumber());
 				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0), bag.getBagID());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
@@ -129,7 +133,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	}
 
 	@Override
-	public void onSetNextDelivery(boolean is_successful)
+
+	public void onSetNextDelivery(boolean is_successful, String bagId)
 	{
 		if (is_successful)
 		{
@@ -137,6 +142,9 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			custom_toast.setSuccess(true);
 			custom_toast.setText("Successfully changed next delivery.");
 			custom_toast.show();
+			
+			MiscHelper.setNextDeliveryId(bagId, this);
+			
 			finish();
 		}
 

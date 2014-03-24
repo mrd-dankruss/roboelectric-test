@@ -6,10 +6,10 @@
     android:background="@color/colour_background"
     android:orientation="vertical" >
 
-     <FrameLayout
+     <ImageView
         android:id="@+id/scan_image"
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/scanner_height"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/margin_scan_image_NS"
@@ -17,10 +17,11 @@
         android:layout_marginRight="@dimen/margin_scan_image_WE"
         android:layout_marginTop="@dimen/margin_scan_image_NS"
         android:cropToPadding="true"
+        android:clickable="true"
+        android:onClick="onBarcodeClick"
+        android:scaleType="centerInside"
         android:src="@drawable/scan_image" >
-
-        <include layout="@layout/capture" />
-    </FrameLayout>
+    </ImageView>
      
     <FrameLayout
         android:id="@+id/framelayout_scan_bottomframe"

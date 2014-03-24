@@ -138,34 +138,13 @@ public class LoginFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Void... urls) {
-            final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
-                    false);
-
-            // If in training run mode, just return true without checking login.
-            if (training_mode) {
-                return true;
-            } else {
-                String hash = PinManager.toMD5(holder.text_manager_pin.getText().toString());
-                hash = holder.text_manager_pin.getText().toString(); // DEBUG
-                TelephonyManager mngr = (TelephonyManager) getActivity().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-
-                final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-                //String status = ServerInterface.getInstance(getActivity().getApplicationContext())
-                //        .authManager(selected_user_id, driver_id, hash, mngr.getDeviceId());
-                String status = "success";
 
                 if (selected_user_type == UserType.MANAGER)
                 {
-                    if (status.equals("success")) {
-                        return true;
-                    }
+                    return true;
                 } else {
                     return false;
                 }
-                return false;
-            }
         }
 
         @Override
