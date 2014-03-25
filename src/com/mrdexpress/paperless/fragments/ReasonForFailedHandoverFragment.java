@@ -187,30 +187,9 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			Log.d(TAG, "postFailedHandover: " + result);
 			if (result.equals("success"))
 			{
-				String bagid = getActivity().getIntent().getStringExtra(
-						VariableManager.EXTRA_NEXT_BAG_ID);
+				int bagid = Integer.parseInt( getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
 
-				int no_rows_affected = DbHandler.getInstance(getActivity()).setDeliveryStatus(
-						bagid, Bag.STATUS_UNSUCCESSFUL, delay_reason);
-
-				if (no_rows_affected > 0)
-				{
-					CustomToast custom_toast = new CustomToast(getActivity());
-					custom_toast.setText("Success");
-					custom_toast.setSuccess(true);
-					custom_toast.show();
-				}
-				else
-				{
-					CustomToast custom_toast = new CustomToast(getActivity());
-					custom_toast.setText("Failed delivery status update failed");
-					custom_toast.setSuccess(true);
-					custom_toast.show();
-				}
-
-				/*Bag bag = DbHandler.getInstance(getActivity()).getBag(bagid);
-				bag.setStatus(Bag.STATUS_UNSUCCESSFUL);
-				DbHandler.getInstance(getActivity()).addBag(bag);*/
+                Workflow.getInstance().setDeliveryStatus( bagid, Bag.STATUS_UNSUCCESSFUL, delay_reason);
 			}
 			else
 			{

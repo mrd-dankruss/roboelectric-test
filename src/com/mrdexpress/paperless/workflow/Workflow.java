@@ -451,11 +451,34 @@ public class Workflow extends Observable
 
     public ArrayList<Bag> getBagsByStatus( String status)
     {
-        return getBags();
+        JSONArray bags = this.getBagsScanned(true);
+        ArrayList<Bag> retbags = new ArrayList<Bag>();
+
+        for( int i=0; i < bags.size(); i++)
+        {
+            JSONObject jso = JSONObjectHelper.getJSONObjectDef((JSONObject) bags.get(i), "status", new JSONObject());
+            if (JSONObjectHelper.getStringDef(jso, "status", Bag.STATUS_TODO).equals(status))
+                retbags.add(new Bag((JSONObject) bags.get(i)));
+        }
+
+        return retbags;
     }
 
     public void setWaybillScanned( String barcode, int scanned)
     {
+        // TODO: propogate this to the server
+    }
 
+    public void setDeliveryStatus( int bagid, String status, String reason)
+    {
+        JSONObject bag = getBag( bagid);
+        if( bag != null)
+        {
+            // TODO: propogate this to the server
+            JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( bag, "status", new JSONObject());
+            jsostatus.put("status", status);
+            jsostatus.put("reason", reason);
+            bag.put("status", jsostatus);
+        }
     }
 }

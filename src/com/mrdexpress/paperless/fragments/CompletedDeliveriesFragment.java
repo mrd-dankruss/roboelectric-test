@@ -111,8 +111,7 @@ public class CompletedDeliveriesFragment extends Fragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null,
-					false);
+			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null,	false);
 
 			if (holder == null)
 			{

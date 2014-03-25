@@ -50,7 +50,7 @@ public class ViewBagManifestActivity extends Activity
 		holder.text_view_consignment_number.setIncludeFontPadding(false);
 
 		// Set titles
-		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( getIntent().getIntExtra(VariableManager.EXTRA_BAGID,-1)) + " (" +  Integer.toString( getIntent().getIntExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS,-1)) + " items)");
+		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( getIntent().getIntExtra(VariableManager.EXTRA_BAGID,-1)) + " (" +  list.size() + " items)");
 		holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + getIntent().getStringExtra(VariableManager.EXTRA_BAG_DESTINATION));
 	}
 

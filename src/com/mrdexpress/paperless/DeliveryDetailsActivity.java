@@ -50,8 +50,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		intent = getIntent();
-		position = Integer.parseInt(intent.getStringExtra(VariableManager.EXTRA_LIST_POSITION));
-        JSONObject jso =  Workflow.getInstance().getBag( Integer.parseInt( intent.getStringExtra(VariableManager.EXTRA_BAG_NO)));
+		position = intent.getIntExtra(VariableManager.EXTRA_LIST_POSITION, -1);
+        JSONObject jso =  Workflow.getInstance().getBag( intent.getIntExtra( VariableManager.EXTRA_BAG_NO, -1));
         bag = new Bag( jso);
 		//bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 	}

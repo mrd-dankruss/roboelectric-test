@@ -705,7 +705,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * Changes the delivery status of a bag.
 	 * 
 	 */
-	public int setDeliveryStatus(String bagid, String status, String reason)
+	/*public int setDeliveryStatus(String bagid, String status, String reason)
 	{
 		int no_rows = 0; // Number of rows affected
 
@@ -757,7 +757,7 @@ public class DbHandler extends SQLiteOpenHelper
 			}
 		}
 		return no_rows;
-	}
+	} */
 
 	/**
 	 * Changes the delivery status of a bag.
@@ -768,10 +768,10 @@ public class DbHandler extends SQLiteOpenHelper
 	 *            Delivery status of bag. (TODO, failed, partial, etc...)
 	 * @return Number of rows affected.
 	 */
-	public int setDeliveryStatus(String bagid, String status)
+	/*public int setDeliveryStatus(String bagid, String status)
 	{
 		return setDeliveryStatus(bagid, status, "");
-	}
+	} */
 
 	/**
 	 * Sets the value for whether the particular waybill has been

@@ -46,19 +46,19 @@ public class DeliveryHandoverFragment extends Fragment
 	private IncompleteScanDialog dialog;
 	ArrayList<DeliveryHandoverDataObject> list;
 	private DeliveryHandoverAdapter listAdapter;
-	String bagid;
+	int bagid;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
-		bagid = getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
+        bagid = Integer.parseInt( getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID), -1);
 		// Log.d(TAG, "Zorro - Bag ID: " + bagid);
 
 		//list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 
-        list = Workflow.getInstance().getBagParcelsAsObjects( Integer.parseInt( bagid));
+        list = Workflow.getInstance().getBagParcelsAsObjects( bagid);
 
 		listAdapter = new DeliveryHandoverAdapter(list);
 
@@ -99,28 +99,9 @@ public class DeliveryHandoverFragment extends Fragment
 					if (allParcelsScanned())
 					{
 
-						int no_rows_affected = DbHandler.getInstance(getActivity()).setDeliveryStatus(bagid, Bag.STATUS_COMPLETED);
-
-						if (no_rows_affected > 0)
-						{
-							CustomToast custom_toast = new CustomToast(getActivity());
-							custom_toast.setText("Delivery completed successfully");
-							custom_toast.setSuccess(true);
-							custom_toast.show();
-						}
-						else
-						{
-							CustomToast custom_toast = new CustomToast(getActivity());
-							custom_toast.setText("Successful delivery status update failed");
-							custom_toast.setSuccess(true);
-							custom_toast.show();
-						}
+                        Workflow.getInstance().setDeliveryStatus( bagid, Bag.STATUS_COMPLETED, "");
 
 						getActivity().finish();
-						/*	CustomToast toast = new CustomToast(getActivity());
-							toast.setSuccess(true);
-							toast.setText("Delivery completed successfully!");
-							toast.show();	*/
 					}
 					else
 					{
