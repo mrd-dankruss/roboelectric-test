@@ -20,7 +20,7 @@
         android:clickable="true"
         android:onClick="onBarcodeClick"
         android:scaleType="centerInside"
-        android:src="@drawable/scan_image" >
+        android:src="@drawable/scan_image" android:contentDescription="Scan Image">
     </ImageView>
      
     <FrameLayout
