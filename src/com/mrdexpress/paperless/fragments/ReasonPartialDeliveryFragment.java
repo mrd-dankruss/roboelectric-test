@@ -223,45 +223,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 			}
 			if (result.equalsIgnoreCase("success"))
 			{
-				// Log.d (TAG, "zeus partial delivery bag ID: "+
-				// getActivity().getIntent().getStringExtra(
-				// VariableManager.EXTRA_NEXT_BAG_ID));
-				int no_rows_affected = DbHandler.getInstance(getActivity())
-						.setDeliveryStatus(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID), Bag.STATUS_PARTIAL);
-
-				Log.d(TAG, "Zeus - Partial delivery number rows affected: " + no_rows_affected);
-
-				if (no_rows_affected > 0)
-				{
-					CustomToast custom_toast = new CustomToast(getActivity());
-					custom_toast.setText("Partial handover logged");
-					custom_toast.setSuccess(true);
-					custom_toast.show();
-					getActivity().setResult(Activity.RESULT_OK);
-				}
-				else
-				{
-					CustomToast custom_toast = new CustomToast(getActivity());
-					custom_toast.setText("Partial handover failed");
-					custom_toast.setSuccess(false);
-					custom_toast.show();
-					getActivity().setResult(Activity.RESULT_CANCELED);
-				}
-			}
-			else
-			{
-				if ((result == null) | (!(result.length() > 0)))
-				{
-					result = "Partial handover failed";
-				}
-
-				CustomToast custom_toast = new CustomToast(getActivity());
-				custom_toast.setText(result);
-				custom_toast.setSuccess(false);
-				custom_toast.show();
-				getActivity().setResult(Activity.RESULT_CANCELED);
+                Workflow.getInstance().setDeliveryStatus(  getActivity().getIntent().getIntExtra( VariableManager.EXTRA_NEXT_BAG_ID, -1), Bag.STATUS_PARTIAL, "");
 			}
 
 			if (getActivity() != null)

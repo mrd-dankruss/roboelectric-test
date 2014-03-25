@@ -48,32 +48,6 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		FNB, TAKEALOT, NONE, MRD
 	}
 
-	/**
-	 * @param context
-	 *            The current context.
-	 * @param values
-	 *            The values to be used in the list in a two-dimensional
-	 *            arrayList (to enable onSetDataChanged).
-	 *            ArrayList(DeliveryType, Company, Address, Delivery ID).
-	 *            DeliveryType and Company can be called through their
-	 *            respective enums. <br>
-	 * 
-	 *            Delivery Type: DELIVERY, RETURN, EXCHANGE Company: FNB,
-	 *            TAKEALOT <br>
-	 * 
-	 * <br>
-	 *            Example: <br>
-	 * 
-	 *            List<List<String>> values = new ArrayList<List<String>>(); <br>
-	 * 
-	 *            List<String> temp1 = new ArrayList<String>(); <br>
-	 *            temp1.add(DeliveryType.DELIVERY.toString()); <br>
-	 *            temp1.add(Company.FNB.toString()); <br>
-	 *            temp1.add(
-	 *            "Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526"); <br>
-	 *            temp1.add("00025420254 (6 items)"); <br>
-	 *            values.add(temp1); <br>
-	 */
 	public ViewDeliveriesListAdapter(FragmentActivity activity, List<Bag> values)
 	{
 		super();
@@ -166,10 +140,10 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		
 		Bag bag = values.get(position);
 		boolean isNextBag = false;
-		String nextBagId = MiscHelper.getNextDeliveryId(activity);
-		if (MiscHelper.isNonEmptyString(nextBagId))
+		int nextBagId = MiscHelper.getNextDeliveryId(activity);
+		if( nextBagId != -1)
 		{
-			isNextBag = nextBagId.equals(bag.getBagNumber());
+			isNextBag = nextBagId == bag.getBagID();
 		}
 		else
 		{
@@ -181,7 +155,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		
 		if (isNextBag)
 		{
-			final String bag_id = bag.getBagNumber();
+			final int bag_id = bag.getBagID();
 
 			updateStatus.setOnClickListener(new View.OnClickListener()
 			{

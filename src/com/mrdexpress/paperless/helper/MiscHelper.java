@@ -65,33 +65,33 @@ public class MiscHelper {
 	 * persists next delivery's id
 	 * remove id if bagId == null
 	 */
-	public static void setNextDeliveryId(String bagId, Activity activity)
+	public static void setNextDeliveryId(int bagId, Activity activity)
 	{
 		// Store in sharedprefs
 		SharedPreferences prefs = activity.getSharedPreferences(VariableManager.PREF,
 				activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(VariableManager.PREF_CURRENT_BAGID, bagId);
+		editor.putInt(VariableManager.PREF_CURRENT_STOPID, bagId);
 		editor.apply();
 	}
 	
-	public static String getNextDeliveryId(Activity activity)
+	public static int getNextDeliveryId(Activity activity)
 	{
 		SharedPreferences prefs = activity.getSharedPreferences(VariableManager.PREF,
 				activity.MODE_PRIVATE);
-		return prefs.getString(VariableManager.PREF_CURRENT_BAGID, null);
+		return prefs.getInt(VariableManager.PREF_CURRENT_STOPID, -1);
 	}
 	
 	
-	public static String validateNextDeliveryId(List<Bag> todoBags, Activity activity)
+	public static int validateNextDeliveryId(List<Bag> todoBags, Activity activity)
 	{
-		String nextBagId = getNextDeliveryId(activity);
-		if (MiscHelper.isNonEmptyString(nextBagId))
+		int nextBagId = getNextDeliveryId(activity);
+		if( nextBagId != -1)
 		{
 			boolean validId = false;
 			for (Bag bag : todoBags)
 			{
-				if (nextBagId.equals(bag.getBagNumber()))
+				if (nextBagId == bag.getBagID())
 				{
 					validId = true;
 					break;
@@ -100,13 +100,13 @@ public class MiscHelper {
 			
 			if (!validId)
 			{
-				nextBagId = null;
-				setNextDeliveryId(null, activity);
+				nextBagId = -1;
+				setNextDeliveryId(-1, activity);
 			}
 		}
 		else
 		{
-			nextBagId = null;
+			nextBagId = -1;
 		}
 		
 		return nextBagId;

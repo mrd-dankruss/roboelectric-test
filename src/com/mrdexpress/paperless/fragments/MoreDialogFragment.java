@@ -31,7 +31,7 @@ public class MoreDialogFragment extends DialogFragment
 	private Activity activity;
 
 	public interface SetNextDeliveryListener {
-        void onSetNextDelivery(boolean is_successful, String bagId);
+        void onSetNextDelivery(boolean is_successful, int bagId);
     }
 	
 	/**
