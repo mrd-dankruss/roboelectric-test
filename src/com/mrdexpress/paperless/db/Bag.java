@@ -41,10 +41,26 @@ public class Bag
 	public String getDestination()
 	{
         JSONObject jso = Workflow.getInstance().getStopForBagId( this.getBagID());
-        if( jso != null)
-		    return JSONObjectHelper.getStringDef( jso, "desc", "!");
+        if( jso != null) {
+            jso = JSONObjectHelper.getJSONObjectDef(jso, "destination", null);
+            if( jso != null) {
+                return JSONObjectHelper.getStringDef(jso, "desc", "!");
+            }
+        }
         return "!";
 	}
+
+    public JSONObject getDestinationExtra()
+    {
+        JSONObject jso = Workflow.getInstance().getStopForBagId( this.getBagID());
+        if( jso != null) {
+            jso = JSONObjectHelper.getJSONObjectDef(jso, "destination", null);
+            if( jso != null) {
+                return JSONObjectHelper.getJSONObjectDef( jso, "extra", null);
+            }
+        }
+        return null;
+    }
 
 	public int getNumberItems()
 	{

@@ -31,6 +31,7 @@ import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.Date;
@@ -858,13 +859,13 @@ public class ScanActivity extends FragmentActivity {
 				convertView = LayoutInflater.from(context).inflate(R.layout.row_scan, null, false);				
 			}
 			TextView text_view_consignment = (TextView) convertView.findViewById(R.id.textView_row_scan);
+            TextView text_view_hubcode = (TextView) convertView.findViewById(R.id.testView_row_scan_hubcode);
+            TextView text_view_qty = (TextView) convertView.findViewById(R.id.testView_row_scan_qty);
 			ImageView image_green_tick = (ImageView)convertView.findViewById(R.id.imageView_row_scan_tick);
 			
-			text_view_consignment.setText(bag.getBarcode()
-					+ " ( "
-					+ bag.getNumberItems()
-					+ " ITEMS )");
-			text_view_consignment.setText(bag.getBarcode() 	+ " ("	+ bag.getNumberItems()	+ " ITEMS)");
+            text_view_qty.setText("(" + bag.getNumberItems() + " ITEM" + (bag.getNumberItems() == 1?"":"S") + " )");
+			text_view_consignment.setText(bag.getBarcode());
+            text_view_hubcode.setText( JSONObjectHelper.getStringDef( bag.getDestinationExtra(), "hubcode", "!"));
 			
 			// re-set styling since view may be re-used
 			if (bag.getScanned())
