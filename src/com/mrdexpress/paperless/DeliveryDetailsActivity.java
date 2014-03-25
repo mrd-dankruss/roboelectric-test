@@ -123,9 +123,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			@Override
 			public void onClick(View v)
 			{
-				boolean isNextBag = bag.getBagNumber().equals(MiscHelper.getNextDeliveryId(DeliveryDetailsActivity.this));
-				DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagNumber());
-				DialogFragment newFragment = MoreDialogFragment.newInstance((position > 0), bag.getBagID());
+				boolean isNextBag = bag.getBagID() == MiscHelper.getNextDeliveryId(DeliveryDetailsActivity.this);
+				DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagID());
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
@@ -134,7 +133,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 	@Override
 
-	public void onSetNextDelivery(boolean is_successful, String bagId)
+	public void onSetNextDelivery(boolean is_successful, int bagId)
 	{
 		if (is_successful)
 		{

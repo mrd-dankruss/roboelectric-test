@@ -354,14 +354,31 @@ public class Workflow extends Observable
         // $.response.workflow.workflow.tripstops[?(@.tripstopdata[0].id==22)]
     }
 
-    public JSONArray getBagsScanned()
+    public JSONArray getBagsScanned( Boolean scanned)
     {
+        JSONArray rawbags = new JSONArray();
         try
         {
-            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag' && @.flowdata.scannedtime)]");
-            JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
-                    Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
-            return rawbags;
+            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload == 'bag' && @.flowdata.scannedtime)]");
+            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
+                    Filter.filter(Criteria.where("payload").eq("bag")));
+                    //Filter.filter(Criteria.where("payload").eq("bag").and("flowdata.scannedtime").notEmpty()));
+            // workaround for jsonpath not allowing deeper paths in filter
+            for( int i=0; i < bags.size(); i++)
+            {
+                JSONObject flowdata = JSONObjectHelper.getJSONObjectDef((JSONObject) bags.get(i), "flowdata", null);
+                if( flowdata != null) {
+                    if( scanned) {
+                        if (JSONObjectHelper.exists(flowdata, "scannedtime") && JSONObjectHelper.getIntDef(flowdata, "scannedtime", -1) != -1)
+                            rawbags.add(bags.get(i));
+                    }
+                    else
+                    {
+                        if( !JSONObjectHelper.exists(flowdata, "scannedtime") || ((JSONObjectHelper.exists(flowdata, "scannedtime") && JSONObjectHelper.getIntDef(flowdata, "scannedtime", -1) == -1)))
+                            rawbags.add(bags.get(i));
+                    }
+                }
+            }
         }
         catch( PathNotFoundException e)
         {
@@ -371,7 +388,9 @@ public class Workflow extends Observable
         {
             Log.e("gary", e.toString());
         }
-        return new JSONArray();
+        if( rawbags == null)
+            rawbags = new JSONArray();
+        return rawbags;
     }
 
     public ArrayList<String> getBagBarcodesScanned()
@@ -379,16 +398,45 @@ public class Workflow extends Observable
         ArrayList<String> ret = new ArrayList<String>();
         try
         {
+            JSONArray bags = this.getBagsScanned(true);
             //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag' && @.flowdata.scannedtime)]");
-            ret = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.barcode",
-                    Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
+            //ret = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.barcode",
+            //        Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
 
-            /*for( int i=0; i < rawbags.size(); i++)
+            for( int i=0; i < bags.size(); i++)
             {
-                JSONObject flowdata = JSONObjectHelper.getJSONObjectDef( (JSONObject)rawbags.get(i), "flowdata", null);
+                JSONObject flowdata = JSONObjectHelper.getJSONObjectDef( (JSONObject)bags.get(i), "flowdata", null);
                 if ( flowdata != null)
                     ret.add( JSONObjectHelper.getStringDef( flowdata, "barcode", "!"));
-            } */
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+        return ret;
+    }
+
+    public ArrayList<String> getBagBarcodesUnscanned()
+    {
+        ArrayList<String> ret = new ArrayList<String>();
+        try
+        {
+            JSONArray bags = this.getBagsScanned(false);
+            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag' && @.flowdata.scannedtime)]");
+            //ret = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.barcode",
+            //        Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
+
+            for( int i=0; i < bags.size(); i++)
+            {
+                JSONObject flowdata = JSONObjectHelper.getJSONObjectDef( (JSONObject)bags.get(i), "flowdata", null);
+                if ( flowdata != null)
+                    ret.add( JSONObjectHelper.getStringDef( flowdata, "barcode", "!"));
+            }
         }
         catch( PathNotFoundException e)
         {

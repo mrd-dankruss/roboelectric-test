@@ -31,7 +31,9 @@ import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.Workflow;
 
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
@@ -59,41 +61,15 @@ public class ScanActivity extends FragmentActivity {
 
     SharedPreferences prefs;
     
-    Hashtable<String, Integer> bagsUnscanned;
-    Hashtable<String, Integer> bagsScanned;
+    //Hashtable<String, Integer> bagsUnscanned;
+    //Hashtable<String, Integer> bagsScanned;
     List<Bag> bags;
     String driverId;
     BarcodeListAdapter adapter;
     Handler handler;
 
     public void UpDateBagsForAdapter(String added_id){
-        driverId = prefs.getString(VariableManager.PREF_DRIVERID, null);
-        DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
-        bags = DbHandler.getInstance(this).getBags(driverId);
-        bagsUnscanned = new Hashtable<String, Integer>();
-        bagsScanned = new Hashtable<String, Integer>();
-        int i = 0;
-        for (Bag bag : bags)
-        {
-            //if ( added_id.equals(bag.getBarcode()) ){
-            //    bag.setScanned(true);
-            //}
-            String barcode = bag.getBarcode();
-            Hashtable<String, Integer> bagMap;
-            if (bag.getScanned())
-            {
-                bagMap = bagsScanned;
-            }
-            else
-            {
-                bagMap = bagsUnscanned;
-            }
-
-            bagMap.put(barcode, i);
-            i++;
-        }
         UpdateBagsCounter();
-
     }
 
     @Override
@@ -108,27 +84,8 @@ public class ScanActivity extends FragmentActivity {
         handler = new Handler();
         
         driverId = prefs.getString(VariableManager.PREF_DRIVERID, null);
-        DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
-        bags = DbHandler.getInstance(this).getBags(driverId);
-        bagsUnscanned = new Hashtable<String, Integer>();
-        bagsScanned = new Hashtable<String, Integer>();
-        int i = 0;
-        for (Bag bag : bags)
-        {
-        	String barcode = bag.getBarcode();
-        	Hashtable<String, Integer> bagMap;
-        	if (bag.getScanned())
-        	{
-        		bagMap = bagsScanned;
-        	}
-        	else
-        	{
-        		bagMap = bagsUnscanned;
-        	}
-        	
-        	bagMap.put(barcode, i);
-        	i++;
-        }
+        //DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+        bags = Workflow.getInstance().getBags();
 
         // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
         Display display = getWindowManager().getDefaultDisplay();
@@ -159,6 +116,8 @@ public class ScanActivity extends FragmentActivity {
 
         initViewHolder();
 
+        UpdateBagsCounter();
+
 //        if (savedInstanceState != null) {
 //            // Restore value of members from saved state
 //            Log.d(TAG, "restoring savedstate");
@@ -188,9 +147,9 @@ public class ScanActivity extends FragmentActivity {
                                  ViewBagManifestActivity.class);
                 		 
                 		 // Pass info to view manifest activity
-                         intent.putExtra(VariableManager.EXTRA_BAGID, bag.getBagNumber());
-                         intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, bag.getDestinationHubName());
-                         intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, ""+bag.getNumberItems());
+                         intent.putExtra(VariableManager.EXTRA_BAGID, bag.getBagID());
+                         intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, bag.getDestination());
+                         intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, Integer.toString( bag.getNumberItems()));
 
                          startActivity(intent);
                 	}
@@ -204,7 +163,7 @@ public class ScanActivity extends FragmentActivity {
             public void onClick(View v) {
                 // Check if all bags have been scanned
                 // if (true) // DEBUG
-                if ((bagsScanned.size() == holder.list.getCount()) & (bagsScanned.size() > 0)) {
+                if (( Workflow.getInstance().getBagsScanned(true).size() == holder.list.getCount()) & ( holder.list.getCount() > 0)) {
                     // Go to View Deliveries screen
                     Intent intent = new Intent(getApplicationContext(),
                             ViewDeliveriesFragmentActivity.class);
@@ -415,11 +374,9 @@ public class ScanActivity extends FragmentActivity {
 		 
 		 adapter.notifyDataSetChanged();
 		 
-		 holder.button_start_milkrun.setEnabled(bagsScanned.size() > 0);
-		 holder.button_start_milkrun.setEnabled( Workflow.getInstance().getBagsScanned().size() > 0);
+		 holder.button_start_milkrun.setEnabled( Workflow.getInstance().getBagsScanned(true).size() > 0);
 		 
-		 if (bagsScanned.size() == bags.size()) 
-		 if ( Workflow.getInstance().getBagsScanned().size() == Workflow.getInstance().getBags().size())
+		 if ( Workflow.getInstance().getBagsScanned(true).size() == Workflow.getInstance().getBags().size())
 		 {
              CustomToast toast = new CustomToast(this);
              toast.setSuccess(true);
@@ -518,43 +475,30 @@ public class ScanActivity extends FragmentActivity {
     //@Override
     public void handleDecode(String barcodeString) 
     {
-    	Log.d(TAG, "handleDecode: barcodeString = " + barcodeString);
-    	
-    	Integer scannedPosition = null;
-    	if (MiscHelper.isNonEmptyString(barcodeString))
-    	{
-    		last_scanned_barcode = barcodeString;
-    		if (bagsUnscanned.containsKey(barcodeString))
-    		{
-    			scannedPosition = bagsUnscanned.get(barcodeString);
-    		}
-    		else
-    		{
-    			scannedPosition = bagsScanned.get(barcodeString);
-    		}
-    	}
-    	
-    	Runnable decodeCallback = null;
-    	if (scannedPosition != null)
-    	{
-            Bag scannedBag = bags.get(scannedPosition);
+        Bag scannedBag = null;
+
+        for( int i=0; i < bags.size(); i++)
+        {
+            Bag b = bags.get(i);
+            if( b.getBarcode().equals( barcodeString))
+            {
+                scannedBag = b;
+                break;
+            }
+        }
+
+        Runnable decodeCallback = null;
+        if (scannedBag != null)
+        {
             boolean wasScanned = scannedBag.getScanned();
-            Log.d(TAG, "handleDecode(): set Scanned " + barcodeString + " to " + !wasScanned);
-            
-            Hashtable<String, Integer> removeMap;
-            Hashtable<String, Integer> addMap;
+
             // TODO: when does this get sent to the server?
-            if (wasScanned)
+            if( wasScanned)
                 scannedBag.setScanned( -1);
+            else
                 scannedBag.setScanned( (int) new Date().getTime() / 1000);
-            
-            removeMap.remove(barcodeString);
-    		scannedBag.setScanned(!wasScanned);
-    		// TODO -- can do this faster since have primary key
-			DbHandler.getInstance(ScanActivity.this).setScanned(barcodeString, !wasScanned);
-    		addMap.put(barcodeString, scannedPosition);
-    		
-    		decodeCallback = new Runnable()
+
+            decodeCallback = new Runnable()
     		{
 				@Override
 				public void run() {
@@ -598,9 +542,6 @@ public class ScanActivity extends FragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (bagsScanned != null) {
-            Log.d(TAG, "Items selected: " + String.valueOf(bagsScanned.size()));
-        }
 
         // Close dialog if it is showing upon resuming screen.
         // Or else it is still open when backing out of ManagerAuthIncompleteScanActivity
@@ -838,8 +779,8 @@ public class ScanActivity extends FragmentActivity {
             } else {
                 String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
                 if (!new_bag_id.isEmpty()){
-                    ServerInterface.getInstance(getApplicationContext()).downloadBag(
-                            getApplicationContext(),new_bag_id,driverid);
+                //    ServerInterface.getInstance(getApplicationContext()).downloadBag(
+                //            getApplicationContext(),new_bag_id,driverid);
                 // TODO: Gary wire this back in...!!
                 //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
                     adapter.notifyDataSetChanged();
@@ -877,7 +818,6 @@ public class ScanActivity extends FragmentActivity {
     public void UpdateBagsCounter() {
         try 
         {
-            holder.textview_scanstatus.setText("Bags Scanned : (" + bagsScanned.size() + '/' + bags.size() + ')');
             holder.textview_scanstatus.setText("BAG" + ( Workflow.getInstance().getBagBarcodesScanned().size()==1?"":"S") + " (" + Workflow.getInstance().getBagBarcodesScanned().size() + " / " + bags.size() + " SCANNED)");
         } 
         catch (Exception e) 

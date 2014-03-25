@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -18,14 +19,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class ManagerAuthIncompleteScanActivity extends Activity {
 
@@ -82,8 +84,9 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
 
             final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
-            list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned(
-                    driverid);
+            ArrayList<String> bc = Workflow.getInstance().getBagBarcodesUnscanned();
+            list = TextUtils.join("\n", bc);
+            //list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned( driverid);
             System.out.println("list: " + list);
             return null;
         }
