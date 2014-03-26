@@ -162,55 +162,49 @@ public class ReasonPartialDeliveryFragment extends Fragment
 			// ServerInterface.postPartialDelivery(waybill_id, status_id, extra)
 			String result = "";
 
-			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-			boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
 
-			if (!training_run)
-			{
-				for (int i = 0; i < data.size(); i++)
-				{
-					ArrayList<ReasonPartialDeliveryItem> reasons = data.get(i);
+            for (int i = 0; i < data.size(); i++)
+            {
+                ArrayList<ReasonPartialDeliveryItem> reasons = data.get(i);
 
-					for (int r = 0; r < reasons.size(); r++)
-					{
-						if (reasons.get(r).isSelected())
-						{
-							try
-							{
-								String result_JSON_string = ServerInterface.getInstance(
-										getActivity())
-										.postPartialDelivery(reasons.get(r).getGroupName(),
-												reasons.get(r).getReasonID());
+                for (int r = 0; r < reasons.size(); r++)
+                {
+                    if (reasons.get(r).isSelected())
+                    {
+                        try
+                        {
+                            String result_JSON_string = ServerInterface.getInstance(
+                                    getActivity())
+                                    .postPartialDelivery(reasons.get(r).getGroupName(),
+                                            reasons.get(r).getReasonID());
 
-								// Log.d(TAG, result_JSON_string);
+                            // Log.d(TAG, result_JSON_string);
 
-								JSONObject result_JSON = new JSONObject(result_JSON_string);
+                            JSONObject result_JSON = new JSONObject(result_JSON_string);
 
-								String result_status = result_JSON.getJSONObject("response")
-										.getJSONObject("waybill").getString("status");
+                            String result_status = result_JSON.getJSONObject("response")
+                                    .getJSONObject("waybill").getString("status");
 
-								if (result_status.equalsIgnoreCase("success"))
-								{
-									result = "Success";
-								}
-							}
-							catch (JSONException e)
-							{
-								StringWriter sw = new StringWriter();
-								e.printStackTrace(new PrintWriter(sw));
-								Log.e(TAG, sw.toString());
-								result = "failed";
-							}
+                            if (result_status.equalsIgnoreCase("success"))
+                            {
+                                result = "Success";
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            StringWriter sw = new StringWriter();
+                            e.printStackTrace(new PrintWriter(sw));
+                            Log.e(TAG, sw.toString());
+                            result = "failed";
+                        }
 
-							// Log.d(TAG, "zorro# waybill:" + reasons.get(r).getGroupName()
-							// + " reasonTitle:" + reasons.get(r).getReasonTitle());
-						}
-					}
-				}
-			}
+                        // Log.d(TAG, "zorro# waybill:" + reasons.get(r).getGroupName()
+                        // + " reasonTitle:" + reasons.get(r).getReasonTitle());
+                    }
+                }
+            }
 			return result;
-			// return ""; // DEBUG
 		}
 
 		@Override
@@ -301,97 +295,41 @@ public class ReasonPartialDeliveryFragment extends Fragment
 				Context.MODE_PRIVATE);
 		boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
-		if (training_run)
-		{
-			// temp.add(new ReasonPartialDeliveryItem("00025420254 (TAKEALOT)", "greg_code_1",
-			// "Wrong Parcel", false));
+        data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
 
-			data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
+        String[] waybill_IDs = getActivity().getIntent().getStringArrayExtra( VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE);
+        // Log.d(TAG, "unscanned bagid length: " + bag_IDs.length);
+        // Get reasons
+        //ArrayList<DialogDataObject> reasons = DbHandler.getInstance(getActivity()).getPartialDeliveryReasons();
+        ArrayList<DialogDataObject> reasons = Workflow.getInstance().getPartialDeliveryReasons();
 
-			String[] waybill_IDs = getActivity().getIntent().getStringArrayExtra(
-					VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE);
-			// Log.d(TAG, "unscanned bagid length: " + bag_IDs.length);
-			// Get reasons
-			ArrayList<DialogDataObject> reasons = new ArrayList<DialogDataObject>();
+        /*	Log.d(TAG,
+                    "zorro - next bag id: "
+                            + getActivity().getIntent().getStringExtra(
+                                    VariableManager.EXTRA_NEXT_BAG_ID));*/
 
-			reasons.add(new DialogDataObject("Lost in transit", "1"));
-			reasons.add(new DialogDataObject("Wrong parcel", "2"));
-			reasons.add(new DialogDataObject("Wrong branch", "3"));
+        // Each waybill / (group in extendable list)
+        for (int i = 0; i < waybill_IDs.length; i++)
+        {
+            ArrayList<ReasonPartialDeliveryItem> reason_items = new ArrayList<ReasonPartialDeliveryItem>();
 
-			/*	Log.d(TAG,
-						"zorro - next bag id: "
-								+ getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID));*/
+            // Get current driver
+            // SharedPreferences prefs =
+            // getActivity().getSharedPreferences(VariableManager.PREF,
+            // 0);
+            // String driver = prefs.getString(VariableManager.EXTRA_DRIVER_ID, "");
 
-			// Each waybill / (group in extendable list)
-			for (int i = 0; i < waybill_IDs.length; i++)
-			{
-				ArrayList<ReasonPartialDeliveryItem> reason_items = new ArrayList<ReasonPartialDeliveryItem>();
+            // Bag bag = DbHandler.getInstance(getActivity()).getBag(driver, waybill_IDs[i]);
 
-				// Get current driver
-				// SharedPreferences prefs =
-				// getActivity().getSharedPreferences(VariableManager.PREF,
-				// 0);
-				// String driver = prefs.getString(VariableManager.EXTRA_DRIVER_ID, "");
-
-				// Bag bag = DbHandler.getInstance(getActivity()).getBag(driver, waybill_IDs[i]);
-
-				/*Waybill waybill = DbHandler.getInstance(getActivity())
-						.getWaybill(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID));*/
-
-				// Log.d(TAG, "zorro - waybill barcode: " + waybill.getBarcode());
-
-				Random random = new Random();
-
-				for (int r = 0; r < reasons.size(); r++)
-				{
-					reason_items.add(new ReasonPartialDeliveryItem(String.valueOf(Math.abs(random
-							.nextInt())), reasons.get(r).getSubText(),
-							reasons.get(r).getMainText(), false));
-				}
-				data.add(reason_items);
-			}
-
-		}
-		else
-		{
-			data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
-
-			String[] waybill_IDs = getActivity().getIntent().getStringArrayExtra( VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE);
-			// Log.d(TAG, "unscanned bagid length: " + bag_IDs.length);
-			// Get reasons
-			//ArrayList<DialogDataObject> reasons = DbHandler.getInstance(getActivity()).getPartialDeliveryReasons();
-            ArrayList<DialogDataObject> reasons = Workflow.getInstance().getPartialDeliveryReasons();
-
-			/*	Log.d(TAG,
-						"zorro - next bag id: "
-								+ getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID));*/
-
-			// Each waybill / (group in extendable list)
-			for (int i = 0; i < waybill_IDs.length; i++)
-			{
-				ArrayList<ReasonPartialDeliveryItem> reason_items = new ArrayList<ReasonPartialDeliveryItem>();
-
-				// Get current driver
-				// SharedPreferences prefs =
-				// getActivity().getSharedPreferences(VariableManager.PREF,
-				// 0);
-				// String driver = prefs.getString(VariableManager.EXTRA_DRIVER_ID, "");
-
-				// Bag bag = DbHandler.getInstance(getActivity()).getBag(driver, waybill_IDs[i]);
-
-				Waybill waybill = DbHandler.getInstance(getActivity()).getWaybill( getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
-				// Log.d(TAG, "zorro - waybill barcode: " + waybill.getBarcode());
-				for (int r = 0; r < reasons.size(); r++)
-				{
-					reason_items.add(new ReasonPartialDeliveryItem(waybill.getBarcode(), reasons.get(r).getSubText(), reasons.get(r).getMainText(), false));
-				}
-				data.add(reason_items);
-			}
-		}
+            // TODO: gary wire this back in
+            /*Waybill waybill = DbHandler.getInstance(getActivity()).getWaybill( getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
+            // Log.d(TAG, "zorro - waybill barcode: " + waybill.getBarcode());
+            for (int r = 0; r < reasons.size(); r++)
+            {
+                reason_items.add(new ReasonPartialDeliveryItem(waybill.getBarcode(), reasons.get(r).getSubText(), reasons.get(r).getMainText(), false));
+            } */
+            data.add(reason_items);
+        }
 	}
 
 	private class PartialDeliveryObject

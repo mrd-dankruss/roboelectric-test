@@ -29,6 +29,18 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="18sp" />
+    <TextView
+        android:id="@+id/testView_row_scan_qty"
+        android:text="(1 ITEM)"
+        android:gravity="right"
+        android:layout_toRightOf="@+id/testView_row_scan_hubcode"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/margin_row_NS"
+        android:layout_marginLeft="@dimen/margin_row_W"
+        android:layout_marginTop="@dimen/margin_row_NS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp" />
     <ImageView
         android:id="@+id/imageView_row_scan_tick"
         android:layout_width="wrap_content"
