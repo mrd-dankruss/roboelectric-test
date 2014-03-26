@@ -21,18 +21,6 @@
         android:text="@string/button_login"
         android:textSize="@dimen/font_size_button" />
 
-    <ImageView
-        android:id="@+id/ImageView01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:paddingBottom="@dimen/mainmenu_padding_logo_bottom"
-        android:paddingLeft="@dimen/mainmenu_padding_logo_side"
-        android:paddingRight="@dimen/mainmenu_padding_logo_side"
-        android:paddingTop="@dimen/mainmenu_padding_logo_top"
-        android:src="@drawable/mrd_logo_large" />
-
     <EditText
         android:id="@+id/text_mainmenu_password"
         android:layout_width="fill_parent"
@@ -65,14 +53,20 @@
         android:ems="10"
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
-        android:hint="@string/text_hint_mainmenu_enter_name"
+        android:hint="@string/driver_select_name"
         android:background="@color/main_activity_grey"
         android:textColor="@color/text_grey"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:textSize="@dimen/font_size_text_field" >
+        android:textSize="@dimen/font_size_text_field" android:enabled="true">
 
         <requestFocus />
     </AutoCompleteTextView>
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/text_mainmenu_name"
+            android:id="@+id/driver_select_list"/>
 
 </RelativeLayout>

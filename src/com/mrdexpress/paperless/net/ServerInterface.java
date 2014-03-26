@@ -1,15 +1,19 @@
 package com.mrdexpress.paperless.net;
 
-import android.content.ContentValues;
+import com.androidquery.AQuery;
+import com.androidquery.callback.*;
+
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.DataSetObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
-import com.mrdexpress.paperless.db.*;
+import com.androidquery.AQuery;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Driver;
+import com.mrdexpress.paperless.db.Drivers;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -41,19 +45,17 @@ import java.io.*;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 
 public class ServerInterface {
 
     private final static String TAG = "ServerInterface";
-
+    private static final String API_URL = "http://uat.mrdexpress.com/api/";
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
-
     private static ServerInterface server_interface;
     private static Context context;
-    private static final String API_URL = "http://uat.mrdexpress.com/api/";
     // private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
     // private static String token="abcde";
     private static SharedPreferences prefs;
@@ -89,7 +91,7 @@ public class ServerInterface {
                 Toast.makeText(VariableManager.context, message, Toast.LENGTH_SHORT).show();
 
 				/*CustomToast toast = new CustomToast(VariableManager.CONTEXT, view);
-				 toast.setSuccess(true);
+                 toast.setSuccess(true);
 				 toast.setText("Delivery completed successfully!");
 				 toast.show();*/
             }
@@ -98,7 +100,6 @@ public class ServerInterface {
 
     /**
      * Makes API call to request a new session token.
-     *
      */
     public String requestToken() {
         TelephonyManager mngr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -188,7 +189,6 @@ public class ServerInterface {
 
     /**
      * Makes API call to update driver PIN.
-     *
      */
     public String updatePIN(String id, String new_pin, String imei) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -228,7 +228,7 @@ public class ServerInterface {
     /**
      * Retrieves list of drivers from server. Used to populate the list at
      * login.
-     *
+     * switching it over to AJAX
      */
     public void getDrivers(Context context) {
         TelephonyManager mngr = (TelephonyManager) context
@@ -236,6 +236,71 @@ public class ServerInterface {
         String imei_id = mngr.getDeviceId();
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
         String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken=" + token;
+        final Context ctext = context;
+        final AQuery aq = new AQuery(context);
+        aq.ajax( url  , JSONObject.class , new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+                if(json != null){
+                    //successful ajax call, show status code and json content
+                    //Toast.makeText(aq.getContext(), status.getCode() + ":" + json.toString(), Toast.LENGTH_LONG).show();
+
+                    Drivers drvs = Drivers.getInstance();
+                    drvs.setDrivers(json);
+
+
+
+                    JSONArray drivers_jArray = null;
+                    try {
+                        JSONObject jObject = json;
+                        if (jObject.has("response")) {
+                            drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
+                        } else if (jObject.has("error")) {
+
+                        }
+                    } catch (JSONException e) {
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw));
+                        Log.e(TAG, sw.toString());
+                    }
+                    if (drivers_jArray != null) {
+                        for (int i = 0; i < drivers_jArray.length(); i++) {
+                            try {
+                                // ID
+                                int id = Integer.parseInt(drivers_jArray.getJSONObject(i).getString(
+                                        VariableManager.JSON_KEY_DRIVER_ID));
+
+                                // Name
+                                String name = drivers_jArray.getJSONObject(i).getString(
+                                        VariableManager.JSON_KEY_DRIVER_FIRSTNAME)
+                                        + " "
+                                        + drivers_jArray.getJSONObject(i).getString(
+                                        VariableManager.JSON_KEY_DRIVER_LASTNAME);
+
+                                Log.d(TAG, "Driver retrieved: " + name);
+
+                                // PIN
+                                String pin = drivers_jArray.getJSONObject(i).getString(
+                                        VariableManager.JSON_KEY_DRIVER_PIN);
+
+                                DbHandler.getInstance(ctext).addDriver(new Driver(id, name, pin));
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                if (VariableManager.DEBUG) {
+                                    displayToast("JSONException: driver/drivers");
+                                }
+                            }
+                        }
+
+                }else{
+                    //ajax error, show error code
+                    Toast.makeText(aq.getContext(), "Error:" + status.getCode(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }});
+        /*
 
         String response = getInputStreamFromUrl(url);
 
@@ -246,10 +311,7 @@ public class ServerInterface {
             if (jObject.has("response")) {
                 drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
             } else if (jObject.has("error")) {
-				/*CustomToast toast = new CustomToast(context);
-				toast.setSuccess(true);
-				toast.setText("Error" + stripErrorCode(jObject.toString()));
-				toast.show();*/
+
             }
         } catch (JSONException e) {
             StringWriter sw = new StringWriter();
@@ -287,7 +349,7 @@ public class ServerInterface {
                     }
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -1062,7 +1124,6 @@ public class ServerInterface {
 
     /**
      * Post failed handover to API.
-     *
      */
     public String postSuccessfulDelivery(String bag_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -1081,7 +1142,6 @@ public class ServerInterface {
 
     /**
      * Post partial delivery to API.
-     *
      */
     public String postPartialDelivery(String waybill_id, String status_id) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -1447,7 +1507,7 @@ public class ServerInterface {
         // return "success";
     }
 
-    public String setNextDelivery( int stopid) {
+    public String setNextDelivery(int stopid) {
         // Store in sharedprefs
         //TODO: gary!!! this is a stop, not a bag -- check for ripples
 
