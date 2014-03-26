@@ -1,58 +1,89 @@
 package com.mrdexpress.paperless.datatype;
+import android.os.Parcel;
+import android.os.Parcelable;
+import com.mrdexpress.paperless.workflow.JSONObjectHelper;
+import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 
-public class UserItem
+public class UserItem implements Parcelable
 {
-	// TODO: Add id, name, pin (maybe), type (driver or manager)
-	private String person_id;
-	private String person_name;
-	// private String person_pin;
-	private UserType person_type;
+    private ObservableJSONObject data;
 
 	public enum UserType
 	{
 		DRIVER, MANAGER
 	}
 
-	public UserItem(String person_id, String person_name, UserType person_type)
+    public UserItem( ObservableJSONObject person)
 	{
-		this.person_id = person_id;
-		this.person_name = person_name;
-		this.person_type = person_type;
+        this.data = person;
 	}
 
-	public String getUserID()
-	{
-		return person_id;
-	}
+    public UserItem(Parcel in)
+    {
+        readFromParcel(in);
+    }
 
-	public void setUserID(String person_id)
+    public int describeContents()
+    {
+        return 0;
+    }
+
+	public int getUserID()
 	{
-		this.person_id = person_id;
+		return JSONObjectHelper.getIntDef( data.get(), "id", -1);
 	}
 
 	public String getUserName()
 	{
-		return person_name;
-	}
-
-	public void setUserName(String person_name)
-	{
-		this.person_name = person_name;
+        return JSONObjectHelper.getStringDef( data.get(), "firstName", "!") + " " + JSONObjectHelper.getStringDef( data.get(), "lastName", "!");
 	}
 
 	public UserType getUserType()
 	{
-		return person_type;
+        String role = JSONObjectHelper.getStringDef( data.get(), "role", "!");
+        if( role.contains("MANAGER"))
+            return UserType.MANAGER;
+        return UserType.DRIVER;
 	}
 
-	public void setUserType(UserType person_type)
-	{
-		this.person_type = person_type;
-	}
-	
+    public boolean isPinSet()
+    {
+        return !JSONObjectHelper.getStringDef( data.get(), "driverPin", "").trim().equals("");
+    }
+
+    public String getPin()
+    {
+        return JSONObjectHelper.getStringDef( data.get(), "driverPin", null);
+    }
+
+
 	@Override
 	public String toString()
 	{
-		return person_name;
+		return getUserName();
 	}
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString( data.getJSON());
+    }
+
+    public void readFromParcel(Parcel in)
+    {
+        data.setJSON( in.readString());
+    }
+
+    public static final Parcelable.Creator<UserItem> CREATOR = new Parcelable.Creator<UserItem>()
+    {
+        public UserItem createFromParcel(Parcel in)
+        {
+            return new UserItem(in);
+        }
+
+        public UserItem[] newArray(int size)
+        {
+            return new UserItem[size];
+        }
+    };
 }

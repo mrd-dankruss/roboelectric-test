@@ -6,6 +6,7 @@ import android.util.Log;
 import com.jayway.jsonpath.*;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
 import net.minidev.json.JSONArray;
@@ -27,6 +28,8 @@ public class Workflow extends Observable
     private Context context;
 
     private ReadContext workflow;
+    private ReadContext drivers;
+    private ReadContext managers;
 
     public Workflow()
     {
@@ -508,4 +511,95 @@ public class Workflow extends Observable
         } */
         return bags;
     }
+
+    /////////////////////////////////////////
+    // DRIVERS
+    /////////////////////////////////////////
+
+    public void setDriversFromJSON( String json)
+    {
+        drivers = JsonPath.parse( json);
+        this.notifyObservers();
+    }
+
+    public ArrayList<UserItem> getDrivers()
+    {
+        ArrayList<UserItem> drivers = null;
+
+        drivers = new ArrayList<UserItem>();
+
+        try
+        {
+            JSONArray r = this.drivers.read("$.response.drivers");
+
+            if( r instanceof JSONArray)
+            {
+                for( int i=0; i < r.size(); i++)
+                {
+                    JSONObject ro = (JSONObject)r.get(i);
+                    ro.put("role", "{DRIVER}");
+
+                    UserItem user = new UserItem( new ObservableJSONObject(ro));
+                    drivers.add( user);
+                }
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow drivers", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return drivers;
+
+    }
+
+    /////////////////////////////////////////
+    // MANAGERS
+    /////////////////////////////////////////
+
+    public void setManagersFromJSON( String json)
+    {
+        managers = JsonPath.parse( json);
+        this.notifyObservers();
+    }
+
+    public ArrayList<UserItem> getManagers()
+    {
+        ArrayList<UserItem> managers = null;
+
+        managers = new ArrayList<UserItem>();
+
+        try
+        {
+            JSONArray r = this.managers.read("$.response.manager");
+
+            if( r instanceof JSONArray)
+            {
+                for( int i=0; i < r.size(); i++)
+                {
+                    JSONObject ro = (JSONObject)r.get(i);
+                    ro.put("role", "{MANAGER}");
+
+                    UserItem user = new UserItem( new ObservableJSONObject(ro));
+                    managers.add( user);
+                }
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow drivers", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return managers;
+    }
+
+
 }

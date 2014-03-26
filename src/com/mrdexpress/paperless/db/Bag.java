@@ -90,7 +90,9 @@ public class Bag
 	public String getDestinationAddress()
 	{
         JSONObject jso = Workflow.getInstance().getStopForBagId( this.getBagID());
-        return JSONObjectHelper.getStringDef( jso, "address", "!");
+        if( jso != null)
+            return JSONObjectHelper.getStringDef( jso, "address", "!");
+        return "!";
     }
 
 	public String getDestinationContact()

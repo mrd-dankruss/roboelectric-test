@@ -54,7 +54,6 @@ public class DeliveryHandoverFragment extends Fragment
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
         bagid = Integer.parseInt( getActivity().getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID), -1);
-		// Log.d(TAG, "Zorro - Bag ID: " + bagid);
 
 		//list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 

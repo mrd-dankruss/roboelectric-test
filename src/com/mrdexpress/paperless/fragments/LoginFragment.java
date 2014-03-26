@@ -24,8 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
-import com.mrdexpress.paperless.ManagerAuthNotAssignedActivity;
+import com.mrdexpress.paperless.ManagerAuthActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
@@ -45,9 +44,7 @@ public class LoginFragment extends Fragment {
     private View rootView;
     private SharedPreferences prefs;
     ArrayList<UserItem> person_item_list;
-    private String selected_user_id;
-    private String selected_user_name;
-    private UserType selected_user_type;
+    private UserItem selectedUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,11 +61,9 @@ public class LoginFragment extends Fragment {
 
         prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-        person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext())
-                .getManagers());
+        person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext()).getManagers());
 
-        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getActivity()
-                .getApplicationContext(), person_item_list);
+        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getActivity().getApplicationContext(), person_item_list);
 
         // Set the adapter
         holder.text_manager_name.setAdapter(adapter);
@@ -77,17 +72,10 @@ public class LoginFragment extends Fragment {
         holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(
-                        position)).getUserID();
-                selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(
-                        position)).getUserName();
-                selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(
-                        position)).getUserType();
+                selectedUser = ((UserItem) holder.text_manager_name.getAdapter().getItem( position));
 
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService( Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(holder.text_manager_name.getWindowToken(), 0);
-
             }
         });
 
@@ -95,7 +83,22 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                new ManagerLoginUserTask().execute();
+                //new ManagerLoginUserTask().execute();
+                if ( true) {
+                    prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, Integer.toString( selectedUser.getUserID())).commit();
+                    prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selectedUser.getUserName()).commit();
+
+                    Intent intent = new Intent();
+                    intent.putExtra(ManagerAuthActivity.MANAGER_AUTH_SUCCESS, true);
+                    intent.putExtra("selected_manager", selectedUser);
+                    getActivity().setResult(Activity.RESULT_OK, intent);
+                    getActivity().finish();
+                } else {
+                    CustomToast toast = new CustomToast(getActivity());
+                    toast.setText(getString(R.string.text_unauthorised));
+                    toast.setSuccess(false);
+                    toast.show();
+                }
             }
         });
     }
@@ -117,69 +120,6 @@ public class LoginFragment extends Fragment {
 	}
 	*/
 
-    /**
-     * Requests token from server.
-     *
-     * @author htdahms
-     */
-    private class ManagerLoginUserTask extends AsyncTask<Void, Void, Boolean> {
-
-        private ProgressDialog dialog = new ProgressDialog(getActivity());
-
-        /** progress dialog to show user that the backup is processing. */
-        /**
-         * application context.
-         */
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Manager Authorisation");
-            this.dialog.show();
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... urls) {
-
-                if (selected_user_type == UserType.MANAGER)
-                {
-                    return true;
-                } else {
-                    return false;
-                }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-
-            if (result == true) {
-                // Close progress spinner
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
-
-                prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, selected_user_id)
-                        .commit();
-                prefs.edit()
-                        .putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selected_user_name)
-                        .commit();
-
-                Intent intent = new Intent();
-                intent.putExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, true);
-                intent.putExtra(ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, true);
-                getActivity().setResult(Activity.RESULT_OK, intent);
-                getActivity().finish();
-            } else {
-                // Close progress spinner
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
-                CustomToast toast = new CustomToast(getActivity());
-                toast.setText(getString(R.string.text_unauthorised));
-                toast.setSuccess(false);
-                toast.show();
-            }
-        }
-    }
-
     public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
 
         if (rootView == null) {
@@ -198,11 +138,9 @@ public class LoginFragment extends Fragment {
                     FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_REGULAR));
 
-            holder.text_manager_name = (AutoCompleteTextView) rootView
-                    .findViewById(R.id.text_login_screen_name);
-            holder.text_manager_pin = (TextView) rootView
-                    .findViewById(R.id.text_login_screen_password);
-            holder.text_manager_pin.setVisibility(View.GONE);
+            holder.text_manager_name = (AutoCompleteTextView) rootView.findViewById(R.id.text_login_screen_name);
+            holder.text_manager_pin = (TextView) rootView.findViewById(R.id.text_login_screen_password);
+            //holder.text_manager_pin.setVisibility(View.GONE);
             holder.button_login = (Button) rootView.findViewById(R.id.button_login_screen);
 
             holder.text_manager_name.setTypeface(typeface_roboto_regular);
@@ -210,19 +148,10 @@ public class LoginFragment extends Fragment {
             holder.button_login.setTypeface(typeface_roboto_bold);
 
 
-                holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        selected_user_id = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
-                                .getUserID();
-                        selected_user_name = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
-                                .getUserName();
-                        selected_user_type = ((UserItem) holder.text_manager_name.getAdapter().getItem(position))
-                                .getUserType();
-
-                        //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
-
+            holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    selectedUser = ((UserItem) holder.text_manager_name.getAdapter().getItem(position));
                     }
                 });
 

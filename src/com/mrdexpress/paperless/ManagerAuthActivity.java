@@ -6,47 +6,55 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
-import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
-public class ManagerAuthIncompleteScanActivity extends Activity {
+public class ManagerAuthActivity extends Activity {
 
     private ViewHolder holder;
     private View root_view;
-    private final String TAG = "ManagerAuthIncompleteScanActivity";
+    private final String TAG = "ManagerAuthActivity";
     private ProgressDialog dialog_login;
     private String imei_id;
     private String last_logged_in_manager_name;
     private String last_logged_in_manager_id;
 
-    public static String MANAGER_AUTH_INCOMPLETE_SCAN = "fi.gfarr.mrd.ManagerAuthIncompleteScanActivity.auth_success";
+    public static String MANAGER_AUTH_SUCCESS = "com.mrdexpress.paperless.ManagerAuthActivity.auth_success";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manager_auth_incomplete_scan);
+        setContentView(R.layout.activity_manager_auth_not_assigned);
 
-        setTitle(R.string.title_actionbar_manager_auth_not_assigned); // Change actionbar title
+        String title = "Manager Authorization Required";
+        String body = "";
+
+        Bundle extras = getIntent().getExtras();
+        if( extras != null)
+        {
+            if( extras.containsKey("title"))
+                title = extras.getString("title");
+            if( extras.containsKey("body"))
+                body = extras.getString("body");
+
+        }
+        setTitle( title);
 
         // Initialize ViewHolder
         initViewHolder();
@@ -54,50 +62,14 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         imei_id = mngr.getDeviceId();
 
-        // List of unscanned bags
-        new RetrieveUnScannedConsignmentsTask().execute();
+        SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
+        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
+        // Heading
+        holder.text_content.setText( body);
 
         initClickListeners();
-    }
-
-    private class RetrieveUnScannedConsignmentsTask extends AsyncTask<Void, Void, Void> {
-
-        private ProgressDialog dialog_progress = new ProgressDialog(
-                ManagerAuthIncompleteScanActivity.this);
-
-        private String list = "";
-
-        /** progress dialog to show user that the backup is processing. */
-        /**
-         * application context.
-         */
-        @Override
-        protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving unscanned consignments");
-            this.dialog_progress.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... urls) {
-            SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-                    Context.MODE_PRIVATE);
-
-            final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-            //list = DbHandler.getInstance(getApplicationContext()).getConsignmentsNotScanned( driverid);
-            System.out.println("list: " + list);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void nothing) {
-            holder.text_list.setText(list);
-
-            // Close progress spinner
-            if (dialog_progress.isShowing()) {
-                dialog_progress.dismiss();
-            }
-        }
     }
 
     @Override
@@ -106,25 +78,11 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
 
         SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-        last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME,
-                null);
-        last_logged_in_manager_id = prefs
-                .getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
+        last_logged_in_manager_name = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, null);
+        last_logged_in_manager_id = prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null);
 
         // Display name of manager
-        if (last_logged_in_manager_name == null) {
-            holder.text_name.setText("(Please select \"Select Manager\" below first!)");
-            holder.button_change_manager.setText("Select Manager");
-            holder.button_change_manager.setBackgroundResource(R.drawable.button_custom);
-            holder.button_continue.setBackgroundResource(R.drawable.button_custom_grey);
-            holder.button_continue.setEnabled(false);
-        } else {
-            holder.text_name.setText(last_logged_in_manager_name);
-            holder.button_change_manager.setText("Change Manager");
-            holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
-            holder.button_continue.setBackgroundResource(R.drawable.button_custom);
-            holder.button_continue.setEnabled(true);
-        }
+        holder.text_name.setText(last_logged_in_manager_name);
     }
 
     @Override
@@ -140,18 +98,35 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
     private void initClickListeners() {
         holder.button_continue.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Perform action on click
                 login();
             }
         });
 
         holder.button_change_manager.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Perform action on click
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//				startActivity(intent);
-                startActivityForResult(intent, ScanActivity.RESULT_INCOMPLETE_SCAN_AUTH);
+
+                // startActivity(intent);
+                startActivityForResult(intent, ScanActivity.RESULT_MANAGER_AUTH);
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ScanActivity.RESULT_MANAGER_AUTH) {
+            if (resultCode == RESULT_OK) {
+                if (data.getBooleanExtra(ManagerAuthActivity.MANAGER_AUTH_SUCCESS, false)) {
+                    Intent intent = new Intent();
+                    intent.putExtra(ManagerAuthActivity.MANAGER_AUTH_SUCCESS, true);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                }
+            }
+        }
     }
 
     /**
@@ -159,56 +134,55 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
      * start next activity.
      */
     public void login() {
+        class ActivityThread extends Thread {
+            public Activity activity = null;
+        }
 
         if (checkPin()) {
             // Progress spinner
-            dialog_login = new ProgressDialog(ManagerAuthIncompleteScanActivity.this);
+            dialog_login = new ProgressDialog(ManagerAuthActivity.this);
             dialog_login.setMessage("Authenticating");
             dialog_login.show();
 
 			/*
              * Make API call authenticating driver credentials in a thread.
 			 * When finished, send msg to thread handler to start ScanActivity
-			 * 
 			 */
-            final MyHandler handler = new MyHandler(this);
-            Thread t = new Thread() {
+            final MyHandler handler = new MyHandler(this) {
+                @Override
+                public void handleMessage(Message msg) {
+                    dialog_login.hide();
+                    displayToast(msg.obj.toString());
+                }
+            };
+            ActivityThread t = new ActivityThread() {
                 @Override
                 public void run() {
-
-                    String hash = PinManager.toMD5(holder.editText_pin.getText().toString());
-                    hash = holder.editText_pin.getText().toString(); // DEBUG
-
                     SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
                             Context.MODE_PRIVATE);
-
                     final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
                     String status = "";
-                    status = ServerInterface.getInstance(getApplicationContext()).authManager( last_logged_in_manager_id, driver_id, hash, imei_id);
 
-                    Log.d("Incomplete", "Success: " + status);
+                    //String hash; //PinManager.toMD5(holder.editText_pin.getText().toString());
+                    String hash = holder.editText_pin.getText().toString(); // DEBUG
+                    status = ServerInterface.getInstance(getApplicationContext()).authManager(
+                            last_logged_in_manager_id, driver_id, hash, imei_id);
                     if (status.equals("success")) {
                         // handler.sendEmptyMessage(0);
                         Intent intent = new Intent();
-                        intent.putExtra(MANAGER_AUTH_INCOMPLETE_SCAN, true);
+                        intent.putExtra(MANAGER_AUTH_SUCCESS, true);
                         setResult(Activity.RESULT_OK, intent);
                         finish();
                     } else {
-                        // handler.sendEmptyMessage(1);
+                        Message msg = handler.obtainMessage();
+                        msg.obj = getApplicationContext().getString(R.string.manager_login_wrong_password);
+                        handler.sendMessage(msg);
                     }
                 }
             };
-
+            t.activity = this;
             t.start();
         }
-		/*
-		 * if (holder.editText_pin.getText().toString().equals("1111")) { return
-		 * true; } else {
-		 * displayToast(getString(R.string.text_enter_pin_incorrect)); return
-		 * false; }
-		 */
-
     }
 
     /**
@@ -217,11 +191,9 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
      * @return True is valid.
      */
     private boolean checkPin() {
-
         // Check for 4-digit format
         String msg = PinManager.checkPin(holder.editText_pin.getText().toString(), this);
         if (msg.equals("OK")) {
-
             return true;
         } else {
             displayToast(msg);
@@ -248,16 +220,15 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
      * @author greg
      */
     static class MyHandler extends Handler {
-        private WeakReference<ManagerAuthIncompleteScanActivity> mActivity;
+        private WeakReference<ManagerAuthActivity> mActivity;
 
-        MyHandler(ManagerAuthIncompleteScanActivity managerAuthIncompleteScanActivity) {
-            mActivity = new WeakReference<ManagerAuthIncompleteScanActivity>(
-                    managerAuthIncompleteScanActivity);
+        MyHandler(ManagerAuthActivity activity) {
+            mActivity = new WeakReference<ManagerAuthActivity>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            ManagerAuthIncompleteScanActivity activity = mActivity.get();
+            ManagerAuthActivity activity = mActivity.get();
             if (activity != null) {
                 activity.handleMessage(msg);
             }
@@ -265,18 +236,16 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
     }
 
     /**
-     * Starts the barcode scan activity after user authenication thread has completed.
+     * Starts the barcode scan activity after user authentication thread has completed.
      *
      * @param msg
      */
     public void handleMessage(Message msg) {
-
         if (msg.what == 0) {
             Intent intent = new Intent(getApplicationContext(),
                     ViewDeliveriesFragmentActivity.class);
             // intent.putExtra(EXTRA_MESSAGE, message);
-			/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
+
             startActivity(intent);
 
             // Close progress spinner
@@ -309,18 +278,11 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_REGULAR));
 
-            holder.button_continue = (Button) root_view
-                    .findViewById(R.id.button_incomplete_scan_activity_continue);
-            holder.button_change_manager = (Button) root_view
-                    .findViewById(R.id.button_incomplete_scan_activity_change);
-            holder.editText_pin = (EditText) root_view
-                    .findViewById(R.id.editText_incomplete_scan_activity_pin);
-            holder.text_name = (TextView) root_view
-                    .findViewById(R.id.text_incomplete_scan_activity_name);
-            holder.text_content = (TextView) root_view
-                    .findViewById(R.id.textView_incomplete_scan_activity_heading);
-            holder.text_list = (TextView) root_view
-                    .findViewById(R.id.textView_incomplete_scan_activity_list);
+            holder.button_continue = (Button) root_view.findViewById(R.id.button_not_assigned_activity_continue);
+            holder.button_change_manager = (Button) root_view.findViewById(R.id.button_not_assigned_activity_change);
+            holder.editText_pin = (EditText) root_view.findViewById(R.id.editText_not_assigned_activity_pin);
+            holder.text_name = (TextView) root_view.findViewById(R.id.text_not_assigned_activity_name);
+            holder.text_content = (TextView) root_view.findViewById(R.id.textView_not_assigned_activity_heading);
 
             holder.button_continue.setTypeface(typeface_roboto_bold);
             holder.button_change_manager.setTypeface(typeface_roboto_bold);
@@ -344,7 +306,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
     // of times that findViewById is called, which affected listview performance
     static class ViewHolder {
         Button button_continue, button_change_manager;
-        TextView text_name, text_content, text_list;
+        TextView text_name, text_content;
         EditText editText_pin;
     }
 }

@@ -38,8 +38,7 @@ public class VariableManager
 	public static final String PREF_CURRENT_STOPID = PREF + "." + "currentStopId";
 	public static final String PREF_NETWORK_AVAILABLE = PREF + "." + "avail";
 	public static final String PREF_DRIVERID = PREF + "." + "driverid";
-	public static final String PREF_TRAINING_MODE = "TrainingRunMode"; // Is a training run
-																		// activated?
+
 	public static final String IMEI_TEST = "490154203237518";
 
 	public static String next_bag_id;

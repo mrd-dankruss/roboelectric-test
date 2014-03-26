@@ -256,8 +256,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 			}
 
 			holder.list = (ExpandableListView) rootView.findViewById(R.id.lvExp);
-			holder.button_continue = (Button) rootView
-					.findViewById(R.id.button_reason_partial_delivery);
+			holder.button_continue = (Button) rootView.findViewById(R.id.button_reason_partial_delivery);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -291,9 +290,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 	 */
 	private void prepareListData()
 	{
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
-		boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
 
         data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
 

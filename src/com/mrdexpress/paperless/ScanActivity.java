@@ -744,7 +744,6 @@ public class ScanActivity extends FragmentActivity {
                     Context.MODE_PRIVATE);
 
             final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-            final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
             String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
             if (!new_bag_id.isEmpty()){

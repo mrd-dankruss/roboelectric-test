@@ -136,41 +136,31 @@ public class ReasonForFailedHandoverFragment extends Fragment
 		@Override
 		protected String doInBackground(String... args)
 		{
-			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-			boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
+            JSONObject result_object;
+            String status = "";
+            try
+            {
+                String json_string = ServerInterface.getInstance(getActivity())
+                        .postFailedHandover(args[0], args[1]);
+                Log.d(TAG, json_string);
 
-			if (training_mode)
-			{
-				return "success";
-			}
-			else
-			{
-				JSONObject result_object;
-				String status = "";
-				try
-				{
-					String json_string = ServerInterface.getInstance(getActivity())
-							.postFailedHandover(args[0], args[1]);
-					Log.d(TAG, json_string);
-					
-					result_object = new JSONObject(json_string);
-					
-					// <TODO, NB!!>: API returns incorrect values so issue MOB-20 requires the following hardcoded + incorrect code.
-					result_object = new JSONObject("{'response':{'waybill':{'status':'success'}}}");
-					// </TODO, NB!!>
-					
-					status = result_object.getJSONObject("response").getJSONObject("waybill")
-							.getString("status");
-				}
-				catch (JSONException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                result_object = new JSONObject(json_string);
 
-				return status;
-			}
+                // <TODO, NB!!>: API returns incorrect values so issue MOB-20 requires the following hardcoded + incorrect code.
+                result_object = new JSONObject("{'response':{'waybill':{'status':'success'}}}");
+                // </TODO, NB!!>
+
+                status = result_object.getJSONObject("response").getJSONObject("waybill")
+                        .getString("status");
+            }
+            catch (JSONException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            return status;
 		}
 
 		@Override

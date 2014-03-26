@@ -153,18 +153,12 @@ public class ManagerAuthNotAssignedActivity extends Activity {
                     SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
                             Context.MODE_PRIVATE);
                     final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
-                    final boolean training_mode = prefs.getBoolean(
-                            VariableManager.PREF_TRAINING_MODE, false);
                     String status = "";
 
-                    if (training_mode) {
-                        status = "success";
-                    } else {
-                        //String hash; //PinManager.toMD5(holder.editText_pin.getText().toString());
-                        String hash = holder.editText_pin.getText().toString(); // DEBUG
-                        status = ServerInterface.getInstance(getApplicationContext()).authManager(
-                                last_logged_in_manager_id, driver_id, hash, imei_id);
-                    }
+                    //String hash; //PinManager.toMD5(holder.editText_pin.getText().toString());
+                    String hash = holder.editText_pin.getText().toString(); // DEBUG
+                    status = ServerInterface.getInstance(getApplicationContext()).authManager(
+                            last_logged_in_manager_id, driver_id, hash, imei_id);
                     if (status.equals("success")) {
                         // handler.sendEmptyMessage(0);
                         Intent intent = new Intent();

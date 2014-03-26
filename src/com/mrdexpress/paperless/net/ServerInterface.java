@@ -239,55 +239,7 @@ public class ServerInterface {
 
         String response = getInputStreamFromUrl(url);
 
-        JSONArray drivers_jArray = null;
-
-        try {
-            JSONObject jObject = new JSONObject(response);
-            if (jObject.has("response")) {
-                drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
-            } else if (jObject.has("error")) {
-				/*CustomToast toast = new CustomToast(context);
-				toast.setSuccess(true);
-				toast.setText("Error" + stripErrorCode(jObject.toString()));
-				toast.show();*/
-            }
-        } catch (JSONException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG, sw.toString());
-        }
-
-        if (drivers_jArray != null) {
-            for (int i = 0; i < drivers_jArray.length(); i++) {
-                try {
-                    // ID
-                    int id = Integer.parseInt(drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_ID));
-
-                    // Name
-                    String name = drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_FIRSTNAME)
-                            + " "
-                            + drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_LASTNAME);
-
-                    Log.d(TAG, "Driver retrieved: " + name);
-
-                    // PIN
-                    String pin = drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_PIN);
-
-                    DbHandler.getInstance(context).addDriver(new Driver(id, name, pin));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    if (VariableManager.DEBUG) {
-                        displayToast("JSONException: driver/drivers");
-                    }
-                }
-            }
-        }
+        Workflow.getInstance().setDriversFromJSON( response);
     }
 
     /**
@@ -303,47 +255,7 @@ public class ServerInterface {
         String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken=" + token;
         String response = getInputStreamFromUrl(url);
 
-        JSONArray managers_jArray = null;
-
-        try {
-            JSONObject jObject = new JSONObject(response);
-            if (jObject.has("response")) {
-                managers_jArray = jObject.getJSONObject("response").getJSONArray("manager");
-            } else if (jObject.has("error")) {
-				/*CustomToast toast = new CustomToast((Activity) context);
-				toast.setSuccess(true);
-				toast.setText("Error" + stripErrorCode(jObject.toString()));
-				toast.show();*/
-            }
-        } catch (JSONException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG, sw.toString());
-        }
-
-        if (managers_jArray != null) {
-            for (int i = 0; i < managers_jArray.length(); i++) {
-                try {
-                    // ID
-                    String id = managers_jArray.getJSONObject(i).getString("id");
-
-                    // First Name
-                    String first_name = managers_jArray.getJSONObject(i).getString("firstName");
-
-                    // Last name
-                    String last_name = managers_jArray.getJSONObject(i).getString("lastName");
-
-                    DbHandler.getInstance(context).addManager(id, first_name + " " + last_name);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    if (VariableManager.DEBUG) {
-                        displayToast("JSONException: manager/managers");
-                    }
-                }
-            }
-        }
+        Workflow.getInstance().setManagersFromJSON( response);
     }
 
     /**

@@ -24,6 +24,7 @@ public class DriverHomeActivity extends FragmentActivity
 		if (fragment == null)
 		{
 			fragment = new DriverHomeFragment();
+            fragment.setArguments( savedInstanceState);
 			fm.beginTransaction().add(R.id.activity_home_container, fragment).commit();
 		}
 		// Fragment: Home End

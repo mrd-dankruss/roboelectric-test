@@ -26,7 +26,7 @@ public class DeliveryHandoverDataObjectArray implements Parcelable
 	private DeliveryHandoverDataObjectArray(Parcel in)
 	{
 		mObjList = new ArrayList<DeliveryHandoverDataObject>();
-		in.readList(mObjList, getClass().getClassLoader());
+		in.readList(mObjList, mObjList.getClass().getClassLoader());
 	}
 
 	public static final Parcelable.Creator<DeliveryHandoverDataObjectArray> CREATOR = new Parcelable.Creator<DeliveryHandoverDataObjectArray>()

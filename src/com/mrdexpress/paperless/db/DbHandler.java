@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -435,20 +436,6 @@ public class DbHandler extends SQLiteOpenHelper
 	 */
 	public ArrayList<DialogDataObject> getContacts(String bag_id)
 	{
-		training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
-
-		if (training_run)
-		{
-			ArrayList<DialogDataObject> contacts = new ArrayList<DialogDataObject>();
-			// Log.d(TAG, "zeus adding fake contacts");
-			contacts.add(new DialogDataObject("Branch Manager", "0822231234"));
-			contacts.add(new DialogDataObject("Dispatch Manager", "083421888"));
-			contacts.add(new DialogDataObject("Supervisor", "076556445"));
-
-			return contacts;
-		}
-		else
-		{
 			// Log.d(TAG, "zeus adding real contacts");
 			SQLiteDatabase db = null;
 			ArrayList<DialogDataObject> contacts = new ArrayList<DialogDataObject>();
@@ -508,7 +495,6 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 			return contacts;
-		}
 	}
 
 	public ArrayList<ComLogObject> getComLog(String bag_id)
@@ -742,7 +728,7 @@ public class DbHandler extends SQLiteOpenHelper
 	 * 
 	 * @return
 	 */
-	public ArrayList<UserItem> getDrivers()
+	/*public ArrayList<UserItem> getDrivers()
 	{
 		SQLiteDatabase db = null;
 		try
@@ -762,7 +748,13 @@ public class DbHandler extends SQLiteOpenHelper
 					String driver_id = cursor.getString(cursor.getColumnIndex(C_DRIVER_ID));
 					String driver_name = cursor.getString(cursor.getColumnIndex(C_DRIVER_NAME));
 
-					UserItem person_item = new UserItem(driver_id, driver_name, UserType.DRIVER);
+                    net.minidev.json.JSONObject jso = new net.minidev.json.JSONObject();
+                    jso.put("id", driver_id);
+                    jso.put("firstname", driver_name);
+                    jso.put("surname", "");
+                    jso.put("role","{DRIVER}");
+
+                    UserItem person_item = new UserItem( new ObservableJSONObject( jso) );
 
 					drivers.add(person_item);
 
@@ -797,7 +789,7 @@ public class DbHandler extends SQLiteOpenHelper
 				}
 			}
 		}
-	}
+	}    */
 
 	/**
 	 * Returns list of drivers
@@ -824,7 +816,13 @@ public class DbHandler extends SQLiteOpenHelper
 					String manager_id = cursor.getString(cursor.getColumnIndex(C_MANAGER_ID));
 					String manager_name = cursor.getString(cursor.getColumnIndex(C_MANAGER_NAME));
 
-					UserItem person_item = new UserItem(manager_id, manager_name, UserType.MANAGER);
+                    net.minidev.json.JSONObject jso = new net.minidev.json.JSONObject();
+                    jso.put("id", manager_id);
+                    jso.put("firstname", manager_name);
+                    jso.put("surname", "");
+                    jso.put("role","{MANAGER}");
+
+					UserItem person_item = new UserItem( new ObservableJSONObject( jso) );
 
 					managers.add(person_item);
 

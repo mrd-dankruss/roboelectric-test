@@ -70,19 +70,8 @@ public class CallListFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-						Context.MODE_PRIVATE);
-				boolean training_run = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
+		        SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
 
-				if (training_run)
-				{
-					CustomToast toast = new CustomToast(getActivity());
-					toast.setText(getString(R.string.text_trainingrun_call));
-					toast.setSuccess(true);
-					toast.show();
-				}
-				else
-				{
 					parentItemPosition = position;
 					
 					Calendar c = Calendar.getInstance();
@@ -107,8 +96,7 @@ public class CallListFragment extends Fragment
 
 					intent.setData(Uri.parse("tel:" + phone_number));
 					getActivity().startActivity(intent);
-				}
-			}
+    			}
 		});
 	}
 

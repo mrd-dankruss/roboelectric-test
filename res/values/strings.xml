@@ -126,7 +126,7 @@
     <string name="text_todo_deliveries_complete_1">All packages delivered successfully!</string>
     <string name="text_todo_deliveries_complete_2">Please return to Dispatch</string>
     <string name="text_transfer_data_uploading">Uploading data to server</string>
-    <string name="text_process_handover_successful">Process succcessful handover</string>
+    <string name="text_process_handover_successful">Process successful handover</string>
     <string name="text_process_handover_failed">Process failed handover</string>
     <string name="text_not_assigned_message">This consignment has not been assigned to you!</string>
     <string name="text_unauthorised">Authorisation Failed, Please Try Again.</string>

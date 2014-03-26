@@ -1,5 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,7 +33,7 @@ public class DriverHomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-        initViewHolder(inflater, container); // Inflate ViewHolder static instance
+        initViewHolder(inflater, container, savedInstanceState); // Inflate ViewHolder static instance
 
         return rootView;
     }
@@ -43,7 +44,6 @@ public class DriverHomeFragment extends Fragment {
         // Reset training run mode
 
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(VariableManager.PREF_TRAINING_MODE, false);
         editor.apply();
 
         holder.button_milkrun.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +54,7 @@ public class DriverHomeFragment extends Fragment {
         });
     }
 
-    public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 
         if (rootView == null) {
 
@@ -62,6 +62,7 @@ public class DriverHomeFragment extends Fragment {
 
             if (holder == null) {
                 holder = new ViewHolder();
+                holder.bundle = bundle;
             }
 
             Typeface typeface_robotoBold = Typeface.createFromAsset(getActivity().getAssets(),
@@ -91,6 +92,7 @@ public class DriverHomeFragment extends Fragment {
     // Creates static instances of resources.
     // Increases performance by only finding and inflating resources only once.
     static class ViewHolder {
+        Bundle bundle;
         Button button_milkrun;
         Button button_training_run;
     }
@@ -135,7 +137,12 @@ public class DriverHomeFragment extends Fragment {
             Intent intent = new Intent(getActivity(), ScanActivity.class);
 
             // Pass driver name on
-            intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent().getStringExtra(VariableManager.EXTRA_DRIVER));
+            Activity a = getActivity();
+            Intent i = a.getIntent();
+            //String s = i.getStringExtra(VariableManager.EXTRA_DRIVER);
+
+            //String s = getActivity().geta
+            intent.putExtra(VariableManager.EXTRA_DRIVER, "SAM");
 
 			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
 					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
