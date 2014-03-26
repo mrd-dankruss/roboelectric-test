@@ -46,6 +46,7 @@ import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Drivers;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
@@ -53,7 +54,7 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
-import com.mrdexpress.paperless.workflow.Workflow;
+import com.mrdexpress.paperless.adapters.SelectDriverListAdapter;
 
 public class MainActivity extends Activity
 {
@@ -74,6 +75,7 @@ public class MainActivity extends Activity
 	AtomicInteger msgId = new AtomicInteger();
 	Context context;
 	private boolean is_registration_successful;
+    SelectDriverListAdapter sdriver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -84,6 +86,7 @@ public class MainActivity extends Activity
 		new RequestTokenTask().execute();
 
 		new UpdateApp().execute();
+
 
 		// Check & store network availability
 		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
@@ -140,11 +143,29 @@ public class MainActivity extends Activity
 			{
                 selected_user = ((UserItem) holder.text_name.getAdapter().getItem(position));
 
-				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+				//InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				//imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
 
 			}
 		});
+
+        holder.name_view.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Drivers.DriversObject obj = ((Drivers.DriversObject)holder.name_view.getAdapter().getItem(i));
+                int id = obj.getid();
+                selected_user_id = Integer.toString(id);
+                selected_user_name = obj.getFullName();
+                selected_user_type = UserType.DRIVER;
+                holder.text_name.setText(selected_user_name);
+                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+	}
+        });
+
+        //sdriver = new SelectDriverListAdapter(this);
+        //holder.name_view.setAdapter(sdriver);
+        //Drivers.getInstance().getDriversData();
 
 	}
 
@@ -344,11 +365,23 @@ public class MainActivity extends Activity
                 person_item_list.addAll(Workflow.getInstance().getDrivers());
                 person_item_list.addAll(Workflow.getInstance().getManagers());
 
+                Drivers.getInstance().getDriversData();
+
+                //ArrayList<Drivers.DriversObject> dob = Drivers.getInstance().getDriversDataList();
+                sdriver = new SelectDriverListAdapter( getApplicationContext() , Drivers.getInstance().getDriversDataList());
+                //sdriver = new SelectDriverListAdapter(this);
+                holder.name_view.setAdapter(sdriver);
+                hideSoftKeyboard();
+                //Drivers.getInstance().getDriversData();
+
+
 				// Close progress spinner
 				if (dialog.isShowing())
 				{
 					dialog.dismiss();
 				}
+                holder.name_view.requestFocus();
+
 
 				// Retrieve list of drivers in a thread
 				// new RequestDriverManagerTask().execute();
@@ -900,6 +933,9 @@ public class MainActivity extends Activity
 			{
 				holder = new ViewHolder();
 			}
+             //holder.name_view =
+
+            holder.name_view = (ListView) root_view.findViewById(R.id.driver_select_list);
 
 			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
@@ -913,6 +949,8 @@ public class MainActivity extends Activity
 
 			holder.text_name = (AutoCompleteTextView) root_view
 					.findViewById(R.id.text_mainmenu_name);
+            holder.text_name.setEnabled(false);
+            holder.text_name.setFocusable(false);
 			holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
 
 			holder.text_password.setTypeface(typeface_roboto_regular);
@@ -959,6 +997,14 @@ public class MainActivity extends Activity
 		Button button_login;
 		AutoCompleteTextView text_name;
 		EditText text_password;
+        ListView name_view;
 	}
+
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+}
+    }
 
 }
