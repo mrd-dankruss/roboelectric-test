@@ -5,6 +5,7 @@ import android.util.Log;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
+import com.mrdexpress.paperless.datatype.UserItem;
 import net.minidev.json.JSONArray;
 import org.json.JSONObject;
 import java.io.Serializable;
@@ -82,10 +83,13 @@ public class Drivers {
         return driverlistarray.get(activeindex);
     }
 
+
     public class DriversObject implements Serializable {
         private Integer id;
         private String firstName;
         private String lastName;
+        private String driverPin;
+
         public net.minidev.json.JSONObject jsondata;
 
         public DriversObject(net.minidev.json.JSONObject json) {
@@ -128,6 +132,13 @@ public class Drivers {
         public void setfirstName(String firstName) {
             this.firstName = firstName;
         }
+        public String getdriverPin() {
+            return driverPin;
+        }
+
+        public void setdriverPin(String pin) {
+            this.driverPin = pin;
+        }
 
         public String getlastName() {
             return lastName;
@@ -139,6 +150,10 @@ public class Drivers {
 
         public void setlastName(String lastName) {
             this.lastName = lastName;
+        }
+
+        public UserItem.UserType getUserType(){
+            return UserItem.UserType.DRIVER;
         }
     }
 
