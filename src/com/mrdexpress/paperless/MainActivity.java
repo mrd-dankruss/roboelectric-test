@@ -55,7 +55,6 @@ import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.adapters.SelectDriverListAdapter;
-import com.mrdexpress.paperless.workflow.Workflow;
 
 public class MainActivity extends Activity
 {
@@ -63,7 +62,7 @@ public class MainActivity extends Activity
 	private View root_view;
 	private final String TAG = "MainActivity";
 	private ArrayList<UserItem> person_item_list;
-    private Drivers.DriversObject selected_user;
+    private UserItem selected_user;
 
 	public static final String EXTRA_MESSAGE = "message";
 	public static final String PROPERTY_REG_ID = "registration_id";
@@ -142,7 +141,7 @@ public class MainActivity extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
 			{
-                //selected_user = ((UserItem) holder.text_name.getAdapter().getItem(position));
+                selected_user = ((UserItem) holder.text_name.getAdapter().getItem(position));
 
 				//InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				//imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
@@ -155,14 +154,11 @@ public class MainActivity extends Activity
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Drivers.DriversObject obj = ((Drivers.DriversObject)holder.name_view.getAdapter().getItem(i));
                 int id = obj.getid();
-                selected_user = obj;
-                holder.text_name.setText(obj.getFullName());
-                /*
+
                 selected_user_id = Integer.toString(id);
                 selected_user_name = obj.getFullName();
                 selected_user_type = UserType.DRIVER;
                 holder.text_name.setText(selected_user_name);
-                */
                 //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
 	}
@@ -217,7 +213,7 @@ public class MainActivity extends Activity
 					}
                     else
                     {
-                        displayCustomToast("Please select valid driver on the list above.");
+                        displayCustomToast("Please select valid driver by entering the first letter in his name or surname");
                     }
 				}
 			}
@@ -229,13 +225,13 @@ public class MainActivity extends Activity
     {
         String hash = PinManager.toMD5(holder.text_password.getText().toString());
         //hash = holder.text_password.getText().toString();
-        if( selected_user.getdriverPin().equals( hash)) {
+        if( selected_user.getPin().equals( hash)) {
             if (type == UserType.DRIVER) {
-                if( selected_user.getdriverPin().isEmpty() )
+                if( !selected_user.isPinSet())
                 {
                     SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString(VariableManager.PREF_DRIVERID, Integer.toString(selected_user.getid()));
+                    editor.putString(VariableManager.PREF_DRIVERID, Integer.toString(selected_user.getUserID()));
                     editor.apply();
 
                     Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
@@ -245,12 +241,12 @@ public class MainActivity extends Activity
                     // Store currently selected driverid in shared prefs
                     SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString(VariableManager.PREF_DRIVERID, Integer.toString(selected_user.getid()));
+                    editor.putString(VariableManager.PREF_DRIVERID, Integer.toString(selected_user.getUserID()));
                     editor.apply();
 
                     Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
 
-                    intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user.getfirstName());
+                    intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user.getUserName());
                     //intent.putExtra("selected_driver", selected_user);
 
                     startActivity(intent);
@@ -376,6 +372,7 @@ public class MainActivity extends Activity
                 sdriver = new SelectDriverListAdapter( getApplicationContext() , Drivers.getInstance().getDriversDataList());
                 //sdriver = new SelectDriverListAdapter(this);
                 holder.name_view.setAdapter(sdriver);
+                hideSoftKeyboard();
                 //Drivers.getInstance().getDriversData();
 
 
