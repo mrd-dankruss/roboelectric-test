@@ -9,20 +9,20 @@ import org.json.JSONObject;
  * Created by hannobean on 2014/03/25.
  */
 public class Ajax {
+    private static Ajax _instance = null;
     public Activity globalactivity;
     public Context globalcontext;
     public AQuery query;
     private static final String API_URL = "http://uat.mrdexpress.com/api/";
 
-    public Ajax(Activity act){
-        globalactivity = act;
-        query = new AQuery(act);
+    public static Ajax getInstance() {
+        if (_instance == null) {
+            _instance = new Ajax();
+        }
+        return _instance;
     }
 
-    public Ajax(Context ctx){
-        globalcontext = ctx;
-        query = new AQuery(ctx);
-    }
+
 
     public void doAjax(String url , String callback){
         query.ajax(url , JSONObject.class , this , callback);

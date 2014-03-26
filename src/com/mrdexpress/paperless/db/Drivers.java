@@ -7,7 +7,6 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
 import net.minidev.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -21,12 +20,13 @@ public class Drivers {
     private Context context;
     private ReadContext drivers;
     private Boolean loaded = false;
+    private ArrayList<DriversObject> driverlistarray;
+    private Integer activeindex = 0;
 
     public static Drivers getInstance() {
         if (_instance == null) {
             _instance = new Drivers();
         }
-
         return _instance;
     }
 
@@ -48,6 +48,7 @@ public class Drivers {
         net.minidev.json.JSONArray driverlist = null;
         try {
             driverlist = drivers.read("$.response.drivers[*]");
+            driverlistarray = getDriversDataList(driverlist);
         } catch (PathNotFoundException e) {
             Log.e("JSON Exception", e.toString());
         } catch (Exception e) {
@@ -63,6 +64,22 @@ public class Drivers {
             list.add(new DriversObject((net.minidev.json.JSONObject)json.get(i)));
         }
         return list;
+    }
+
+    public ArrayList<DriversObject> getDriversDataList(net.minidev.json.JSONArray json){
+        ArrayList<DriversObject> list = new ArrayList<DriversObject>();
+        for (int i=0; i<json.size(); i++) {
+            list.add(new DriversObject((net.minidev.json.JSONObject)json.get(i)));
+        }
+        return list;
+    }
+
+    public void setActiveIndex(Integer index){
+        activeindex = index;
+    }
+
+    public DriversObject getActiveDriver(){
+        return driverlistarray.get(activeindex);
     }
 
     public class DriversObject implements Serializable {
@@ -81,7 +98,7 @@ public class Drivers {
                             java.lang.reflect.Method method = this.getClass().getDeclaredMethod("set" + field.getName().toString(), java.lang.String.class);
                             method.invoke(this , (String)json.get(field.getName()));
                         }catch(Exception e){
-                            Log.e("MRDEX" , e.getMessage());
+                            Log.e("MRD-Exception" , e.getMessage());
                         }
                     }
                     else if (field.getType() == java.lang.Integer.class){
@@ -89,13 +106,13 @@ public class Drivers {
                             java.lang.reflect.Method method = this.getClass().getDeclaredMethod("set" + field.getName().toString(), java.lang.Integer.class);
                             method.invoke(this , (Integer)json.get(field.getName()));
                         }catch(Exception e){
-                            Log.e("MRDEX" , e.getMessage());
+                            Log.e("MRD-Exception" , e.getMessage());
                         }
                     }
                 }
             }
-            Log.e("WTF" , allFields.toString());
         }
+
         public int getid() {
             return id;
         }
