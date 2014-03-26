@@ -144,6 +144,11 @@ public class DriverHomeFragment extends Fragment {
             //String s = getActivity().geta
             intent.putExtra(VariableManager.EXTRA_DRIVER, "SAM");
 
+
+
+
+            
+
 			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
 					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
