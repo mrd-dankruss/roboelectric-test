@@ -19,6 +19,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Drivers;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -142,12 +143,8 @@ public class DriverHomeFragment extends Fragment {
             //String s = i.getStringExtra(VariableManager.EXTRA_DRIVER);
 
             //String s = getActivity().geta
-            intent.putExtra(VariableManager.EXTRA_DRIVER, "SAM");
-
-
-
-
-            
+            Drivers.DriversObject obj = Drivers.getInstance().getActiveDriver();
+            intent.putExtra(VariableManager.EXTRA_DRIVER, Drivers.getInstance().getActiveDriver().getfirstName());
 
 			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
 					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
