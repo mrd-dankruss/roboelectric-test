@@ -157,6 +157,7 @@ public class MainActivity extends Activity
                 int id = obj.getid();
                 selected_user = obj;
                 holder.text_name.setText(obj.getFullName());
+                Drivers.getInstance().setActiveIndex(i);
                 /*
                 selected_user_id = Integer.toString(id);
                 selected_user_name = obj.getFullName();
