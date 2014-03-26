@@ -744,53 +744,20 @@ public class ScanActivity extends FragmentActivity {
                     Context.MODE_PRIVATE);
 
             final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-            final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE,
-                    false);
+            final boolean training_mode = prefs.getBoolean(VariableManager.PREF_TRAINING_MODE, false);
 
-            if (training_mode) {
-                ContentValues values = new ContentValues();
-
-                Random random = new Random();
-                int randomBagID = random.nextInt(1000);
-
-                values.put(DbHandler.C_BAG_ID, randomBagID); // PK
-                values.put(DbHandler.C_BAG_DEST_ADDRESS, "Sesami Street");
-                values.put(DbHandler.C_BAG_DEST_CONTACT, "012469977");
-                values.put(DbHandler.C_BAG_DEST_HUBCODE, "909090");
-                values.put(DbHandler.C_BAG_DEST_HUBNAME, "Philly");
-                values.put(DbHandler.C_BAG_DEST_LAT, "-18.1234231");
-                values.put(DbHandler.C_BAG_DEST_LONG, "33.1852100");
-                values.put(DbHandler.C_BAG_DEST_SUBURB, "Bel Air");
-                values.put(DbHandler.C_BAG_DEST_TOWN, "Philledelpia");
-                values.put(DbHandler.C_BAG_BARCODE, last_scanned_barcode);
-                values.put(DbHandler.C_BAG_ASSIGNED, 1);
-                values.put(DbHandler.C_BAG_SCANNED, 1);
-                values.put(DbHandler.C_BAG_CREATION_TIME, "241200B Feb 2014");
-                values.put(DbHandler.C_BAG_NUM_ITEMS, "1");
-                values.put(DbHandler.C_BAG_DRIVER_ID, VariableManager.TRAININGRUN_MILKRUN_DRIVERID);
-                values.put(DbHandler.C_BAG_STATUS, Bag.STATUS_TODO);
-
-                Log.d(TAG,
-                        "Added trainingrun bagid: "
-                                + randomBagID
-                                + " "
-                                + DbHandler.getInstance(getApplicationContext()).addRow(
-                                DbHandler.TABLE_BAGS_TRAINING, values));
+            String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
+            if (!new_bag_id.isEmpty()){
+            //    ServerInterface.getInstance(getApplicationContext()).downloadBag(
+            //            getApplicationContext(),new_bag_id,driverid);
+            // TODO: Gary wire this back in...!!
+            //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
+                adapter.notifyDataSetChanged();
+                UpDateBagsForAdapter(last_scanned_barcode);
+                handleDecode(last_scanned_barcode);
 
             } else {
-                String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
-                if (!new_bag_id.isEmpty()){
-                //    ServerInterface.getInstance(getApplicationContext()).downloadBag(
-                //            getApplicationContext(),new_bag_id,driverid);
-                // TODO: Gary wire this back in...!!
-                //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
-                    adapter.notifyDataSetChanged();
-                    UpDateBagsForAdapter(last_scanned_barcode);
-                    handleDecode(last_scanned_barcode);
-
-                } else {
-                    barCodeScanFailed();
-                }
+                barCodeScanFailed();
             }
             return null;
         }
@@ -863,7 +830,7 @@ public class ScanActivity extends FragmentActivity {
             TextView text_view_qty = (TextView) convertView.findViewById(R.id.testView_row_scan_qty);
 			ImageView image_green_tick = (ImageView)convertView.findViewById(R.id.imageView_row_scan_tick);
 			
-            text_view_qty.setText("(" + bag.getNumberItems() + " ITEM" + (bag.getNumberItems() == 1?"":"S") + " )");
+            text_view_qty.setText("( " + bag.getNumberItems() + " ITEM" + (bag.getNumberItems() == 1?"":"S") + " )");
 			text_view_consignment.setText(bag.getBarcode());
             text_view_hubcode.setText( JSONObjectHelper.getStringDef( bag.getDestinationExtra(), "hubcode", "!"));
 			

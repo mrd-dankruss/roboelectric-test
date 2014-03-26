@@ -12,6 +12,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 
@@ -480,5 +481,31 @@ public class Workflow extends Observable
             jsostatus.put("reason", reason);
             bag.put("status", jsostatus);
         }
+    }
+
+    public ArrayList<HashMap<String, String>> getBagCoords()
+    {
+        ArrayList<HashMap<String, String>> bags = null;
+        bags = new ArrayList<HashMap<String, String>>();
+
+        /*while (true)
+        {
+            String address = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_ADDRESS));
+
+            String hubname = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_HUBNAME));
+
+            String lat = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT));
+
+            String lon = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG));
+
+            HashMap<String, String> bag = new HashMap<String, String>();
+            bag.put(VariableManager.EXTRA_BAG_ADDRESS, address);
+            bag.put(VariableManager.EXTRA_BAG_HUBNAME, hubname);
+            bag.put(VariableManager.EXTRA_BAG_LAT, lat);
+            bag.put(VariableManager.EXTRA_BAG_LON, lon);
+
+            bags.add(bag);
+        } */
+        return bags;
     }
 }
