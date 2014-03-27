@@ -89,6 +89,7 @@ public class MainActivity extends Activity
 		new UpdateApp().execute();
 
 
+
 		// Check & store network availability
 		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();

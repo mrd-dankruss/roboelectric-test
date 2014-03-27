@@ -243,119 +243,13 @@ public class ServerInterface {
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 if(json != null){
                     //successful ajax call, show status code and json content
-                    //Toast.makeText(aq.getContext(), status.getCode() + ":" + json.toString(), Toast.LENGTH_LONG).show();
-
                     Drivers drvs = Drivers.getInstance();
                     drvs.setDrivers(json);
-
-
-
-                    JSONArray drivers_jArray = null;
-                    try {
-                        JSONObject jObject = json;
-                        if (jObject.has("response")) {
-                            drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
-                        } else if (jObject.has("error")) {
-
-                        }
-                    } catch (JSONException e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        Log.e(TAG, sw.toString());
-                    }
-                    if (drivers_jArray != null) {
-                        for (int i = 0; i < drivers_jArray.length(); i++) {
-                            try {
-                                // ID
-                                int id = Integer.parseInt(drivers_jArray.getJSONObject(i).getString(
-                                        VariableManager.JSON_KEY_DRIVER_ID));
-
-                                // Name
-                                String name = drivers_jArray.getJSONObject(i).getString(
-                                        VariableManager.JSON_KEY_DRIVER_FIRSTNAME)
-                                        + " "
-                                        + drivers_jArray.getJSONObject(i).getString(
-                                        VariableManager.JSON_KEY_DRIVER_LASTNAME);
-
-                                Log.d(TAG, "Driver retrieved: " + name);
-
-                                // PIN
-                                String pin = drivers_jArray.getJSONObject(i).getString(
-                                        VariableManager.JSON_KEY_DRIVER_PIN);
-
-                                DbHandler.getInstance(ctext).addDriver(new Driver(id, name, pin));
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                if (VariableManager.DEBUG) {
-                                    displayToast("JSONException: driver/drivers");
-                                }
-                            }
-                        }
-
-                }else{
-                    //ajax error, show error code
-                    Toast.makeText(aq.getContext(), "Error:" + status.getCode(), Toast.LENGTH_LONG).show();
+                    Workflow.getInstance().setDriversFromJSON( json.toString() );
                 }
             }
-        }});
-        /*
 
-        String response = getInputStreamFromUrl(url);
-
-<<<<<<< .mine
-        Workflow.getInstance().setDriversFromJSON( response);
-
-
-
-
-
-
-
-=======
-        JSONArray drivers_jArray = null;
-
-        try {
-            JSONObject jObject = new JSONObject(response);
-            if (jObject.has("response")) {
-                drivers_jArray = jObject.getJSONObject("response").getJSONArray("drivers");
-            } else if (jObject.has("error")) {
-
->>>>>>> .theirs
-    }
-
-        if (drivers_jArray != null) {
-            for (int i = 0; i < drivers_jArray.length(); i++) {
-                try {
-                    // ID
-                    int id = Integer.parseInt(drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_ID));
-
-                    // Name
-                    String name = drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_FIRSTNAME)
-                            + " "
-                            + drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_LASTNAME);
-
-                    Log.d(TAG, "Driver retrieved: " + name);
-
-                    // PIN
-                    String pin = drivers_jArray.getJSONObject(i).getString(
-                            VariableManager.JSON_KEY_DRIVER_PIN);
-
-                    DbHandler.getInstance(context).addDriver(new Driver(id, name, pin));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    if (VariableManager.DEBUG) {
-                        displayToast("JSONException: driver/drivers");
-                    }
-                }
-            }
-        }*/
+        });
     }
 
     /**
