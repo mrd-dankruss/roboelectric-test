@@ -4,6 +4,9 @@ import android.os.Parcelable;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 
+import java.io.Serializable;
+import java.util.jar.Pack200;
+
 public class UserItem implements Parcelable
 {
     private ObservableJSONObject data;

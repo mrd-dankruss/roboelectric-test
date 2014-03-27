@@ -50,6 +50,7 @@
 
     <application
         android:allowBackup="true"
+        android:name="com.mrdexpress.paperless.Paperless"
         android:icon="@drawable/mrd_logo_small"
         android:label="@string/app_name"
         android:theme="@style/Theme.Mrdstyle" >
