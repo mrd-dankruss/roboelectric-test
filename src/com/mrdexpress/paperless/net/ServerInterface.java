@@ -67,20 +67,20 @@ public class ServerInterface {
     public static ServerInterface getInstance(Context context) {
         if (server_interface == null) {
             //server_interface = new ServerInterface(context.getApplicationContext());
+
             server_interface = new ServerInterface(Paperless.getContext());
-        }
+            if (prefs == null) {
+                prefs = Paperless.getContext().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+            }
 
-        if (prefs == null) {
-            prefs = Paperless.getContext().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-        }
-
-        if (context != null)
-        {
-            aq = new AQuery(context);
-        }
-        else
-        {
-            aq = new AQuery(Paperless.getContext());
+            if (context != null)
+            {
+                aq = new AQuery(context);
+            }
+            else
+            {
+                aq = new AQuery(Paperless.getContext());
+            }
         }
 
         return server_interface;
@@ -128,30 +128,6 @@ public class ServerInterface {
     }
     public String requestToken() {
         String url = API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
-        //String ret = null;
-        /*aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
-            String Token = null;
-            @Override
-            public void callback(String url, JSONObject jObject, AjaxStatus status) {
-                try
-                {
-                    if (jObject.has("response"))
-                    {
-                        Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
-
-                    } else if (jObject.has("error")) {
-                        Token = jObject.toString();
-                    }
-                } catch (JSONException e) {
-                    Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
-                }
-                Device.getInstance().setToken(Token);
-            }
-
-        });
-        return Device.getInstance().getToken();*/
-
-        /*
         AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
         cb.url(url).type(JSONObject.class);
         aq.sync(cb);
@@ -172,18 +148,6 @@ public class ServerInterface {
         }
         Device.getInstance().setToken(Token);
         return Token;
-        */
-        String results = null;
-        try{
-            results =  new QueryTask().execute(url).get();
-        }
-        catch(Exception e){
-            Log.e("MRD-EX" , e.getMessage());
-        }
-
-        return results;
-
-
     }
 
     /**

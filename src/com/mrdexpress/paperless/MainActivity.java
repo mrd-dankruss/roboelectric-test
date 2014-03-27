@@ -43,6 +43,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -52,6 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainActivity extends Activity {
     private ViewHolder holder;
     private View root_view;
+    private MainActivity globalthis = this;
     private final String TAG = "MainActivity";
     private ArrayList<Users.UserData> person_item_list;
     private Users.UserData selected_user;
@@ -68,20 +71,18 @@ public class MainActivity extends Activity {
     Context context;
     private boolean is_registration_successful;
     SelectDriverListAdapter sdriver;
-    AQuery aq;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
-        aq = new AQuery(getApplicationContext());
         initViewHolder();
         setTitle(R.string.title_actionbar_mainmenu);
         Device.getInstance().setIMEI();
-        startService(new Intent(this, LocationService.class));
 
         //Starting the Token Call First.
+        /*
         aq.ajax(ServerInterface.getInstance(getApplicationContext()).getTokenUrl(), JSONObject.class, new AjaxCallback<JSONObject>() {
             public void callback(String url, JSONObject jObject, AjaxStatus status) {
                 String Token = null;
@@ -129,16 +130,72 @@ public class MainActivity extends Activity {
                     }
                 });
             }
-        });
+        });   */
 
         new UpdateApp().execute();
 
+        class SetupTask extends AsyncTask<Void, Void, String>
+        {
+            @Override
+            protected String doInBackground(Void... params)
+            {
+                String token = ServerInterface.getInstance(null).requestToken();
+                ServerInterface.getInstance(null).getUsers();
+
+                return token;
+            }
+
+            @Override
+            protected void onPostExecute(String token)
+            {
+                globalthis.afterSetup();
+            }
+        }
+
+        new SetupTask().execute();
+    }
+
+    private void afterSetup()
+    {
+        person_item_list = Users.getInstance().driversList;
+
+        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
+                person_item_list);
+
+        // Set the adapter
+        holder.text_name.setAdapter(adapter);
+        holder.text_name.setThreshold(1);
+
+               /* holder.text_name.setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                        selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+
+                    }
+                });*/
+        holder.text_name.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
+                Users.getInstance().setActiveDriverIndex(position);
+                holder.text_password.requestFocus();
+                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+            }
+        });
+
+        AQuery ac = new AQuery(root_view);
+        ac.id(R.id.button_mainmenu_start_login).clicked(this, "triggerLogin");
+
+        startService(new Intent( this, LocationService.class));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         // GCM registration.
         if (checkPlayServices()) {
-            gcm = GoogleCloudMessaging.getInstance(this);
-            regid = getRegistrationId(context);
+            gcm = GoogleCloudMessaging.getInstance( this);
+            regid = getRegistrationId( this);
             is_registration_successful = false;
             if (regid.isEmpty()) {
                 registerInBackground();
@@ -146,10 +203,8 @@ public class MainActivity extends Activity {
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
-
-        AQuery ac = new AQuery(root_view);
-        ac.id(R.id.button_mainmenu_start_login).clicked(this, "triggerLogin");
     }
+
     public void triggerLogin(View view){
         if (checkPin() && selected_user != null) {
             loginUser(selected_user.getUsertype());
@@ -278,7 +333,7 @@ public class MainActivity extends Activity {
      */
     private String getRegistrationId(Context context) {
         String registrationId = Device.getInstance().getGCMGOOGLEID();
-        if (registrationId.isEmpty()) {
+        if (registrationId == null || registrationId.isEmpty()) {
             Log.i(TAG, "Registration not found.");
             return "";
         }
