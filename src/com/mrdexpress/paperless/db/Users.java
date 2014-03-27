@@ -163,5 +163,10 @@ public class Users implements Serializable
             return usertype;
         }
 
+        @Override
+        public String toString()
+        {
+            return getFullName();
+        }
     }
 }
