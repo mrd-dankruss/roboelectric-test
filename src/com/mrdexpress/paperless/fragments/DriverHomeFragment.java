@@ -20,6 +20,7 @@ import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Drivers;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -112,7 +113,7 @@ public class DriverHomeFragment extends Fragment {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving consignments2");
+            this.dialog_progress.setMessage("Retrieving Workflow");
             this.dialog_progress.show();
         }
 
@@ -120,10 +121,7 @@ public class DriverHomeFragment extends Fragment {
         protected Void doInBackground(Void... urls) {
             SharedPreferences prefs = getActivity().getApplicationContext().getSharedPreferences( VariableManager.PREF, Context.MODE_PRIVATE);
 
-            final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
             ServerInterface.getInstance(getActivity().getApplicationContext()).getMilkrunWorkflow( getActivity().getApplicationContext());
-            //ServerInterface.getInstance(getActivity().getApplicationContext()).downloadBags( getActivity().getApplicationContext(), driverid);
 
             return null;
         }
@@ -137,14 +135,7 @@ public class DriverHomeFragment extends Fragment {
             // Start scan activity
             Intent intent = new Intent(getActivity(), ScanActivity.class);
 
-            // Pass driver name on
-            Activity a = getActivity();
-            Intent i = a.getIntent();
-            //String s = i.getStringExtra(VariableManager.EXTRA_DRIVER);
-
-            //String s = getActivity().geta
-            Drivers.DriversObject obj = Drivers.getInstance().getActiveDriver();
-            intent.putExtra(VariableManager.EXTRA_DRIVER, Drivers.getInstance().getActiveDriver().getfirstName());
+            intent.putExtra(VariableManager.EXTRA_DRIVER, Users.getInstance().getActiveDriver().getfirstName());
 
 			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
 					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/

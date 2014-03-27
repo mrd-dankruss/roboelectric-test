@@ -369,7 +369,7 @@ public class ServerInterface {
      */
     public void getMilkrunWorkflow(Context context) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token;
+        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + Device.getInstance().getToken();
 
         try {
             String response = getInputStreamFromUrl(url);

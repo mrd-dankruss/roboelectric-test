@@ -159,8 +159,7 @@ public class MainActivity extends Activity {
     {
         person_item_list = Users.getInstance().driversList;
 
-        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
-                person_item_list);
+        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(), person_item_list);
 
         // Set the adapter
         holder.text_name.setAdapter(adapter);
@@ -193,7 +192,7 @@ public class MainActivity extends Activity {
 
         // Check device for Play Services APK. If check succeeds, proceed with
         // GCM registration.
-        if (checkPlayServices()) {
+       /* if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance( this);
             regid = getRegistrationId( this);
             is_registration_successful = false;
@@ -202,7 +201,7 @@ public class MainActivity extends Activity {
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
-        }
+        }   */
     }
 
     public void triggerLogin(View view){
