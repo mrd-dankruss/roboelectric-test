@@ -31,6 +31,7 @@ import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -43,7 +44,7 @@ public class LoginFragment extends Fragment {
     private ViewHolder holder;
     private View rootView;
     private SharedPreferences prefs;
-    ArrayList<UserItem> person_item_list;
+    ArrayList<Users.UserData> person_item_list;
     private UserItem selectedUser;
 
     @Override
@@ -57,11 +58,11 @@ public class LoginFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        person_item_list = new ArrayList<UserItem>();
+        person_item_list = Users.getInstance().driversList;
 
         prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
-        person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext()).getManagers());
+        //person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext()).getManagers());
 
         UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getActivity().getApplicationContext(), person_item_list);
 

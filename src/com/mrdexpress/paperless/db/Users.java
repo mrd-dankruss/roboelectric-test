@@ -91,12 +91,12 @@ public class Users implements Serializable
         }
     }
 
-    private enum Type
+    public enum Type
     {
         MANAGER,DRIVER;
     }
 
-    private class UserData
+    public class UserData
     {
         public net.minidev.json.JSONObject json;
         private String firstName;
@@ -157,6 +157,10 @@ public class Users implements Serializable
 
         public Object getUndefined(String key){
             return json.get(key);
+        }
+
+        public Type getUsertype(){
+            return usertype;
         }
 
     }

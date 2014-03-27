@@ -39,6 +39,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -48,6 +51,7 @@ import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Drivers;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
@@ -57,14 +61,16 @@ import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.adapters.SelectDriverListAdapter;
 import com.mrdexpress.paperless.workflow.Workflow;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity
 {
 	private ViewHolder holder;
 	private View root_view;
 	private final String TAG = "MainActivity";
-	private ArrayList<UserItem> person_item_list;
-    private Drivers.DriversObject selected_user;
+	private ArrayList<Users.UserData> person_item_list;
+    private Users.UserData selected_user;
 
 	public static final String EXTRA_MESSAGE = "message";
 	public static final String PROPERTY_REG_ID = "registration_id";
@@ -78,31 +84,86 @@ public class MainActivity extends Activity
 	Context context;
 	private boolean is_registration_successful;
     SelectDriverListAdapter sdriver;
+    AQuery aq;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+        context = getApplicationContext();
+        aq = new AQuery(getApplicationContext());
         initViewHolder();
         setTitle(R.string.title_actionbar_mainmenu);
+        Device.getInstance().setIMEI();
         startService(new Intent(this, LocationService.class));
-        ServerInterface.getInstance(context).requestToken();
 
-		//new RequestTokenTask().execute();
+        //Starting the Token Call First.
+        aq.ajax(ServerInterface.getInstance(getApplicationContext()).getTokenUrl() , JSONObject.class , new AjaxCallback<JSONObject>(){
+            public void callback(String url, JSONObject jObject, AjaxStatus status) {
+                String Token = null;
+                try
+                {
+                    if (jObject.has("response"))
+                    {
+                        Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
 
-		//new UpdateApp().execute();
+                    } else if (jObject.has("error")) {
+                        Token = jObject.toString();
+                    }
+                } catch (JSONException e) {
+                    Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+                }
+                Device.getInstance().setToken(Token);
+
+                aq.ajax(ServerInterface.getInstance(getApplicationContext()).getUsersURL() , JSONObject.class , new AjaxCallback<JSONObject>(){
+                    public void callback(String url, JSONObject json, AjaxStatus status) {
+                        try
+                        {
+                            if (json != null) {
+                                //Generate Users Data
+                                Users.getInstance().setUsers(json.toString());
+                            }
+                        } catch (Exception e) {
+                            Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+                        }
+                        person_item_list = Users.getInstance().driversList;
+                        initClickListeners();
+
+                        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
+                                person_item_list);
+
+                        // Set the adapter
+                        holder.text_name.setAdapter(adapter);
+                        holder.text_name.setThreshold(1);
+
+                        holder.text_name.setOnItemClickListener(new OnItemClickListener()
+                        {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+                            {
+                                selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
+
+                                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
+
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+		new UpdateApp().execute();
 
 
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
-        /*
 		if (checkPlayServices())
 		{
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = getRegistrationId(context);
 			is_registration_successful = false;
-
 			if (regid.isEmpty())
 			{
 				registerInBackground();
@@ -112,8 +173,10 @@ public class MainActivity extends Activity
 		{
 			Log.i(TAG, "No valid Google Play Services APK found.");
 		}
-		*/
 
+
+
+        /*
 		person_item_list = new ArrayList<UserItem>();
 
 		initClickListeners();
@@ -137,13 +200,14 @@ public class MainActivity extends Activity
 
 			}
 		});
+		*/
 
         holder.name_view.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Drivers.DriversObject obj = ((Drivers.DriversObject)holder.name_view.getAdapter().getItem(i));
                 int id = obj.getid();
-                selected_user = obj;
+                //selected_user = obj;
                 holder.text_name.setText(obj.getFullName());
                 Drivers.getInstance().setActiveIndex(i);
                 /*
@@ -196,11 +260,11 @@ public class MainActivity extends Activity
 				// Perform action on click
 				if (checkPin())
 				{
-					if ( selected_user.getUserType() == UserType.DRIVER)
+					if ( selected_user.getUsertype() == Users.Type.DRIVER)
 					{
                         loginUser(UserType.DRIVER);
 					}
-                    else if (selected_user.getUserType() == UserType.MANAGER)
+                    else if (selected_user.getUsertype() == Users.Type.MANAGER)
 					{
                         loginUser(UserType.MANAGER);
 					}
@@ -822,8 +886,8 @@ public class MainActivity extends Activity
 
 			holder.text_name = (AutoCompleteTextView) root_view
 					.findViewById(R.id.text_mainmenu_name);
-            holder.text_name.setEnabled(false);
-            holder.text_name.setFocusable(false);
+            //holder.text_name.setEnabled(false);
+            //holder.text_name.setFocusable(false);
 			holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
 
 			holder.text_password.setTypeface(typeface_roboto_regular);
