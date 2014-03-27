@@ -142,7 +142,6 @@ public class ViewBagManifestActivity extends Activity
 
 		if (root_view == null)
 		{
-
 			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 
 			if (holder == null)
@@ -156,7 +155,6 @@ public class ViewBagManifestActivity extends Activity
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
-
 		}
 		else
 		{

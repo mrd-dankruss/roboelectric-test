@@ -14,6 +14,7 @@ public class Device {
     private String Token = "400";
     private String GCMID = null;
     private String GCMGOOGLEID = null;
+    private Integer AppVersion = null;
 
     public static Device getInstance() {
         if (_instance == null) {
@@ -28,6 +29,14 @@ public class Device {
 
     public String getIMEI(){
         return IMEI;
+    }
+
+    public void setAppVersion(Integer av){
+        this.AppVersion = av;
+    }
+
+    public Integer getAppVersion(){
+        return this.AppVersion;
     }
 
     public String getGCMID(){

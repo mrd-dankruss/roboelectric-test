@@ -81,58 +81,8 @@ public class MainActivity extends Activity {
         setTitle(R.string.title_actionbar_mainmenu);
         Device.getInstance().setIMEI();
 
-        //Starting the Token Call First.
-        /*
-        aq.ajax(ServerInterface.getInstance(getApplicationContext()).getTokenUrl(), JSONObject.class, new AjaxCallback<JSONObject>() {
-            public void callback(String url, JSONObject jObject, AjaxStatus status) {
-                String Token = null;
-                try {
-                    if (jObject.has("response")) {
-                        Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
-
-                    } else if (jObject.has("error")) {
-                        Token = jObject.toString();
-                    }
-                } catch (JSONException e) {
-                    Log.e("MRD-EX", "FIX THIS : " + e.getMessage());
-                }
-                Device.getInstance().setToken(Token);
-
-                aq.ajax(ServerInterface.getInstance(getApplicationContext()).getUsersURL(), JSONObject.class, new AjaxCallback<JSONObject>() {
-                    public void callback(String url, JSONObject json, AjaxStatus status) {
-                        try {
-                            if (json != null) {
-                                //Generate Users Data
-                                Users.getInstance().setUsers(json.toString());
-                            }
-                        } catch (Exception e) {
-                            Log.e("MRD-EX", "FIX THIS : " + e.getMessage());
-                        }
-                        person_item_list = Users.getInstance().driversList;
-                        UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
-                                person_item_list);
-
-                        // Set the adapter
-                        holder.text_name.setAdapter(adapter);
-                        holder.text_name.setThreshold(1);
-
-                        holder.text_name.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                                selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
-                                Users.getInstance().setActiveDriverIndex(position);
-                                holder.text_name.setText(selected_user.getFullName());
-                                holder.text_password.requestFocus();
-                                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
-                            }
-                        });
-                    }
-                });
-            }
-        });   */
-
-        new UpdateApp().execute();
+        /* Not yet until we fix it */
+        //new UpdateApp().execute();
 
         class SetupTask extends AsyncTask<Void, Void, String>
         {
@@ -249,6 +199,7 @@ public class MainActivity extends Activity {
             }
             else if (type == Users.Type.MANAGER)
             {
+                // Manager cant login to the Main Activity - right ?
 
             }
         } else {
@@ -379,30 +330,19 @@ public class MainActivity extends Activity {
                     regid = gcm.register(SENDER_ID);
                     Log.i(TAG, "GCM registration ID: " + regid);
                     msg = "Device registered, registration ID=" + regid;
-                    
-
+                    Device.getInstance().setGCMGOOGLEID(regid);
                     // You should send the registration ID to your server over HTTP, so it
                     // can use GCM/HTTP or CCS to send messages to your app.
                     sendRegistrationIdToBackend(regid);
-
-                    // For this demo: we don't need to send it because the device will send
-                    // upstream messages to a server that echo back the message using the
-                    // 'from' address in the message.
-
-                    // Persist the regID - no need to register again.
-                    storeRegistrationId(context, regid);
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
-                    // If there is an error, don't just keep trying to register.
-                    // Require the user to click a button again, or perform
-                    // exponential back-off.
                 }
                 return msg;
             }
 
             @Override
             protected void onPostExecute(String msg) {
-                if (is_registration_successful) {
+                /*if (is_registration_successful) {
                     CustomToast toast = new CustomToast(MainActivity.this);
                     toast.setText("Sending device registration ID successful!");
                     toast.setSuccess(true);
@@ -412,7 +352,7 @@ public class MainActivity extends Activity {
                     toast.setText("Sending device registration ID failed!");
                     toast.setSuccess(false);
                     toast.show();
-                }
+                }*/
             }
         }.execute(null, null, null);
     }
@@ -423,33 +363,10 @@ public class MainActivity extends Activity {
      * to a server that echoes back the message using the 'from' address in the message.
      */
     private void sendRegistrationIdToBackend(String regid) {
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
-        String token = ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(
-                telephonyManager.getDeviceId(), regid);
-
-        Log.d(TAG, "Token: " + token);
-
-        if (token.equals("OK")) {
-            is_registration_successful = true;
-        }
-    }
-
-    /**
-     * Stores the registration ID and the app versionCode in the application's
-     * {@code SharedPreferences}.
-     *
-     * @param context application's context.
-     * @param regId   registration ID
-     */
-    private void storeRegistrationId(Context context, String regId) {
-        final SharedPreferences prefs = getGCMPreferences(context);
+        ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(regid);
+        is_registration_successful = true;
         int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId on app version " + appVersion);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_REG_ID, regId);
-        editor.putInt(PROPERTY_APP_VERSION, appVersion);
-        editor.commit();
+        Device.getInstance().setAppVersion(appVersion);
     }
 
 
@@ -572,54 +489,27 @@ public class MainActivity extends Activity {
                 holder = new ViewHolder();
             }
             //holder.name_view =
-
             Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_BOLD));
             Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_REGULAR));
-
             holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
             holder.button_login.setTypeface(typeface_roboto_bold);
-
             holder.text_name = (AutoCompleteTextView) root_view
                     .findViewById(R.id.text_mainmenu_name);
-            //holder.text_name.setEnabled(false);
-            //holder.text_name.setFocusable(false);
             holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
-
             holder.text_password.setTypeface(typeface_roboto_regular);
-
             root_view.setTag(holder);
-
         } else {
             holder = (ViewHolder) root_view.getTag();
-
             if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup)) {
                 ((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
             } else {
             }
         }
     }
-
-	/*
-	 * Create a PendingIntent that triggers an IntentService in your
-	 * app when a geofence transition occurs.
-	 */
-	/*    private PendingIntent getTransitionPendingIntent() {
-	        // Create an explicit Intent
-	        Intent intent = new Intent(this,
-	                ReceiveTransitionsIntentService.class);
-	        
-	         * Return the PendingIntent
-	         
-	        return PendingIntent.getService(
-	                this,
-	                0,
-	                intent,
-	                PendingIntent.FLAG_UPDATE_CURRENT);
-	    }*/
 
     // ViewHolder stores static instances of views in order to reduce the number
     // of times that findViewById is called, which affected listview performance
@@ -628,12 +518,4 @@ public class MainActivity extends Activity {
         AutoCompleteTextView text_name;
         EditText text_password;
     }
-
-    public void hideSoftKeyboard() {
-        if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
 }

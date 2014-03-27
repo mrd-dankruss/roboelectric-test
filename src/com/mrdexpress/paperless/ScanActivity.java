@@ -2,7 +2,9 @@ package com.mrdexpress.paperless;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -10,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -17,16 +20,13 @@ import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.os.StrictMode;
-
 import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
 import com.mrdexpress.paperless.fragments.NotAssignedToUserDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.service.LocationService;
@@ -35,9 +35,7 @@ import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Random;
 
 public class ScanActivity extends FragmentActivity {
 
@@ -61,7 +59,7 @@ public class ScanActivity extends FragmentActivity {
     private String last_scanned_barcode;
 
     SharedPreferences prefs;
-    
+
     //Hashtable<String, Integer> bagsUnscanned;
     //Hashtable<String, Integer> bagsScanned;
     List<Bag> bags;
@@ -69,23 +67,19 @@ public class ScanActivity extends FragmentActivity {
     BarcodeListAdapter adapter;
     Handler handler;
 
-    public void UpDateBagsForAdapter(String added_id){
+    public void UpDateBagsForAdapter(String added_id) {
         UpdateBagsCounter();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_scan);
-        
-    	// Store currently selected driver id globally
-        prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-        
+        // Store currently selected driver id globally
+        //prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+
         handler = new Handler();
-        
-        driverId = prefs.getString(VariableManager.PREF_DRIVERID, null);
-        //DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
+        driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );
         bags = Workflow.getInstance().getBags();
 
         // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
@@ -100,37 +94,16 @@ public class ScanActivity extends FragmentActivity {
         intent.putExtra(Intents.Scan.WIDTH, width);
         intent.putExtra(Intents.Scan.HEIGHT, height);
 
-        // Start rerieving milkruns list from server
-        // Param is driver ID, passed through from DriverListActivity
-        // new
-        // RetrieveBagsTask().execute(getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
+        try{
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }catch(Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+        }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        
-
-		/*prefs.edit()
-                .putString(VariableManager.EXTRA_DRIVER_ID,
-						getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID)).commit();*/
-
-        user_name = getIntent().getStringExtra(VariableManager.EXTRA_DRIVER);
+        user_name = Users.getInstance().getActiveDriver().getfirstName();
 
         initViewHolder();
-
         UpdateBagsCounter();
-
-//        if (savedInstanceState != null) {
-//            // Restore value of members from saved state
-//            Log.d(TAG, "restoring savedstate");
-//            selected_items = savedInstanceState
-//                    .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
-//            Log.d(TAG, selected_items.toString());
-//        } else {
-//            // initialize members with default values for a new instance
-//            selected_items = new ArrayList<String>();
-//            Log.d(TAG, "not restoring savedstate");
-//        }
-
 
         // Set click listener for list items (selecting a driver)
 
@@ -140,20 +113,19 @@ public class ScanActivity extends FragmentActivity {
 
                 // View manifest
                 if (holder.list.getItemAtPosition(position) != null) {
-                	
-                	Bag bag = (Bag) holder.list.getItemAtPosition(position);
-                	if (bag != null)
-                	{
-                		 Intent intent = new Intent(getApplicationContext(),
-                                 ViewBagManifestActivity.class);
-                		 
-                		 // Pass info to view manifest activity
-                         intent.putExtra(VariableManager.EXTRA_BAGID, bag.getBagID());
-                         intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, bag.getDestination());
-                         intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, Integer.toString( bag.getNumberItems()));
 
-                         startActivity(intent);
-                	}
+                    Bag bag = (Bag) holder.list.getItemAtPosition(position);
+                    if (bag != null) {
+                        Intent intent = new Intent(getApplicationContext(),
+                                ViewBagManifestActivity.class);
+
+                        // Pass info to view manifest activity
+                        intent.putExtra(VariableManager.EXTRA_BAGID, bag.getBagID());
+                        intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, bag.getDestination());
+                        intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, Integer.toString(bag.getNumberItems()));
+
+                        startActivity(intent);
+                    }
                 }
             }
         });
@@ -164,7 +136,7 @@ public class ScanActivity extends FragmentActivity {
             public void onClick(View v) {
                 // Check if all bags have been scanned
                 // if (true) // DEBUG
-                if (( Workflow.getInstance().getBagsScanned(true).size() == holder.list.getCount()) & ( holder.list.getCount() > 0)) {
+                if ((Workflow.getInstance().getBagsScanned(true).size() == holder.list.getCount()) & (holder.list.getCount() > 0)) {
                     // Go to View Deliveries screen
                     Intent intent = new Intent(getApplicationContext(),
                             ViewDeliveriesFragmentActivity.class);
@@ -204,27 +176,9 @@ public class ScanActivity extends FragmentActivity {
 
         adapter = new BarcodeListAdapter(this);
         holder.list.setAdapter(adapter);
-        
+
         UpdateBagsCounter();
     }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle savedInstanceState) {
-//        super.onSaveInstanceState(savedInstanceState);
-//        // Save UI state changes to the savedInstanceState.
-//        // This bundle will be passed to onCreate if the process is
-//        // killed and restarted.
-//
-//        if (selected_items.size() > 0) {
-//            savedInstanceState.putStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS,
-//                    selected_items);
-//
-//            String msg = "onSaveInstanceState - "
-//                    + savedInstanceState.getStringArrayList(
-//                    VariableManager.EXTRA_LIST_SCANNED_ITEMS).get(0);
-//            Log.d(TAG, msg);
-//        }
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -285,23 +239,18 @@ public class ScanActivity extends FragmentActivity {
                 }
             }
         }
-        if (requestCode == VariableManager.CALLBACK_SCAN_BARCODE_GENERAL)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				String contents = data.getStringExtra("SCAN_RESULT");
-				
-				if (contents != null) 
-				{
-					String upc = contents;
-					handleDecode(upc);
-				}
-			}
-			else if (resultCode == Activity.RESULT_CANCELED)
-			{
-				// Handle cancel
-			}
-		}
+        if (requestCode == VariableManager.CALLBACK_SCAN_BARCODE_GENERAL) {
+            if (resultCode == RESULT_OK) {
+                String contents = data.getStringExtra("SCAN_RESULT");
+
+                if (contents != null) {
+                    String upc = contents;
+                    handleDecode(upc);
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Handle cancel
+            }
+        }
     }
 
 //    @Override
@@ -362,46 +311,39 @@ public class ScanActivity extends FragmentActivity {
     }
 
 
-    void barCodeScanFailed(){
+    void barCodeScanFailed() {
         CustomToast toast = new CustomToast(this);
         toast.setSuccess(true);
         toast.setText(getApplicationContext().getString(R.string.manager_login_wrong_password));
         toast.show();
     }
-    
-    void onBarcodeMatchSuccess()
-    {
-    	 UpdateBagsCounter();
-		 
-		 adapter.notifyDataSetChanged();
-		 
-		 holder.button_start_milkrun.setEnabled( Workflow.getInstance().getBagsScanned(true).size() > 0);
-		 
-		 if ( Workflow.getInstance().getBagsScanned(true).size() == Workflow.getInstance().getBags().size())
-		 {
-             CustomToast toast = new CustomToast(this);
-             toast.setSuccess(true);
-             toast.setText(getString(R.string.text_scan_successful));
-             toast.show();
-         } 
-		 else 
-		 {
-             CustomToast toast = new CustomToast(this);
-             toast.setSuccess(true);
-             toast.setText(getString(R.string.text_scan_next));
-             toast.show();
-         }
+
+    void onBarcodeMatchSuccess() {
+        UpdateBagsCounter();
+
+        adapter.notifyDataSetChanged();
+
+        holder.button_start_milkrun.setEnabled(Workflow.getInstance().getBagsScanned(true).size() > 0);
+
+        if (Workflow.getInstance().getBagsScanned(true).size() == Workflow.getInstance().getBags().size()) {
+            CustomToast toast = new CustomToast(this);
+            toast.setSuccess(true);
+            toast.setText(getString(R.string.text_scan_successful));
+            toast.show();
+        } else {
+            CustomToast toast = new CustomToast(this);
+            toast.setSuccess(true);
+            toast.setText(getString(R.string.text_scan_next));
+            toast.show();
+        }
     }
-    
-    void onBarcodeMatchFail()
-    {
-    	Log.d(TAG, "onBarcodeMatchFail, dialog_not_assigned = " + dialog_not_assigned);
-    	// not sure what this code does...
-    	if (dialog_not_assigned != null) 
-    	{
-            if (dialog_not_assigned.isShowing() == false) 
-            {
-            	
+
+    void onBarcodeMatchFail() {
+        Log.d(TAG, "onBarcodeMatchFail, dialog_not_assigned = " + dialog_not_assigned);
+        // not sure what this code does...
+        if (dialog_not_assigned != null) {
+            if (dialog_not_assigned.isShowing() == false) {
+
                 dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
                 dialog_not_assigned.getWindow().setBackgroundDrawable(
                         new ColorDrawable(Color.TRANSPARENT));
@@ -420,18 +362,14 @@ public class ScanActivity extends FragmentActivity {
                             // startActivity(intent);
                             dialog_not_assigned.dismiss();
                             startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                        } 
-                        else 
-                        {
+                        } else {
                             dialog_not_assigned.dismiss();
                             startNotAssignedActivity();
                         }
                     }
                 });
             }
-        } 
-    	else 
-    	{
+        } else {
             dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
             dialog_not_assigned.getWindow().setBackgroundDrawable(
                     new ColorDrawable(Color.TRANSPARENT));
@@ -440,8 +378,7 @@ public class ScanActivity extends FragmentActivity {
             final Button button_continue = (Button) dialog_not_assigned
                     .findViewById(R.id.button_not_assigned_continue);
 
-            button_continue.setOnClickListener(new OnClickListener() 
-            {
+            button_continue.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
@@ -451,9 +388,7 @@ public class ScanActivity extends FragmentActivity {
                         // startActivity(intent);
                         dialog_not_assigned.dismiss();
                         startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                    } 
-                    else 
-                    {
+                    } else {
                         dialog_not_assigned.dismiss();
                         startNotAssignedActivity();
                     }
@@ -461,82 +396,75 @@ public class ScanActivity extends FragmentActivity {
             });
         }
     }
-    
-    
-    public void onBarcodeClick(View v) 
-    {
-    	Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-		intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-		startActivityForResult(intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+
+
+    public void onBarcodeClick(View v) {
+        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+        startActivityForResult(intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
     }
-    
+
     /**
      * Barcode has been successfully scanned.
      */
     //@Override
-    public void handleDecode(String barcodeString) 
-    {
+    public void handleDecode(String barcodeString) {
         Bag scannedBag = null;
 
-        for( int i=0; i < bags.size(); i++)
-        {
+        for (int i = 0; i < bags.size(); i++) {
             Bag b = bags.get(i);
-            if( b.getBarcode().equals( barcodeString))
-            {
+            if (b.getBarcode().equals(barcodeString)) {
                 scannedBag = b;
                 break;
             }
         }
 
         Runnable decodeCallback = null;
-        if (scannedBag != null)
-        {
+        if (scannedBag != null) {
             boolean wasScanned = scannedBag.getScanned();
 
             // TODO: when does this get sent to the server?
-            if( wasScanned)
-                scannedBag.setScanned( -1);
+            if (wasScanned)
+                scannedBag.setScanned(-1);
             else
-                scannedBag.setScanned( (int) new Date().getTime() / 1000);
+                scannedBag.setScanned((int) new Date().getTime() / 1000);
 
-            decodeCallback = new Runnable()
-    		{
-				@Override
-				public void run() {
-					onBarcodeMatchSuccess();
-				}
-    		};
-    	}
-    	else
-    	{
-    		Log.d(TAG, "handleDecode(): no match " + barcodeString);
-    		/*
+            decodeCallback = new Runnable() {
+                @Override
+                public void run() {
+                    onBarcodeMatchSuccess();
+                }
+            };
+        } else {
+            Log.d(TAG, "handleDecode(): no match " + barcodeString);
+            /*
     		   First lets see if this barcode exists in the system.
     		 */
-            if (android.os.Build.VERSION.SDK_INT > 9) { StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); StrictMode.setThreadPolicy(policy); }
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            }
             String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, prefs.getString(VariableManager.PREF_DRIVERID, null));
-            if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null") ){
+            if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null")) {
                 CustomToast toast = new CustomToast(this);
                 toast.setSuccess(false);
                 toast.setText(getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
                 toast.show();
 
             } else {
-                decodeCallback = new Runnable()
-                {
+                decodeCallback = new Runnable() {
                     @Override
                     public void run() {
                         onBarcodeMatchFail();
                     }
                 };
             }
-    	}
-    	
-    	// post delayed since dialogs do not show if launched directly from onActivityResult method
-    	if (decodeCallback != null)
-    	{
-    		handler.postDelayed(decodeCallback, 10);
-    	}
+        }
+
+        // post delayed since dialogs do not show if launched directly from onActivityResult method
+        if (decodeCallback != null) {
+            handler.postDelayed(decodeCallback, 10);
+        }
     }
 
 
@@ -562,8 +490,7 @@ public class ScanActivity extends FragmentActivity {
             }
         }
 
-        if ( Workflow.getInstance().getBagBarcodesScanned().size() == 0)
-        {
+        if (Workflow.getInstance().getBagBarcodesScanned().size() == 0) {
             holder.button_start_milkrun.setEnabled(false);
             holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
         } else {
@@ -607,7 +534,6 @@ public class ScanActivity extends FragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
     public void initViewHolder() {
@@ -746,11 +672,11 @@ public class ScanActivity extends FragmentActivity {
             final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
             String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
-            if (!new_bag_id.isEmpty()){
-            //    ServerInterface.getInstance(getApplicationContext()).downloadBag(
-            //            getApplicationContext(),new_bag_id,driverid);
-            // TODO: Gary wire this back in...!!
-            //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
+            if (!new_bag_id.isEmpty()) {
+                //    ServerInterface.getInstance(getApplicationContext()).downloadBag(
+                //            getApplicationContext(),new_bag_id,driverid);
+                // TODO: Gary wire this back in...!!
+                //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
                 adapter.notifyDataSetChanged();
                 UpDateBagsForAdapter(last_scanned_barcode);
                 handleDecode(last_scanned_barcode);
@@ -779,78 +705,64 @@ public class ScanActivity extends FragmentActivity {
             }
         }
     }
-    
-    
+
 
     public void UpdateBagsCounter() {
-        try 
-        {
-            holder.textview_scanstatus.setText("BAG" + ( Workflow.getInstance().getBagBarcodesScanned().size()==1?"":"S") + " (" + Workflow.getInstance().getBagBarcodesScanned().size() + " / " + bags.size() + " SCANNED)");
-        } 
-        catch (Exception e) 
-        {
+        try {
+            holder.textview_scanstatus.setText("BAG" + (Workflow.getInstance().getBagBarcodesScanned().size() == 1 ? "" : "S") + " (" + Workflow.getInstance().getBagBarcodesScanned().size() + " / " + bags.size() + " SCANNED)");
+        } catch (Exception e) {
             Log.e("MRDEX:", e.toString());
         }
     }
 
-    
-    class BarcodeListAdapter extends ArrayAdapter<Bag>
-    {
-		public BarcodeListAdapter(Context context)
-		{
-			super(context, R.layout.row_scan);
-		}
-		
-		@Override
-		public int getCount ()
-		{
-			return bags.size();
-		}
-		
-		@Override
-		public
-		Bag getItem(int position)
-		{
-			return bags.get(position);
-		}
-		
-		@Override
-		public View getView (int position, View convertView, ViewGroup parent)
-		{
-			Bag bag = getItem(position);
-			Context context = this.getContext();
-			
-			if (convertView == null)
-			{
-				convertView = LayoutInflater.from(context).inflate(R.layout.row_scan, null, false);				
-			}
-			TextView text_view_consignment = (TextView) convertView.findViewById(R.id.textView_row_scan);
+
+    class BarcodeListAdapter extends ArrayAdapter<Bag> {
+        public BarcodeListAdapter(Context context) {
+            super(context, R.layout.row_scan);
+        }
+
+        @Override
+        public int getCount() {
+            return bags.size();
+        }
+
+        @Override
+        public Bag getItem(int position) {
+            return bags.get(position);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Bag bag = getItem(position);
+            Context context = this.getContext();
+
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).inflate(R.layout.row_scan, null, false);
+            }
+            TextView text_view_consignment = (TextView) convertView.findViewById(R.id.textView_row_scan);
             TextView text_view_hubcode = (TextView) convertView.findViewById(R.id.testView_row_scan_hubcode);
             TextView text_view_qty = (TextView) convertView.findViewById(R.id.testView_row_scan_qty);
-			ImageView image_green_tick = (ImageView)convertView.findViewById(R.id.imageView_row_scan_tick);
-			
-            text_view_qty.setText("( " + bag.getNumberItems() + " ITEM" + (bag.getNumberItems() == 1?"":"S") + " )");
-			text_view_consignment.setText(bag.getBarcode());
-            text_view_hubcode.setText( JSONObjectHelper.getStringDef( bag.getDestinationExtra(), "hubcode", "!"));
-			
-			// re-set styling since view may be re-used
-			if (bag.getScanned())
-			{
-				image_green_tick.setVisibility(View.VISIBLE);
-				text_view_consignment.setTextColor(context.getResources().getColor(
-						R.color.colour_green_scan)); 
-				text_view_consignment.setTextColor(context.getResources().getColor(	R.color.colour_green_scan));
-			}
-			else
-			{
-				image_green_tick.setVisibility(View.INVISIBLE);
-				text_view_consignment.setTextColor(context.getResources().getColor(
-						R.color.colour_row_text)); 
-				text_view_consignment.setTextColor(context.getResources().getColor(	R.color.colour_row_text));
-			}
-			
-			return convertView;
-		}
+            ImageView image_green_tick = (ImageView) convertView.findViewById(R.id.imageView_row_scan_tick);
+
+            text_view_qty.setText("( " + bag.getNumberItems() + " ITEM" + (bag.getNumberItems() == 1 ? "" : "S") + " )");
+            text_view_consignment.setText(bag.getBarcode());
+            text_view_hubcode.setText(JSONObjectHelper.getStringDef(bag.getDestinationExtra(), "hubcode", "!"));
+
+            // re-set styling since view may be re-used
+            if (bag.getScanned()) {
+                image_green_tick.setVisibility(View.VISIBLE);
+                text_view_consignment.setTextColor(context.getResources().getColor(
+                        R.color.colour_green_scan));
+                text_view_consignment.setTextColor(context.getResources().getColor(R.color.colour_green_scan));
+            } else {
+                image_green_tick.setVisibility(View.INVISIBLE);
+                text_view_consignment.setTextColor(context.getResources().getColor(
+                        R.color.colour_row_text));
+                text_view_consignment.setTextColor(context.getResources().getColor(R.color.colour_row_text));
+            }
+
+            return convertView;
+        }
     }
-    
+
 }
