@@ -487,30 +487,21 @@ public class MainActivity extends Activity {
                 holder = new ViewHolder();
             }
             //holder.name_view =
-
             Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_BOLD));
             Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_REGULAR));
-
             holder.button_login = (Button) root_view.findViewById(R.id.button_mainmenu_start_login);
             holder.button_login.setTypeface(typeface_roboto_bold);
-
             holder.text_name = (AutoCompleteTextView) root_view
                     .findViewById(R.id.text_mainmenu_name);
-            //holder.text_name.setEnabled(false);
-            //holder.text_name.setFocusable(false);
             holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
-
             holder.text_password.setTypeface(typeface_roboto_regular);
-
             root_view.setTag(holder);
-
         } else {
             holder = (ViewHolder) root_view.getTag();
-
             if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup)) {
                 ((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
             } else {
