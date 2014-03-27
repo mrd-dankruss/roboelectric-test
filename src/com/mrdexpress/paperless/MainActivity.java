@@ -46,6 +46,7 @@ import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Drivers;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -83,34 +84,19 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+        initViewHolder();
+        setTitle(R.string.title_actionbar_mainmenu);
+        startService(new Intent(this, LocationService.class));
+        ServerInterface.getInstance(context).requestToken();
 
-		new RequestTokenTask().execute();
+		//new RequestTokenTask().execute();
 
-		new UpdateApp().execute();
+		//new UpdateApp().execute();
 
-
-
-		// Check & store network availability
-		/*SharedPreferences settings = getSharedPreferences(VariableManager.PREF, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean(
-				VariableManager.PREF_NETWORK_AVAILABLE,
-				NetworkStateReceiver.getInstance(getApplicationContext())
-						.checkNetworkAvailability()).commit();*/
-
-		// Initialize ViewHolder
-		initViewHolder();
-
-		// Set global variable holding context
-		VariableManager.context = this;
-		context = getApplicationContext();
-
-		setTitle(R.string.title_actionbar_mainmenu); // Change actionbar title
-
-		startService(new Intent(this, LocationService.class));
 
 		// Check device for Play Services APK. If check succeeds, proceed with
 		// GCM registration.
+        /*
 		if (checkPlayServices())
 		{
 			gcm = GoogleCloudMessaging.getInstance(this);
@@ -126,6 +112,7 @@ public class MainActivity extends Activity
 		{
 			Log.i(TAG, "No valid Google Play Services APK found.");
 		}
+		*/
 
 		person_item_list = new ArrayList<UserItem>();
 
@@ -272,128 +259,7 @@ public class MainActivity extends Activity
         }
     }
 
-	/**
-	 * Requests token from server.
-	 *
-	 * @author greg
-	 *
-	 */
-	private class RequestTokenTask extends AsyncTask<Void, Void, String>
-	{
 
-		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog.setMessage("Acquiring token");
-			this.dialog.show();
-		}
-
-		@Override
-		protected String doInBackground(Void... urls)
-		{
-			// Log.i(TAG, "Fetching token...");
-			String token = ServerInterface.getInstance(getApplicationContext()).requestToken();
-
-			if (token.equals("400"))
-			{
-				return token;
-			}
-			else
-			{
-				// Log.d(TAG, "zorro token: " + token);
-
-				// VariableManager.token = token; // Security vulnerability?
-
-				// Download delay reasons
-				// change progress spinner text
-				if (dialog.isShowing())
-				{
-					dialog.setTitle("Retrieving driver list");
-				}
-				ServerInterface.getInstance(getApplicationContext()).getDrivers( getApplicationContext());
-				if (dialog.isShowing())
-				{
-					dialog.setTitle("Retrieving manager list");
-				}
-				ServerInterface.getInstance(getApplicationContext()).getManagers( getApplicationContext());
-				/*if (dialog.isShowing())
-				{
-					dialog.setTitle("Retrieving delay reasons");
-				}
-				ServerInterface.getInstance(getApplicationContext()).downloadDelays( getApplicationContext());*/
-
-				/*if (dialog.isShowing())
-				{
-					dialog.setTitle("Retrieving failed handover reasons");
-				}
-				ServerInterface.getInstance(getApplicationContext()).downloadFailedDeliveryReasons(	getApplicationContext());*/
-
-				/*if (dialog.isShowing())
-				{
-					dialog.setTitle("Retrieving partial delivery reasons");
-				}
-				ServerInterface.getInstance(getApplicationContext()).downloadPartialDeliveryReasons(getApplicationContext());
-				*/
-
-				// Log.i(TAG, "Token aquired.");
-			}
-			return token;
-		}
-
-		@Override
-		protected void onPostExecute(String result)
-		{
-
-			if (result.equals("400"))
-			{
-				UnauthorizedUseDialog dialog = new UnauthorizedUseDialog(MainActivity.this);
-				dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-				dialog.show();
-
-				LayoutInflater factory = LayoutInflater.from(MainActivity.this);
-
-				final Button button_ok = (Button) dialog.findViewById(R.id.button_incomplete_scan_ok);
-
-				button_ok.setOnClickListener(new OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						MainActivity.this.finish();
-					}
-				});
-			}
-			else
-			{
-                person_item_list.addAll(Workflow.getInstance().getDrivers());
-                person_item_list.addAll(Workflow.getInstance().getManagers());
-
-                Drivers.getInstance().getDriversData();
-
-                //ArrayList<Drivers.DriversObject> dob = Drivers.getInstance().getDriversDataList();
-                sdriver = new SelectDriverListAdapter( getApplicationContext() , Drivers.getInstance().getDriversDataList());
-                //sdriver = new SelectDriverListAdapter(this);
-                holder.name_view.setAdapter(sdriver);
-                //Drivers.getInstance().getDriversData();
-
-
-				// Close progress spinner
-				if (dialog.isShowing())
-				{
-					dialog.dismiss();
-				}
-                holder.name_view.requestFocus();
-
-
-				// Retrieve list of drivers in a thread
-				// new RequestDriverManagerTask().execute();
-			}
-		}
-	}
 
 	/**
 	 * Requests token from server.
@@ -795,6 +661,7 @@ public class MainActivity extends Activity
 		editor.putInt(PROPERTY_APP_VERSION, appVersion);
 		editor.commit();
 	}
+
 
 	private class UpdateApp extends AsyncTask<Void, Void, Void>
 	{

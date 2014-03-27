@@ -11,9 +11,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.androidquery.AQuery;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.db.Driver;
-import com.mrdexpress.paperless.db.Drivers;
+import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.*;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -56,9 +55,8 @@ public class ServerInterface {
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
     private static ServerInterface server_interface;
     private static Context context;
-    // private static final String API_URL_APIARY = "http://paperlessapp.apiary.io/";
-    // private static String token="abcde";
     private static SharedPreferences prefs;
+    private static AQuery aq;
 
     public ServerInterface(Context ctx) {
         context = ctx;
@@ -67,19 +65,23 @@ public class ServerInterface {
     // Return singleton instance of DbHandler
     public static ServerInterface getInstance(Context context) {
         if (server_interface == null) {
-            server_interface = new ServerInterface(context.getApplicationContext());
+            //server_interface = new ServerInterface(context.getApplicationContext());
+            server_interface = new ServerInterface(Paperless.getContext());
         }
-
-		/*if ((ServerInterface.token == null) | (ServerInterface.token == ""))
-        {
-			 SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF,
-			 Context.MODE_PRIVATE);
-			 ServerInterface.token = settings.getString(VariableManager.PREF_TOKEN, "");
-		}*/
 
         if (prefs == null) {
-            prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+            prefs = Paperless.getContext().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
         }
+
+        if (context != null)
+        {
+            aq = new AQuery(context);
+        }
+        else
+        {
+            aq = new AQuery(Paperless.getContext());
+        }
+
         return server_interface;
     }
 
@@ -89,59 +91,79 @@ public class ServerInterface {
             public void run() {
                 Log.e(TAG, "Test: " + message);
                 Toast.makeText(VariableManager.context, message, Toast.LENGTH_SHORT).show();
-
-				/*CustomToast toast = new CustomToast(VariableManager.CONTEXT, view);
-				 toast.setSuccess(true);
-				 toast.setText("Delivery completed successfully!");
-				 toast.show();*/
             }
         });
+    }
+
+    /*
+     * Gets Users From The API
+     */
+    public void getUsers() {
+        String url = API_URL + "v1/driver/users?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken();
+        AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
+        cb.url(url).type(JSONObject.class);
+        aq.sync(cb);
+        try
+        {
+            JSONObject json = cb.getResult();
+            AjaxStatus status = cb.getStatus();
+            if (json != null) {
+                //Generate Users Data
+                Users.getInstance().setUsers(json.toString());
+            }
+        } catch (Exception e) {
+            Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+        }
     }
 
     /**
      * Makes API call to request a new session token.
      */
     public String requestToken() {
-        TelephonyManager mngr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String imei_id = mngr.getDeviceId();
+        String url = API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
+        String ret = null;
+        /*aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            String Token = null;
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus status) {
+                try
+                {
+                    if (jObject.has("response"))
+                    {
+                        Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
 
-        String url = API_URL + "v1/auth/auth?imei=" + imei_id;
-        String response = getInputStreamFromUrl(url);
-        // Log.d(TAG, "zorro - requestToken(): " + response);
-        String status = "";
+                    } else if (jObject.has("error")) {
+                        Token = jObject.toString();
+                    }
+                } catch (JSONException e) {
+                    Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+                }
+                Device.getInstance().setToken(Token);
+            }
 
-        try {
-            JSONObject jObject = new JSONObject(response);
-            // token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+        });
+        return Device.getInstance().getToken();*/
+        AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
+        cb.url(url).type(JSONObject.class);
+        aq.sync(cb);
+        String Token = null;
+        try
+        {
+            JSONObject jObject = cb.getResult();
+            AjaxStatus status = cb.getStatus();
+            if (jObject.has("response"))
+            {
+                Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
 
-            if (jObject.has("response")) {
-                status = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
             } else if (jObject.has("error")) {
-                status = stripErrorCode(jObject.toString());
+                Token = jObject.toString();
             }
         } catch (JSONException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG, sw.toString());
-
-            if (VariableManager.DEBUG) {
-                displayToast("JSONException: auth/auth");
-            }
-            return "";
-            // Oops
+            Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
         }
+        Device.getInstance().setToken(Token);
+        return Token;
 
-        if (VariableManager.DEBUG) {
-            Log.d(TAG, "token: " + status);
-        }
-        SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(VariableManager.PREF_TOKEN, status);
-        editor.apply();
-
-        return status;
-        // return "abcde";
     }
 
     /**
@@ -151,6 +173,7 @@ public class ServerInterface {
      * @param gcm_id The GCM ID returned by Google GCM Service
      * @return
      */
+
     public String registerDeviceGCM(String imei, String gcm_id) {
 
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
@@ -231,13 +254,9 @@ public class ServerInterface {
      * switching it over to AJAX
      */
     public void getDrivers(Context context) {
-        TelephonyManager mngr = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        String imei_id = mngr.getDeviceId();
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/driver/drivers?imei=" + imei_id + "&mrdToken=" + token;
-        final Context ctext = context;
-        final AQuery aq = new AQuery(context);
+        String url = API_URL + "v1/driver/drivers?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + token;
+        final AQuery aq = new AQuery(Paperless.getContext());
         aq.ajax( url  , JSONObject.class , new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
@@ -248,7 +267,6 @@ public class ServerInterface {
                     Workflow.getInstance().setDriversFromJSON( json.toString() );
                 }
             }
-
         });
     }
 
@@ -1419,4 +1437,6 @@ public class ServerInterface {
         }
 
     }
+
+
 }

@@ -11,6 +11,8 @@ public class Device {
     private static Device _instance = null;
     private static Context _context = null;
     private String IMEI = null;
+    private String Token = "400";
+    private String GCMID = null;
 
     public static Device getInstance() {
         if (_instance == null) {
@@ -18,21 +20,31 @@ public class Device {
         }
         return _instance;
     }
-    public static Device getInstance(Context context) {
-        if (_instance == null) {
-            _instance = new Device();
-        }
-        _context = context;
-        return _instance;
+
+    public void setGCMID(String gcmid){
+        this.GCMID = gcmid;
     }
 
     public String getIMEI(){
         return IMEI;
     }
+
+    public String getGCMID(){
+        return this.GCMID;
+    }
+
     public void setIMEI(){
         TelephonyManager m = (TelephonyManager) Paperless.getContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
         IMEI = m.getDeviceId();
+    }
+
+    public void setToken(String token){
+        this.Token = token;
+    }
+
+    public String getToken(){
+        return this.Token;
     }
 
 }
