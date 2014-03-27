@@ -354,7 +354,7 @@ public class ServerInterface {
      */
     public void getMilkrunWorkflow(Context context) {
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token;
+        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + Device.getInstance().getToken();
 
         try {
             String response = getInputStreamFromUrl(url);
