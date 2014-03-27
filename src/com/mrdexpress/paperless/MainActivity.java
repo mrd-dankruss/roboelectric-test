@@ -108,8 +108,6 @@ public class MainActivity extends Activity {
                             Log.e("MRD-EX", "FIX THIS : " + e.getMessage());
                         }
                         person_item_list = Users.getInstance().driversList;
-                        initClickListeners();
-
                         UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
                                 person_item_list);
 
@@ -121,10 +119,11 @@ public class MainActivity extends Activity {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                                 selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
-
-                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
-
+                                Users.getInstance().setActiveDriverIndex(position);
+                                holder.text_name.setText(selected_user.getFullName());
+                                holder.text_password.requestFocus();
+                                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
                             }
                         });
                     }
@@ -148,39 +147,13 @@ public class MainActivity extends Activity {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
 
-
-
-        /*
-        person_item_list = new ArrayList<UserItem>();
-
-		initClickListeners();
-
-		UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getApplicationContext(),
-				person_item_list);
-
-		// Set the adapter
-		holder.text_name.setAdapter(adapter);
-		holder.text_name.setThreshold(1);
-
-		holder.text_name.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
-			{
-                //selected_user = ((UserItem) holder.text_name.getAdapter().getItem(position));
-
-				//InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				//imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
-
-			}
-		});
-		*/
-
-
-        //sdriver = new SelectDriverListAdapter(this);
-        //holder.name_view.setAdapter(sdriver);
-        //Drivers.getInstance().getDriversData();
-
+        AQuery ac = new AQuery(root_view);
+        ac.id(R.id.button_mainmenu_start_login).clicked(this, "triggerLogin");
+    }
+    public void triggerLogin(View view){
+        if (checkPin() && selected_user != null) {
+            loginUser(selected_user.getUsertype());
+        }
     }
 
     /* (non-Javadoc)
@@ -203,57 +176,25 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Initiate click listeners for buttons.
+     * Trigger Login Action
      */
-    private void initClickListeners() {
-        // Click Start New Milkrun button
-        holder.button_login.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                if (checkPin()) {
-                    if (selected_user.getUsertype() == Users.Type.DRIVER) {
-                        loginUser(UserType.DRIVER);
-                    } else if (selected_user.getUsertype() == Users.Type.MANAGER) {
-                        loginUser(UserType.MANAGER);
-                    } else {
-                        displayCustomToast("Please select valid driver on the list above.");
-                    }
-                }
-            }
-        });
-
-    }
-
-    private void loginUser(UserType type) {
+ 
+    private void loginUser(Users.Type type) {
         String hash = PinManager.toMD5(holder.text_password.getText().toString());
         //hash = holder.text_password.getText().toString();
         if (selected_user.getdriverPin().equals(hash)) {
-            if (type == UserType.DRIVER) {
+            if (type == Users.Type.DRIVER) {
                 if (selected_user.getdriverPin().isEmpty()) {
-                    SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString(VariableManager.PREF_DRIVERID, Integer.toString(selected_user.getid()));
-                    editor.apply();
-
                     Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
                     startActivity(intent);
                 } else {
                     // Store currently selected driverid in shared prefs
-                    SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString(VariableManager.PREF_DRIVERID, Integer.toString(selected_user.getid()));
-                    editor.apply();
-
                     Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-
-                    intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user.getfirstName());
-                    //intent.putExtra("selected_driver", selected_user);
-
                     startActivity(intent);
                 }
             }
-
-            if (type == UserType.MANAGER) {
+            else if (type == Users.Type.MANAGER)
+            {
 
             }
         } else {
@@ -264,169 +205,6 @@ public class MainActivity extends Activity {
         }
     }
 
-
-    /**
-     * Requests token from server.
-     *
-     * @author greg
-     *
-     */
-	/*private class RequestDriverManagerTask extends AsyncTask<Void, Void, String>
-	{
-
-		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-
-		*//** progress dialog to show user that the backup is processing. */
-	/*
-	*//** application context. */
-	/*
-	@Override
-	protected void onPreExecute()
-	{
-	this.dialog.setMessage("Retrieving list of drivers/managers");
-	this.dialog.show();
-	}
-
-	@Override
-	protected String doInBackground(Void... urls)
-	{
-	ServerInterface.getInstance(getApplicationContext()).getDrivers(
-	getApplicationContext(), imei_id);
-	ServerInterface.getInstance(getApplicationContext()).getManagers(
-	getApplicationContext(), imei_id);
-	return null;
-	}
-
-	@Override
-	protected void onPostExecute(String result)
-	{
-	// TODO: Initilize person_item_list
-	try
-	{
-	person_item_list
-	.addAll(DbHandler.getInstance(getApplicationContext()).getDrivers());
-	person_item_list.addAll(DbHandler.getInstance(getApplicationContext())
-	.getManagers());
-	Log.d(TAG, "PersonList: " + person_item_list.size());
-	}
-	catch (NullPointerException e)
-	{
-	StringWriter sw = new StringWriter();
-	e.printStackTrace(new PrintWriter(sw));
-	Log.e(TAG, sw.toString());
-
-	CustomToast toast = new CustomToast(getParent());
-	toast.setText("Network error");
-	toast.setSuccess(false);
-	toast.show();
-	}
-	// Close progress spinner
-	if (dialog.isShowing())
-	{
-	dialog.dismiss();
-	}
-	}
-	}
-	*/
-
-    /**
-     * Requests token from server.
-     *
-     * @author greg
-     *
-     */
-	/*private class DriverLoginUserTask extends AsyncTask<Void, Void, Boolean>
-	{
-
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog.setMessage("Authenticating");
-			this.dialog.show();
-		}
-
-		@Override
-		protected Boolean doInBackground(Void... urls)
-		{
-			String hash = PinManager.toMD5(holder.text_password.getText().toString());
-			hash = holder.text_password.getText().toString(); // DEBUG *Remove when hashing is
-																// wanted again
-
-			if( !selected_user.isPinSet())
-			{
-				isDriverPinSet = false;
-				return true;
-			}
-			else
-			{
-				isDriverPinSet = true;
-				//String status = ServerInterface.getInstance(getApplicationContext()).authDriver(
-				//		hash, selected_user_id);
-
-                if( selected_user.getPin().equals( hash))
-				{
-					// Store currently selected driverid in shared prefs
-					SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString( VariableManager.PREF_DRIVERID, Integer.toString( selected_user.getUserID()));
-					editor.apply();
-
-					return true;
-				}
-				return false;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result)
-		{
-
-			if (result == true)
-			{
-				if (isDriverPinSet)
-				{
-					Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-
-					DbHandler.getInstance(getApplicationContext());
-					// Pass driver name on
-					intent.putExtra(VariableManager.EXTRA_DRIVER, selected_user.getUserName());
-                    intent.putExtra("selected_driver", selected_user);
-
-					startActivity(intent);
-					// Close progress spinner
-					if (dialog.isShowing())
-					{
-						dialog.dismiss();
-					}
-				}
-				else
-				{
-					// Store currently selected driverid in shared prefs
-					SharedPreferences prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString(VariableManager.PREF_DRIVERID, Integer.toString( selected_user.getUserID()));
-					editor.apply();
-
-					Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
-					startActivity(intent);
-				}
-
-			}
-			else
-			{
-				// Close progress spinner
-				if (dialog.isShowing())
-				{
-					dialog.dismiss();
-				}
-				CustomToast toast = new CustomToast(MainActivity.this);
-				toast.setText(getString(R.string.text_unauthorised));
-				toast.setSuccess(false);
-				toast.show();
-			}
-		}
-	} */
-
     /**
      * Check PIN's validity (data validation)
      *
@@ -436,7 +214,6 @@ public class MainActivity extends Activity {
         // Check for 4-digit format
         String msg = PinManager.checkPin(holder.text_password.getText().toString(), this);
         if (msg.equals("OK")) {
-
             return true;
         } else {
             displayToast(msg);
@@ -500,19 +277,9 @@ public class MainActivity extends Activity {
      * registration ID.
      */
     private String getRegistrationId(Context context) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        String registrationId = Device.getInstance().getGCMGOOGLEID();
         if (registrationId.isEmpty()) {
             Log.i(TAG, "Registration not found.");
-            return "";
-        }
-        // Check if app was updated; if so, it must clear the registration ID
-        // since the existing regID is not guaranteed to work with the new
-        // app version.
-        int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
-        int currentVersion = getAppVersion(context);
-        if (registeredVersion != currentVersion) {
-            Log.i(TAG, "App version changed.");
             return "";
         }
         return registrationId;
@@ -558,6 +325,7 @@ public class MainActivity extends Activity {
                     regid = gcm.register(SENDER_ID);
                     Log.i(TAG, "GCM registration ID: " + regid);
                     msg = "Device registered, registration ID=" + regid;
+                    
 
                     // You should send the registration ID to your server over HTTP, so it
                     // can use GCM/HTTP or CCS to send messages to your app.

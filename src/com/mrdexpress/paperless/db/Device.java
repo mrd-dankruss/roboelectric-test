@@ -13,6 +13,7 @@ public class Device {
     private String IMEI = null;
     private String Token = "400";
     private String GCMID = null;
+    private String GCMGOOGLEID = null;
 
     public static Device getInstance() {
         if (_instance == null) {
@@ -31,6 +32,13 @@ public class Device {
 
     public String getGCMID(){
         return this.GCMID;
+    }
+
+    public void setGCMGOOGLEID(String id){
+        this.GCMGOOGLEID = id;
+    }
+    public String getGCMGOOGLEID(){
+        return this.GCMGOOGLEID;
     }
 
     public void setIMEI(){
