@@ -194,40 +194,25 @@ public class ServerInterface {
      * @return
      */
 
-    public String registerDeviceGCM(String imei, String gcm_id) {
-
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-
-        String url = API_URL + "v1/push/register?imei=" + imei + "&mrdToken=" + token + "&gcmID="
+    public void registerDeviceGCM(String gcm_id) {
+        String url = API_URL + "v1/push/register?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken() + "&gcmID="
                 + gcm_id;
 
-        Log.d(TAG, "URL: " + url);
+        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            String Token = null;
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                String status = null;
+                try {
+                    status = jObject.getJSONObject("response").getString("push");
 
-        String response = getInputStreamFromUrl(url);
-
-        Log.d(TAG, "Response: " + response);
-
-        String status = "";
-
-        try {
-            JSONObject jObject = new JSONObject(response);
-            status = jObject.getJSONObject("response").getString("push");
-
-        } catch (JSONException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("JSONException: registerDeviceGSM");
+                }
+                catch (JSONException e) {
+                    Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+                }
+                Device.getInstance().setGCMID(status);
             }
-            return "";
-            // Oops
-        }
-
-        if (VariableManager.DEBUG) {
-            Log.d(TAG, "token: " + status);
-        }
-        return status;
+        });
     }
 
     /**

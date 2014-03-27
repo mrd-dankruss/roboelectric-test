@@ -131,7 +131,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        new UpdateApp().execute();
+        /* Not yet until we fix it */
+        //new UpdateApp().execute();
 
 
         // Check device for Play Services APK. If check succeeds, proceed with
@@ -195,6 +196,7 @@ public class MainActivity extends Activity {
             }
             else if (type == Users.Type.MANAGER)
             {
+                // Manager cant login to the Main Activity - right ?
 
             }
         } else {
@@ -325,23 +327,12 @@ public class MainActivity extends Activity {
                     regid = gcm.register(SENDER_ID);
                     Log.i(TAG, "GCM registration ID: " + regid);
                     msg = "Device registered, registration ID=" + regid;
-                    
-
+                    Device.getInstance().setGCMGOOGLEID(regid);
                     // You should send the registration ID to your server over HTTP, so it
                     // can use GCM/HTTP or CCS to send messages to your app.
                     sendRegistrationIdToBackend(regid);
-
-                    // For this demo: we don't need to send it because the device will send
-                    // upstream messages to a server that echo back the message using the
-                    // 'from' address in the message.
-
-                    // Persist the regID - no need to register again.
-                    storeRegistrationId(context, regid);
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
-                    // If there is an error, don't just keep trying to register.
-                    // Require the user to click a button again, or perform
-                    // exponential back-off.
                 }
                 return msg;
             }
@@ -370,32 +361,10 @@ public class MainActivity extends Activity {
      */
     private void sendRegistrationIdToBackend(String regid) {
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
-        String token = ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(
-                telephonyManager.getDeviceId(), regid);
-
-        Log.d(TAG, "Token: " + token);
-
-        if (token.equals("OK")) {
-            is_registration_successful = true;
-        }
-    }
-
-    /**
-     * Stores the registration ID and the app versionCode in the application's
-     * {@code SharedPreferences}.
-     *
-     * @param context application's context.
-     * @param regId   registration ID
-     */
-    private void storeRegistrationId(Context context, String regId) {
-        final SharedPreferences prefs = getGCMPreferences(context);
+        ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(regid);
+        is_registration_successful = true;
         int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId on app version " + appVersion);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_REG_ID, regId);
-        editor.putInt(PROPERTY_APP_VERSION, appVersion);
-        editor.commit();
+        Device.getInstance().setAppVersion(appVersion);
     }
 
 
@@ -549,24 +518,6 @@ public class MainActivity extends Activity {
         }
     }
 
-	/*
-	 * Create a PendingIntent that triggers an IntentService in your
-	 * app when a geofence transition occurs.
-	 */
-	/*    private PendingIntent getTransitionPendingIntent() {
-	        // Create an explicit Intent
-	        Intent intent = new Intent(this,
-	                ReceiveTransitionsIntentService.class);
-	        
-	         * Return the PendingIntent
-	         
-	        return PendingIntent.getService(
-	                this,
-	                0,
-	                intent,
-	                PendingIntent.FLAG_UPDATE_CURRENT);
-	    }*/
-
     // ViewHolder stores static instances of views in order to reduce the number
     // of times that findViewById is called, which affected listview performance
     static class ViewHolder {
@@ -574,12 +525,4 @@ public class MainActivity extends Activity {
         AutoCompleteTextView text_name;
         EditText text_password;
     }
-
-    public void hideSoftKeyboard() {
-        if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
 }
