@@ -15,12 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import com.androidquery.AQuery;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Drivers;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -31,13 +31,12 @@ public class DriverHomeFragment extends Fragment {
     private ViewHolder holder;
     private View rootView;
     private SharedPreferences prefs;
-    private AQuery aq;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
         initViewHolder(inflater, container, savedInstanceState); // Inflate ViewHolder static instance
-        aq = new AQuery(getActivity());
+
         return rootView;
     }
 
@@ -114,15 +113,16 @@ public class DriverHomeFragment extends Fragment {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving deliveries");
+            this.dialog_progress.setMessage("Retrieving Workflow");
             this.dialog_progress.show();
         }
 
         @Override
         protected Void doInBackground(Void... urls) {
             SharedPreferences prefs = getActivity().getApplicationContext().getSharedPreferences( VariableManager.PREF, Context.MODE_PRIVATE);
-            final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
+
             ServerInterface.getInstance(getActivity().getApplicationContext()).getMilkrunWorkflow( getActivity().getApplicationContext());
+
             return null;
         }
 
@@ -135,8 +135,11 @@ public class DriverHomeFragment extends Fragment {
             // Start scan activity
             Intent intent = new Intent(getActivity(), ScanActivity.class);
 
-            // Pass driver name on
-            Activity a = getActivity();
+            intent.putExtra(VariableManager.EXTRA_DRIVER, Users.getInstance().getActiveDriver().getfirstName());
+
+			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
+					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
+
             startActivity(intent);
         }
     }
