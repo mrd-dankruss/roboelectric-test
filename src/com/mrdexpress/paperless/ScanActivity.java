@@ -444,7 +444,10 @@ public class ScanActivity extends FragmentActivity {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
             }
-            String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, prefs.getString(VariableManager.PREF_DRIVERID, null));
+            String new_bag_id = ServerInterface.getInstance(
+                    getApplicationContext())
+                    .scanBag(getApplicationContext(), barcodeString, Integer.toString(Users.getInstance().getActiveDriver().getid()));
+
             if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null")) {
                 CustomToast toast = new CustomToast(this);
                 toast.setSuccess(false);

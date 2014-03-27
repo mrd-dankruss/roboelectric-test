@@ -1307,7 +1307,7 @@ public class ServerInterface {
      */
     public String scanBag(Context context, String barcode, String driver_id) {
         String id = "";
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
+        String token = Device.getInstance().getToken();
         String url = API_URL + "v1/bags/scan?barcode=" + barcode + "&mrdToken=" + token + "&id=" + driver_id;
 
         Log.i(TAG, "Fetching " + url);
