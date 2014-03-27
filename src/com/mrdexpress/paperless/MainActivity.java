@@ -343,7 +343,6 @@ public class MainActivity extends Activity {
 
             @Override
             protected void onPostExecute(String msg) {
-
                 /*if (is_registration_successful) {
                     CustomToast toast = new CustomToast(MainActivity.this);
                     toast.setText("Sending device registration ID successful!");
@@ -365,7 +364,6 @@ public class MainActivity extends Activity {
      * to a server that echoes back the message using the 'from' address in the message.
      */
     private void sendRegistrationIdToBackend(String regid) {
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         ServerInterface.getInstance(getApplicationContext()).registerDeviceGCM(regid);
         is_registration_successful = true;
         int appVersion = getAppVersion(context);
