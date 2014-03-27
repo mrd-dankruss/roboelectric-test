@@ -62,11 +62,12 @@
 
         <requestFocus />
     </AutoCompleteTextView>
-    <ListView
+    <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_above="@+id/text_mainmenu_name"
-            android:id="@+id/driver_select_list"/>
+            android:id="@+id/imageView"
+            android:src="@drawable/mrd_logo_large"
+            android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp" android:contentDescription="MrD Logo"/>
 
 </RelativeLayout>

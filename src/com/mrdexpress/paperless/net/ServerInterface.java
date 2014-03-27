@@ -1,5 +1,6 @@
 package com.mrdexpress.paperless.net;
 
+import android.os.AsyncTask;
 import com.androidquery.AQuery;
 import com.androidquery.callback.*;
 
@@ -98,6 +99,9 @@ public class ServerInterface {
     /*
      * Gets Users From The API
      */
+    public String getUsersURL(){
+        return API_URL + "v1/driver/users?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken();
+    }
     public void getUsers() {
         String url = API_URL + "v1/driver/users?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken();
         AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
@@ -119,9 +123,12 @@ public class ServerInterface {
     /**
      * Makes API call to request a new session token.
      */
+    public String getTokenUrl(){
+        return API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
+    }
     public String requestToken() {
         String url = API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
-        String ret = null;
+        //String ret = null;
         /*aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
             String Token = null;
             @Override
@@ -143,6 +150,8 @@ public class ServerInterface {
 
         });
         return Device.getInstance().getToken();*/
+
+        /*
         AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
         cb.url(url).type(JSONObject.class);
         aq.sync(cb);
@@ -163,6 +172,17 @@ public class ServerInterface {
         }
         Device.getInstance().setToken(Token);
         return Token;
+        */
+        String results = null;
+        try{
+            results =  new QueryTask().execute(url).get();
+        }
+        catch(Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+        }
+
+        return results;
+
 
     }
 
@@ -1437,6 +1457,42 @@ public class ServerInterface {
         }
 
     }
+
+
+    private class QueryTask extends AsyncTask<String, Void, String> {
+
+        String token = null;
+
+        protected String doInBackground(String... url) {
+            AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
+            cb.url(url[0]).type(JSONObject.class);
+            aq.sync(cb);
+            String Token = null;
+            try
+            {
+                JSONObject jObject = cb.getResult();
+                AjaxStatus status = cb.getStatus();
+                if (jObject.has("response"))
+                {
+                    Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+
+                } else if (jObject.has("error")) {
+                    Token = jObject.toString();
+                }
+            } catch (JSONException e) {
+                Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+            }
+            Device.getInstance().setToken(Token);
+            token = Token;
+            return Token;
+        }
+
+        protected void onPostExecute(String result) {
+            //showDialog("Downloaded " + result + " bytes");
+        }
+    }
+
+
 
 
 }
