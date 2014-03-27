@@ -114,7 +114,7 @@ public class DriverHomeFragment extends Fragment {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving deliveries for Driver");
+            this.dialog_progress.setMessage("Retrieving deliveries");
             this.dialog_progress.show();
         }
 
@@ -137,16 +137,6 @@ public class DriverHomeFragment extends Fragment {
 
             // Pass driver name on
             Activity a = getActivity();
-            Intent i = a.getIntent();
-            //String s = i.getStringExtra(VariableManager.EXTRA_DRIVER);
-
-            //String s = getActivity().geta
-            Drivers.DriversObject obj = Drivers.getInstance().getActiveDriver();
-            intent.putExtra(VariableManager.EXTRA_DRIVER, Drivers.getInstance().getActiveDriver().getfirstName());
-
-			/*intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-					.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
-
             startActivity(intent);
         }
     }

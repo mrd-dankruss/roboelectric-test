@@ -343,7 +343,8 @@ public class MainActivity extends Activity {
 
             @Override
             protected void onPostExecute(String msg) {
-                if (is_registration_successful) {
+
+                /*if (is_registration_successful) {
                     CustomToast toast = new CustomToast(MainActivity.this);
                     toast.setText("Sending device registration ID successful!");
                     toast.setSuccess(true);
@@ -353,7 +354,7 @@ public class MainActivity extends Activity {
                     toast.setText("Sending device registration ID failed!");
                     toast.setSuccess(false);
                     toast.show();
-                }
+                }*/
             }
         }.execute(null, null, null);
     }
