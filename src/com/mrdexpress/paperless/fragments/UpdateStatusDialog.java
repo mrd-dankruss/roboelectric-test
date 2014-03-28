@@ -20,6 +20,7 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
 
@@ -98,9 +99,8 @@ public class UpdateStatusDialog extends DialogFragment
 				// Successful
 				if (position == 0)
 				{
-					Intent intent = new Intent(getActivity(),
-							DeliveryHandoverFragmentActivity.class);
-					intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
+					Intent intent = new Intent(getActivity(), DeliveryHandoverFragmentActivity.class);
+                    Workflow.getInstance().currentBagID = bagid;
 					startActivity(intent);
 					dismiss();
 				}
@@ -108,7 +108,7 @@ public class UpdateStatusDialog extends DialogFragment
 				if (position == 1)
 				{
 					Intent intent = new Intent(getActivity(), ReasonForFailedHandoverActivity.class);
-					intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
+                    Workflow.getInstance().currentBagID = bagid;
 					startActivity(intent);
 					dismiss();
 				}

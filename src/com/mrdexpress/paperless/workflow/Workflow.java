@@ -30,6 +30,8 @@ public class Workflow extends Observable
     private ReadContext drivers;
     private ReadContext managers;
 
+    public int currentBagID;
+
     public Workflow()
     {
         context = VariableManager.context;
