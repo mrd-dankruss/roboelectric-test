@@ -1,7 +1,6 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +29,7 @@ import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.service.LocationService;
@@ -42,7 +42,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements LoginInterface {
     private ViewHolder holder;
     private View root_view;
     private MainActivity globalthis = this;
@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
     AtomicInteger msgId = new AtomicInteger();
     Context context;
     private boolean is_registration_successful;
+    public ProgressDialog dialog_main;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,10 @@ public class MainActivity extends Activity {
         initViewHolder();
         setTitle(R.string.title_actionbar_mainmenu);
         Device.getInstance().setIMEI();
+        dialog_main = new ProgressDialog( this );
+        //dialog_main.setMessage("Logging you in please be patient");
+        //dialog_main.show();
+
 
         /* Not yet until we fix it */
         //new UpdateApp().execute();
@@ -115,7 +120,9 @@ public class MainActivity extends Activity {
         });
 
         AQuery ac = new AQuery(root_view);
-        ac.id(R.id.button_mainmenu_start_login).clicked(this, "triggerLogin");
+        ac.id(R.id.button_mainmenu_start_login).progress(dialog_main).clicked(this, "triggerLogin");
+
+
 
         startService(new Intent(this, LocationService.class));
 
@@ -158,15 +165,43 @@ public class MainActivity extends Activity {
         holder.text_password.setText("");
     }
 
+
+
     /**
      * Trigger Login Action
      */
+    public void onSuccessLogin(){
+
+    }
+
+    @Override
+    public void onLoginComplete(Paperless.PaperlessStatus result){
+        //
+        dialog_main.dismiss();
+        if (result == Paperless.PaperlessStatus.FAILED){
+            //Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
+            //startActivity(intent);
+        } else if (result == Paperless.PaperlessStatus.SUCCESS){
+            Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
+            startActivity(intent);
+        } else if (result == Paperless.PaperlessStatus.SPECIAL){
+            Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
+            startActivity(intent);
+        }
+    }
  
     private void loginUser(Users.Type type) {
         String hash = PinManager.toMD5(holder.text_password.getText().toString());
-        ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
-        dialog_progress.setMessage("Logging you in " + holder.text_name.getText() + " please be patient");
-        dialog_progress.show();
+
+        //ProgressDialog dialog_progress = new ProgressDialog( Paperless.getContext() );
+        //dialog_progress.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
+        //dialog_progress.show();
+
+        dialog_main.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
+        dialog_main.show();
+        ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), dialog_main , this);
+        //ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString() , getApplicationContext());
+        /*
 
         if (selected_user.getdriverPin().equals(hash)) {
             if (type == Users.Type.DRIVER) {
@@ -190,6 +225,7 @@ public class MainActivity extends Activity {
             toast.setSuccess(false);
             toast.show();
         }
+        */
     }
 
     /**
