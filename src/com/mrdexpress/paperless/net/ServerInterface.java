@@ -225,7 +225,7 @@ public class ServerInterface {
      */
     public void getDrivers(Context context) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/driver/drivers?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
+        String url = API_URL + "v1/driver/drivers?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + token;
         final AQuery aq = new AQuery(Paperless.getContext());
         aq.ajax( url  , JSONObject.class , new AjaxCallback<JSONObject>() {
             @Override
@@ -371,7 +371,8 @@ public class ServerInterface {
      */
     public void getMilkrunWorkflow(Context context) {
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token;
+        String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token+ "&driverID=" + Users.getInstance().getActiveDriver().getid();
+
         try {
             String response = getInputStreamFromUrl(url);
             Workflow.getInstance().setWorkflowFromJSON(response);
