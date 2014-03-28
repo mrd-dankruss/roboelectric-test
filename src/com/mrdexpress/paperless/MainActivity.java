@@ -170,17 +170,16 @@ public class MainActivity extends Activity implements LoginInterface {
     /**
      * Trigger Login Action
      */
-    public void onSuccessLogin(){
-
-    }
 
     @Override
     public void onLoginComplete(Paperless.PaperlessStatus result){
         //
         dialog_main.dismiss();
         if (result == Paperless.PaperlessStatus.FAILED){
-            //Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-            //startActivity(intent);
+            CustomToast toast = new CustomToast(MainActivity.this);
+            toast.setText(getString(R.string.text_unauthorised));
+            toast.setSuccess(false);
+            toast.show();
         } else if (result == Paperless.PaperlessStatus.SUCCESS){
             Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
             startActivity(intent);
@@ -191,15 +190,9 @@ public class MainActivity extends Activity implements LoginInterface {
     }
  
     private void loginUser(Users.Type type) {
-        String hash = PinManager.toMD5(holder.text_password.getText().toString());
-
-        //ProgressDialog dialog_progress = new ProgressDialog( Paperless.getContext() );
-        //dialog_progress.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
-        //dialog_progress.show();
-
         dialog_main.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
         dialog_main.show();
-        ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), dialog_main , this);
+        ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), this);
         //ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString() , getApplicationContext());
         /*
 
