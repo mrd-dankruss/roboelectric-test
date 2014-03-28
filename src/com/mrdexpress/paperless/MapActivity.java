@@ -248,10 +248,6 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private void setupMapMarkers()
 	{
 		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-
         // TODO: gary!!!!
 		// Retrieve coords
 		/*ArrayList<HashMap<int, int>> bags = DbHandler.getInstance(getApplicationContext()).getBagCoords(driverid);

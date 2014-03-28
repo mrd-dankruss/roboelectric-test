@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -13,7 +11,6 @@ import android.widget.Toast;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.UnsuccessfulDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 public class UnsuccessfulDeliveriesFragment extends ListFragment
@@ -49,16 +46,7 @@ public class UnsuccessfulDeliveriesFragment extends ListFragment
 	{
 		// TODO Auto-generated method stub
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
-
-		String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-		//adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-		//		getActivity()).getBagsByStatus(driverid, Bag.STATUS_UNSUCCESSFUL));
-
         adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus( Bag.STATUS_UNSUCCESSFUL));
-
 		setListAdapter(adapter);
 	}
 

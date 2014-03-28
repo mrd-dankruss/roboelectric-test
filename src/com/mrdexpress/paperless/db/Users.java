@@ -43,6 +43,7 @@ public class Users implements Serializable
     public void setActiveDriverIndex(int i){
         activeDriverIndex = i;
     }
+    
     public void setActiveManagerIndex(int i){
         activeManagerIndex = i;
     }
@@ -135,8 +136,12 @@ public class Users implements Serializable
             }
         }
 
-        public int getid() {
+        public Integer getid() {
             return id;
+        }
+
+        public String getStringid(){
+            return Integer.toString(id);
         }
 
         public void setid(Integer id) {

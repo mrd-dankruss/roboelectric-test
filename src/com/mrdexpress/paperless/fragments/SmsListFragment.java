@@ -49,8 +49,6 @@ public class SmsListFragment extends Fragment
 
 		// SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 		// Context.MODE_PRIVATE);
-
-		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 		final String bag_id = getActivity().getIntent().getStringExtra(
 				VariableManager.EXTRA_NEXT_BAG_ID);
 

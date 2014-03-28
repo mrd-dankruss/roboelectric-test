@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -92,14 +94,9 @@ public class CreatePinActivity extends Activity
 		@Override
 		protected String doInBackground(Void... params)
 		{
-			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-					Context.MODE_PRIVATE);
-
-			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-			TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+			final String driverid = Users.getInstance().getActiveDriver().getStringid();
 			return ServerInterface.getInstance(getApplicationContext()).updatePIN(driverid,
-					holder.editText_pin1.getText().toString(), telephonyManager.getDeviceId());
+					holder.editText_pin1.getText().toString(), Device.getInstance().getIMEI());
 
 		}
 
@@ -272,13 +269,7 @@ public class CreatePinActivity extends Activity
 		@Override
 		protected Void doInBackground(Void... urls)
 		{
-			SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-			final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
             ServerInterface.getInstance(getApplicationContext()).getMilkrunWorkflow(context);
-			//ServerInterface.getInstance(getApplicationContext()).downloadBags( getApplicationContext(), driverid);
-
 			return null;
 		}
 

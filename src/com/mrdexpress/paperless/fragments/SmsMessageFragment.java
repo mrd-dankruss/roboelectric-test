@@ -1,8 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,12 +60,6 @@ public class SmsMessageFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
-				Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
 		Bundle bundle = this.getArguments();
 		if (bundle != null)
 		{

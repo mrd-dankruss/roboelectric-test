@@ -1,8 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -46,12 +44,6 @@ public class ViewDeliveriesFragment extends Fragment
 	{
 		// TODO Auto-generated method stub
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-		//adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-		//		.getBagsByStatus(driverid, Bag.STATUS_TODO));
 
         adapter = new ViewDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_TODO));
  		if (adapter.getCount() == 0)

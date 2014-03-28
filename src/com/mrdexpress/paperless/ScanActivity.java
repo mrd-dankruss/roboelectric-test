@@ -381,7 +381,7 @@ public class ScanActivity extends FragmentActivity {
             }
         } else {
             dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-            dialog_not_assigned.getWindow().setBackgroundDrawable( new ColorDrawable(Color.TRANSPARENT));
+            dialog_not_assigned.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog_not_assigned.show();
             Log.d(TAG, "SHOW dialog_not_assigned = " + dialog_not_assigned);
             final Button button_continue = (Button) dialog_not_assigned.findViewById(R.id.button_not_assigned_continue);
@@ -389,7 +389,7 @@ public class ScanActivity extends FragmentActivity {
             button_continue.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if( Users.getInstance().getActiveManager() == null){
+                    if (Users.getInstance().getActiveManager() == null) {
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         // startActivity(intent);
                         dialog_not_assigned.dismiss();
@@ -414,7 +414,7 @@ public class ScanActivity extends FragmentActivity {
      * Barcode has been successfully scanned.
      */
     //@Override
-    public void handleDecode(String barcodeString) {        
+    public void handleDecode(String barcodeString) {
         Bag scannedBag = null;
 
         for (int i = 0; i < bags.size(); i++) {
@@ -606,10 +606,6 @@ public class ScanActivity extends FragmentActivity {
     private void startIncompleteScanActivity() {
         // Start manager authorization activity
         Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
-
-        // intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-        // getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-
         startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
     }
 
@@ -625,15 +621,9 @@ public class ScanActivity extends FragmentActivity {
 
         @Override
         protected Void doInBackground(Void... urls) {
-            SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-                    Context.MODE_PRIVATE);
-
-            final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
+            final String driverid = Integer.toString(Users.getInstance().getActiveDriver().getid());
             String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
             if (!new_bag_id.isEmpty()) {
-                //    ServerInterface.getInstance(getApplicationContext()).downloadBag(
-                //            getApplicationContext(),new_bag_id,driverid);
                 // TODO: Gary wire this back in...!!
                 //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
                 adapter.notifyDataSetChanged();
