@@ -78,9 +78,12 @@ public class ViewDeliveriesFragment extends Fragment
 			{
 				// Go to View Deliveries screen
 				Intent intent = new Intent(getActivity(), DeliveryDetailsActivity.class);
-				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagID());
+                intent.putExtra("bag_id" , ((Bag)holder.list.getItemAtPosition(position)).getBagID());
+                intent.putExtra("list_id", position);
+
+				//intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagID());
 //				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
-				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");
+				//intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");
 				startActivity(intent);
 			}
 		});

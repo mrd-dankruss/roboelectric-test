@@ -258,7 +258,6 @@ public class ServerInterface {
      * Submit driver authentication request (login). Receives success status.
      *
      * @param PIN
-     * calls a progress box
      * @return
      */
     public void authDriver(String PIN , final LoginInterface log) {
@@ -288,37 +287,6 @@ public class ServerInterface {
                 }
             }
         });
-
-        /*
-        String response = getInputStreamFromUrl(url);
-
-        String status = "";
-
-        try {
-            JSONObject jObject = new JSONObject(response);
-
-            if (jObject.has("response")) {
-                status = jObject.getJSONObject("response").getJSONObject("auth")
-                        .getString("status");
-            } else if (jObject.has("error")) {
-                status = stripErrorCode(jObject.toString());
-            }
-        } catch (JSONException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("JSONException: auth/driver");
-            }
-        }
-
-        if (VariableManager.DEBUG) {
-            Log.d(TAG, "auth/driver: " + status);
-        }
-        */
-
-        //return status;
-        // return "success"; // DEBUG!!
     }
 
     /**
