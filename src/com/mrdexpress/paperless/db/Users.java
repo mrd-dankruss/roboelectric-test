@@ -139,8 +139,12 @@ public class Users implements Serializable
             }
         }
 
-        public int getid() {
+        public Integer getid() {
             return id;
+        }
+
+        public String getStringid(){
+            return Integer.toString(id);
         }
 
         public void setid(Integer id) {

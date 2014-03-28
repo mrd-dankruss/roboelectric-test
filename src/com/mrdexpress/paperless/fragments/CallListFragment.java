@@ -1,9 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,13 +16,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.widget.CustomToast;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class CallListFragment extends Fragment
 {

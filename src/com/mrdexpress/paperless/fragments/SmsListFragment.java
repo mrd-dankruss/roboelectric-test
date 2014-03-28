@@ -1,21 +1,11 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +13,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.SmsDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.widget.CustomToast;
+
+import java.util.ArrayList;
 
 public class SmsListFragment extends Fragment
 {
@@ -60,8 +49,6 @@ public class SmsListFragment extends Fragment
 
 		// SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 		// Context.MODE_PRIVATE);
-
-		// final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 		final String bag_id = getActivity().getIntent().getStringExtra(
 				VariableManager.EXTRA_NEXT_BAG_ID);
 

@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.helper.FontHelper;
 

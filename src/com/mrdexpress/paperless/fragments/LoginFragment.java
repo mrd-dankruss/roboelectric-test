@@ -1,18 +1,10 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,22 +14,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.mrdexpress.paperless.LoginActivity;
-import com.mrdexpress.paperless.ManagerAuthActivity;
 import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
-import com.mrdexpress.paperless.datatype.UserItem;
-import com.mrdexpress.paperless.datatype.UserItem.UserType;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
+
+import java.util.ArrayList;
 
 public class LoginFragment extends Fragment {
 

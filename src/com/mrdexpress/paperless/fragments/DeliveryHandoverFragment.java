@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.*;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,24 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.service.GCMIntentService;
-import com.mrdexpress.paperless.widget.CustomToast;
-import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
+
+import java.util.*;
 
 public class DeliveryHandoverFragment extends Fragment
 {

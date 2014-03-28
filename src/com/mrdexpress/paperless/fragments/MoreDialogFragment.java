@@ -12,12 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
-
-import com.mrdexpress.paperless.CallActivity;
-import com.mrdexpress.paperless.MapActivity;
-import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.ReportDelayActivity;
-import com.mrdexpress.paperless.SmsActivity;
+import com.mrdexpress.paperless.*;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 

@@ -1,8 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,12 +11,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-
 import com.mrdexpress.paperless.DeliveryDetailsActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -48,12 +44,6 @@ public class ViewDeliveriesFragment extends Fragment
 	{
 		// TODO Auto-generated method stub
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
-		//adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-		//		.getBagsByStatus(driverid, Bag.STATUS_TODO));
 
         adapter = new ViewDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_TODO));
  		if (adapter.getCount() == 0)

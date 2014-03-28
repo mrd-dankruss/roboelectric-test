@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,8 +10,6 @@ import android.widget.ListView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 public class PartialDeliveriesFragment extends Fragment
@@ -40,12 +36,7 @@ public class PartialDeliveriesFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-		final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
-
 		adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_PARTIAL));
-
 		holder.list.setAdapter(adapter);
 
 		/*holder.button_completed.setOnClickListener(new View.OnClickListener()

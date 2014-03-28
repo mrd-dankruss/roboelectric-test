@@ -1,15 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Random;
-
-import com.mrdexpress.paperless.workflow.Workflow;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,17 +17,20 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ExpandableListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.db.Waybill;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.Workflow;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class ReasonPartialDeliveryFragment extends Fragment
 {

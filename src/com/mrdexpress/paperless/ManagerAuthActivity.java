@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -63,8 +64,6 @@ public class ManagerAuthActivity extends Activity {
         imei_id = mngr.getDeviceId();
 
         SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-        final String driverid = prefs.getString(VariableManager.PREF_DRIVERID, null);
 
         // Heading
         holder.text_content.setText( body);
@@ -158,9 +157,7 @@ public class ManagerAuthActivity extends Activity {
             ActivityThread t = new ActivityThread() {
                 @Override
                 public void run() {
-                    SharedPreferences prefs = getSharedPreferences(VariableManager.PREF,
-                            Context.MODE_PRIVATE);
-                    final String driver_id = prefs.getString(VariableManager.PREF_DRIVERID, null);
+                    final String driver_id = Users.getInstance().getActiveDriver().getStringid();
                     String status = "";
 
                     //String hash; //PinManager.toMD5(holder.editText_pin.getText().toString());

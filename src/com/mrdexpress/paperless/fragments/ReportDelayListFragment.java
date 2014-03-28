@@ -1,16 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.Calendar;
-import java.util.Date;
-
-import com.mrdexpress.paperless.workflow.Workflow;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -25,14 +16,20 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.Workflow;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class ReportDelayListFragment extends Fragment
 {
@@ -101,9 +98,7 @@ public class ReportDelayListFragment extends Fragment
 				// Only perform action if there is a selection made
 				if (VariableManager.delay_id != null)
 				{
-					SharedPreferences prefs = getActivity().getApplicationContext()
-							.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-					String driverid = prefs.getString(VariableManager.PREF_DRIVERID, "");
+					String driverid = Users.getInstance().getActiveDriver().getStringid();
 
 					new ReportDelayTask().execute(
 							getActivity().getIntent().getStringExtra(
