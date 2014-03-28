@@ -259,14 +259,7 @@ public class ServerInterface {
      * @return
      */
     public String authDriver(String PIN, String driver_id) {
-        // SharedPreferences settings = context.getSharedPreferences(VariableManager.PREF, 0);
-        // String token = settings.getString(VariableManager.PREF_TOKEN, "");
-
-        TelephonyManager mngr = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        String imei_id = mngr.getDeviceId();
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/auth/driver?imei=" + imei_id + "&mrdToken=" + token
+        String url = API_URL + "v1/auth/driver?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken()
                 + "&driverPIN=" + PIN + "&driverID=" + driver_id;
 
         String response = getInputStreamFromUrl(url);
@@ -354,16 +347,7 @@ public class ServerInterface {
 
         try {
             String response = getInputStreamFromUrl(url);
-
             Workflow.getInstance().setWorkflowFromJSON(response);
-
-           /* Workflow.getInstance().registerObserver( new DataSetObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
-                }
-            });*/
-
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));

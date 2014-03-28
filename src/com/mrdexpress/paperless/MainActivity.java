@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -110,8 +111,6 @@ public class MainActivity extends Activity {
                 selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
                 Users.getInstance().setActiveDriverIndex(Users.getInstance().driversList.indexOf(selected_user));
                 holder.text_password.requestFocus();
-                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
             }
         });
 
@@ -165,7 +164,10 @@ public class MainActivity extends Activity {
  
     private void loginUser(Users.Type type) {
         String hash = PinManager.toMD5(holder.text_password.getText().toString());
-        //hash = holder.text_password.getText().toString();
+        ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
+        dialog_progress.setMessage("Logging you in " + holder.text_name.getText() + " please be patient");
+        dialog_progress.show();
+
         if (selected_user.getdriverPin().equals(hash)) {
             if (type == Users.Type.DRIVER) {
                 if (selected_user.getdriverPin().isEmpty()) {
