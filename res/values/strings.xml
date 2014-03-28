@@ -117,7 +117,7 @@
     <string name="text_scan_successful">Scan successful</string>
     <string name="text_play_services">Google Play services required</string>
     <string name="text_net_error">Connection error</string>
-    <string name="text_scan_next">Scan next</string>
+    <string name="text_scan_next">Scan successful, Scan next item.</string>
     <string name="text_incomplete_scan_message">You have not scanned all of your consignments!</string>
     <string name="text_incomplete_scan_title">Warning!</string>
     <string name="text_manAuth_heading">The following consignments have not been scanned:</string>

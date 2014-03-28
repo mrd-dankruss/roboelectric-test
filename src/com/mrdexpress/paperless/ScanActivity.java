@@ -120,9 +120,10 @@ public class ScanActivity extends FragmentActivity {
                                 ViewBagManifestActivity.class);
 
                         // Pass info to view manifest activity
-                        intent.putExtra(VariableManager.EXTRA_BAGID, bag.getBagID());
-                        intent.putExtra(VariableManager.EXTRA_BAG_DESTINATION, bag.getDestination());
-                        intent.putExtra(VariableManager.EXTRA_BAG_NUMBER_ITEMS, Integer.toString(bag.getNumberItems()));
+
+                        intent.putExtra("bag_id", bag.getBagID() );
+                        intent.putExtra("bag_dest", bag.getDestination() );
+                        intent.putExtra("bag_items", Integer.toString(bag.getNumberItems()) );
 
                         startActivity(intent);
                     }
@@ -408,7 +409,7 @@ public class ScanActivity extends FragmentActivity {
      * Barcode has been successfully scanned.
      */
     //@Override
-    public void handleDecode(String barcodeString) {
+    public void handleDecode(String barcodeString) {        
         Bag scannedBag = null;
 
         for (int i = 0; i < bags.size(); i++) {

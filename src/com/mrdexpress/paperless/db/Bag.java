@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.db;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
@@ -11,12 +12,14 @@ import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Bag
+public class Bag implements Serializable
 {
-    ObservableJSONObject data;
+    private static final long serialVersionUID = 0L;
+    public ObservableJSONObject data;
 
     private final String TAG = "Bag";
 
