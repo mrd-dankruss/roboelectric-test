@@ -5,10 +5,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.*;
-import android.widget.*;
-
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
-import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class ViewBagManifestActivity extends Activity
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        list = Workflow.getInstance().getBagParcelsAsObjects( getIntent().getIntExtra(VariableManager.EXTRA_BAGID, -1));
+        list = Workflow.getInstance().getBagParcelsAsObjects( getIntent().getIntExtra("bag_id", -1));
         listAdapter = new DeliveryHandoverAdapter(list);
 
         if ((listAdapter != null) & (list != null))
@@ -50,8 +50,8 @@ public class ViewBagManifestActivity extends Activity
 		holder.text_view_consignment_number.setIncludeFontPadding(false);
 
 		// Set titles
-		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( getIntent().getIntExtra(VariableManager.EXTRA_BAGID,-1)) + " (" +  list.size() + " items)");
-		holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + getIntent().getStringExtra(VariableManager.EXTRA_BAG_DESTINATION));
+		holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( getIntent().getIntExtra("bag_id",-1)) + " (" +  list.size() + " items)");
+		holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + getIntent().getStringExtra("bag_dest"));
 	}
 
     private class DeliveryHandoverAdapter extends BaseAdapter
