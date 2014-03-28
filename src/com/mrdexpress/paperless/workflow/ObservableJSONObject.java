@@ -4,8 +4,6 @@ import com.jayway.jsonpath.internal.JsonReader;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 
 /**

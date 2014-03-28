@@ -1,17 +1,14 @@
 package com.mrdexpress.paperless.net;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.helper.VariableManager;
+import org.json.JSONObject;
 
 public class NetworkStateReceiver extends BroadcastReceiver
 {

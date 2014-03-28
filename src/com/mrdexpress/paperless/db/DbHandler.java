@@ -1,17 +1,5 @@
 package com.mrdexpress.paperless.db;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.mrdexpress.paperless.workflow.ObservableJSONObject;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,14 +8,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.mrdexpress.paperless.datatype.ComLogObject;
-import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.datatype.UserItem;
-import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.CallQueueObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class DbHandler extends SQLiteOpenHelper
 {
@@ -410,10 +402,6 @@ public class DbHandler extends SQLiteOpenHelper
 							.getColumnIndex(C_COMLOG_TIMESTAMP)), cursor.getString(cursor
 							.getColumnIndex(C_COMLOG_USER)), cursor.getString(cursor
 							.getColumnIndex(C_COMLOG_NOTE)));
-
-					/*					Log.d("getContacts",
-												"getColumnIndex.Name: " + cursor.getColumnIndex(C_CONTACTS_NAME));
-										Log.d("getContacts", "getColumnIndex.Contact: " + cursor);*/
 
 					comlogs.add(comlog);
 					cursor.moveToNext();

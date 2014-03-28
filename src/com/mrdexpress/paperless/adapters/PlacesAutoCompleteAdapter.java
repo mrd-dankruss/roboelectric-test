@@ -1,5 +1,15 @@
 package com.mrdexpress.paperless.adapters;
 
+import android.content.Context;
+import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
+import com.mrdexpress.paperless.datatype.MapPlacesItem;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -7,18 +17,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.mrdexpress.paperless.datatype.MapPlacesItem;
-
-import android.content.Context;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 
 public class PlacesAutoCompleteAdapter extends ArrayAdapter<MapPlacesItem> implements Filterable {
     

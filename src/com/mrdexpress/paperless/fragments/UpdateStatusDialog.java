@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.DeliveryHandoverFragmentActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ReasonForFailedHandoverActivity;
@@ -23,6 +20,8 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+
+import java.util.ArrayList;
 
 public class UpdateStatusDialog extends DialogFragment
 {

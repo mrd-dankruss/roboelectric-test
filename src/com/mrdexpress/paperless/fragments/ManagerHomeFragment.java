@@ -8,12 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.service.LocationService;
 
 public class ManagerHomeFragment extends Fragment
 {

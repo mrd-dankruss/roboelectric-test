@@ -1,8 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,12 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class SmsMessageFragment extends Fragment
 {

@@ -13,12 +13,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-
 import com.mrdexpress.paperless.DeliveryDetailsActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;

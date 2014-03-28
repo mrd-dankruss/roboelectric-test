@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-
 import com.mrdexpress.paperless.fragments.LoginFragment;
 
 public class LoginActivity extends FragmentActivity
 {
-    public static String MANAGER_AUTH_SUCCESS = "com.mrdexpress.paperless.ManagerAuthActivity.auth_success";
+    public static String MANAGER_AUTH_SUCCESS = "com.mrdexpress.paperless.LoginActivity.auth_success";
 
 	Fragment fragment;
 	

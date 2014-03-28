@@ -4,13 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-
-
-import java.util.Formatter;
-import java.util.Observable;
-import java.util.Observer;
 
 public class DeliveryHandoverDataObject implements Parcelable
 {

@@ -1,9 +1,6 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.db.Users;
+
+import java.util.ArrayList;
 
 public class UserAutoCompleteAdapter extends BaseAdapter implements Filterable
 {

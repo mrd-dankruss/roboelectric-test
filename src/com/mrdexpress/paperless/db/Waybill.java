@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.db;
 
-import android.util.Log;
-
 public class Waybill
 {
 

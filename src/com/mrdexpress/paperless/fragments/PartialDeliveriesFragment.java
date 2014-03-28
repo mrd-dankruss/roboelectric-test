@@ -12,7 +12,6 @@ import android.widget.ListView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 
