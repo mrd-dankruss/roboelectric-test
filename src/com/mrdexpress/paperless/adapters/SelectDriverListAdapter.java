@@ -5,19 +5,17 @@ package com.mrdexpress.paperless.adapters;
  */
 
 import android.content.Context;
-import android.database.Cursor;;
+;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
-import android.util.Log;
-import com.mrdexpress.paperless.db.Drivers;
 
 import java.util.ArrayList;
 
-public class SelectDriverListAdapter extends BaseAdapter
+/*public class SelectDriverListAdapter extends BaseAdapter
 {
     private Context mContext;
     private ArrayList<Drivers.DriversObject> drivers;
@@ -57,4 +55,4 @@ public class SelectDriverListAdapter extends BaseAdapter
     {
         return position;
     }
-}
+} */

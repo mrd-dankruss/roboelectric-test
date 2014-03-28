@@ -58,8 +58,6 @@ public class ScanActivity extends FragmentActivity {
 
     private String last_scanned_barcode;
 
-    SharedPreferences prefs;
-
     //Hashtable<String, Integer> bagsUnscanned;
     //Hashtable<String, Integer> bagsScanned;
     List<Bag> bags;
@@ -152,18 +150,29 @@ public class ScanActivity extends FragmentActivity {
 
                     // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
 
-                    final Button button_continue = (Button) dialog
-                            .findViewById(R.id.button_incomplete_scan_continue);
+                    final Button button_continue = (Button) dialog.findViewById(R.id.button_incomplete_scan_continue);
 
                     button_continue.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            new RetrieveManagersTask().execute();
+                            if(Users.getInstance().getActiveManager() == null){
+
+                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                startActivityForResult(intent, ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
+
+
+                                /*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                // startActivity(intent);
+                                startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN); */
+                                dialog.dismiss();
+                            } else {
+                                startIncompleteScanActivity();
+                                dialog.dismiss();
+                            }
                         }
                     });
 
-                    final Button button_scan = (Button) dialog
-                            .findViewById(R.id.button_incomplete_scan_scan);
+                    final Button button_scan = (Button) dialog.findViewById(R.id.button_incomplete_scan_scan);
 
                     button_scan.setOnClickListener(new OnClickListener() {
                         @Override
@@ -206,36 +215,37 @@ public class ScanActivity extends FragmentActivity {
                 handleDecode(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE));
             }
         }
-        if (requestCode == RESULT_MANAGER_AUTH) {
+
+        // TODO: wite this back in
+       /* if (requestCode == RESULT_MANAGER_AUTH) {
             if (resultCode == RESULT_OK) {
                 if (data.getBooleanExtra(ManagerAuthNotAssignedActivity.MANAGER_AUTH_SUCCESS, false)) {
                     new AddBagToDriver().execute();
                 }
             }
-        }
+        }*/
         if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH) {
             if (resultCode == RESULT_OK) {
-                if (data.getBooleanExtra(
-                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
-                    Intent intent = new Intent(getApplicationContext(),
-                            ViewDeliveriesFragmentActivity.class);
-
+                if( Users.getInstance().getActiveManager() != null)
+                {
+                    Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
                     startActivity(intent);
                 }
             }
         }
         if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN) {
+            // manager auth was required for an incomplete scan
             if (resultCode == RESULT_OK) {
-                if (data.getBooleanExtra(
-                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
+                if( Users.getInstance().getActiveManager() != null)
+                {
                     startIncompleteScanActivity();
                 }
             }
         }
         if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE) {
             if (resultCode == RESULT_OK) {
-                if (data.getBooleanExtra(
-                        ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false)) {
+                if (data.getBooleanExtra( ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
+                {
                     startNotAssignedActivity();
                 }
             }
@@ -356,9 +366,8 @@ public class ScanActivity extends FragmentActivity {
                     @Override
                     public void onClick(View v) {
                         dialog_not_assigned.dismiss();
-                        if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
-                            Intent intent = new Intent(getApplicationContext(),
-                                    LoginActivity.class);
+                        if( Users.getInstance().getActiveManager() == null){
+                            Intent intent = new Intent(getApplicationContext(),  LoginActivity.class);
 
                             // startActivity(intent);
                             dialog_not_assigned.dismiss();
@@ -372,20 +381,16 @@ public class ScanActivity extends FragmentActivity {
             }
         } else {
             dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-            dialog_not_assigned.getWindow().setBackgroundDrawable(
-                    new ColorDrawable(Color.TRANSPARENT));
+            dialog_not_assigned.getWindow().setBackgroundDrawable( new ColorDrawable(Color.TRANSPARENT));
             dialog_not_assigned.show();
             Log.d(TAG, "SHOW dialog_not_assigned = " + dialog_not_assigned);
-            final Button button_continue = (Button) dialog_not_assigned
-                    .findViewById(R.id.button_not_assigned_continue);
+            final Button button_continue = (Button) dialog_not_assigned.findViewById(R.id.button_not_assigned_continue);
 
             button_continue.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
-                        Intent intent = new Intent(getApplicationContext(),
-                                LoginActivity.class);
-
+                    if( Users.getInstance().getActiveManager() == null){
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         // startActivity(intent);
                         dialog_not_assigned.dismiss();
                         startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
@@ -445,10 +450,7 @@ public class ScanActivity extends FragmentActivity {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
             }
-            String new_bag_id = ServerInterface.getInstance(
-                    getApplicationContext())
-                    .scanBag(getApplicationContext(), barcodeString, Integer.toString(Users.getInstance().getActiveDriver().getid()));
-
+            String new_bag_id = ServerInterface.getInstance( getApplicationContext()).scanBag( getApplicationContext(), last_scanned_barcode, Integer.toString( Users.getInstance().getActiveDriver().getid()));
             if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null")) {
                 CustomToast toast = new CustomToast(this);
                 toast.setSuccess(false);
@@ -592,60 +594,13 @@ public class ScanActivity extends FragmentActivity {
         TextView textview_scanstatus;
     }
 
-    /**
-     * Retrieve list of managers from API in background
-     *
-     * @author greg
-     */
-    private class RetrieveManagersTask extends AsyncTask<Void, Void, Void> {
-
-        private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
-
-        /** progress dialog to show user that the backup is processing. */
-        /**
-         * application context.
-         */
-        @Override
-        protected void onPreExecute() {
-            this.dialog_progress.setMessage("Retrieving list of managers");
-            this.dialog_progress.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... urls) {
-            // Log.i(TAG, "Fetching token...");
-            ServerInterface.getInstance(getApplicationContext()).getManagers(
-                    getApplicationContext());
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void nothing) {
-            // Close progress spinner
-            if (dialog_progress.isShowing()) {
-                dialog_progress.dismiss();
-            }
-
-            // Start manager authorization activity
-            if (prefs.getString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, null) == null) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-
-                // startActivity(intent);
-                startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
-                dialog.dismiss();
-            } else {
-                startIncompleteScanActivity();
-                dialog.dismiss();
-            }
-        }
-    }
-
     private void startNotAssignedActivity() {
         // Start manager authorization activity
+        // TODO: wire this back in
+        /*
         Intent intent = new Intent(getApplicationContext(), ManagerAuthNotAssignedActivity.class);
         intent.putExtra(VariableManager.EXTRA_BAGID, last_scanned_barcode);
-        startActivityForResult(intent, RESULT_MANAGER_AUTH);
+        startActivityForResult(intent, RESULT_MANAGER_AUTH);*/
     }
 
     private void startIncompleteScanActivity() {

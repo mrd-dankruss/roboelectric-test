@@ -9,7 +9,8 @@ import com.mrdexpress.paperless.fragments.LoginFragment;
 
 public class LoginActivity extends FragmentActivity
 {
-	
+    public static String MANAGER_AUTH_SUCCESS = "com.mrdexpress.paperless.ManagerAuthActivity.auth_success";
+
 	Fragment fragment;
 	
 	@Override
