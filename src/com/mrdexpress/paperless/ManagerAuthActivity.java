@@ -145,7 +145,6 @@ public class ManagerAuthActivity extends Activity {
             dialog_login.show();
 
 			/*
-             * Make API call authenticating driver credentials in a thread.
 			 * When finished, send msg to thread handler to start ScanActivity
 			 */
             final MyHandler handler = new MyHandler(this) {

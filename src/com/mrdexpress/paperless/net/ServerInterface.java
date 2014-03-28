@@ -309,9 +309,8 @@ public class ServerInterface {
      * @return
      */
     public String authManager(String man_id, String driver_id, String PIN, String imei_id) {
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken=" + token
-                + "&managerPIN=" + PIN + "&managerID=" + man_id;
+        String token = Device.getInstance().getToken();
+        String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken=" + token + "&managerPIN=&managerID=" + man_id;
 
         String response = getInputStreamFromUrl(url);
 
