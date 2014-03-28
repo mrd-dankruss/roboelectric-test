@@ -653,7 +653,6 @@ public class ScanActivity extends FragmentActivity {
         Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
 
         // intent.putExtra(VariableManager.EXTRA_DRIVER_ID,
-        // getIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
 
         startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
     }
