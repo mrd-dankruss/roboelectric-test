@@ -44,6 +44,7 @@ public class Users implements Serializable
     public void setActiveDriverIndex(int i){
         activeDriverIndex = i;
     }
+    
     public void setActiveManagerIndex(int i){
         activeManagerIndex = i;
     }

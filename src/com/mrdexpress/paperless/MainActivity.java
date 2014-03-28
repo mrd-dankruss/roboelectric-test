@@ -117,7 +117,7 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
-                Users.getInstance().setActiveDriverIndex(position);
+                Users.getInstance().setActiveDriverIndex(Users.getInstance().driversList.indexOf(selected_user));
                 holder.text_password.requestFocus();
                 //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 //imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
@@ -127,7 +127,7 @@ public class MainActivity extends Activity {
         AQuery ac = new AQuery(root_view);
         ac.id(R.id.button_mainmenu_start_login).clicked(this, "triggerLogin");
 
-        startService(new Intent( this, LocationService.class));
+        startService(new Intent(this, LocationService.class));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         // GCM registration.
