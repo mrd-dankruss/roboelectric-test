@@ -261,7 +261,7 @@ public class ServerInterface {
      * calls a progress box
      * @return
      */
-    public void authDriver(String PIN , final Dialog dag , final LoginInterface log) {
+    public void authDriver(String PIN , final LoginInterface log) {
         String url = API_URL + "v1/auth/driver?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken()
                 + "&driverPIN=" + PIN + "&driverID=" + Users.getInstance().getActiveDriver().getStringid();
         AQuery ac = new AQuery(context);
@@ -269,8 +269,6 @@ public class ServerInterface {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 if(json != null){
-                    //successful ajax call, show status code and json content
-                    //dialog_progress.dismiss();
                     try {
                         String jsonstatus = json.getJSONObject("response").getJSONObject("auth").getString("status");
                         if (jsonstatus.equals("success")){
@@ -284,6 +282,9 @@ public class ServerInterface {
                         Log.e("MRD-EX" , e.getMessage());
                         log.onLoginComplete(Paperless.PaperlessStatus.FAILED);
                     }
+                } else {
+                    //Error Login
+                    log.onLoginComplete(Paperless.PaperlessStatus.FAILED);
                 }
             }
         });
