@@ -30,7 +30,6 @@ public class ViewDeliveriesFragment extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
 		return rootView;
@@ -77,10 +76,10 @@ public class ViewDeliveriesFragment extends Fragment
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
 				// Go to View Deliveries screen
+
 				Intent intent = new Intent(getActivity(), DeliveryDetailsActivity.class);
 				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagID());
-//				intent.putExtra(VariableManager.EXTRA_DRIVER_ID, driverid);
-				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position + "");
+				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position);
 				startActivity(intent);
 			}
 		});

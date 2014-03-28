@@ -149,32 +149,18 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 
 	public void initViewHolder()
 	{
-
 		if (rootView == null)
 		{
-
 			rootView = this.getWindow().getDecorView().findViewById(android.R.id.content);
-
 			if (holder == null)
-			{
 				holder = new ViewHolder();
-			}
-
-			// Store the holder with the view.
 			rootView.setTag(holder);
-
 		}
 		else
 		{
 			holder = (ViewHolder) rootView.getTag();
-
 			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
-			{
 				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			}
-			else
-			{
-			}
 		}
 	}
 	

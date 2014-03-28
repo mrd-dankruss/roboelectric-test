@@ -33,6 +33,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	private ViewHolder holder;
 	private View rootView;
 	private Bag bag;
+    private int BagID;
     private ArrayList<DeliveryHandoverDataObject> waybills;
     private int position;
 	Intent intent;
@@ -49,7 +50,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		intent = getIntent();
 		position = intent.getIntExtra(VariableManager.EXTRA_LIST_POSITION, -1);
-        JSONObject jso =  Workflow.getInstance().getBag(intent.getIntExtra(VariableManager.EXTRA_BAG_NO, -1));
+        BagID = intent.getIntExtra(VariableManager.EXTRA_BAG_NO, -1);
+        JSONObject jso =  Workflow.getInstance().getBag( BagID);
         bag = new Bag( jso);
 		//bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 	}
@@ -69,7 +71,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
         //holder.text_delivery_bad_id.setText("Parcel(s) to be delivered for :  " + bag.getBagNumber() + "\n");
         //waybills = DbHandler.getInstance(this).getWaybillsForHandover(intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 
-        waybills = Workflow.getInstance().getBagParcelsAsObjects( Integer.parseInt( intent.getStringExtra(VariableManager.EXTRA_BAG_NO)));
+        waybills = Workflow.getInstance().getBagParcelsAsObjects( bag.getBagID());
 
         bagtext.append("Parcel(s) to be delivered for :  " + bag.getBarcode() + "<br />");
         int teller = 1;
@@ -80,7 +82,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
 
-		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( Integer.toString(bag.getBagID()));
+		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( Integer.toString( bag.getBagID()));
 
 		String comlog_text = "";
 
