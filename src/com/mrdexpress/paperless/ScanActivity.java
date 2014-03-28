@@ -409,7 +409,7 @@ public class ScanActivity extends FragmentActivity {
      * Barcode has been successfully scanned.
      */
     //@Override
-    public void handleDecode(String barcodeString) {        
+    public void handleDecode(String barcodeString) {
         Bag scannedBag = null;
 
         for (int i = 0; i < bags.size(); i++) {
