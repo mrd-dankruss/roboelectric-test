@@ -44,26 +44,32 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
     public void onResume() {
         super.onResume();
 
-        Users.UserData last_logged_in_manager = Users.getInstance().getActiveManager();
-        if( last_logged_in_manager == null)
+        onActivityResult( ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN, 0, null);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( requestCode == ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
         {
-            holder.text_name.setText("(Please select \"Select Manager\" below first!)");
-            holder.button_change_manager.setText("Select Manager");
-            holder.button_change_manager.setBackgroundResource(R.drawable.button_custom);
-            holder.button_continue.setBackgroundResource(R.drawable.button_custom_grey);
-            holder.button_continue.setEnabled(false);
-        } else {
-            holder.text_name.setText( last_logged_in_manager.getFullName());
-            holder.button_change_manager.setText("Change Manager");
-            holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
-            holder.button_continue.setBackgroundResource(R.drawable.button_custom);
-            holder.button_continue.setEnabled(true);
+            Users.UserData last_logged_in_manager = Users.getInstance().getActiveManager();
+            if( last_logged_in_manager != null)
+            {
+                holder.text_name.setText( last_logged_in_manager.getFullName());
+                holder.button_change_manager.setText("Change Manager");
+                holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
+                holder.button_continue.setBackgroundResource(R.drawable.button_custom);
+                holder.button_continue.setEnabled(true);
+            }
+            else
+            {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivityForResult(intent, ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
+            }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.manager_auth_incomplete_scan, menu);
         return true;
     }
@@ -90,10 +96,8 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
 
         holder.button_change_manager.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//				startActivity(intent);
-                startActivityForResult(intent, ScanActivity.RESULT_INCOMPLETE_SCAN_AUTH);
-                finish();
+                Users.getInstance().setActiveManagerIndex(-1);
+                onActivityResult( ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN, 0, null);
             }
         });
     }
@@ -110,30 +114,6 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
         toast.show();
     }
 
-    /*public void handleMessage(Message msg) {
-
-        if (msg.what == 0) {
-            Intent intent = new Intent(getApplicationContext(),
-                    ViewDeliveriesFragmentActivity.class);
-            // intent.putExtra(EXTRA_MESSAGE, message);
-		    //intent.putExtra(VariableManager.EXTRA_DRIVER_ID,etIntent().getStringExtra(VariableManager.EXTRA_DRIVER_ID));
-            startActivity(intent);
-
-            // Close progress spinner
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (dialog_login.isShowing()) dialog_login.dismiss();
-                }
-            });
-
-            // startActivity(intent);
-        }
-    }   */
-
-    /**
-     * Allows the views' resources to be found only once, improving performance.
-     */
     public void initViewHolder() {
         if (root_view == null) {
             root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);

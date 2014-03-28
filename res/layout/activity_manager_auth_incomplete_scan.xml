@@ -47,7 +47,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:background="@drawable/button_custom"
-            android:text="@string/button_continue"
+            android:text="Authorize"
             android:textStyle="bold" />
 
         

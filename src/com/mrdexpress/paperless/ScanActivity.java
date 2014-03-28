@@ -133,16 +133,8 @@ public class ScanActivity extends FragmentActivity {
         holder.button_start_milkrun.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Check if all bags have been scanned
-                // if (true) // DEBUG
                 if ((Workflow.getInstance().getBagsScanned(true).size() == holder.list.getCount()) & (holder.list.getCount() > 0)) {
-                    // Go to View Deliveries screen
-                    Intent intent = new Intent(getApplicationContext(),
-                            ViewDeliveriesFragmentActivity.class);
-                    // EditText editText = (EditText) findViewById(R.id.edit_message);
-                    // String message = editText.getText().toString();
-                    // intent.putExtra(EXTRA_MESSAGE, message);
-                    startActivity(intent);
+                    startDelivery();
                 } else {
                     dialog = new IncompleteScanDialog(ScanActivity.this);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -155,20 +147,9 @@ public class ScanActivity extends FragmentActivity {
                     button_continue.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(Users.getInstance().getActiveManager() == null){
-
-                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                startActivityForResult(intent, ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
-
-
-                                /*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                // startActivity(intent);
-                                startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN); */
-                                dialog.dismiss();
-                            } else {
-                                startIncompleteScanActivity();
-                                dialog.dismiss();
-                            }
+                            Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
+                            startActivityForResult(intent, ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
+                            dialog.dismiss();
                         }
                     });
 
@@ -188,6 +169,14 @@ public class ScanActivity extends FragmentActivity {
         holder.list.setAdapter(adapter);
 
         UpdateBagsCounter();
+    }
+
+    private void startDelivery()
+    {
+        finish();
+
+        Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -234,11 +223,10 @@ public class ScanActivity extends FragmentActivity {
             }
         }
         if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN) {
-            // manager auth was required for an incomplete scan
             if (resultCode == RESULT_OK) {
                 if( Users.getInstance().getActiveManager() != null)
                 {
-                    startIncompleteScanActivity();
+                    startDelivery();
                 }
             }
         }
