@@ -1,9 +1,5 @@
 package com.mrdexpress.paperless.service;
 
-import com.mrdexpress.paperless.workflow.Workflow;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -11,10 +7,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
+import com.mrdexpress.paperless.workflow.Workflow;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Date;
 

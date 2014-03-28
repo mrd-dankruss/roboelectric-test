@@ -1,20 +1,16 @@
 package com.mrdexpress.paperless;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.datatype.ComLogObject;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
@@ -28,6 +24,8 @@ import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class DeliveryDetailsActivity extends FragmentActivity implements SetNextDeliveryListener
 {
@@ -51,7 +49,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		intent = getIntent();
 		position = intent.getIntExtra(VariableManager.EXTRA_LIST_POSITION, -1);
-        JSONObject jso =  Workflow.getInstance().getBag( intent.getIntExtra( VariableManager.EXTRA_BAG_NO, -1));
+        JSONObject jso =  Workflow.getInstance().getBag(intent.getIntExtra(VariableManager.EXTRA_BAG_NO, -1));
         bag = new Bag( jso);
 		//bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
 	}

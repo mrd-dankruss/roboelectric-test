@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;

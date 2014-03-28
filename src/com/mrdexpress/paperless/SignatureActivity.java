@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import com.mrdexpress.paperless.shake.ShakeDetectActivity;
 import com.mrdexpress.paperless.shake.ShakeDetectActivityListener;
 

@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
@@ -10,21 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
-import com.mrdexpress.paperless.workflow.JSONObjectHelper;
-import com.mrdexpress.paperless.workflow.Workflow;
-import net.minidev.json.JSONObject;
+
+import java.util.List;
 
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {

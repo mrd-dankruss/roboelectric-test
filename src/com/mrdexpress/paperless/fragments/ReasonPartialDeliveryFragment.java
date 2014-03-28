@@ -155,7 +155,7 @@ public class ReasonPartialDeliveryFragment extends Fragment
 			// ServerInterface.postPartialDelivery(waybill_id, status_id, extra)
 			String result = "";
 
-			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
+			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
             for (int i = 0; i < data.size(); i++)
             {

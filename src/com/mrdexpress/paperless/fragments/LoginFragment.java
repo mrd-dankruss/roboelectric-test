@@ -77,23 +77,6 @@ public class LoginFragment extends Fragment {
         });
     }
 
-	/*
-    @Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		((DialogDataObject) adapter.getItem(parentItemPosition)).setThirdText(data
-				.getStringExtra(SMSDialog.DIALOG_TIME_STRING));
-
-		// VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
-
-		// holder.report_button.setVisibility(View.VISIBLE);
-		holder.report_button.setBackgroundResource(R.drawable.button_custom);
-		holder.list.setAdapter(adapter);
-		adapter.notifyDataSetChanged();
-		holder.report_button.setEnabled(true);
-	}
-	*/
-
     public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
 
         if (rootView == null) {

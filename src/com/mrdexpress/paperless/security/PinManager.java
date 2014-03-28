@@ -1,13 +1,12 @@
 package com.mrdexpress.paperless.security;
 
+import android.app.Activity;
+import android.util.Log;
+import com.mrdexpress.paperless.R;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import android.app.Activity;
-import android.util.Log;
-
-import com.mrdexpress.paperless.R;
 
 public class PinManager {
 

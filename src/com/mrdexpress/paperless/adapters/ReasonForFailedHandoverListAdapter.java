@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -10,9 +8,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+
+import java.util.ArrayList;
 
 public class ReasonForFailedHandoverListAdapter extends BaseAdapter
 {

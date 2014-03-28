@@ -1,22 +1,17 @@
 package com.mrdexpress.paperless.db;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Parcel;
 import android.os.Parcelable;
-import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
-import com.mrdexpress.paperless.helper.VariableManager;
+import com.jayway.jsonpath.internal.JsonReader;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 
-public class Bag implements Serializable
+public class Bag implements Parcelable
 {
     private static final long serialVersionUID = 0L;
     public ObservableJSONObject data;
@@ -36,8 +31,6 @@ public class Bag implements Serializable
 
 	public int getBagID()
 	{
-        //JSONObject flowdata = data.getJSONObject("flowdata");
-		//return JSONObjectHelper.getIntDef( flowdata, "", -1);
         return JSONObjectHelper.getIntDef(data.get(), "payloadid", -1);
 	}
 
@@ -59,7 +52,7 @@ public class Bag implements Serializable
         if( jso != null) {
             jso = JSONObjectHelper.getJSONObjectDef(jso, "destination", null);
             if( jso != null) {
-                return JSONObjectHelper.getJSONObjectDef( jso, "extra", null);
+                return JSONObjectHelper.getJSONObjectDef(jso, "extra", null);
             }
         }
         return null;
@@ -131,4 +124,38 @@ public class Bag implements Serializable
 	{
 		return new ArrayList<Contact>();
 	}
+
+
+    // parcelable support //////////
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(data.get().toJSONString());
+    }
+
+    public void readFromParcel(Parcel in)
+    {
+        data.set( (JSONObject) new JsonReader().parse( in.readString()));
+    }
+
+    public final Parcelable.Creator<Bag> CREATOR = new Parcelable.Creator<Bag>()
+    {
+        public Bag createFromParcel(Parcel in)
+        {
+            return new Bag( (JSONObject) new JsonReader().parse( in.readString()));
+        }
+
+        public Bag[] newArray(int size)
+        {
+            return new Bag[size];
+        }
+    };
+
+
+
 }

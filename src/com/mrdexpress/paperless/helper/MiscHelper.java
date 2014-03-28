@@ -4,14 +4,13 @@
  */
 package com.mrdexpress.paperless.helper;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
 import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.db.Bag;
+
+import java.util.List;
 
 public class MiscHelper {
 	

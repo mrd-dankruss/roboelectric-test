@@ -8,7 +8,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import com.jayway.jsonpath.internal.JsonReader;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -114,7 +113,7 @@ public class Users implements Serializable
         private String lastName;
         private int id;
         private String pin;
-        private Type usertype;
+        private String role;
 
         public UserData(net.minidev.json.JSONObject obj){
             json = obj;
@@ -130,10 +129,7 @@ public class Users implements Serializable
                     lastName = json.get("lastName").toString();
                     pin = json.get("driverPin").toString();
                     id = Integer.parseInt(json.get("id").toString());
-                    if (json.get("role").toString().contains("MANAGER"))
-                        usertype = Type.MANAGER;
-                    else
-                        usertype = Type.DRIVER;
+                    role = json.get("role").toString();
                 } catch (Exception e) {
                     Log.e("MRD-EX", "Parsing variable exception , this should be fixed when it happens!! " + e.getMessage());
                 }
@@ -184,7 +180,10 @@ public class Users implements Serializable
         }
 
         public Type getUsertype(){
-            return usertype;
+            if( role.contains("MANAGER"))
+                return Type.MANAGER;
+            else
+                return Type.DRIVER;
         }
 
         @Override

@@ -1,19 +1,20 @@
 package com.mrdexpress.paperless.net;
 
-import android.os.AsyncTask;
-import com.androidquery.AQuery;
-import com.androidquery.callback.*;
-
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 import com.mrdexpress.paperless.Paperless;
-import com.mrdexpress.paperless.db.*;
+import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -37,7 +38,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,7 +46,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.util.Hashtable;
-import java.util.List;
 
 
 public class ServerInterface {
@@ -224,7 +223,7 @@ public class ServerInterface {
      */
     public void getDrivers(Context context) {
         String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/driver/drivers?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + token;
+        String url = API_URL + "v1/driver/drivers?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
         final AQuery aq = new AQuery(Paperless.getContext());
         aq.ajax( url  , JSONObject.class , new AjaxCallback<JSONObject>() {
             @Override
@@ -302,9 +301,8 @@ public class ServerInterface {
      * @return
      */
     public String authManager(String man_id, String driver_id, String PIN, String imei_id) {
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken=" + token
-                + "&managerPIN=" + PIN + "&managerID=" + man_id;
+        String token = Device.getInstance().getToken();
+        String url = API_URL + "v1/auth/manager?imei=" + imei_id + "&mrdToken=" + token + "&managerPIN=&managerID=" + man_id;
 
         String response = getInputStreamFromUrl(url);
 

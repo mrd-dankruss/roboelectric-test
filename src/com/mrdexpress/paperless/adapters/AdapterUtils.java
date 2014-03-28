@@ -1,19 +1,14 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.m039.wf.SectionAdapter;
 import com.mrdexpress.paperless.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

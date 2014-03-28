@@ -1,15 +1,14 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
+
+import java.util.ArrayList;
 
 public class EntryAdapter extends ArrayAdapter<Item> {
 

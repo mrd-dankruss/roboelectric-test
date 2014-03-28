@@ -1,11 +1,9 @@
 package com.mrdexpress.paperless.datatype;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
-
-import java.io.Serializable;
-import java.util.jar.Pack200;
 
 public class UserItem implements Parcelable
 {
@@ -33,7 +31,7 @@ public class UserItem implements Parcelable
 
 	public int getUserID()
 	{
-		return JSONObjectHelper.getIntDef( data.get(), "id", -1);
+		return JSONObjectHelper.getIntDef(data.get(), "id", -1);
 	}
 
 	public String getUserName()

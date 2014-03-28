@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -11,9 +9,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
+
+import java.util.ArrayList;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter
 {

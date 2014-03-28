@@ -4,16 +4,7 @@ package com.mrdexpress.paperless.adapters;
  * Created by hannobean on 2014/03/26.
  */
 
-import android.content.Context;
 ;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-import com.mrdexpress.paperless.R;
-
-import java.util.ArrayList;
 
 /*public class SelectDriverListAdapter extends BaseAdapter
 {

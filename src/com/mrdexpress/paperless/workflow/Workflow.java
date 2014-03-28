@@ -1,7 +1,6 @@
 package com.mrdexpress.paperless.workflow;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 import com.jayway.jsonpath.*;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
@@ -585,7 +584,7 @@ public class Workflow extends Observable
                     ro.put("role", "{MANAGER}");
 
                     UserItem user = new UserItem( new ObservableJSONObject(ro));
-                    managers.add( user);
+                    managers.add(user);
                 }
             }
         }

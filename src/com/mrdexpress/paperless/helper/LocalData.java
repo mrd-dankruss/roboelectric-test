@@ -1,7 +1,6 @@
 package com.mrdexpress.paperless.helper;
 
 import java.util.Observable;
-import android.content.SharedPreferences;
 
 /**
  * Created by hannobean on 2014/03/17.
