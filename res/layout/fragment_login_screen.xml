@@ -42,7 +42,7 @@
         android:inputType="numberPassword" />
     
     <Button
-        android:id="@+id/button_login_screen"
+        android:id="@+id/button_login_screen_select_manager"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"

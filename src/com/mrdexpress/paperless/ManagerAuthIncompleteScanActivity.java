@@ -54,11 +54,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
             Users.UserData last_logged_in_manager = Users.getInstance().getActiveManager();
             if( last_logged_in_manager != null)
             {
-                holder.text_name.setText( last_logged_in_manager.getFullName());
-                holder.button_change_manager.setText("Change Manager");
-                holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
-                holder.button_continue.setBackgroundResource(R.drawable.button_custom);
-                holder.button_continue.setEnabled(true);
+                holder.text_name.setText(last_logged_in_manager.getFullName());
             }
             else
             {
@@ -145,7 +141,11 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
             holder.text_name.setTypeface(typeface_roboto_bold);
             holder.text_content.setTypeface(typeface_roboto_regular);
 
-            // Store the holder with the view.
+            holder.button_change_manager.setText("Change Manager");
+            holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
+            holder.button_continue.setBackgroundResource(R.drawable.button_custom);
+            holder.button_continue.setEnabled(true);
+
             root_view.setTag(holder);
         } else {
             holder = (ViewHolder) root_view.getTag();

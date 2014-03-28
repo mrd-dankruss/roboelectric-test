@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class LoginActivity extends Activity
             @Override
             public void onClick(View v) {
                 //new ManagerLoginUserTask().execute();
-                if ( true) {
+                if ( selectedUser.getdriverPin().equals( PinManager.toMD5( holder.text_manager_pin.getText().toString()))) {
                     Users.getInstance().setActiveManager(selectedUser);
                     setResult(Activity.RESULT_OK);
                     finish();
@@ -106,7 +107,7 @@ public class LoginActivity extends Activity
             holder.text_manager_name = (AutoCompleteTextView) rootView.findViewById(R.id.text_login_screen_name);
             holder.text_manager_pin = (TextView) rootView.findViewById(R.id.text_login_screen_password);
             //holder.text_manager_pin.setVisibility(View.GONE);
-            holder.button_login = (Button) rootView.findViewById(R.id.button_login_screen);
+            holder.button_login = (Button) rootView.findViewById(R.id.button_login_screen_select_manager);
 
             holder.text_manager_name.setTypeface(typeface_roboto_regular);
             holder.text_manager_pin.setTypeface(typeface_roboto_regular);
