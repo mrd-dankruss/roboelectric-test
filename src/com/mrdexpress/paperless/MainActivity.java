@@ -28,7 +28,6 @@ import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.mrdexpress.paperless.adapters.SelectDriverListAdapter;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.UserItem.UserType;
 import com.mrdexpress.paperless.db.Device;
@@ -70,7 +69,6 @@ public class MainActivity extends Activity {
     AtomicInteger msgId = new AtomicInteger();
     Context context;
     private boolean is_registration_successful;
-    SelectDriverListAdapter sdriver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,15 +113,6 @@ public class MainActivity extends Activity {
         holder.text_name.setAdapter(adapter);
         holder.text_name.setThreshold(1);
 
-               /* holder.text_name.setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(holder.text_name.getWindowToken(), 0);
-
-                    }
-                });*/
         holder.text_name.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -142,7 +131,7 @@ public class MainActivity extends Activity {
 
         // Check device for Play Services APK. If check succeeds, proceed with
         // GCM registration.
-       /* if (checkPlayServices()) {
+        if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance( this);
             regid = getRegistrationId( this);
             is_registration_successful = false;
@@ -151,7 +140,7 @@ public class MainActivity extends Activity {
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
-        }   */
+        }
     }
 
     public void triggerLogin(View view){

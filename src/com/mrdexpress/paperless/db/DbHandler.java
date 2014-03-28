@@ -40,24 +40,10 @@ public class DbHandler extends SQLiteOpenHelper
 	public static final String DB_NAME = "Paperless.db";
 
 	// Tables
-	public static final String TABLE_DRIVERS = "Drivers";
-	public static final String TABLE_MANAGERS = "Managers";
 	public static final String TABLE_CALLQUEUE = "CallQueue"; // Queues API calls if net is down
 	public static final String TABLE_CONTACTS = "Contacts";
 	public static final String TABLE_COMLOG = "ComLog";
 
-	// ------------ Fields - Drivers ---------
-	public static final String C_DRIVER_ID = "_id"; // Primary key
-	public static final String C_DRIVER_NAME = "dvr_name";
-	public static final String C_DRIVER_PIN = "dvr_pin";
-
-	// ------------ Fields - Managers ---------
-	public static final String C_MANAGER_ID = "_id"; // Primary key
-	public static final String C_MANAGER_NAME = "man_name";
-
-	// ------------ Fields - Bags -------------
-	public static final String C_BAG_ID = "_id"; // Consignment number
-													// (PK)
 	// ------------ Fields - Contacts -------------
 	public static final String C_CONTACTS_ID = "_id"; // Primary key
 	public static final String C_CONTACTS_NAME = "contact_name";
@@ -88,7 +74,6 @@ public class DbHandler extends SQLiteOpenHelper
 	public DbHandler(Context context)
 	{
 		super(context, DB_NAME, null, DB_VERSION);
-		// TODO Auto-generated constructor stub
 		this.context = context;
 		prefs = context.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 	}
@@ -110,15 +95,6 @@ public class DbHandler extends SQLiteOpenHelper
 		try
 		{
 			db.beginTransaction();
-
-			final String CREATE_TABLE_DRIVERS = "CREATE TABLE " + TABLE_DRIVERS + "(" + C_DRIVER_ID
-					+ " INTEGER PRIMARY KEY AUTOINCREMENT," + C_DRIVER_NAME + " TEXT,"
-					+ C_DRIVER_PIN + " TEXT)";
-			createTable(db, TABLE_DRIVERS, CREATE_TABLE_DRIVERS);
-
-			final String CREATE_TABLE_MANAGERS = "CREATE TABLE " + TABLE_MANAGERS + "("
-					+ C_MANAGER_ID + " INTEGER PRIMARY KEY," + " TEXT," + C_MANAGER_NAME + " TEXT)";
-			createTable(db, TABLE_MANAGERS, CREATE_TABLE_MANAGERS);
 
 			final String CREATE_TABLE_CONTACTS = "CREATE TABLE " + TABLE_CONTACTS + "("
 					+ C_CONTACTS_ID + " INTEGER PRIMARY KEY," + C_CONTACTS_NAME + " TEXT,"
@@ -166,94 +142,10 @@ public class DbHandler extends SQLiteOpenHelper
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		// TODO Auto-generated method stub
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_DRIVERS);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANAGERS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMLOG);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CALLQUEUE);
 		onCreate(db);
-	}
-
-	/**
-	 * Add a new driver to the database.
-	 * 
-	 * Params: Driver object. Name of table to insert into
-	 * 
-	 * Returns boolean of whether the database transaction was successful
-	 */
-	public boolean addDriver(Driver driver)
-	{
-		ContentValues values = new ContentValues();
-
-		values.put(C_DRIVER_ID, driver.getId());
-		values.put(C_DRIVER_NAME, driver.getName());
-		values.put(C_DRIVER_PIN, driver.getPin());
-
-		String where_clause = C_DRIVER_ID + " LIKE '"
-				+ driver.getId() + "'";
-		
-		String countQuery = "SELECT * FROM " + TABLE_DRIVERS + " WHERE " + where_clause;
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-
-		if (cursor.getCount() > 0)
-		{
-			cursor.close();
-			int affected_rows = db.update(TABLE_DRIVERS, values, where_clause, null);
-			if (affected_rows > 0)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			
-			return addRow(TABLE_DRIVERS, values);
-		}
-
-	}
-
-	/**
-	 * Add a manager to the DB.
-	 * 
-	 */
-	public boolean addManager(String id, String name)
-	{
-		ContentValues values = new ContentValues();
-
-		values.put(C_MANAGER_ID, id);
-		values.put(C_MANAGER_NAME, name);
-
-		String where_clause = C_MANAGER_ID + " LIKE '"
-				+ id + "'";
-		
-		String countQuery = "SELECT * FROM " + TABLE_MANAGERS + " WHERE " + where_clause;
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-		
-		if (cursor.getCount() > 0)
-		{
-			cursor.close();
-			int affected_rows = db.update(TABLE_MANAGERS, values, where_clause, null);
-			if (affected_rows > 0)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			
-			return addRow(TABLE_MANAGERS, values);
-		}
-		
 	}
 
 	public boolean addContact(String name, String number, String bagid)
@@ -412,9 +304,6 @@ public class DbHandler extends SQLiteOpenHelper
 	/**
 	 * Converts int datatype to boolean, because SQLite doesn't have boolean
 	 * primitives.
-	 * 
-	 * @param bool
-	 * @return
 	 */
 	public boolean convertIntToBool(int integer)
 	{
@@ -671,191 +560,5 @@ public class DbHandler extends SQLiteOpenHelper
 		msgs.add(new DialogDataObject("Ambush", "Ambush"));
 
 		return msgs;
-	}
-
-	/**
-	 * Returns true if the driver has set a PIN.
-	 * 
-	 * @return Barcode at specified row
-	 */
-	public boolean isDriverPinSet(String driver_id)
-	{
-		String countQuery = "SELECT  * FROM " + TABLE_DRIVERS + " WHERE " + C_DRIVER_ID + " LIKE '"
-				+ driver_id + "'";
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-		String driver_pin = "";
-		if (cursor != null && cursor.moveToFirst())
-		{
-			driver_pin = cursor.getString(cursor.getColumnIndex(C_DRIVER_PIN));
-			Log.d(TAG, "PIN: " + driver_pin);
-		}
-		// Log.d(TAG, "zorro cursor bagid " + barcode);
-		cursor.close();
-		boolean isDriverPinSet = true;
-		if (driver_pin.equals("null"))
-		{
-			Log.d(TAG, "inside: " + driver_pin);
-			isDriverPinSet = false;
-		}
-
-		return isDriverPinSet;
-	}
-
-	/**
-	 * Return the name of a driver.
-	 * 
-	 * @return Barcode at specified row
-	 */
-	public String getDriverName(String driver_id)
-	{
-		String countQuery = "SELECT  * FROM " + TABLE_DRIVERS + " WHERE " + C_DRIVER_ID + " LIKE '"
-				+ driver_id + "'";
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-		String driver_name = "";
-		if (cursor != null && cursor.moveToFirst())
-		{
-			driver_name = cursor.getString(cursor.getColumnIndex(C_DRIVER_NAME));
-		}
-		// Log.d(TAG, "zorro cursor bagid " + barcode);
-		cursor.close();
-		return driver_name;
-	}
-
-	/**
-	 * Returns list of drivers
-	 * 
-	 * @return
-	 */
-	/*public ArrayList<UserItem> getDrivers()
-	{
-		SQLiteDatabase db = null;
-		try
-		{
-			db = this.getReadableDatabase(); // Open db
-
-			ArrayList<UserItem> drivers = null;
-			String sql = "SELECT * FROM " + TABLE_DRIVERS;
-			Cursor cursor = db.rawQuery(sql, null);
-
-			if (cursor != null && cursor.moveToFirst())
-			{
-				drivers = new ArrayList<UserItem>();
-
-				while (!cursor.isAfterLast())
-				{
-					String driver_id = cursor.getString(cursor.getColumnIndex(C_DRIVER_ID));
-					String driver_name = cursor.getString(cursor.getColumnIndex(C_DRIVER_NAME));
-
-                    net.minidev.json.JSONObject jso = new net.minidev.json.JSONObject();
-                    jso.put("id", driver_id);
-                    jso.put("firstname", driver_name);
-                    jso.put("surname", "");
-                    jso.put("role","{DRIVER}");
-
-                    UserItem person_item = new UserItem( new ObservableJSONObject( jso) );
-
-					drivers.add(person_item);
-
-					cursor.moveToNext();
-				}
-			}
-
-			return drivers;
-		}
-		catch (SQLiteException e)
-		{ // TODO Auto-generated catch
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		catch (IllegalStateException e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		finally
-		{
-
-			if (db != null)
-			{
-				if (db.isOpen()) // check if db is already open
-				{
-					db.close(); // close db
-				}
-			}
-		}
-	}    */
-
-	/**
-	 * Returns list of drivers
-	 * 
-	 * @return
-	 */
-	public ArrayList<UserItem> getManagers()
-	{
-		SQLiteDatabase db = null;
-		try
-		{
-			db = this.getReadableDatabase(); // Open db
-
-			ArrayList<UserItem> managers = null;
-			String sql = "SELECT * FROM " + TABLE_MANAGERS;
-			Cursor cursor = db.rawQuery(sql, null);
-
-			if (cursor != null && cursor.moveToFirst())
-			{
-				managers = new ArrayList<UserItem>();
-
-				while (!cursor.isAfterLast())
-				{
-					String manager_id = cursor.getString(cursor.getColumnIndex(C_MANAGER_ID));
-					String manager_name = cursor.getString(cursor.getColumnIndex(C_MANAGER_NAME));
-
-                    net.minidev.json.JSONObject jso = new net.minidev.json.JSONObject();
-                    jso.put("id", manager_id);
-                    jso.put("firstname", manager_name);
-                    jso.put("surname", "");
-                    jso.put("role","{MANAGER}");
-
-					UserItem person_item = new UserItem( new ObservableJSONObject( jso) );
-
-					managers.add(person_item);
-
-					cursor.moveToNext();
-				}
-			}
-
-			return managers;
-		}
-		catch (SQLiteException e)
-		{ // TODO Auto-generated catch
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		catch (IllegalStateException e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			Log.e(TAG, sw.toString());
-			return null;
-		}
-		finally
-		{
-
-			if (db != null)
-			{
-				if (db.isOpen()) // check if db is already open
-				{
-					db.close(); // close db
-				}
-			}
-		}
 	}
 }

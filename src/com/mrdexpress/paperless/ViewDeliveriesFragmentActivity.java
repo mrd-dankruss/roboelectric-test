@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
@@ -206,14 +207,9 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
         final Button button_ok = (Button) dialog_change_user.findViewById(R.id.button_change_user_ok);
         final TextView dialog_content = (TextView) dialog_change_user.findViewById(R.id.text_change_driver_content);
 
-        SharedPreferences prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-        String driverId = prefs.getString(VariableManager.PREF_DRIVERID, "");
-        String user_name = "";
-        if (MiscHelper.isNonEmptyString(driverId))
-        {
-        	user_name = DbHandler.getInstance(this).getDriverName(driverId);
-        }
-        dialog_content.setText("Are you sure you want to log out" + ((MiscHelper.isNonEmptyString(user_name) ? (" "+user_name) : "")) + "?");
+        String user_name = Users.getInstance().getActiveDriver().getFullName();
+
+        dialog_content.setText("Are you sure you want to log out" + user_name + "?");
 
         button_close.setOnClickListener(new OnClickListener() {
             @Override

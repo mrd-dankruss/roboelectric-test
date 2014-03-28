@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mrdexpress.paperless.LoginActivity;
 import com.mrdexpress.paperless.ManagerAuthActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ScanActivity;
@@ -43,13 +44,11 @@ public class LoginFragment extends Fragment {
     private final String TAG = "LoginFragment";
     private ViewHolder holder;
     private View rootView;
-    private SharedPreferences prefs;
     ArrayList<Users.UserData> person_item_list;
-    private UserItem selectedUser;
+    private Users.UserData selectedUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
         return rootView;
@@ -58,11 +57,7 @@ public class LoginFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        person_item_list = Users.getInstance().driversList;
-
-        prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-
-        //person_item_list.addAll(DbHandler.getInstance(getActivity().getApplicationContext()).getManagers());
+        person_item_list = Users.getInstance().managersList;
 
         UserAutoCompleteAdapter adapter = new UserAutoCompleteAdapter(getActivity().getApplicationContext(), person_item_list);
 
@@ -73,7 +68,7 @@ public class LoginFragment extends Fragment {
         holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                selectedUser = ((UserItem) holder.text_manager_name.getAdapter().getItem( position));
+                selectedUser = ((Users.UserData) holder.text_manager_name.getAdapter().getItem( position));
 
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService( Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(holder.text_manager_name.getWindowToken(), 0);
@@ -86,13 +81,8 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
                 //new ManagerLoginUserTask().execute();
                 if ( true) {
-                    prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_ID, Integer.toString( selectedUser.getUserID())).commit();
-                    prefs.edit().putString(VariableManager.LAST_LOGGED_IN_MANAGER_NAME, selectedUser.getUserName()).commit();
-
-                    Intent intent = new Intent();
-                    intent.putExtra(ManagerAuthActivity.MANAGER_AUTH_SUCCESS, true);
-                    intent.putExtra("selected_manager", selectedUser);
-                    getActivity().setResult(Activity.RESULT_OK, intent);
+                    Users.getInstance().setActiveManager(selectedUser);
+                    getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
                 } else {
                     CustomToast toast = new CustomToast(getActivity());
@@ -152,7 +142,7 @@ public class LoginFragment extends Fragment {
             holder.text_manager_name.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                    selectedUser = ((UserItem) holder.text_manager_name.getAdapter().getItem(position));
+                    selectedUser = ((Users.UserData) holder.text_manager_name.getAdapter().getItem(position));
                     }
                 });
 

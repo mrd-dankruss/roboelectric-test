@@ -39,24 +39,11 @@
             android:text="985678hd368\n00002534462\nWWW857428\nWWW946483"
             android:textSize="@dimen/font_size_dialog_content" />
 
-        <EditText
-            android:id="@+id/editText_incomplete_scan_activity_pin"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/height_pin"
-            android:layout_below="@+id/textView_incomplete_scan_activity_list"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@color/colour_white"
-            android:ems="10"
-            android:inputType="numberPassword"
-            android:paddingLeft="@dimen/margin_pin_left"
-            android:hint="@string/text_create_pin_enter" />
-        
         <Button
             android:id="@+id/button_incomplete_scan_activity_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editText_incomplete_scan_activity_pin"
+            android:layout_below="@+id/textView_incomplete_scan_activity_list"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:background="@drawable/button_custom"

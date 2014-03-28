@@ -1,9 +1,14 @@
 package com.mrdexpress.paperless.db;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.jayway.jsonpath.internal.JsonReader;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,11 +23,11 @@ public class Users implements Serializable
     private ReadContext users;
 
 
-    private Integer activeDriverIndex = 0;
+    private Integer activeDriverIndex = -1;
     public ArrayList<UserData> driversList;
 
     public ArrayList<UserData> managersList;
-    private int activeManagerIndex = 0;
+    private int activeManagerIndex = -1;
 
     public static Users getInstance() {
         if (_instance == null) {
@@ -43,8 +48,12 @@ public class Users implements Serializable
         activeManagerIndex = i;
     }
 
+    public void setActiveManager( UserData user){
+        activeManagerIndex = managersList.indexOf( user);
+    }
+
     public UserData getActiveManager(){
-        if (managersList.size() > 0)
+        if (managersList.size() > 0 && activeManagerIndex > -1)
         {
             return this.managersList.get(activeManagerIndex);
         }
@@ -55,7 +64,7 @@ public class Users implements Serializable
     }
 
     public UserData getActiveDriver(){
-        if (driversList.size() > 0)
+        if (driversList.size() > 0  && activeDriverIndex > -1)
         {
             return this.driversList.get(activeDriverIndex);
         }
@@ -77,11 +86,11 @@ public class Users implements Serializable
                 net.minidev.json.JSONObject obj = (net.minidev.json.JSONObject)userlist.get(i);
                 if ( obj.get("role").toString().contains("DRIVER") ){
                     //Create Driver UserData and Add it to the Driver List
-                    driversList.add(new UserData(obj , Type.DRIVER));
+                    driversList.add(new UserData(obj));
                 }
                 if ( obj.get("role").toString().contains("MANAGER") ){
                     //Create Driver UserData and Add it to the Driver List
-                    managersList.add(new UserData(obj , Type.DRIVER));
+                    managersList.add(new UserData(obj));
                 }
             }
         }
@@ -96,7 +105,8 @@ public class Users implements Serializable
         MANAGER,DRIVER;
     }
 
-    public class UserData
+    // this need to be Parcelable to be able to serialise into a Bundle
+    public class UserData implements Parcelable
     {
         public net.minidev.json.JSONObject json;
         private String firstName;
@@ -105,18 +115,27 @@ public class Users implements Serializable
         private String pin;
         private Type usertype;
 
-        public UserData(net.minidev.json.JSONObject obj, Type type){
+        public UserData(net.minidev.json.JSONObject obj){
             json = obj;
-            try{
-                firstName = obj.get("firstName").toString();
-                lastName = obj.get("lastName").toString();
-                pin = obj.get("driverPin").toString();
-                id = Integer.parseInt(obj.get("id").toString());
-                usertype = type;
+            if( json != null) {
+                setUserDataFromJSON();
             }
-            catch(Exception e)
-            {
-                Log.e("MRD-EX" , "Parsing variable exception , this should be fixed when it happens!! " + e.getMessage());
+        }
+
+        private void setUserDataFromJSON(){
+            if( json != null) {
+                try {
+                    firstName = json.get("firstName").toString();
+                    lastName = json.get("lastName").toString();
+                    pin = json.get("driverPin").toString();
+                    id = Integer.parseInt(json.get("id").toString());
+                    if (json.get("role").toString().contains("MANAGER"))
+                        usertype = Type.MANAGER;
+                    else
+                        usertype = Type.DRIVER;
+                } catch (Exception e) {
+                    Log.e("MRD-EX", "Parsing variable exception , this should be fixed when it happens!! " + e.getMessage());
+                }
             }
         }
 
@@ -168,5 +187,38 @@ public class Users implements Serializable
         {
             return getFullName();
         }
+
+        public int describeContents()
+        {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags)
+        {
+            dest.writeString(json.toJSONString());
+        }
+
+        public void readFromParcel(Parcel in)
+        {
+            json = (JSONObject) new JsonReader().parse( in.readString());
+            setUserDataFromJSON();
+        }
+
+        public final Parcelable.Creator<UserData> CREATOR = new Parcelable.Creator<UserData>()
+        {
+            public UserData createFromParcel(Parcel in)
+            {
+                UserData ud = new UserData(null);
+                ud.readFromParcel( in);
+                return ud;
+            }
+
+            public UserData[] newArray(int size)
+            {
+                return new UserData[size];
+            }
+        };
+
     }
 }
