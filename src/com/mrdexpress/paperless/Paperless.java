@@ -19,6 +19,8 @@ public class Paperless extends Application {
         // or return instance.getApplicationContext();
     }
 
+    public enum PaperlessStatus {SUCCESS,FAILED,SPECIAL};
+
     @Override
     public void onCreate() {
         instance = this;

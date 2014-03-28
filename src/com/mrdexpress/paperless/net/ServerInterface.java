@@ -1,5 +1,6 @@
 package com.mrdexpress.paperless.net;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Device;
@@ -256,12 +258,37 @@ public class ServerInterface {
      * Submit driver authentication request (login). Receives success status.
      *
      * @param PIN
+     * calls a progress box
      * @return
      */
-    public String authDriver(String PIN, String driver_id) {
+    public void authDriver(String PIN , final Dialog dag , final LoginInterface log) {
         String url = API_URL + "v1/auth/driver?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken()
-                + "&driverPIN=" + PIN + "&driverID=" + driver_id;
+                + "&driverPIN=" + PIN + "&driverID=" + Users.getInstance().getActiveDriver().getStringid();
+        AQuery ac = new AQuery(context);
+        ac.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+                if(json != null){
+                    //successful ajax call, show status code and json content
+                    //dialog_progress.dismiss();
+                    try {
+                        String jsonstatus = json.getJSONObject("response").getJSONObject("auth").getString("status");
+                        if (jsonstatus.equals("success")){
+                            //success Path
+                            log.onLoginComplete(Paperless.PaperlessStatus.SUCCESS);
+                        }else{
+                            //failed path
+                            log.onLoginComplete(Paperless.PaperlessStatus.SPECIAL);
+                        }
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                        log.onLoginComplete(Paperless.PaperlessStatus.FAILED);
+                    }
+                }
+            }
+        });
 
+        /*
         String response = getInputStreamFromUrl(url);
 
         String status = "";
@@ -287,8 +314,9 @@ public class ServerInterface {
         if (VariableManager.DEBUG) {
             Log.d(TAG, "auth/driver: " + status);
         }
+        */
 
-        return status;
+        //return status;
         // return "success"; // DEBUG!!
     }
 
