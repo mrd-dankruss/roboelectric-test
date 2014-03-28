@@ -30,6 +30,8 @@ public class Workflow extends Observable
     private ReadContext drivers;
     private ReadContext managers;
 
+    public int currentBagID;
+
     public Workflow()
     {
         context = VariableManager.context;
@@ -225,7 +227,9 @@ public class Workflow extends Observable
         try
         {
             //JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload eq 'bag')].flowdata");
-            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata",
+            //JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata",
+            //        Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
+            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
                     Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
             bag = (JSONObject)bags.get(0);
         }
@@ -289,15 +293,19 @@ public class Workflow extends Observable
 
         if( bag instanceof JSONObject)
         {
-            JSONArray ja = (JSONArray)bag.get("parcels");
-
-            if( ja instanceof JSONArray)
+            JSONObject jso = (JSONObject)bag.get("flowdata");
+            if( jso != null)
             {
-                for( int i=0; i < ja.size(); i++)
+                JSONArray ja = (JSONArray)jso.get("parcels");
+
+                if( ja instanceof JSONArray)
                 {
-                    ObservableJSONObject bagparcel = new ObservableJSONObject( (JSONObject)ja.get(i));
-                    DeliveryHandoverDataObject parcel = new DeliveryHandoverDataObject( bagparcel);
-                    parcels.add( parcel);
+                    for( int i=0; i < ja.size(); i++)
+                    {
+                        ObservableJSONObject bagparcel = new ObservableJSONObject( (JSONObject)ja.get(i));
+                        DeliveryHandoverDataObject parcel = new DeliveryHandoverDataObject( bagparcel);
+                        parcels.add( parcel);
+                    }
                 }
             }
         }

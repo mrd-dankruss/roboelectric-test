@@ -118,8 +118,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
 
 		// ID
-		id.setText(values.get(position).getBarcode() + " ("
-				+ values.get(position).getNumberItems() + " items)");
+		id.setText(values.get(position).getBarcode() + " ("	+ values.get(position).getNumberItems() + " items)");
 		
 		// Company logo
 		// Only doing MrD for now so hardcode

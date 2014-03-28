@@ -90,10 +90,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			public void onClick(View v)
 			{
 
-				new ReportReasonForFailTask()
-						.execute(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID), delay_id);
+				new ReportReasonForFailTask().execute( Integer.toString( Workflow.getInstance().currentBagID),  delay_id);
 			}
 		});
 		holder.report_button.setVisibility(View.VISIBLE);

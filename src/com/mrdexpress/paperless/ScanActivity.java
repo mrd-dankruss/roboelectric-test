@@ -58,8 +58,6 @@ public class ScanActivity extends FragmentActivity {
 
     private String last_scanned_barcode;
 
-    //Hashtable<String, Integer> bagsUnscanned;
-    //Hashtable<String, Integer> bagsScanned;
     List<Bag> bags;
     String driverId;
     BarcodeListAdapter adapter;
@@ -73,8 +71,6 @@ public class ScanActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-        // Store currently selected driver id globally
-        //prefs = this.getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
 
         handler = new Handler();
         driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );
@@ -251,19 +247,6 @@ public class ScanActivity extends FragmentActivity {
             }
         }
     }
-
-//    @Override
-//    public void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//        // Restore UI state from the savedInstanceState.
-//        // This bundle has also been passed to onCreate.
-//
-//        selected_items = savedInstanceState
-//                .getStringArrayList(VariableManager.EXTRA_LIST_SCANNED_ITEMS);
-//
-//        String msg = "onRestoreInstanceState - " + selected_items.get(0);
-//        Log.d(TAG, msg);
-//    }
 
     private void setupChangeUserDialog() {
         dialog_change_user = new ChangeUserDialog(ScanActivity.this);
