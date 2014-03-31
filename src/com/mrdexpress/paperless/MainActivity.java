@@ -29,6 +29,7 @@ import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
@@ -75,11 +76,22 @@ public class MainActivity extends Activity implements LoginInterface {
         //dialog_main.setMessage("Logging you in please be patient");
         //dialog_main.show();
 
+        String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
+            @Override
+            public void execute( Object args) {
+                ServerInterface.getInstance(null).getUsers( new CallBackFunction() {
+                    @Override
+                    public void execute( Object args) {
+                        afterSetup();
+                    }
+                } );
+            }
+        });
 
         /* Not yet until we fix it */
         //new UpdateApp().execute();
 
-        class SetupTask extends AsyncTask<Void, Void, String>
+        /*class SetupTask extends AsyncTask<Void, Void, String>
         {
             @Override
             protected String doInBackground(Void... params)
@@ -97,7 +109,7 @@ public class MainActivity extends Activity implements LoginInterface {
             }
         }
 
-        new SetupTask().execute();
+        new SetupTask().execute();  */
     }
 
     private void afterSetup()

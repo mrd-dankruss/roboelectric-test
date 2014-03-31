@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.DbHandler;
@@ -103,9 +104,24 @@ public class ServerInterface {
     public String getUsersURL(){
         return API_URL + "v1/driver/users?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken();
     }
-    public void getUsers() {
-        String url = API_URL + "v1/driver/users?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken();
-        AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
+
+    public void getUsers( final CallBackFunction callback) {
+        String url = getUsersURL();
+        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                String Token = null;
+                if (jObject.has("response"))
+                {
+                    Users.getInstance().setUsers(jObject.toString());
+                }
+                if( callback != null)
+                    callback.execute( null);
+            }
+        });
+
+
+        /*AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
         cb.url(url).type(JSONObject.class);
         aq.sync(cb);
         try
@@ -119,6 +135,9 @@ public class ServerInterface {
         } catch (Exception e) {
             Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
         }
+
+        if( callback != null)
+            callback.execute();   */
     }
 
     /**
@@ -127,10 +146,32 @@ public class ServerInterface {
     public String getTokenUrl(){
         return API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
     }
-    public String requestToken() {
-        String url = API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
+
+    public String requestToken( final CallBackFunction callback) {
+        String url = getTokenUrl();
         AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
-        cb.url(url).type(JSONObject.class);
+        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                String Token = null;
+                if (jObject.has("response"))
+                {
+                    try {
+                        Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+                        Device.getInstance().setToken(Token);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else if (jObject.has("error")) {
+                }
+                if( callback != null)
+                    callback.execute( Token);
+            }
+        });
+
+        return "";
+        /*cb.url(url).type(JSONObject.class);
         aq.sync(cb);
         String Token = null;
         try
@@ -148,13 +189,15 @@ public class ServerInterface {
             Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
         }
         Device.getInstance().setToken(Token);
-        return Token;
+
+        if( callback != null)
+            callback.execute();
+        return Token;  */
     }
 
     /**
      * Registers the device for GCM
      *
-     * @param imei   IMEI of the device
      * @param gcm_id The GCM ID returned by Google GCM Service
      * @return
      */
@@ -251,7 +294,7 @@ public class ServerInterface {
         String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken=" + token;
         String response = getInputStreamFromUrl(url);
 
-        Workflow.getInstance().setManagersFromJSON( response);
+        Workflow.getInstance().setManagersFromJSON(response);
     }
 
     /**
@@ -601,7 +644,7 @@ public class ServerInterface {
                         Log.i(TAG, "Token expired");
                         // Token has expired
 
-                        ServerInterface.getInstance(context).requestToken();
+                        ServerInterface.getInstance(context).requestToken( null);
                     }
 					/*else if (error_code.equals("400")) // Bad request
 					{
