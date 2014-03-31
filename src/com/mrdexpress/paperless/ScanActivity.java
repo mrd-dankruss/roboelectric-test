@@ -317,6 +317,7 @@ public class ScanActivity extends FragmentActivity {
             toast.setSuccess(true);
             toast.setText(getString(R.string.text_scan_next));
             toast.show();
+            //TODO : MAKE IT STAY OPEN HERE 
         }
     }
 
@@ -377,7 +378,7 @@ public class ScanActivity extends FragmentActivity {
 
     public void onBarcodeClick(View v) {
         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-        intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+       // intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
         startActivityForResult(intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
     }
 
@@ -440,7 +441,7 @@ public class ScanActivity extends FragmentActivity {
 
         // post delayed since dialogs do not show if launched directly from onActivityResult method
         if (decodeCallback != null) {
-            handler.postDelayed(decodeCallback, 10);
+            //handler.postDelayed(decodeCallback, 10);
         }
     }
 
