@@ -301,9 +301,9 @@ public class ScanActivity extends FragmentActivity {
     }
 
     void onBarcodeMatchSuccess() {
-        UpdateBagsCounter();
-
         adapter.notifyDataSetChanged();
+
+        UpdateBagsCounter();
 
         holder.button_start_milkrun.setEnabled(Workflow.getInstance().getBagsScanned(true).size() > 0);
 
@@ -322,57 +322,18 @@ public class ScanActivity extends FragmentActivity {
     }
 
     void onBarcodeMatchFail() {
-        Log.d(TAG, "onBarcodeMatchFail, dialog_not_assigned = " + dialog_not_assigned);
-        // not sure what this code does...
-        if (dialog_not_assigned != null) {
-            if (dialog_not_assigned.isShowing() == false) {
-
-                dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-                dialog_not_assigned.getWindow().setBackgroundDrawable(
-                        new ColorDrawable(Color.TRANSPARENT));
-                dialog_not_assigned.show();
-                final Button button_continue = (Button) dialog_not_assigned
-                        .findViewById(R.id.button_not_assigned_continue);
-
-                button_continue.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog_not_assigned.dismiss();
-                        if( Users.getInstance().getActiveManager() == null){
-                            Intent intent = new Intent(getApplicationContext(),  LoginActivity.class);
-
-                            // startActivity(intent);
-                            dialog_not_assigned.dismiss();
-                            startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                        } else {
-                            dialog_not_assigned.dismiss();
-                            startNotAssignedActivity();
-                        }
-                    }
-                });
-            }
-        } else {
             dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
             dialog_not_assigned.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog_not_assigned.show();
-            Log.d(TAG, "SHOW dialog_not_assigned = " + dialog_not_assigned);
             final Button button_continue = (Button) dialog_not_assigned.findViewById(R.id.button_not_assigned_continue);
 
             button_continue.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (Users.getInstance().getActiveManager() == null) {
-                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                        // startActivity(intent);
-                        dialog_not_assigned.dismiss();
-                        startActivityForResult(intent, RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE);
-                    } else {
-                        dialog_not_assigned.dismiss();
-                        startNotAssignedActivity();
-                    }
-                }
+                    dialog_not_assigned.dismiss();
+                    startNotAssignedActivity();
+                };
             });
-        }
     }
 
 
@@ -407,12 +368,7 @@ public class ScanActivity extends FragmentActivity {
             else
                 scannedBag.setScanned((int) new Date().getTime() / 1000);
 
-            decodeCallback = new Runnable() {
-                @Override
-                public void run() {
-                    onBarcodeMatchSuccess();
-                }
-            };
+            onBarcodeMatchSuccess();
         } else {
             Log.d(TAG, "handleDecode(): no match " + barcodeString);
             /*
@@ -430,12 +386,7 @@ public class ScanActivity extends FragmentActivity {
                 toast.show();
 
             } else {
-                decodeCallback = new Runnable() {
-                    @Override
-                    public void run() {
-                        onBarcodeMatchFail();
-                    }
-                };
+                onBarcodeMatchFail();
             }
         }
 

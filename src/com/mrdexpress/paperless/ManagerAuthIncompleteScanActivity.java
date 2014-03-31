@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.ui.ManagerButton;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
@@ -43,25 +44,6 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-
-        onActivityResult( ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN, 0, null);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if( requestCode == ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN)
-        {
-            Users.UserData last_logged_in_manager = Users.getInstance().getActiveManager();
-            if( last_logged_in_manager != null)
-            {
-                holder.text_name.setText(last_logged_in_manager.getFullName());
-            }
-            else
-            {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivityForResult(intent, ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
-            }
-        }
     }
 
     @Override
@@ -87,13 +69,6 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
                 } else {
 
                 }
-            }
-        });
-
-        holder.button_change_manager.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Users.getInstance().setActiveManagerIndex(-1);
-                onActivityResult( ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN, 0, null);
             }
         });
     }
@@ -125,24 +100,16 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_REGULAR));
 
-            holder.button_continue = (Button) root_view
+            holder.button_continue = (ManagerButton) root_view
                     .findViewById(R.id.button_incomplete_scan_activity_continue);
-            holder.button_change_manager = (Button) root_view
-                    .findViewById(R.id.button_incomplete_scan_activity_change);
-            holder.text_name = (TextView) root_view
-                    .findViewById(R.id.text_incomplete_scan_activity_name);
             holder.text_content = (TextView) root_view
                     .findViewById(R.id.textView_incomplete_scan_activity_heading);
             holder.text_list = (TextView) root_view
                     .findViewById(R.id.textView_incomplete_scan_activity_list);
 
             holder.button_continue.setTypeface(typeface_roboto_bold);
-            holder.button_change_manager.setTypeface(typeface_roboto_bold);
-            holder.text_name.setTypeface(typeface_roboto_bold);
             holder.text_content.setTypeface(typeface_roboto_regular);
 
-            holder.button_change_manager.setText("Change Manager");
-            holder.button_change_manager.setBackgroundResource(R.drawable.button_custom_grey);
             holder.button_continue.setBackgroundResource(R.drawable.button_custom);
             holder.button_continue.setEnabled(true);
 
@@ -160,7 +127,7 @@ public class ManagerAuthIncompleteScanActivity extends Activity {
     // ViewHolder stores static instances of views in order to reduce the number
     // of times that findViewById is called, which affected listview performance
     static class ViewHolder {
-        Button button_continue, button_change_manager;
-        TextView text_name, text_content, text_list;
+        ManagerButton button_continue;
+        TextView text_content, text_list;
     }
 }

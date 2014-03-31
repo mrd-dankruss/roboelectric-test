@@ -90,26 +90,6 @@ public class MainActivity extends Activity implements LoginInterface {
 
         /* Not yet until we fix it */
         //new UpdateApp().execute();
-
-        /*class SetupTask extends AsyncTask<Void, Void, String>
-        {
-            @Override
-            protected String doInBackground(Void... params)
-            {
-                String token = ServerInterface.getInstance(null).requestToken();
-                ServerInterface.getInstance(null).getUsers();
-
-                return token;
-            }
-
-            @Override
-            protected void onPostExecute(String token)
-            {
-                globalthis.afterSetup();
-            }
-        }
-
-        new SetupTask().execute();  */
     }
 
     private void afterSetup()
