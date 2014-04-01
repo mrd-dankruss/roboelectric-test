@@ -302,15 +302,6 @@
             </meta-data>
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.LoginActivity"
-            android:label="@string/title_actionbar_mainmenu"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.ScanActivity" />
-        </activity>
-        <activity
             android:name="com.mrdexpress.paperless.ManagerHomeActivity"
             android:label="@string/title_actionbar_mainmenu"
             android:parentActivityName="com.mrdexpress.paperless.MainActivity"

@@ -7,6 +7,7 @@ public class ReasonPartialDeliveryItem
 	private String reason_ID;
 	private String reason_title;
 	private boolean is_selected;
+    public int parcelid;
 
 	/**
 	 * 
@@ -18,9 +19,10 @@ public class ReasonPartialDeliveryItem
 	 *            Reason name from API
 	 * @param is_selected
 	 */
-	public ReasonPartialDeliveryItem(String group_name, String reason_ID, String reason_title,
+	public ReasonPartialDeliveryItem( int parcelid, String group_name, String reason_ID, String reason_title,
 			boolean is_selected)
 	{
+        this.parcelid = parcelid;
 		this.group_name = group_name;
 		this.reason_ID = reason_ID;
 		this.reason_title = reason_title;

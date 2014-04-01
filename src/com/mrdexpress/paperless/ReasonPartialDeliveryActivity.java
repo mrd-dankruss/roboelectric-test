@@ -23,8 +23,8 @@ public class ReasonPartialDeliveryActivity extends FragmentActivity
 		if (fragment == null)
 		{
 			fragment = new ReasonPartialDeliveryFragment();
-			fm.beginTransaction().add(R.id.activity_reason_partial_delivery_container, fragment)
-					.commit();
+            fragment.setArguments( savedInstanceState);
+			fm.beginTransaction().add(R.id.activity_reason_partial_delivery_container, fragment).commit();
 		}
 		// Fragment: Home End
 	}

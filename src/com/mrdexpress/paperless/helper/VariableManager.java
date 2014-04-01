@@ -68,4 +68,6 @@ public class VariableManager
 	public static final String LAST_LOGGED_IN_MANAGER_NAME = "com.mrdexpress.paperless.last_logged_in_manager_name";
 	public static final String LAST_LOGGED_IN_MANAGER_ID = "com.mrdexpress.paperless.last_logged_in_manager_id";
 
+    public static final String UNSCANNED_PARCELS = "unscanned_parcels";
+
 }

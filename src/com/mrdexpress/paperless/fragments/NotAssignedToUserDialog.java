@@ -11,13 +11,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.ui.ManagerButton;
 
 public class NotAssignedToUserDialog extends Dialog
 {
 	private Activity context;
 	private TextView dialog_title, dialog_content;
 	private ImageButton dialog_close;
-	private Button dialog_cancel, dialog_continue;
+	private Button dialog_cancel;
+    private ManagerButton dialog_continue;
+    public CallBackFunction callback;
 
 	public NotAssignedToUserDialog(Activity activity)
 	{
@@ -43,7 +47,7 @@ public class NotAssignedToUserDialog extends Dialog
 		dialog_title = (TextView) findViewById(R.id.textView_not_assigned_name);
 		dialog_close = (ImageButton) findViewById(R.id.button_not_assigned_closeButton);
 		dialog_cancel = (Button) findViewById(R.id.button_not_assigned_cancel);
-		dialog_continue = (Button) findViewById(R.id.button_not_assigned_continue);
+		dialog_continue = (ManagerButton) findViewById(R.id.button_not_assigned_continue);
 		dialog_content = (TextView) findViewById(R.id.text_not_assigned_content);
 		
 		dialog_title.setTypeface(typeface_roboto_bold);

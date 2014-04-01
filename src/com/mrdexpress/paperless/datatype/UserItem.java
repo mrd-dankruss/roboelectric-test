@@ -39,6 +39,16 @@ public class UserItem implements Parcelable
         return JSONObjectHelper.getStringDef( data.get(), "firstName", "!") + " " + JSONObjectHelper.getStringDef( data.get(), "lastName", "!");
 	}
 
+    public String getFirstName()
+    {
+        return JSONObjectHelper.getStringDef( data.get(), "firstName", "!");
+    }
+
+    public String getLastName()
+    {
+        return JSONObjectHelper.getStringDef( data.get(), "lastName", "!");
+    }
+
 	public UserType getUserType()
 	{
         String role = JSONObjectHelper.getStringDef( data.get(), "role", "!");

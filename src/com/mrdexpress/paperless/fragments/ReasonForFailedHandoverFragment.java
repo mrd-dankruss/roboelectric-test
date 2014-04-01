@@ -73,12 +73,9 @@ public class ReasonForFailedHandoverFragment extends Fragment
 				{
 					Log.d("Reason", "ListItem: " + position);
 					setTick(position);
-					delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position))
-							.getSubText();
-					delay_reason = ((DialogDataObject) holder.list.getItemAtPosition(position))
-							.getMainText();
-					holder.report_button.setBackgroundResource(R.drawable.button_custom);
-					holder.report_button.setEnabled(true);
+					delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getSubText();
+					delay_reason = ((DialogDataObject) holder.list.getItemAtPosition(position)).getMainText();
+					//holder.report_button.setBackgroundResource(R.drawable.button_custom);
 				}
 			}
 		});
@@ -90,11 +87,10 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			public void onClick(View v)
 			{
 
-				new ReportReasonForFailTask().execute( Integer.toString( Workflow.getInstance().currentBagID),  delay_id);
+                Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, delay_reason);
+                getActivity().finish();
 			}
 		});
-		holder.report_button.setVisibility(View.VISIBLE);
-		holder.report_button.setEnabled(false);
 	}
 
 	private void setTick(int position)
@@ -109,85 +105,8 @@ public class ReasonForFailedHandoverFragment extends Fragment
 				values.get(i).setThirdText("false");
 			}
 		}
-
+        holder.report_button.setEnabled(true);
 		adapter.notifyDataSetChanged();
-	}
-
-	private class ReportReasonForFailTask extends AsyncTask<String, Void, String>
-	{
-
-		private ProgressDialog dialog = new ProgressDialog(getActivity());
-
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute()
-		{
-			this.dialog.setMessage("Submitting failed handover report");
-			this.dialog.show();
-		}
-
-		@Override
-		protected String doInBackground(String... args)
-		{
-			SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
-            JSONObject result_object;
-            String status = "";
-            try
-            {
-                String json_string = ServerInterface.getInstance(getActivity())
-                        .postFailedHandover(args[0], args[1]);
-                Log.d(TAG, json_string);
-
-                result_object = new JSONObject(json_string);
-
-                // <TODO, NB!!>: API returns incorrect values so issue MOB-20 requires the following hardcoded + incorrect code.
-                result_object = new JSONObject("{'response':{'waybill':{'status':'success'}}}");
-                // </TODO, NB!!>
-
-                status = result_object.getJSONObject("response").getJSONObject("waybill")
-                        .getString("status");
-            }
-            catch (JSONException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            return status;
-		}
-
-		@Override
-		protected void onPostExecute(String result)
-		{
-			// Close progress spinner
-			if (dialog.isShowing())
-			{
-				dialog.dismiss();
-			}
-
-			// VariableManager.delay_id = null;
-
-			Log.d(TAG, "postFailedHandover: " + result);
-			if (result.equals("success"))
-			{
-				int bagid = Integer.parseInt( getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
-
-                Workflow.getInstance().setDeliveryStatus( bagid, Bag.STATUS_UNSUCCESSFUL, delay_reason);
-			}
-			else
-			{
-				CustomToast custom_toast = new CustomToast(getActivity());
-				custom_toast.setText("Failed");
-				custom_toast.setSuccess(false);
-				custom_toast.show();
-			}
-
-			if (getActivity() != null)
-			{
-				getActivity().finish();
-			}
-		}
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -205,7 +124,8 @@ public class ReasonForFailedHandoverFragment extends Fragment
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
-
+            holder.report_button.setEnabled(false);
+            holder.report_button.setVisibility( View.VISIBLE);
 			// Store the holder with the view.
 			rootView.setTag(holder);
 

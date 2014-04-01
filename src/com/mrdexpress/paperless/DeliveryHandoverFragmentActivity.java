@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONObject;
 
 public class DeliveryHandoverFragmentActivity extends FragmentActivity
 {
@@ -44,17 +47,9 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 			// Make sure the request was successful
 			if (resultCode == RESULT_OK)
 			{
-				finish();
-				/*String bagid = getIntent().getStringExtra(VariableManager.EXTRA_NEXT_BAG_ID);
-				Bag bag = DbHandler.getInstance(getApplicationContext()).getBag(bagid);
-				bag.setStatus(Bag.STATUS_PARTIAL);
-				DbHandler.getInstance(getApplicationContext()).addBag(bag);
-				// The user picked a contact.
-				// The Intent's data Uri identifies which contact was selected.
-				finish();
-				// Do something with the contact here (bigger example below)
-				 *
-*/			}
+                Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_PARTIAL, "");
+                finish();
+            }
 		}
 	}
 }

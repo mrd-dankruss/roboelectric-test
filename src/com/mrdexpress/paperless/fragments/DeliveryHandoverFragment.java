@@ -125,8 +125,8 @@ public class DeliveryHandoverFragment extends Fragment
 								/*b.putParcelableArrayList(
 										VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
 										getUnscannedParcels(list));*/
-								intent.putExtra( VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,	getUnscannedParcels(list));
-								intent.putExtra( VariableManager.EXTRA_NEXT_BAG_ID,	getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
+								//intent.putExtra( VariableManager.EXTRA_NEXT_BAG_ID,	getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
+                                Workflow.getInstance().doormat.put( VariableManager.UNSCANNED_PARCELS, getUnscannedParcels(list));
 								// intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
 								// b);
 								// intent.putExtra(VariableManager.EXTRA_BAG_NO,
@@ -180,25 +180,18 @@ public class DeliveryHandoverFragment extends Fragment
 	 * @param list
 	 * @return
 	 */
-	private Integer[] getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list)
+	private ArrayList<DeliveryHandoverDataObject> getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list)
 	{
-		ArrayList<Integer> arraylist_unscanned = new ArrayList<Integer>();
+        ArrayList<DeliveryHandoverDataObject> list_unscanned = new ArrayList<DeliveryHandoverDataObject>();
 
-		// TODO conver arraylist to array properly
 		for (int i = 0; i < list.size(); i++)
 		{
-			if (!list.get(i).isParcelScanned())
 			{
-				// list_unscanned[i] = (list.get(i).getParcelID());
-				arraylist_unscanned.add(list.get(i).getParcelID());
+                if (!list.get(i).isParcelScanned())
+                {
+                    list_unscanned.add( list.get(i));
+                }
 			}
-		}
-		Integer[] list_unscanned = new Integer[arraylist_unscanned.size()];
-
-		for (int i = 0; i < arraylist_unscanned.size(); i++)
-		{
-			list_unscanned[i] = arraylist_unscanned.get(i);
-			Log.d(TAG, "unscanned bagid: " + i + ") " + list_unscanned[i]);
 		}
 
 		return list_unscanned;

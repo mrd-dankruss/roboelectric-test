@@ -79,7 +79,7 @@
             android:layout_height="1dp"
             android:background="@color/seperator_grey" />
 
-        <Button
+        <com.mrdexpress.paperless.ui.ManagerButton
             android:id="@+id/button_not_assigned_continue"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

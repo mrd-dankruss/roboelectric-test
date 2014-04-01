@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 public class Bag implements Parcelable
 {
-    private static final long serialVersionUID = 0L;
     public ObservableJSONObject data;
 
     private final String TAG = "Bag";
@@ -140,7 +139,7 @@ public class Bag implements Parcelable
 
     public void readFromParcel(Parcel in)
     {
-        data.set( (JSONObject) new JsonReader().parse( in.readString()));
+        data = new ObservableJSONObject( (JSONObject) new JsonReader().parse( in.readString()));
     }
 
     public final Parcelable.Creator<Bag> CREATOR = new Parcelable.Creator<Bag>()
