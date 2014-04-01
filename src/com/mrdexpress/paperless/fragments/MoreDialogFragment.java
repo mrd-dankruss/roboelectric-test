@@ -15,12 +15,14 @@ import android.widget.ImageButton;
 import com.mrdexpress.paperless.*;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class MoreDialogFragment extends DialogFragment
 {
 
 	private final String TAG = "MoreDialogFragment";
 	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
+    public static String MORE_BAGID = "more_bagid";
 	private boolean isExtendedDialaog;
 	private static int bagid;
 	private Activity activity;
@@ -54,6 +56,7 @@ public class MoreDialogFragment extends DialogFragment
 		f.setArguments(args);
 
 		bagid = bag_id;
+        Workflow.getInstance().doormat.put( MORE_BAGID, bagid);
 
 		return f;
 	}
@@ -80,10 +83,8 @@ public class MoreDialogFragment extends DialogFragment
 			isExtendedDialaog = args.getBoolean(EXTENDED_DIALOG);
 		}
 		
-		ImageButton closeDialogButton = (ImageButton) v
-				.findViewById(R.id.button_deliveriesMore_closeButton);
-		Button setAsNextDelivery = (Button) v
-				.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
+		ImageButton closeDialogButton = (ImageButton) v.findViewById(R.id.button_deliveriesMore_closeButton);
+		Button setAsNextDelivery = (Button) v.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
 		View setAsNextDeliveryDivider = (View) v.findViewById(R.id.seperator_deliveriesMore_nextDelivery);
 		Button viewMapButton = (Button) v.findViewById(R.id.button_deliveriesMore_viewMap);
 		Button reportDelayButton = (Button) v.findViewById(R.id.button_deliveriesMore_reportDelay);
@@ -110,8 +111,9 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
+                Workflow.getInstance().currentBagID = bagid;
 				dismiss();
-				new SetNextDelivery().execute();
+				//new SetNextDelivery().execute();
 			}
 		});
 
@@ -121,13 +123,6 @@ public class MoreDialogFragment extends DialogFragment
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getActivity(), MapActivity.class);
-
-				// Pass driver name on
-				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER));
-
-			/*	intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
 
 				startActivity(intent);
 
@@ -142,14 +137,6 @@ public class MoreDialogFragment extends DialogFragment
 			{
 				Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
 
-				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER));
-
-		/*		intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
-
-				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
-
 				startActivity(intent);
 
 				dismiss();
@@ -162,7 +149,7 @@ public class MoreDialogFragment extends DialogFragment
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getActivity(), CallActivity.class);
-				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
+
 				startActivity(intent);
 
 				dismiss();
@@ -175,8 +162,7 @@ public class MoreDialogFragment extends DialogFragment
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getActivity(), SmsActivity.class);
-				Log.d(TAG, "Next bag ID - clickListener: " + bagid);
-				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
+
 				startActivity(intent);
 
 				dismiss();

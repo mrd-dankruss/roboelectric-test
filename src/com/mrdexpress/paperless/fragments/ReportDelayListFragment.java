@@ -38,6 +38,7 @@ public class ReportDelayListFragment extends Fragment
 	private ViewHolder holder;
 	private View rootView;
 	private GenericDialogListAdapter adapter;
+    private String delay_id;
 
 	DialogFragment newFragment;
 	TextView subText;
@@ -77,7 +78,7 @@ public class ReportDelayListFragment extends Fragment
 				{
 					// Cursor c = (Cursor) getListView().getItemAtPosition(position);
 					// String delay_id = c.getString(c.getColumnIndex(DbHandler.C_DELAYS_ID));
-					String delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText();
+					delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText();
 
 					// String delay_id = (String) getListView().getItemAtPosition(position);
 
@@ -96,14 +97,11 @@ public class ReportDelayListFragment extends Fragment
 			{
 				// TODO Auto-generated method stub
 				// Only perform action if there is a selection made
-				if (VariableManager.delay_id != null)
+				if (delay_id != null)
 				{
 					String driverid = Users.getInstance().getActiveDriver().getStringid();
 
-					new ReportDelayTask().execute(
-							getActivity().getIntent().getStringExtra(
-									VariableManager.EXTRA_NEXT_BAG_ID), driverid,
-							VariableManager.delay_id);
+					new ReportDelayTask().execute( Integer.toString( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID)), Integer.toString( Users.getInstance().getActiveDriver().getid()), delay_id);
 				}
 			}
 		});
@@ -114,10 +112,9 @@ public class ReportDelayListFragment extends Fragment
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(data
-				.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
+		((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(data.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
 
-		VariableManager.delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
+		delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
 
 		// holder.report_button.setVisibility(View.VISIBLE);
 		holder.report_button.setBackgroundResource(R.drawable.button_custom);
@@ -170,7 +167,7 @@ public class ReportDelayListFragment extends Fragment
 				dialog.dismiss();
 			}
 			Log.i(TAG, result);
-			VariableManager.delay_id = null;
+			delay_id = null;
 
 			CustomToast custom_toast = new CustomToast(getActivity());
 			String status = "";

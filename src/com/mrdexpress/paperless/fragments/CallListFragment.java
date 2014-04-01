@@ -21,6 +21,7 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -35,10 +36,12 @@ public class CallListFragment extends Fragment
 	DialogFragment newFragment;
 	TextView subText;
 	private int parentItemPosition;
+    int bagid;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
+        bagid = (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID);
 
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
@@ -49,16 +52,7 @@ public class CallListFragment extends Fragment
 	{
 		super.onResume();
 
-		Log.d("fi.gfarr.mrd",
-				"NEXT_BAG: "
-						+ getActivity().getIntent().getStringExtra(
-								VariableManager.EXTRA_NEXT_BAG_ID));
-
-		adapter = new GenericDialogListAdapter(getActivity(),
-				DbHandler.getInstance(getActivity())
-						.getContacts(
-								getActivity().getIntent().getStringExtra(
-										VariableManager.EXTRA_NEXT_BAG_ID)), false);
+		adapter = new GenericDialogListAdapter( getActivity(),DbHandler.getInstance(getActivity()).getContacts( Integer.toString( bagid)), false);
 
 		holder.list.setAdapter(adapter);
 
@@ -67,8 +61,6 @@ public class CallListFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-		        SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,	Context.MODE_PRIVATE);
-
 					parentItemPosition = position;
 					
 					Calendar c = Calendar.getInstance();
@@ -83,13 +75,11 @@ public class CallListFragment extends Fragment
 									datetime,
 									note,
 									"SMS",
-									getActivity().getIntent().getStringExtra(
-											VariableManager.EXTRA_NEXT_BAG_ID));
+                                    Integer.toString( bagid));
 					
 					Intent intent = new Intent(Intent.ACTION_CALL);
 
-					String phone_number = ((DialogDataObject) adapter.getItem(position))
-							.getSubText();
+					String phone_number = ((DialogDataObject) adapter.getItem(position)).getSubText();
 
 					intent.setData(Uri.parse("tel:" + phone_number));
 					getActivity().startActivity(intent);
