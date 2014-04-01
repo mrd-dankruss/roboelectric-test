@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.jayway.jsonpath.internal.JsonReader;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -88,6 +89,11 @@ public class Bag implements Parcelable
         if( jso != null)
             return JSONObjectHelper.getStringDef( jso, "address", "!");
         return "!";
+    }
+
+    public JSONObject getStop()
+    {
+        return Workflow.getInstance().getStopForBagId( this.getBagID());
     }
 
 	public String getDestinationContact()

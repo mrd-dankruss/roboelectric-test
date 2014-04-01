@@ -5,16 +5,14 @@ import android.util.Log;
 import com.jayway.jsonpath.*;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 
 /**
  * Created by gary on 2014/03/13.
@@ -205,6 +203,50 @@ public class Workflow extends Observable
         }
 
         return reasons;
+    }
+
+    class StopComparator implements Comparator<StopItem>
+    {
+        @Override
+        public int compare(StopItem lhs, StopItem rhs) {
+            if( lhs.getTripOrder() > rhs.getTripOrder()) return 1;
+            return 0;
+        }
+    }
+
+    class StopJSONObjectComparator implements Comparator<JSONObject>
+    {
+        @Override
+        public int compare(JSONObject lhs, JSONObject rhs) {
+            if( JSONObjectHelper.getIntDef( lhs, "triporder", -1)  > JSONObjectHelper.getIntDef( rhs, "triporder", -1)) return 1;
+            if( JSONObjectHelper.getIntDef( lhs, "triporder", -1) < JSONObjectHelper.getIntDef( rhs, "triporder", -1)) return -1;
+            return 0;
+        }
+    }
+
+    public void setNextStop( int bagid)
+    {
+        JSONObject stop = getStopForBagId( bagid);
+        if( stop != null)
+        {
+            List<JSONObject> stops = workflow.read("$.response.workflow.workflow.tripstops[*]");
+            int thisidx = stops.indexOf( stop);
+            StopItem thisstop = new StopItem( new ObservableJSONObject( (JSONObject)stops.get( thisidx)));
+
+            for( int i=0; i < stops.size(); i++)
+            {
+                StopItem istop = new StopItem( new ObservableJSONObject( (JSONObject)stops.get( i)));
+                if( istop.getTripOrder() == 1)
+                {
+                    istop.setTripOrder( thisstop.getTripOrder());
+                    thisstop.setTripOrder(1);
+                    break;
+                }
+            }
+
+            //Collections.sort( stops, new StopJSONObjectComparator());
+            currentBagID = bagid;
+        }
     }
 
     public List<JSONArray> getBagsAsJSONArray()
@@ -468,6 +510,17 @@ public class Workflow extends Observable
         return ret;
     }
 
+
+    class BagComparator implements Comparator<Bag>
+    {
+        @Override
+        public int compare(Bag lhs, Bag rhs) {
+            if( JSONObjectHelper.getIntDef( lhs.getStop(), "triporder", -1) > JSONObjectHelper.getIntDef( rhs.getStop(), "triporder", -1)) return 1;
+            if( JSONObjectHelper.getIntDef( lhs.getStop(), "triporder", -1) < JSONObjectHelper.getIntDef( rhs.getStop(), "triporder", -1)) return -1;
+            return 0;
+        }
+    }
+
     public ArrayList<Bag> getBagsByStatus( String status)
     {
         JSONArray bags = this.getBagsScanned(true);
@@ -479,6 +532,8 @@ public class Workflow extends Observable
             if (JSONObjectHelper.getStringDef(jso, "status", Bag.STATUS_TODO).equals(status))
                 retbags.add(new Bag((JSONObject) bags.get(i)));
         }
+
+        Collections.sort( retbags, new BagComparator());
 
         return retbags;
     }

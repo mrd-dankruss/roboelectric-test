@@ -112,8 +112,9 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-                Workflow.getInstance().currentBagID = bagid;
+                Workflow.getInstance().setNextStop( bagid);
 				dismiss();
+                getActivity().finish();
 				//new SetNextDelivery().execute();
 			}
 		});
