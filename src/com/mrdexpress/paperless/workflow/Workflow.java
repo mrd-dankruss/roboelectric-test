@@ -235,7 +235,8 @@ public class Workflow extends Observable
             //        Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
             JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
                     Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
-            bag = (JSONObject)bags.get(0);
+            if( bags.size() > 0)
+                bag = (JSONObject)bags.get(0);
         }
         catch( PathNotFoundException e)
         {

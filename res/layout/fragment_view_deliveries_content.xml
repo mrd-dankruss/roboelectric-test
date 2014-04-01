@@ -38,15 +38,15 @@
 
     <Button
         android:id="@+id/button_generic_report"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="7dp"
-        android:background="@drawable/button_custom_grey"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/margin_button_NS"
+        android:layout_marginLeft="@dimen/margin_button_WE"
+        android:layout_marginRight="@dimen/margin_button_WE"
+        android:layout_marginTop="@dimen/margin_button_NS"
         android:text="@string/delivery_button1"
-        android:textColor="@color/black"
-        android:textSize="24sp"
         android:visibility="gone" />
 
 </RelativeLayout>
