@@ -11,15 +11,6 @@
         android:layout_margin="@dimen/activity_horizontal_margin" >
 
         <TextView
-            android:id="@+id/text_incomplete_scan_activity_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="Jim Davids"
-            android:textSize="@dimen/font_size_dialog_title" />
-
-        <TextView
             android:id="@+id/textView_incomplete_scan_activity_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,28 +30,17 @@
             android:text="985678hd368\n00002534462\nWWW857428\nWWW946483"
             android:textSize="@dimen/font_size_dialog_content" />
 
-        <Button
+        <com.mrdexpress.paperless.ui.ManagerButton
             android:id="@+id/button_incomplete_scan_activity_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView_incomplete_scan_activity_list"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@drawable/button_custom"
-            android:text="Authorize"
+            android:background="@drawable/manager_button"
+            android:text="Start Milkrun"
             android:textStyle="bold" />
 
-        
-
-        <Button
-            android:id="@+id/button_incomplete_scan_activity_change"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/button_custom_grey"
-            android:text="@string/button_change_manager"
-            android:textStyle="bold" />
     </RelativeLayout>
 
 </RelativeLayout>

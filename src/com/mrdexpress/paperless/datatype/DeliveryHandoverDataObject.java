@@ -67,6 +67,10 @@ public class DeliveryHandoverDataObject implements Parcelable
         return "";
     }
 
+    public int getID()
+    {
+        return JSONObjectHelper.getIntDef(data.get(), "id", -1);     }
+
     public String getMDX()
     {
         return JSONObjectHelper.getStringDef( data.get(), "mdx", "");

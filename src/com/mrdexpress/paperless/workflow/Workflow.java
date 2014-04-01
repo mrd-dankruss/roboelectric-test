@@ -32,9 +32,10 @@ public class Workflow extends Observable
 
     public int currentBagID;
 
+    public HashMap<String,Object> doormat;
+
     public Workflow()
     {
-        context = VariableManager.context;
     }
 
     public static Workflow getInstance()
@@ -42,6 +43,9 @@ public class Workflow extends Observable
         if ( _instance == null)
         {
             _instance = new Workflow();
+            _instance.doormat = new HashMap<String, Object>();
+            _instance.context = VariableManager.context;    // TODO - where is this used?
+
         }
 
         return _instance;
@@ -250,8 +254,10 @@ public class Workflow extends Observable
         try
         {
             //parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?(@.id==" + Integer.toString( parcelid) + "])");
-            parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?]",
+            JSONArray parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?]",
                     Filter.filter(Criteria.where("id").eq(parcelid)));
+            if( parcels.size() > 0)
+                parcel = (JSONObject) parcels.get(0);
         }
         catch( PathNotFoundException e)
         {
@@ -490,6 +496,19 @@ public class Workflow extends Observable
             jsostatus.put("status", status);
             jsostatus.put("reason", reason);
             bag.put("status", jsostatus);
+        }
+    }
+
+    public void setParcelDeliveryStatus( int parcelid, String status, String reason)
+    {
+        JSONObject parcel = getParcel( parcelid);
+        if( parcel != null)
+        {
+            // TODO: propogate this to the server
+            JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( parcel, "status", new JSONObject());
+            jsostatus.put("status", status);
+            jsostatus.put("reason", reason);
+            parcel.put("status", jsostatus);
         }
     }
 
