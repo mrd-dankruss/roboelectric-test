@@ -36,15 +36,19 @@ import com.mrdexpress.paperless.adapters.PlacesAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.MapPlacesItem;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.widget.Toaster;
+import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapActivity extends Activity implements OnMapClickListener, LocationListener,
@@ -247,12 +251,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	 */
 	private void setupMapMarkers()
 	{
-		SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
-        // TODO: gary!!!!
-		// Retrieve coords
-		/*ArrayList<HashMap<int, int>> bags = DbHandler.getInstance(getApplicationContext()).getBagCoords(driverid);
+		ArrayList<HashMap<String, String>> bags = Workflow.getInstance().getBagCoords();
 
-		// Check coords of each bags
 		for (int i = 0; i < bags.size(); i++)
 		{
 			try
@@ -264,16 +264,12 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				String address = bags.get(i).get(VariableManager.EXTRA_BAG_ADDRESS);
 				String hubname = bags.get(i).get(VariableManager.EXTRA_BAG_HUBNAME);
 
-				map.addMarker(new MarkerOptions().title(hubname).snippet(address)
-						.position(location));
+				map.addMarker(new MarkerOptions().title(hubname).snippet(address).position(location));
 			}
 			catch (NumberFormatException e)
 			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				Log.e(TAG, sw.toString());
 			}
-		} */
+		}
 	}
 
 	/**

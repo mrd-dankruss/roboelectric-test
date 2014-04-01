@@ -574,24 +574,20 @@ public class Workflow extends Observable
         ArrayList<HashMap<String, String>> bags = null;
         bags = new ArrayList<HashMap<String, String>>();
 
-        /*while (true)
+        List<JSONObject> stops = workflow.read("$.response.workflow.workflow.tripstops[*]");
+
+        for( int i=0; i < stops.size(); i++)
         {
-            String address = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_ADDRESS));
-
-            String hubname = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_HUBNAME));
-
-            String lat = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LAT));
-
-            String lon = cursor.getString(cursor.getColumnIndex(C_BAG_DEST_LONG));
+            StopItem istop = new StopItem( new ObservableJSONObject( (JSONObject)stops.get( i)));
 
             HashMap<String, String> bag = new HashMap<String, String>();
-            bag.put(VariableManager.EXTRA_BAG_ADDRESS, address);
-            bag.put(VariableManager.EXTRA_BAG_HUBNAME, hubname);
-            bag.put(VariableManager.EXTRA_BAG_LAT, lat);
-            bag.put(VariableManager.EXTRA_BAG_LON, lon);
-
+            bag.put(VariableManager.EXTRA_BAG_ADDRESS, istop.getAddress());
+            bag.put(VariableManager.EXTRA_BAG_HUBNAME, istop.getDestinationDesc());
+            bag.put(VariableManager.EXTRA_BAG_LAT, Float.toString( JSONObjectHelper.getFloatDef( istop.getCoOrds(), "lat", 0)));
+            bag.put(VariableManager.EXTRA_BAG_LON, Float.toString( JSONObjectHelper.getFloatDef( istop.getCoOrds(), "lon", 0)));
             bags.add(bag);
-        } */
+        }
+
         return bags;
     }
 
