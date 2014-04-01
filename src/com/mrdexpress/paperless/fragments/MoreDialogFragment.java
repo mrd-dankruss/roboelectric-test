@@ -13,6 +13,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import com.mrdexpress.paperless.*;
+import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 
@@ -141,17 +142,10 @@ public class MoreDialogFragment extends DialogFragment
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
-
-				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER));
-
-		/*		intent.putExtra(VariableManager.EXTRA_DRIVER_ID, getActivity().getIntent()
-						.getStringExtra(VariableManager.EXTRA_DRIVER_ID));*/
-
 				intent.putExtra(VariableManager.EXTRA_NEXT_BAG_ID, bagid);
-
+                General.getInstance().setActivebagid(bagid);
+                intent.putExtra("ACTIVE_BAG_ID", bagid);
 				startActivity(intent);
-
 				dismiss();
 			}
 		});

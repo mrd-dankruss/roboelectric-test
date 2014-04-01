@@ -48,7 +48,9 @@ import java.io.*;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 public class ServerInterface {
@@ -432,17 +434,37 @@ public class ServerInterface {
      * @param delayid
      * @return
      */
-    public String postDelay(String bagid, String driverid, String delayid) {
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + driverid
-                + "&mrdToken=" + token + "&delayid=" + delayid;
-        String result = postData(url);
+    public void postDelay(String bagid, String driverid, String delayid) {
+        String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + Users.getInstance().getActiveDriver().getStringid()
+                + "&mrdToken=" + Device.getInstance().getToken() + "&delayid=" + delayid;
+        //String result = postData(url);
         // Log.d(TAG,"zeus: "+ result);
-        if (result.equals(VariableManager.TEXT_NET_ERROR)) {
-            return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
-        } else {
-            return result;
-        }
+        AQuery ac = new AQuery(context);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("delayid", delayid);
+        ac.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+                String callstatus = null;
+                try{
+                if (json != null){
+                    if (json.has("response")) {
+                        callstatus = json.getJSONObject("response").getString("status");
+                    } else if (json.has("error")) {
+                        callstatus = stripErrorCode(json.toString());
+                    }
+                }else{
+                    Log.e("MRD-EX" , "EMPTY JSON");
+                }
+                }catch(Exception e){
+                    Log.e("MRD-EX" , e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void loadComLog(){
+
     }
 
     /**

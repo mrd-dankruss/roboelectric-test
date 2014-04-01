@@ -15,6 +15,7 @@ import com.mrdexpress.paperless.DeliveryDetailsActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -76,11 +77,12 @@ public class ViewDeliveriesFragment extends Fragment
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
 				// Go to View Deliveries screen
-
 				Intent intent = new Intent(getActivity(), DeliveryDetailsActivity.class);
-				intent.putExtra(VariableManager.EXTRA_BAG_NO, ((Bag)holder.list.getItemAtPosition(position)).getBagID());
-				intent.putExtra(VariableManager.EXTRA_LIST_POSITION, position);
-				startActivity(intent);
+                Integer bagid = ((Bag)holder.list.getItemAtPosition(position)).getBagID();
+                intent.putExtra("ACTIVE_BAG_ID", bagid);
+                intent.putExtra("ACTIVE_BAG_POSITION", position);
+                General.getInstance().setActivebagid(bagid);
+                startActivity(intent);
 			}
 		});
 		
