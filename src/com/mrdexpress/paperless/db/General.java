@@ -57,7 +57,7 @@ public class General {
         if (comlog.containsKey(bagid)){
             return comlog.get(bagid);
         }else{
-            return null;
+            return new ArrayList<Communications>();
         }
     }
 
@@ -65,7 +65,7 @@ public class General {
         if (comlog.containsKey( Integer.toString(bagid) )){
             return comlog.get( Integer.toString(bagid) );
         }else{
-            return null;
+            return new ArrayList<Communications>();
         }
     }
 
