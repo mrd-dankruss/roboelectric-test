@@ -558,7 +558,7 @@ public class Workflow extends Observable
 
     public void setParcelDeliveryStatus( int parcelid, String status, String reason)
     {
-        JSONObject parcel = getParcel( parcelid);
+        JSONObject parcel = getParcel(parcelid);
         if( parcel != null)
         {
             // TODO: propogate this to the server

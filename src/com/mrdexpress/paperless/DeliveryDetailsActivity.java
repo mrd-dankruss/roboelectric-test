@@ -15,6 +15,7 @@ import com.mrdexpress.paperless.datatype.ComLogObject;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
@@ -73,13 +74,13 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
 
-		ArrayList<ComLogObject> comlogs = DbHandler.getInstance(getApplicationContext()).getComLog( Integer.toString( bag.getBagID()));
+        ArrayList<General.Communications> coms = General.getInstance().getComLogFromBagId(bag.getBagID());
 
-		String comlog_text = "";
+        String comlog_text = "";
 
-		for (int i = 0; i < comlogs.size(); i++)
+		for (int i = 0; i < coms.size(); i++)
 		{
-			comlog_text = comlog_text + comlogs.get(i).getTimestamp() + " : "+ comlogs.get(i).getNote() + "\n";
+			comlog_text = comlog_text + coms.get(i).getDatetime().substring(0 , 19) + " : "+ coms.get(i).getLogevent() + "\n";
 		}
         if (comlog_text.isEmpty()){
             holder.text_delivery_communication_log.setVisibility(View.GONE);
