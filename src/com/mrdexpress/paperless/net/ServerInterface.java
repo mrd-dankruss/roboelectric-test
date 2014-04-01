@@ -12,12 +12,10 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.mrdexpress.paperless.db.*;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.Paperless;
-import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -41,6 +39,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +47,7 @@ import java.io.*;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -390,6 +390,7 @@ public class ServerInterface {
         try {
             String response = getInputStreamFromUrl(url);
             Workflow.getInstance().setWorkflowFromJSON(response);
+            this.loadComLog();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -437,8 +438,6 @@ public class ServerInterface {
     public void postDelay(String bagid, String driverid, String delayid) {
         String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + Users.getInstance().getActiveDriver().getStringid()
                 + "&mrdToken=" + Device.getInstance().getToken() + "&delayid=" + delayid;
-        //String result = postData(url);
-        // Log.d(TAG,"zeus: "+ result);
         AQuery ac = new AQuery(context);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("delayid", delayid);
@@ -464,7 +463,36 @@ public class ServerInterface {
     }
 
     public void loadComLog(){
+        ArrayList<Bag> bags = Workflow.getInstance().getBags();
+        for (int i = 0; i < bags.size(); i++)
+        {
+            this.retieveComLog( Integer.toString(bags.get(i).getBagID()) );
+        }
+    }
 
+    public void retieveComLog(final String bagid){
+        String url = API_URL + "v1/waybill/communication?id=" + bagid + "&mrdToken=" + Device.getInstance().getToken();
+        AQuery ac = new AQuery(context);
+        ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+                String callstatus = null;
+                try{
+                    if (json != null){
+                        if (json.has("response")) {
+                            JSONArray ar = json.getJSONObject("response").getJSONArray("waybill");
+                            General.getInstance().setComlog(bagid , ar);
+                        } else if (json.has("error")) {
+                            callstatus = stripErrorCode(json.toString());
+                        }
+                    }else{
+                        Log.e("MRD-EX" , "EMPTY JSON");
+                    }
+                }catch(Exception e){
+                    Log.e("MRD-EX" , e.getMessage());
+                }
+            }
+        });
     }
 
     /**

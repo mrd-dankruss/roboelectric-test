@@ -155,7 +155,8 @@ public class ReportDelayListFragment extends Fragment
 							.getMainText() + "";
             // No Need to fire it off manually anymore , reportDelay will always fire it off now.
 			//DbHandler.getInstance(getActivity()).addComLog(datetime, note, "DELAY", args[0]);
-            String bid = General.getInstance().activebagid;
+            //String bid = General.getInstance().activebagid;
+            General.getInstance().AddComLog( new General.Communications(datetime.toString() , note , "N") , General.getInstance().getActivebagid());
             ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
 			return " ";
 		}
