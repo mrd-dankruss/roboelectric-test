@@ -43,17 +43,13 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_delivery_details);
-
 		initViewHolder();
-
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-
 		intent = getIntent();
-		position = intent.getIntExtra(VariableManager.EXTRA_LIST_POSITION, -1);
-        BagID = intent.getIntExtra(VariableManager.EXTRA_BAG_NO, -1);
+		position = intent.getIntExtra("ACTIVE_BAG_POSITION", -1);
+        BagID = intent.getIntExtra("ACTIVE_BAG_ID", -1);
         JSONObject jso =  Workflow.getInstance().getBag( BagID);
-        bag = new Bag( jso);
-		//bag = DbHandler.getInstance(this).getBag( intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
+        bag = new Bag(jso);
 	}
 
 	@Override
@@ -63,14 +59,9 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
 		holder.text_delivery_number.setText("#" + (position + 1));
 		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
-
 		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestination());
 		holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
-		//holder.text_delivery_bad_id.setText("Bag number: " + bag.getBagNumber());
         StringBuilder bagtext = new StringBuilder();
-        //holder.text_delivery_bad_id.setText("Parcel(s) to be delivered for :  " + bag.getBagNumber() + "\n");
-        //waybills = DbHandler.getInstance(this).getWaybillsForHandover(intent.getStringExtra(VariableManager.EXTRA_BAG_NO));
-
         waybills = Workflow.getInstance().getBagParcelsAsObjects( bag.getBagID());
 
         bagtext.append("Parcel(s) to be delivered for :  " + bag.getBarcode() + "<br />");
@@ -98,14 +89,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
             holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
             holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
         }
-
-
 		// TODO:Set image here one day when app is extended.
-		// holder.image_company_logo.setText("");
-
-		// holder.button_update_status.setText("");
-		// holder.button_more.setText("");
-
 		holder.button_update_status.setOnClickListener(new View.OnClickListener()
 		{
 

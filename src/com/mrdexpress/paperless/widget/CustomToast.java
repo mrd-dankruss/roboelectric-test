@@ -27,8 +27,8 @@ public class CustomToast
 
 		toast = new Toast(activity);
 		// MOB-22 specifies vertically centered toast
-		toast.setGravity(Gravity.FILL_HORIZONTAL|Gravity.CENTER_VERTICAL, 0, 0);
-		//toast.setGravity(Gravity.FILL_HORIZONTAL, 0, -280);
+		//toast.setGravity(Gravity.FILL_HORIZONTAL|Gravity.CENTER_VERTICAL, 0, 0);
+		toast.setGravity(Gravity.FILL_HORIZONTAL, 0, -280);
 		toast.setDuration(Toast.LENGTH_LONG);
 		toast.setView(layout);
 	}

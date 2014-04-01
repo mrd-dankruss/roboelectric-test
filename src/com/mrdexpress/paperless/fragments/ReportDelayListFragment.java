@@ -20,6 +20,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -99,9 +100,12 @@ public class ReportDelayListFragment extends Fragment
 				// Only perform action if there is a selection made
 				if (delay_id != null)
 				{
-					String driverid = Users.getInstance().getActiveDriver().getStringid();
+					//String driverid = Users.getInstance().getActiveDriver().getStringid();
 
 					new ReportDelayTask().execute( Integer.toString( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID)), Integer.toString( Users.getInstance().getActiveDriver().getid()), delay_id);
+
+                    //String bagid = General.getInstance().activebagid;
+                    //new ReportDelayTask().execute(bagid, driverid,VariableManager.delay_id);
 				}
 			}
 		});
@@ -140,22 +144,20 @@ public class ReportDelayListFragment extends Fragment
 		@Override
 		protected String doInBackground(String... args)
 		{
-
-			// TODO: Add com log here
-
+			// TODO: Add com log here : Implemented
 			Calendar c = Calendar.getInstance();
 			Date datetime = c.getTime();
-
 			String note = "Running "
 					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
 							.getSubText()
 					+ "late due to "
 					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
 							.getMainText() + "";
-
-			DbHandler.getInstance(getActivity()).addComLog(datetime, note, "DELAY", args[0]);
-
-			return ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
+            // No Need to fire it off manually anymore , reportDelay will always fire it off now.
+			//DbHandler.getInstance(getActivity()).addComLog(datetime, note, "DELAY", args[0]);
+            String bid = General.getInstance().activebagid;
+            ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
+			return " ";
 		}
 
 		@Override

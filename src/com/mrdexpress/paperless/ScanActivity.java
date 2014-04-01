@@ -1,8 +1,10 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -62,6 +64,8 @@ public class ScanActivity extends FragmentActivity {
     String driverId;
     BarcodeListAdapter adapter;
     Handler handler;
+    AlertDialog.Builder dialog_builder;
+    Intent scan_intent;
 
     public void UpDateBagsForAdapter(String added_id) {
         UpdateBagsCounter();
@@ -75,6 +79,7 @@ public class ScanActivity extends FragmentActivity {
         handler = new Handler();
         driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );
         bags = Workflow.getInstance().getBags();
+        dialog_builder = new AlertDialog.Builder(this);
 
         // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
         Display display = getWindowManager().getDefaultDisplay();
@@ -87,6 +92,7 @@ public class ScanActivity extends FragmentActivity {
         intent.setAction(Intents.Scan.ACTION);
         intent.putExtra(Intents.Scan.WIDTH, width);
         intent.putExtra(Intents.Scan.HEIGHT, height);
+        scan_intent = new Intent("com.google.zxing.client.android.SCAN");
 
         try{
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -312,14 +318,32 @@ public class ScanActivity extends FragmentActivity {
             toast.setSuccess(true);
             toast.setText(getString(R.string.text_scan_successful));
             toast.show();
+
         } else {
             CustomToast toast = new CustomToast(this);
             toast.setSuccess(true);
             toast.setText(getString(R.string.text_scan_next));
             toast.show();
-            //TODO : MAKE IT STAY OPEN HERE 
+            //TODO : MAKE IT STAY OPEN HERE
+            dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No" , dialogClickListener).setPositiveButton("Yes" , dialogClickListener ).setTitle("Scan Another Bag").show();
         }
     }
+
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
 
     void onBarcodeMatchFail() {
             dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
@@ -338,9 +362,9 @@ public class ScanActivity extends FragmentActivity {
 
 
     public void onBarcodeClick(View v) {
-        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        //Intent intent = new Intent("com.google.zxing.client.android.SCAN");
        // intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-        startActivityForResult(intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+        startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
     }
 
     /**
@@ -392,7 +416,7 @@ public class ScanActivity extends FragmentActivity {
 
         // post delayed since dialogs do not show if launched directly from onActivityResult method
         if (decodeCallback != null) {
-            //handler.postDelayed(decodeCallback, 10);
+            handler.postDelayed(decodeCallback, 10);
         }
     }
 
