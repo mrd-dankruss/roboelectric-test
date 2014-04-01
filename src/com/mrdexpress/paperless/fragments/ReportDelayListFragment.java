@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,9 +102,7 @@ public class ReportDelayListFragment extends Fragment
 				if (delay_id != null)
 				{
 					//String driverid = Users.getInstance().getActiveDriver().getStringid();
-
 					new ReportDelayTask().execute( Integer.toString( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID)), Integer.toString( Users.getInstance().getActiveDriver().getid()), delay_id);
-
                     //String bagid = General.getInstance().activebagid;
                     //new ReportDelayTask().execute(bagid, driverid,VariableManager.delay_id);
 				}
@@ -147,18 +146,18 @@ public class ReportDelayListFragment extends Fragment
 			// TODO: Add com log here : Implemented
 			Calendar c = Calendar.getInstance();
 			Date datetime = c.getTime();
-			String note = "Running "
-					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
-							.getSubText()
-					+ "late due to "
+            android.text.format.DateFormat df = new android.text.format.DateFormat();
+            String todate = df.format("yyyy-MM-dd hh:mm:ss", datetime).toString();
+
+
+			String note = "" + ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition)).getSubText()
+					+ " : "
 					+ ((DialogDataObject) holder.list.getItemAtPosition(parentItemPosition))
 							.getMainText() + "";
-            // No Need to fire it off manually anymore , reportDelay will always fire it off now.
-			//DbHandler.getInstance(getActivity()).addComLog(datetime, note, "DELAY", args[0]);
-            //String bid = General.getInstance().activebagid;
-            General.getInstance().AddComLog( new General.Communications(datetime.toString() , note , "N") , General.getInstance().getActivebagid());
-            ServerInterface.getInstance(getActivity()).postDelay(args[0], args[1], args[2]);
-			return " ";
+
+            General.getInstance().AddComLog( new General.Communications(todate , note , "N") , General.getInstance().getActivebagid());
+            ServerInterface.getInstance(getActivity()).postDelay(args[0], note , args[2]);
+            return "success";
 		}
 
 		@Override
@@ -173,30 +172,10 @@ public class ReportDelayListFragment extends Fragment
 			delay_id = null;
 
 			CustomToast custom_toast = new CustomToast(getActivity());
-			String status = "";
-			try
-			{
-				JSONObject obj = new JSONObject(result);
-				status = obj.getJSONObject("response").getString("status");
-			}
-			catch (JSONException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			if (status.equals("success"))
-			{
-				custom_toast.setText("Success");
-				custom_toast.setSuccess(true);
-			}
-			else
-			{
-				custom_toast.setText(VariableManager.TEXT_NET_ERROR);
-				custom_toast.setSuccess(false);
-			}
-
+			custom_toast.setText("Delay Logged");
+			custom_toast.setSuccess(true);
 			custom_toast.show();
+
 			getActivity().finish();
 		}
 	}

@@ -435,12 +435,13 @@ public class ServerInterface {
      * @param delayid
      * @return
      */
-    public void postDelay(String bagid, String driverid, String delayid) {
+    public void postDelay(String bagid, String note, String delayid) {
         String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + Users.getInstance().getActiveDriver().getStringid()
                 + "&mrdToken=" + Device.getInstance().getToken() + "&delayid=" + delayid;
         AQuery ac = new AQuery(context);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("delayid", delayid);
+        params.put("note", note);
         ac.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
