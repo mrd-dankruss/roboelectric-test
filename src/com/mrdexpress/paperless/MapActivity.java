@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.location.*;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -28,15 +31,22 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
+import com.google.maps.android.PolyUtil;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
 import com.mrdexpress.paperless.adapters.PlacesAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.MapPlacesItem;
+import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.Toaster;
+import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONArray;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,6 +82,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
 	private static final String TYPE_DETAILS = "/details";
 	private static final String OUT_JSON = "/json";
+    private LatLng myLocation, destLocation;
+    private String drivingDirections;
 	
 	LocationClient locationClient;
 
@@ -101,7 +113,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			map.setOnMapClickListener(this);
 
 			// Enable traffic
-			map.setTrafficEnabled(true);
+			map.setTrafficEnabled(false);
 
 			// Enable LocationLayer of Google Map
 			map.setMyLocationEnabled(true);
@@ -118,12 +130,15 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 							Location location = locationClient.getLastLocation();
 							if (location != null) 
 							{
-						        LatLng myLocation = new LatLng(location.getLatitude(),
+						        myLocation = new LatLng(location.getLatitude(),
 						                location.getLongitude());
 						    
 							    map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
 							            STREET_LEVEL_ZOOM));
-							}
+
+                                if( destLocation != null)
+                                    showRoute( destLocation);
+                            }
 							
 							locationClient.disconnect();
 						}
@@ -200,20 +215,30 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		setupSearchView();
 		setupMapMarkers();
 
+        final TextView directions = (TextView) root_view.findViewById( R.id.map_driving_directions);
+        directions.setVisibility(View.GONE);
 		// Setup "Navigate here" button
 		root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
-		Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
+		final Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
 		button_navigate.setOnClickListener(new View.OnClickListener()
 		{
 			public void onClick(View v)
 			{
-				// Only if marker has been selected
-				if (selected_marker_lat_long != null)
-				{
-					/*CustomToast toast = new CustomToast(getParent(), getWindow().getCurrentFocus());
-					toast.setText("Ahoy");
-					toast.show();*/
 
+                if( button_navigate.getText().equals("Driving Directions"))
+                {
+                    directions.setVisibility( View.VISIBLE);
+                    directions.setText(Html.fromHtml( drivingDirections));
+                    button_navigate.setText("Show Map");
+                }
+                else
+                {
+                    directions.setVisibility( View.GONE);
+                    button_navigate.setText("Driving Directions");
+                }
+				// Only if marker has been selected
+				/*if (selected_marker_lat_long != null)
+				{
 					// Get selected marker coords
 					double marker_lat = selected_marker_lat_long.latitude;
 					double marker_lon = selected_marker_lat_long.longitude;
@@ -221,8 +246,6 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					// Convert coords to Uri
 
 					// Map point based on address
-					/*Uri location = Uri.parse("geo:" + marker_lat + "," + marker_lon + "?z="
-							+ zoom_level);*/
 					Uri location = Uri.parse("geo:0,0?q=" + marker_lat + "," + marker_lon + "("
 							+ selected_marker_name + ")" + "&z=" + STREET_LEVEL_ZOOM);
 					// Or map point based on latitude/longitude
@@ -240,7 +263,8 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 					{
 						startActivity(mapIntent);
 					}
-				}
+				} */
+
 			}
 		});
 
@@ -251,7 +275,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	 */
 	private void setupMapMarkers()
 	{
-		ArrayList<HashMap<String, String>> bags = Workflow.getInstance().getBagCoords();
+		ArrayList<HashMap<String, String>> bags = Workflow.getInstance().getBagsCoords();
 
 		for (int i = 0; i < bags.size(); i++)
 		{
@@ -270,7 +294,63 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			{
 			}
 		}
+
+        HashMap<String, String> dest = Workflow.getInstance().getBagCoords( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID));
+        double lat = Double.parseDouble(dest.get(VariableManager.EXTRA_BAG_LAT));
+        double lon = Double.parseDouble(dest.get(VariableManager.EXTRA_BAG_LON));
+        destLocation = new LatLng(lon, lat);
+
+        if( myLocation != null)
+            showRoute( destLocation);
 	}
+
+    private void showRoute( LatLng destination)
+    {
+        drivingDirections = "";
+
+        ServerInterface.getInstance(getApplicationContext()).getGoogleDrivingDirections( API_KEY, myLocation, destination, new CallBackFunction() {
+            @Override
+            public void execute(Object args) {
+                JSONObject jso = (JSONObject)args;
+                try {
+                    if( jso.get("status").equals("OK"))
+                    {
+                        String json = ((org.json.JSONArray)jso.get("routes")).toString();
+                        ReadContext parser = JsonPath.parse( json);
+                        net.minidev.json.JSONArray polylines = parser.read("$..polyline.points");
+
+                        for( int i = 0; i < polylines.size(); i++)
+                        {
+                            PolylineOptions line = new PolylineOptions();
+                            line.width(6);
+                            //line.color( (i%2==0)?Color.YELLOW:Color.GREEN);
+                            line.color( Color.GREEN);
+                            List<LatLng> list = PolyUtil.decode( (String)polylines.get(i));
+                            for (LatLng latLng : list)
+                            {
+                                line.add( latLng);
+                            }
+                            map.addPolyline( line);
+                        }
+
+                        net.minidev.json.JSONArray steps = parser.read("$..steps[*]");
+
+                        for( int i = 0; i < steps.size(); i++)
+                        {
+                            net.minidev.json.JSONObject distance = JSONObjectHelper.getJSONObjectDef((net.minidev.json.JSONObject) steps.get(i), "distance", null);
+                            String instructions = JSONObjectHelper.getStringDef((net.minidev.json.JSONObject) steps.get(i), "html_instructions", "!");
+                            if( distance != null)
+                            {
+                                drivingDirections = drivingDirections + "" + instructions + " " + JSONObjectHelper.getStringDef( distance, "text", "!") + "<BR><BR>";
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
 	/**
 	 * Setup and initialize the search bar

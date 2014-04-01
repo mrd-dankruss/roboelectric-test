@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.google.android.gms.maps.model.LatLng;
 import com.mrdexpress.paperless.db.*;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
@@ -1043,7 +1044,18 @@ public class ServerInterface {
         }
     }
 
+    public void getGoogleDrivingDirections( String key, LatLng myLocation, LatLng destination, final CallBackFunction callback)
+    {
+        String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + myLocation.latitude+ "," + myLocation.longitude + "&destination=" + destination.latitude+ "," + destination.longitude + "&sensor=false";
+        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                if( callback != null)
+                    callback.execute( jObject);
+            }
+        });
 
+    }
 
 
 }

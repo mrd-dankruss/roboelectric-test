@@ -569,7 +569,7 @@ public class Workflow extends Observable
         }
     }
 
-    public ArrayList<HashMap<String, String>> getBagCoords()
+    public ArrayList<HashMap<String, String>> getBagsCoords()
     {
         ArrayList<HashMap<String, String>> bags = null;
         bags = new ArrayList<HashMap<String, String>>();
@@ -583,12 +583,22 @@ public class Workflow extends Observable
             HashMap<String, String> bag = new HashMap<String, String>();
             bag.put(VariableManager.EXTRA_BAG_ADDRESS, istop.getAddress());
             bag.put(VariableManager.EXTRA_BAG_HUBNAME, istop.getDestinationDesc());
-            bag.put(VariableManager.EXTRA_BAG_LAT, Float.toString( JSONObjectHelper.getFloatDef( istop.getCoOrds(), "lat", 0)));
+            bag.put(VariableManager.EXTRA_BAG_LAT, Float.toString(JSONObjectHelper.getFloatDef(istop.getCoOrds(), "lat", 0)));
             bag.put(VariableManager.EXTRA_BAG_LON, Float.toString( JSONObjectHelper.getFloatDef( istop.getCoOrds(), "lon", 0)));
             bags.add(bag);
         }
 
         return bags;
+    }
+
+    public HashMap<String, String> getBagCoords( int bagid)
+    {
+        JSONObject jsostop = getStopForBagId( bagid);
+        StopItem stop = new StopItem( new ObservableJSONObject( jsostop));
+        HashMap<String, String> bag = new HashMap<String, String>();
+        bag.put(VariableManager.EXTRA_BAG_LAT, Float.toString( JSONObjectHelper.getFloatDef( stop.getCoOrds(), "lat", 0)));
+        bag.put(VariableManager.EXTRA_BAG_LON, Float.toString( JSONObjectHelper.getFloatDef( stop.getCoOrds(), "lon", 0)));
+        return bag;
     }
 
     /////////////////////////////////////////
