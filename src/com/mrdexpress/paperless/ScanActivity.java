@@ -325,7 +325,7 @@ public class ScanActivity extends FragmentActivity {
             toast.setText(getString(R.string.text_scan_next));
             toast.show();
             //TODO : MAKE IT STAY OPEN HERE
-            dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No" , dialogClickListener).setPositiveButton("Yes" , dialogClickListener ).setTitle("Scan Another Bag").show();
+            dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No", dialogClickListener).setPositiveButton("Yes", dialogClickListener).setTitle("Scan Another Bag").show();
         }
     }
 
@@ -344,20 +344,30 @@ public class ScanActivity extends FragmentActivity {
             }
         }
     };
+    DialogInterface.OnClickListener dialog1ClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    //startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+                    startNotAssignedActivity();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
 
     void onBarcodeMatchFail() {
-            dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
-            dialog_not_assigned.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog_not_assigned.show();
-            final Button button_continue = (Button) dialog_not_assigned.findViewById(R.id.button_not_assigned_continue);
-
-            button_continue.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog_not_assigned.dismiss();
-                    startNotAssignedActivity();
-                };
-            });
+        //dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+        //dialog_not_assigned.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //dialog_not_assigned.show();
+        //final Button button_continue = (Button) dialog_not_assigned.findViewById(R.id.button_not_assigned_continue);
+        AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
+        dialog1.setMessage("Manager authorisation required.").setNegativeButton("No" , dialog1ClickListener).setPositiveButton("Yes" , dialog1ClickListener ).setTitle("Do you want to take ownership of this bag ?").show();
     }
 
 
@@ -402,7 +412,7 @@ public class ScanActivity extends FragmentActivity {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
             }
-            String new_bag_id = ServerInterface.getInstance( getApplicationContext()).scanBag( getApplicationContext(), last_scanned_barcode, Integer.toString( Users.getInstance().getActiveDriver().getid()));
+            String new_bag_id = ServerInterface.getInstance( getApplicationContext()).scanBag( getApplicationContext(), barcodeString, Integer.toString( Users.getInstance().getActiveDriver().getid()));
             if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null")) {
                 CustomToast toast = new CustomToast(this);
                 toast.setSuccess(false);

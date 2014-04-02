@@ -9,6 +9,7 @@ import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.ServerInterface;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -396,7 +397,7 @@ public class Workflow extends Observable
         JSONObject stop = null;
         try
         {
-            JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata[0].payload=='bag' && @.tripstopdata[0].payloadid==" + Integer.toString( bagid) + ")]");
+            JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata[0].payload=='bag' && @.tripstopdata[0].payloadid==" + Integer.toString(bagid) + ")]");
             //JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?]",
             //        Filter.filter(Criteria.where("payload").eq("bag").and("payloadid").eq(bagid)));
             if( stops.size() > 0)
@@ -540,7 +541,8 @@ public class Workflow extends Observable
 
     public void setWaybillScanned( String barcode, int scanned)
     {
-        // TODO: propogate this to the server
+        // TODO: propogate this to the server - Hook into this Logic
+        ServerInterface.getInstance().setBagScanned(barcode);
     }
 
     public void setDeliveryStatus( int bagid, String status, String reason)
@@ -548,11 +550,12 @@ public class Workflow extends Observable
         JSONObject bag = getBag( bagid);
         if( bag != null)
         {
-            // TODO: propogate this to the server
             JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( bag, "status", new JSONObject());
             jsostatus.put("status", status);
             jsostatus.put("reason", reason);
             bag.put("status", jsostatus);
+            // TODO: propogate this to the server - Hook into this logic
+            ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
         }
     }
 
@@ -561,11 +564,12 @@ public class Workflow extends Observable
         JSONObject parcel = getParcel(parcelid);
         if( parcel != null)
         {
-            // TODO: propogate this to the server
             JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( parcel, "status", new JSONObject());
             jsostatus.put("status", status);
             jsostatus.put("reason", reason);
             parcel.put("status", jsostatus);
+            // TODO: propogate this to the server - Hook into this Logic
+            ServerInterface.getInstance().setParcelDeliveryStatus(status, Integer.toString(parcelid), reason);
         }
     }
 

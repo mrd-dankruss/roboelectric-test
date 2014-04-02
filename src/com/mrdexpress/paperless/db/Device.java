@@ -1,6 +1,9 @@
 package com.mrdexpress.paperless.db;
 
+import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import com.mrdexpress.paperless.Paperless;
 
@@ -15,6 +18,7 @@ public class Device {
     private String GCMID = null;
     private String GCMGOOGLEID = null;
     private Integer AppVersion = null;
+    private long QueryTimeOut = 10000;//10 seconds
 
     public static Device getInstance() {
         if (_instance == null) {
@@ -62,6 +66,23 @@ public class Device {
 
     public String getToken(){
         return this.Token;
+    }
+
+    public Boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) Paperless.getInstance().getSystemService(Paperless.getInstance().getApplicationContext().CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null) {
+            // There are no active networks.
+            return false;
+        } else
+            return true;
+    }
+
+    public String getTokenIMEIUrl(){
+        return "imei=" + getIMEI() + "&mrdToken=" + getToken();
+    }
+    public long getQueryTimeOut(){
+        return QueryTimeOut;
     }
 
 }

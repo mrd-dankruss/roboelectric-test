@@ -33,6 +33,7 @@ import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
+import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 
@@ -70,6 +71,8 @@ public class MainActivity extends Activity implements LoginInterface {
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         initViewHolder();
+        startService(new Intent(this , AjaxQueueService.class));
+
         setTitle(R.string.title_actionbar_mainmenu);
         Device.getInstance().setIMEI();
         dialog_main = new ProgressDialog( this );
@@ -87,6 +90,7 @@ public class MainActivity extends Activity implements LoginInterface {
                 } );
             }
         });
+
 
         /* Not yet until we fix it */
         //new UpdateApp().execute();

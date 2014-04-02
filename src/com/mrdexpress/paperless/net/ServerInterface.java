@@ -90,6 +90,25 @@ public class ServerInterface {
         return server_interface;
     }
 
+    // Return singleton instance of DbHandler
+    public static ServerInterface getInstance() {
+        if (server_interface == null) {
+            server_interface = new ServerInterface(Paperless.getContext());
+            if (prefs == null) {
+                prefs = Paperless.getContext().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
+            }
+            if (context != null)
+            {
+                aq = new AQuery(context);
+            }
+            else
+            {
+                aq = new AQuery(Paperless.getContext());
+            }
+        }
+        return server_interface;
+    }
+
     public static void displayToast(final String message) {
         UIHandler.post(new Runnable() {
             @Override
@@ -98,6 +117,86 @@ public class ServerInterface {
                 Toast.makeText(VariableManager.context, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void setDeliveryStatus(String status , String bagid , String reason){
+        String url = API_URL + "v1/workflow/updatestatus?" + Device.getInstance().getTokenIMEIUrl();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("status", status);
+        params.put("bagid", bagid);
+        params.put("reason", reason);
+        if (Device.getInstance().isConnected()){
+            aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                    try{
+                        if (json != null){
+                            //Logic here
+
+                        }else{
+                            Log.e("MRD-EX" , "EMPTY JSON");
+                        }
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                    }
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(params , url);
+        }
+    }
+
+    public void setParcelDeliveryStatus(String status , String bagid , String reason){
+        String url = API_URL + "v1/workflow/updateparcelstatus?" + Device.getInstance().getTokenIMEIUrl();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("status", status);
+        params.put("bagid", bagid);
+        params.put("reason", reason);
+        if (Device.getInstance().isConnected()){
+            aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                    try{
+                        if (json != null){
+                            //Logic here
+
+                        }else{
+                            Log.e("MRD-EX" , "EMPTY JSON");
+                        }
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                    }
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(params , url);
+        }
+    }
+
+    public void setBagScanned(String bagid){
+        String url = API_URL + "v1/workflow/scanbagtodriver?" + Device.getInstance().getTokenIMEIUrl() + "&driverID=" + Users.getInstance().getActiveDriver();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("driverID", Users.getInstance().getActiveDriver());
+        params.put("bagid", bagid);
+        if (Device.getInstance().isConnected()){
+            aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                    try{
+                        if (json != null){
+                            //Logic here
+
+                        }else{
+                            Log.e("MRD-EX" , "EMPTY JSON");
+                        }
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                    }
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(params , url);
+        }
     }
 
     /*
@@ -112,34 +211,15 @@ public class ServerInterface {
         aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
             @Override
             public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
-                String Token = null;
-                if (jObject.has("response"))
-                {
-                    Users.getInstance().setUsers(jObject.toString());
-                }
-                if( callback != null)
-                    callback.execute( null);
+            String Token = null;
+            if (jObject.has("response"))
+            {
+                Users.getInstance().setUsers(jObject.toString());
+            }
+            if( callback != null)
+                callback.execute( null);
             }
         });
-
-
-        /*AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
-        cb.url(url).type(JSONObject.class);
-        aq.sync(cb);
-        try
-        {
-            JSONObject json = cb.getResult();
-            AjaxStatus status = cb.getStatus();
-            if (json != null) {
-                //Generate Users Data
-                Users.getInstance().setUsers(json.toString());
-            }
-        } catch (Exception e) {
-            Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
-        }
-
-        if( callback != null)
-            callback.execute();   */
     }
 
     /**
@@ -173,28 +253,6 @@ public class ServerInterface {
         });
 
         return "";
-        /*cb.url(url).type(JSONObject.class);
-        aq.sync(cb);
-        String Token = null;
-        try
-        {
-            JSONObject jObject = cb.getResult();
-            AjaxStatus status = cb.getStatus();
-            if (jObject.has("response"))
-            {
-                Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
-
-            } else if (jObject.has("error")) {
-                Token = jObject.toString();
-            }
-        } catch (JSONException e) {
-            Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
-        }
-        Device.getInstance().setToken(Token);
-
-        if( callback != null)
-            callback.execute();
-        return Token;  */
     }
 
     /**
@@ -464,6 +522,7 @@ public class ServerInterface {
     }
 
     public void loadComLog(){
+        Boolean as = Device.getInstance().isConnected();
         ArrayList<Bag> bags = Workflow.getInstance().getBags();
         for (int i = 0; i < bags.size(); i++)
         {
