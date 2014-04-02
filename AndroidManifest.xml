@@ -96,42 +96,6 @@
                 android:value="com.mrdexpress.paperless.DriverHomeActivity" />
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.DriverListActivity"
-            android:label="@string/title_activity_driver_list"
-            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.MainActivity" />
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name="com.mrdexpress.paperless.ManagerListActivity"
-            android:label="@string/title_activity_manager_list"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.ScanActivity" />
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
             android:name="com.mrdexpress.paperless.SignatureActivity"
             android:label="@string/title_activity_signature"
             android:parentActivityName="com.mrdexpress.paperless.MainActivity"
@@ -139,24 +103,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.mrdexpress.paperless.CreatePinActivity"
-            android:label="@string/title_activity_create_pin"
-            android:parentActivityName="com.mrdexpress.paperless.DriverListActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.DriverListActivity" />
-        </activity>
-        <activity
-            android:name="com.mrdexpress.paperless.EnterPinActivity"
-            android:label="@string/title_activity_enter_pin"
-            android:parentActivityName="com.mrdexpress.paperless.DriverListActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.DriverListActivity" />
         </activity>
         <activity
             android:name="com.mrdexpress.paperless.MapActivity"
@@ -291,16 +237,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.ScanActivity" />
-        </activity>
-        <activity
-            android:name="com.mrdexpress.paperless.ManagerAuthNotAssignedActivity"
-            android:label="@string/title_actionbar_manager_auth_not_assigned"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mrdexpress.paperless.ScanActivity" >
-            </meta-data>
         </activity>
         <activity
             android:name="com.mrdexpress.paperless.ManagerHomeActivity"
