@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,12 +26,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.maps.android.PolyUtil;
 import com.jayway.jsonpath.JsonPath;
@@ -82,8 +80,9 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
 	private static final String TYPE_DETAILS = "/details";
 	private static final String OUT_JSON = "/json";
-    private LatLng myLocation, destLocation;
-    private String drivingDirections;
+    private LatLng myLocation = null;
+    private LatLng destLocation = null;
+    private String drivingDirections = "Loading...";
 	
 	LocationClient locationClient;
 
@@ -217,7 +216,12 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
         final TextView directions = (TextView) root_view.findViewById( R.id.map_driving_directions);
         directions.setVisibility(View.GONE);
-		// Setup "Navigate here" button
+
+        final FrameLayout mapcontainer = (FrameLayout) root_view.findViewById( R.id.map_container);
+
+        final MapFragment mapFragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
+
+        // Setup "Navigate here" button
 		root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
 		final Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
 		button_navigate.setOnClickListener(new View.OnClickListener()
@@ -227,13 +231,18 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
                 if( button_navigate.getText().equals("Driving Directions"))
                 {
-                    directions.setVisibility( View.VISIBLE);
-                    directions.setText(Html.fromHtml( drivingDirections));
+                    mapcontainer.setVisibility(View.GONE);
+                    mapFragment.getView().setVisibility(View.GONE);
+                    directions.setText(Html.fromHtml(drivingDirections));
+                    directions.setVisibility(View.VISIBLE);
+                    directions.requestFocus();
                     button_navigate.setText("Show Map");
                 }
                 else
                 {
                     directions.setVisibility( View.GONE);
+                    mapFragment.getView().setVisibility(View.VISIBLE);
+                    mapcontainer.setVisibility(View.VISIBLE);
                     button_navigate.setText("Driving Directions");
                 }
 				// Only if marker has been selected
@@ -306,50 +315,63 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
     private void showRoute( LatLng destination)
     {
-        drivingDirections = "";
+        final LatLng theDestination = destination;
+        final
 
-        ServerInterface.getInstance(getApplicationContext()).getGoogleDrivingDirections( API_KEY, myLocation, destination, new CallBackFunction() {
+        AsyncTask asyncTask = new AsyncTask() {
             @Override
-            public void execute(Object args) {
-                JSONObject jso = (JSONObject)args;
-                try {
-                    if( jso.get("status").equals("OK"))
-                    {
-                        String json = ((org.json.JSONArray)jso.get("routes")).toString();
-                        ReadContext parser = JsonPath.parse( json);
-                        net.minidev.json.JSONArray polylines = parser.read("$..polyline.points");
-
-                        for( int i = 0; i < polylines.size(); i++)
-                        {
-                            PolylineOptions line = new PolylineOptions();
-                            line.width(6);
-                            //line.color( (i%2==0)?Color.YELLOW:Color.GREEN);
-                            line.color( Color.GREEN);
-                            List<LatLng> list = PolyUtil.decode( (String)polylines.get(i));
-                            for (LatLng latLng : list)
+            protected Object doInBackground(Object[] params) {
+                ServerInterface.getInstance(getApplicationContext()).getGoogleDrivingDirections( API_KEY, myLocation, theDestination, new CallBackFunction() {
+                    @Override
+                    public void execute(Object args) {
+                        JSONObject jso = (JSONObject)args;
+                        try {
+                            if( jso.get("status").equals("OK"))
                             {
-                                line.add( latLng);
-                            }
-                            map.addPolyline( line);
-                        }
+                                String json = ((org.json.JSONArray)jso.get("routes")).toString();
+                                ReadContext parser = JsonPath.parse( json);
+                                net.minidev.json.JSONArray polylines = parser.read("$..polyline.points");
 
-                        net.minidev.json.JSONArray steps = parser.read("$..steps[*]");
+                                for( int i = 0; i < polylines.size(); i++)
+                                {
+                                    PolylineOptions line = new PolylineOptions();
+                                    line.width(6);
+                                    //line.color( (i%2==0)?Color.YELLOW:Color.GREEN);
+                                    line.color( Color.GREEN);
+                                    List<LatLng> list = PolyUtil.decode( (String)polylines.get(i));
+                                    for (LatLng latLng : list)
+                                    {
+                                        line.add( latLng);
+                                    }
+                                    map.addPolyline( line);
+                                }
 
-                        for( int i = 0; i < steps.size(); i++)
-                        {
-                            net.minidev.json.JSONObject distance = JSONObjectHelper.getJSONObjectDef((net.minidev.json.JSONObject) steps.get(i), "distance", null);
-                            String instructions = JSONObjectHelper.getStringDef((net.minidev.json.JSONObject) steps.get(i), "html_instructions", "!");
-                            if( distance != null)
-                            {
-                                drivingDirections = drivingDirections + "" + instructions + " " + JSONObjectHelper.getStringDef( distance, "text", "!") + "<BR><BR>";
+                                net.minidev.json.JSONArray steps = parser.read("$..steps[*]");
+
+                                drivingDirections = "";
+
+                                for( int i = 0; i < steps.size(); i++)
+                                {
+                                    net.minidev.json.JSONObject distance = JSONObjectHelper.getJSONObjectDef((net.minidev.json.JSONObject) steps.get(i), "distance", null);
+                                    String instructions = JSONObjectHelper.getStringDef((net.minidev.json.JSONObject) steps.get(i), "html_instructions", "!");
+                                    if( distance != null)
+                                    {
+                                        drivingDirections = drivingDirections + "" + instructions + " drive " + JSONObjectHelper.getStringDef( distance, "text", "!") + "<BR><BR>";
+                                    }
+                                }
+                                TextView directions = (TextView) root_view.findViewById( R.id.map_driving_directions);
+                                directions.setText(Html.fromHtml(drivingDirections));
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                });
+                return null;
             }
-        });
+        };
+
+        asyncTask.execute();
     }
 
 	/**
