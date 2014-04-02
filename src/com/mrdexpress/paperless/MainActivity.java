@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Xml;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,14 @@ import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
+import org.xml.sax.InputSource;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,9 +99,7 @@ public class MainActivity extends Activity implements LoginInterface {
             }
         });
 
-
-        /* Not yet until we fix it */
-        //new UpdateApp().execute();
+        new UpdateApp().execute();
     }
 
     private void afterSetup()
@@ -189,32 +195,6 @@ public class MainActivity extends Activity implements LoginInterface {
         dialog_main.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
         dialog_main.show();
         ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), this);
-        //ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString() , getApplicationContext());
-        /*
-
-        if (selected_user.getdriverPin().equals(hash)) {
-            if (type == Users.Type.DRIVER) {
-                if (selected_user.getdriverPin().isEmpty()) {
-                    Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
-                    startActivity(intent);
-                } else {
-                    // Store currently selected driverid in shared prefs
-                    Intent intent = new Intent(getApplicationContext(), DriverHomeActivity.class);
-                    startActivity(intent);
-                }
-            }
-            else if (type == Users.Type.MANAGER)
-            {
-                // Manager cant login to the Main Activity - right ?
-
-            }
-        } else {
-            CustomToast toast = new CustomToast(MainActivity.this);
-            toast.setText(getString(R.string.text_unauthorised));
-            toast.setSuccess(false);
-            toast.show();
-        }
-        */
     }
 
     /**
@@ -395,45 +375,30 @@ public class MainActivity extends Activity implements LoginInterface {
 
         @Override
         protected Void doInBackground(Void... urls) {
+
+        final PackageInfo pInfo;
             try {
-                PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                Log.d("update", "Current version: " + pInfo.versionCode);
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                double versionCode = 0;
+                String url = "";
 
-                // Create a URL for the desired page
-                URL url = new URL("http://www.htdahms.co.za/version.txt");
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                try {
+                    String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
+                    versionCode = (Double)xpath.evaluate("/update/versionCode", new InputSource( updateURL), XPathConstants.NUMBER);
+                    url = (String)xpath.evaluate("/update/url", new InputSource( updateURL), XPathConstants.STRING);
 
-                // Read all the text returned by the server
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                String read_line;
-                String[] temp_array;
-                int versionCode = 0;
-
-                while ((read_line = in.readLine()) != null) {
-                    Log.d("update", "Line: " + read_line);
-                    if (read_line.contains("versionCode:")) {
-                        temp_array = read_line.split(":");
-                        versionCode = Integer.parseInt(temp_array[1].trim());
-                    }
-                }
-                in.close();
-
-                if (versionCode == 0) {
-                    // TODO: Error code that update directory on server has problem. Warn
-                    // administrator.
-                } else {
-                    Log.d("update", "Current version: " + pInfo.versionCode);
-                    Log.d("update", "Server version: " + versionCode);
                     if (versionCode > pInfo.versionCode) {
-                        Log.d("update", "BOOM");
-                        downloadAPK();
+                        downloadAPK( url);
                         mustInstall = true;
                     }
+                } catch (XPathExpressionException e) {
+                    e.printStackTrace();
                 }
-            } catch (MalformedURLException e) {
-            } catch (IOException e) {
             } catch (NameNotFoundException e) {
                 e.printStackTrace();
             }
+
             return null;
         }
 
@@ -442,9 +407,7 @@ public class MainActivity extends Activity implements LoginInterface {
             if (mustInstall) {
                 Intent i = new Intent();
                 i.setAction(Intent.ACTION_VIEW);
-                i.setDataAndType(Uri.fromFile(new File(path)),
-                        "application/vnd.android.package-archive");
-                Log.d("Lofting", "About to install new .apk");
+                i.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
                 startActivity(i);
             }
 
@@ -455,8 +418,7 @@ public class MainActivity extends Activity implements LoginInterface {
         }
     }
 
-    private void downloadAPK() {
-        String path = "/sdcard/paperless.apk";
+    private void downloadAPK( String path) {
         try {
             URL url = new URL("http://www.htdahms.co.za/paperless.apk");
             URLConnection connection = url.openConnection();
