@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+import com.mrdexpress.paperless.net.Ajax;
 
 /**
  * Created by hannobean on 2014/04/01.
@@ -28,6 +29,7 @@ public class AjaxQueueService extends Service{
                 {
                     try{
                         Thread.sleep(300000);
+                        Ajax.getInstance().checkQueue();
                         Log.e("MRD-EX" , "Checking Queue");
                     }catch (Exception e){
                         Log.e("MRD-EX" , e.getMessage());
