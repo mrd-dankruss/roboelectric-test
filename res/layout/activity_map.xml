@@ -26,7 +26,7 @@
             android:layout_gravity="bottom"
             android:layout_margin="@dimen/margin_standard"
             android:background="@drawable/button_custom"
-            android:text="@string/button_navigate_here"
+            android:text="Driving Directions"
             android:textStyle="bold" />
     </FrameLayout>
 
@@ -68,6 +68,18 @@
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
-    
 
+    <FrameLayout
+            android:layout_above="@id/map_bottom_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="440dp"
+            android:padding="5dp">
+            <TextView
+                    android:text="123"
+                    android:padding="10dp"
+                    android:id="@+id/map_driving_directions"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+    </FrameLayout>
 </RelativeLayout>

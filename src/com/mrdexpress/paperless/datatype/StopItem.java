@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * Created by gary on 2014/04/01.
@@ -39,7 +40,7 @@ public class StopItem implements Parcelable
 
     public int getTripOrder()
     {
-        return JSONObjectHelper.getIntDef( data.get(), "triporder", -1);
+        return JSONObjectHelper.getIntDef(data.get(), "triporder", -1);
     }
 
     public String getAddress()
@@ -47,6 +48,20 @@ public class StopItem implements Parcelable
         return JSONObjectHelper.getStringDef( data.get(), "address", "!");
     }
 
+    public JSONObject getDestination()
+    {
+        return JSONObjectHelper.getJSONObjectDef(data.get(), "destination", null);
+    }
+
+    public String getDestinationDesc()
+    {
+        return JSONObjectHelper.getStringDef(getDestination(), "desc", "!");
+    }
+
+    public JSONObject getCoOrds()
+    {
+        return JSONObjectHelper.getJSONObjectDef(data.get(), "coords", null);
+    }
 
     @Override
     public String toString()
