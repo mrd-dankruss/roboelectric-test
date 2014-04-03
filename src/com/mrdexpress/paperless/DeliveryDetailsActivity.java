@@ -49,6 +49,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		intent = getIntent();
 		position = intent.getIntExtra("ACTIVE_BAG_POSITION", -1);
         BagID = intent.getIntExtra("ACTIVE_BAG_ID", -1);
+        Workflow.getInstance().currentBagID = BagID;
         JSONObject jso =  Workflow.getInstance().getBag( BagID);
         bag = new Bag(jso);
 	}
@@ -113,11 +114,9 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
-
 	}
 
 	@Override
-
 	public void onSetNextDelivery(boolean is_successful, int bagId)
 	{
 		if (is_successful)

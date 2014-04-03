@@ -35,6 +35,7 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
+import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import org.xml.sax.InputSource;
 
@@ -118,7 +119,7 @@ public class MainActivity extends Activity implements LoginInterface {
         ac.id(R.id.button_mainmenu_start_login).progress(dialog_main).clicked(this, "triggerLogin");
 
         startService(new Intent(this, LocationService.class));
-        startService(new Intent(this , AjaxQueueService.class));
+        startService(new Intent(this , PaperlessService.class));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         // GCM registration.

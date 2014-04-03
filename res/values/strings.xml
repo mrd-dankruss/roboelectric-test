@@ -108,7 +108,7 @@
     <string name="text_create_pin_enter">Tap here to enter your 4-digit PIN</string>
     <string name="text_craete_pin_confirm">Tap here to confirm your PIN</string>
     <string name="text_create_pin_toast_too_short">PIN has to be 4 digits. Please try again</string>
-    <string name="text_create_pin">PIN code not created. Please enter a new PIN code to continue:</string>
+    <string name="text_create_pin">Please enter 4 digit PIN for yourself. This will be your PIN to use the Paperless application.</string>
     <string name="text_enter_pin_incorrect">Incorrect PIN. Please try again.</string>
     <string name="text_enter_pin_invalid">Invalid PIN. Please try again.</string>
     <string name="text_search_hint">Search</string>

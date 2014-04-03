@@ -45,7 +45,7 @@ public class CreatePinActivity extends Activity
 		context = this;
 
 		// Change actionbar title
-		setTitle(R.string.title_actionbar_create_pin);
+		setTitle("Create PIN: " + Users.getInstance().getActiveDriver().getFullName());
 
 		// Inflate views
 		initViewHolder();

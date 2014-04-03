@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mrdexpress.paperless"
     android:versionCode="1"
-    android:versionName="0.0.1" >
+    android:versionName="0.0.2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -103,6 +103,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.MainActivity" />
+        </activity>
+        <activity
+                android:name="com.mrdexpress.paperless.CreatePinActivity"
+                android:label="@string/title_activity_create_pin"
+                android:parentActivityName="com.mrdexpress.paperless.MainActivity"
+                android:screenOrientation="portrait" >
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.mrdexpress.paperless.MainActivity" />
         </activity>
         <activity
             android:name="com.mrdexpress.paperless.MapActivity"
@@ -296,7 +305,7 @@
 
         <service android:name=".service.GCMIntentService" />
         <service android:name=".service.LocationService" />
-        <service android:enabled="true" android:name=".service.AjaxQueueService" />
+        <service android:enabled="true" android:name=".service.PaperlessService" />
 
         <receiver  android:process=":remote" android:name=".service.LocationBroadcastReceiver"></receiver>
 

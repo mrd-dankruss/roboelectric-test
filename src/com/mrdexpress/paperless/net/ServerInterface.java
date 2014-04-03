@@ -498,17 +498,27 @@ public class ServerInterface {
      * @param time
      * @return
      */
-    public String postDriverPosition(String bagid, String accuracy, String lat, String longn,
+    public void postDriverPosition(String accuracy, String lat, String longn,
                                      String trip_stop_id, String time) {
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/trips/tracking?mrdToken=" + token + "&accuracy=" + accuracy
-                + "&lat=" + lat + "&lon=" + longn + "&tripstopid=" + trip_stop_id + "&time=" + time;
-        String result = postData(url);
-        // Log.d(TAG,"zeus: "+ result);
-        if (result.equals(VariableManager.TEXT_NET_ERROR)) {
-            return String.valueOf(DbHandler.getInstance(context).pushCall(url, null));
+        String url = API_URL + "v1/trips/tracking?mrdToken=" + Device.getInstance().getToken();
+
+        AQuery ac = new AQuery(context);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("accuracy", accuracy);
+        params.put("lat", lat);
+        params.put("lon", longn);
+        params.put("tripstopid", trip_stop_id);
+        params.put("time", time);
+
+        if (Device.getInstance().isConnected()){
+            ac.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+                @Override
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                }
+            });
         } else {
-            return result;
+            Ajax.getInstance().addQueue(params , url);
         }
     }
 
@@ -532,15 +542,15 @@ public class ServerInterface {
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 String callstatus = null;
                 try{
-                if (json != null){
-                    if (json.has("response")) {
-                        callstatus = json.getJSONObject("response").getString("status");
-                    } else if (json.has("error")) {
-                        callstatus = stripErrorCode(json.toString());
+                    if (json != null){
+                        if (json.has("response")) {
+                            callstatus = json.getJSONObject("response").getString("status");
+                        } else if (json.has("error")) {
+                            callstatus = stripErrorCode(json.toString());
+                        }
+                    }else{
+                        Log.e("MRD-EX" , "EMPTY JSON");
                     }
-                }else{
-                    Log.e("MRD-EX" , "EMPTY JSON");
-                }
                 }catch(Exception e){
                     Log.e("MRD-EX" , e.getMessage());
                 }

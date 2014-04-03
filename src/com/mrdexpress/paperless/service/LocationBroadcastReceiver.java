@@ -15,6 +15,7 @@ import android.provider.Settings;
 import android.util.Log;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 public class LocationBroadcastReceiver extends BroadcastReceiver implements LocationListener
 {
@@ -56,6 +57,7 @@ private final String TAG = "LocationBroadcastReceiver";
 		SharedPreferences prefs = mContext.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
 		int stop_id = prefs.getInt(VariableManager.PREF_CURRENT_STOPID, -1);
+        Workflow.getInstance().getStopForBagId(Workflow.getInstance().currentBagID);
 		long time = System.currentTimeMillis() / 1000;
 
 		
@@ -282,7 +284,7 @@ private final String TAG = "LocationBroadcastReceiver";
 		@Override
 		protected Void doInBackground(String... args)
 		{
-			status = ServerInterface.getInstance(mContext).postDriverPosition(args[0], args[1],	args[2], args[3], args[4], args[5]);
+			//status = ServerInterface.getInstance(mContext).postDriverPosition(args[0], args[1],	args[2], args[3], args[4], args[5]);
 			return null;
 		}
 
