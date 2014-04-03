@@ -90,9 +90,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="@dimen/margin_standard"
         android:layout_marginRight="@dimen/margin_standard"
-        android:background="@drawable/button_custom_grey"
+        android:background="@drawable/button_custom"
         android:text="@string/button_create"
-        android:textColor="@color/colour_button_greyed"
         android:textStyle="bold" />
 
     <Button

@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Xml;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,15 +37,12 @@ import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import org.xml.sax.InputSource;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -79,13 +75,10 @@ public class MainActivity extends Activity implements LoginInterface {
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         initViewHolder();
-        startService(new Intent(this , AjaxQueueService.class));
 
         setTitle(R.string.title_actionbar_mainmenu);
         Device.getInstance().setIMEI();
         dialog_main = new ProgressDialog( this );
-        //dialog_main.setMessage("Logging you in please be patient");
-        //dialog_main.show();
 
         String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
             @Override
@@ -124,9 +117,8 @@ public class MainActivity extends Activity implements LoginInterface {
         AQuery ac = new AQuery(root_view);
         ac.id(R.id.button_mainmenu_start_login).progress(dialog_main).clicked(this, "triggerLogin");
 
-
-
         startService(new Intent(this, LocationService.class));
+        startService(new Intent(this , AjaxQueueService.class));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         // GCM registration.
@@ -144,8 +136,20 @@ public class MainActivity extends Activity implements LoginInterface {
 
     public void triggerLogin(View view){
         if (checkPin() && selected_user != null) {
-            loginUser(selected_user.getUsertype());
+            if ( selected_user.getdriverPin() == null ){
+                //Cant login yet , needs to create PIN
+                Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
+                startActivity(intent);
+            } else {
+                loginUser(selected_user.getUsertype());
+            }
         }
+    }
+
+    private void loginUser(Users.Type type) {
+        dialog_main.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
+        dialog_main.show();
+        ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), this);
     }
 
     /* (non-Javadoc)
@@ -162,12 +166,9 @@ public class MainActivity extends Activity implements LoginInterface {
         editor.remove(VariableManager.PREF_DRIVERID);
         editor.remove(VariableManager.PREF_CURRENT_STOPID);
         editor.apply();
-
         holder.text_name.setText("");
         holder.text_password.setText("");
     }
-
-
 
     /**
      * Trigger Login Action
@@ -191,11 +192,7 @@ public class MainActivity extends Activity implements LoginInterface {
         }
     }
  
-    private void loginUser(Users.Type type) {
-        dialog_main.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
-        dialog_main.show();
-        ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), this);
-    }
+
 
     /**
      * Check PIN's validity (data validation)
@@ -389,7 +386,10 @@ public class MainActivity extends Activity implements LoginInterface {
                     url = (String)xpath.evaluate("/update/url", new InputSource( updateURL), XPathConstants.STRING);
 
                     if (versionCode > pInfo.versionCode) {
-                        downloadAPK( url);
+                        if (dialog_progress.isShowing()) {
+                            dialog_progress.dismiss();
+                        }
+                        downloadAPK( url , path) ;
                         mustInstall = true;
                     }
                 } catch (XPathExpressionException e) {
@@ -418,14 +418,12 @@ public class MainActivity extends Activity implements LoginInterface {
         }
     }
 
-    private void downloadAPK( String path) {
+    private void downloadAPK( String Url , String path) {
         try {
-            URL url = new URL("http://www.htdahms.co.za/paperless.apk");
+            URL url = new URL(Url);
             URLConnection connection = url.openConnection();
             connection.connect();
-
             int fileLength = connection.getContentLength();
-
             // download the file
             InputStream input = new BufferedInputStream(url.openStream());
             OutputStream output = new FileOutputStream(path);
@@ -435,7 +433,7 @@ public class MainActivity extends Activity implements LoginInterface {
             int count;
             while ((count = input.read(data)) != -1) {
                 total += count;
-                // publishProgress((int) (total * 100 / fileLength));
+                //pb.setProgress( (int) (total * 100 / fileLength));
                 output.write(data, 0, count);
             }
 
@@ -443,8 +441,7 @@ public class MainActivity extends Activity implements LoginInterface {
             output.close();
             input.close();
         } catch (Exception e) {
-            Log.e("YourApp", "Well that didn't work out so well...");
-            Log.e("YourApp", e.getMessage());
+            Log.e("MRD-EX", e.getMessage());
         }
     }
 

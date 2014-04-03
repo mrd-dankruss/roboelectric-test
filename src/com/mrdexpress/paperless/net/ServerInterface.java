@@ -323,6 +323,31 @@ public class ServerInterface {
         return status;
     }
 
+    public String updatePIN(String id, String new_pin, String imei , CallBackFunction func) {
+        String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken=" + Device.getInstance().getToken()
+                + "&driverPIN=" + new_pin + "&imei=" + Device.getInstance().getIMEI();
+
+        String response = postData(url);
+
+        String status = "";
+
+        try {
+            JSONObject jObject = new JSONObject(response);
+            if (jObject.has("response")) {
+                status = jObject.getJSONObject("response").getJSONObject("auth").getString("status");
+                func.execute(status);
+            } else if (jObject.has("error")) {
+                status = stripErrorCode(jObject.toString());
+                func.execute("error");
+            }
+
+        } catch (JSONException e) {
+            func.execute("error");
+        }
+
+        return status;
+    }
+
     /**
      * Retrieves list of drivers from server. Used to populate the list at
      * login.
@@ -491,7 +516,7 @@ public class ServerInterface {
      * Post a delay to API
      *
      * @param bagid
-     * @param driverid
+     *
      * @param delayid
      * @return
      */

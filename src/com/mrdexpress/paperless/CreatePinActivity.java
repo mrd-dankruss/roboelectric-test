@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.widget.CustomToast;
@@ -33,6 +35,7 @@ public class CreatePinActivity extends Activity
 	private ViewHolder holder;
 	private View root_view;
 	private CreatePinActivity context;
+    public ProgressDialog dialog_main;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -57,14 +60,14 @@ public class CreatePinActivity extends Activity
 				// Check if pin is valid then login
 				if (checkPin())
 				{
+                    dialog_main.setMessage("Creating a PIN for " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
+                    try {
+                        dialog_main.show();
+                    }
+                    catch (Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                    }
 					new CreatePINTask().execute();
-
-					// Intent intent = new Intent(getApplicationContext(),
-					// ScanActivity.class);
-					//
-					// DbHandler.getInstance(getApplicationContext());
-					// startActivity(intent);
-
 				}
 			}
 		});
@@ -77,6 +80,7 @@ public class CreatePinActivity extends Activity
 			}
 		});
 
+        dialog_main = new ProgressDialog( context );
 	}
 
 	/**
@@ -95,10 +99,40 @@ public class CreatePinActivity extends Activity
 		protected String doInBackground(Void... params)
 		{
 			final String driverid = Users.getInstance().getActiveDriver().getStringid();
-			return ServerInterface.getInstance(getApplicationContext()).updatePIN(driverid,
-					holder.editText_pin1.getText().toString(), Device.getInstance().getIMEI());
-
+            ServerInterface.getInstance(getApplicationContext()).updatePIN(driverid,holder.editText_pin1.getText().toString(), Device.getInstance().getIMEI() , cback);
+            return "";
 		}
+
+        public CallBackFunction cback = new CallBackFunction(){
+            @Override
+            public void execute( Object args) {
+                String result = args.toString();
+                dialog_main.dismiss();
+                try
+                {
+                    // PIN creation returns from server as successful
+                    if (result.equals("success"))
+                    {
+                        // Retrieve bags for current driver in a thread
+                        Users.getInstance().getActiveDriver().setdriverPin( holder.editText_pin1.getText().toString() );
+                        context.finish();
+                    }
+                    else
+                    {
+                        // There was a problem
+                        CustomToast toast = new CustomToast(CreatePinActivity.this);
+                        toast.setText(result);
+                        toast.setSuccess(false);
+                        toast.show();
+                    }
+                }
+                catch (NumberFormatException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        };
 
 		/**
 		 * The system calls this to perform work in the UI thread and delivers
@@ -107,29 +141,7 @@ public class CreatePinActivity extends Activity
 		@Override
 		protected void onPostExecute(String result)
 		{
-
-			try
-			{
-				// PIN creation returns from server as successful
-				if (result.equals("success"))
-				{
-					// Retrieve bags for current driver in a thread
-					new RetrieveConsignmentsTask().execute();
-				}
-				else
-				{
-					// There was a problem
-					CustomToast toast = new CustomToast(CreatePinActivity.this);
-					toast.setText(result);
-					toast.setSuccess(false);
-					toast.show();
-				}
-			}
-			catch (NumberFormatException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            Log.e("MRD-EX", "PIN DONE");
 		}
 	}
 

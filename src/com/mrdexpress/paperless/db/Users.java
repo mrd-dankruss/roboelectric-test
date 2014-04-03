@@ -112,7 +112,7 @@ public class Users implements Serializable
         private String firstName;
         private String lastName;
         private int id;
-        private String pin;
+        private String pin = null;
         private String role;
 
         public UserData(net.minidev.json.JSONObject obj){
@@ -127,7 +127,9 @@ public class Users implements Serializable
                 try {
                     firstName = json.get("firstName").toString();
                     lastName = json.get("lastName").toString();
-                    pin = json.get("driverPin").toString();
+                    if (json.containsKey("driverPin")){
+                        pin = (String)json.get("driverPin");
+                    }
                     id = Integer.parseInt(json.get("id").toString());
                     role = json.get("role").toString();
                 } catch (Exception e) {
