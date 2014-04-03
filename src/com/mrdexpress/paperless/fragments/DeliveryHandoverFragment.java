@@ -232,7 +232,7 @@ public class DeliveryHandoverFragment extends Fragment
 	{
 		// DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no, scanned);
 
-        JSONObject parcel = Workflow.getInstance().getParcel( Integer.parseInt( parcel_id));
+        JSONObject parcel = Workflow.getInstance().getParcelByParcelBarcode( parcel_id );
 
         if( parcel != null)
         {

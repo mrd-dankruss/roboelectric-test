@@ -28,7 +28,9 @@ public class GCMIntentService extends IntentService
 
 	public GCMIntentService()
 	{
+
 		super("GCMIntentService");
+        Log.i("MRD", "GCM RECEIVED");
 	}
 
 	public static final String TAG = "GCM";
@@ -36,6 +38,7 @@ public class GCMIntentService extends IntentService
 	@Override
 	protected void onHandleIntent(Intent intent)
 	{
+        Log.i("MRD", "GCM RECEIVED");
 		Bundle extras = intent.getExtras();
 		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 		String messageType = gcm.getMessageType(intent);

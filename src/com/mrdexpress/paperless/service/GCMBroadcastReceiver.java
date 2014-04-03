@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
+import android.util.Log;
 
 /**
  * This {@code WakefulBroadcastReceiver} takes care of creating and managing a
@@ -37,6 +38,7 @@ public class GCMBroadcastReceiver extends WakefulBroadcastReceiver
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
+        Log.i("MRD", "GCM RECEIVED");
 		// Explicitly specify that GcmIntentService will handle the intent.
 		ComponentName comp = new ComponentName(context.getPackageName(),
 				GCMIntentService.class.getName());

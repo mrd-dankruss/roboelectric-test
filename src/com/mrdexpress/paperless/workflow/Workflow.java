@@ -314,6 +314,28 @@ public class Workflow extends Observable
         return parcel;
     }
 
+    public JSONObject getParcelByParcelBarcode( String barcode)
+    {
+        JSONObject parcel = null;
+        try
+        {
+            //parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?(@.id==" + Integer.toString( parcelid) + "])");
+            JSONArray parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?]",
+                    Filter.filter(Criteria.where("barcode").eq(barcode)));
+            if( parcels.size() > 0)
+                parcel = (JSONObject) parcels.get(0);
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+        return parcel;
+    }
+
     public List<JSONArray> getBagParcelsOnly( int bagid)
     {
         List<JSONArray> parcels = null;
