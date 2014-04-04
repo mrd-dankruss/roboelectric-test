@@ -17,79 +17,77 @@ import java.util.Date;
 
 public class GCMIntentService extends IntentService
 {
-	public static final int NOTIFICATION_ID = 1;
-	private NotificationManager mNotificationManager;
-	NotificationCompat.Builder builder;
-	
-	public static final String BROADCAST_ACTION = " com.mrdexpress.paperless.service";
+    public static final int NOTIFICATION_ID = 1;
+    public static final String BROADCAST_ACTION = " com.mrdexpress.paperless.service";
+    public static final String TAG = "GCM";
     private final Handler handler = new Handler();
+    NotificationCompat.Builder builder;
     Intent intent;
     int counter = 0;
+    private NotificationManager mNotificationManager;
 
-	public GCMIntentService()
-	{
+    public GCMIntentService()
+    {
 
-		super("GCMIntentService");
+        super("GCMIntentService");
         Log.i("MRD", "GCM RECEIVED");
-	}
+    }
 
-	public static final String TAG = "GCM";
-
-	@Override
-	protected void onHandleIntent(Intent intent)
-	{
+    @Override
+    protected void onHandleIntent(Intent intent)
+    {
         Log.i("MRD", "GCM RECEIVED");
-		Bundle extras = intent.getExtras();
-		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-		String messageType = gcm.getMessageType(intent);
+        Bundle extras = intent.getExtras();
+        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
+        String messageType = gcm.getMessageType(intent);
 
-		if (!extras.isEmpty())
-		{
-			Log.d(TAG, extras.toString());
-			if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType))
-			{
-				Log.i(TAG, "Send error: " + extras.toString());
-			}
-			else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType))
-			{
-				Log.i(TAG, "Deleted messages on server: " + extras.toString());
-			}
-			else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType))
-			{
+        if (!extras.isEmpty())
+        {
+            Log.d(TAG, extras.toString());
+            if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType))
+            {
+                Log.i(TAG, "Send error: " + extras.toString());
+            }
+            else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType))
+            {
+                Log.i(TAG, "Deleted messages on server: " + extras.toString());
+            }
+            else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType))
+            {
 
-				// TODO: Handle parcels being scanned by branch.
+                // TODO: Handle parcels being scanned by branch.
 
-				try
-				{
-					JSONObject json_object = new JSONObject(extras.getString("data"));
-					String barcode = json_object.get("waybill_no").toString();
-					String scanned = json_object.get("scanned").toString();
-					
-					int unix = 0;
-					
-					if (scanned.equals("true"))
-					{
-						unix = (int) new Date().getTime() / 1000;
-					}
-					
-					intent = new Intent(BROADCAST_ACTION);
-					intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, barcode);
-					intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, unix);
-	                sendBroadcast(intent);
+                try
+                {
+                    JSONObject json_object = new JSONObject(extras.getString("data"));
+                    String barcode = json_object.get("waybill_no").toString();
+                    String scanned = json_object.get("scanned").toString();
+
+                    int unix = 0;
+
+                    if (scanned.equals("true"))
+                    {
+                        unix = (int) new Date().getTime() / 1000;
+                    }
+
+                    intent = new Intent(BROADCAST_ACTION);
+                    intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, barcode);
+                    intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, unix);
+                    sendBroadcast(intent);
                     Workflow.getInstance().setWaybillScanned( barcode, unix);
-	                //DbHandler.getInstance(getApplicationContext()).setWaybillScanned(cons_no, bool_scanned);
-	                stopService(intent);
-					
-				}
-				catch (JSONException e1)
-				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		}
-		GCMBroadcastReceiver.completeWakefulIntent(intent);
-	}
+                    //DbHandler.getInstance(getApplicationContext()).setWaybillScanned(cons_no, bool_scanned);
+                    stopService(intent);
+
+                }
+                catch (JSONException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        }
+        GCMBroadcastReceiver.completeWakefulIntent(intent);
+    }
 
 	/*
 	private void sendNotification(String msg)
