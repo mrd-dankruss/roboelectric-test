@@ -238,16 +238,22 @@ public class ServerInterface {
             @Override
             public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
                 String Token = null;
-                if (jObject.has("response"))
-                {
-                    try {
-                        Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
-                        Device.getInstance().setToken(Token);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                try{
+                    if (jObject.has("response"))
+                    {
+                        try {
+                            Token = jObject.getJSONObject("response").getJSONObject("auth").getString("token");
+                            Device.getInstance().setToken(Token);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
-                } else if (jObject.has("error")) {
+                    } else if (jObject.has("error")) {
+                        Token = null;
+                    }
+                }
+                catch(Exception e){
+                    Token = null;
                 }
                 if( callback != null)
                     callback.execute( Token);

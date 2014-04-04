@@ -26,133 +26,108 @@ import net.minidev.json.JSONObject;
 
 import java.util.*;
 
-public class DeliveryHandoverFragment extends Fragment
-{
-	private final String TAG = "DeliveryHandoverFragment";
-	public static String WAYBILL_BARCODE = "com.mrdexpress.waybill_barcode";
-	public static String WAYBILL_SCANNED = "com.mrdexpress.waybill_scanned";
+public class DeliveryHandoverFragment extends Fragment {
+    public static String WAYBILL_BARCODE = "com.mrdexpress.waybill_barcode";
+    public static String WAYBILL_SCANNED = "com.mrdexpress.waybill_scanned";
+    private final String TAG = "DeliveryHandoverFragment";
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Receiver: " + intent.getAction());
+            if (intent.getAction() == GCMIntentService.BROADCAST_ACTION) {
+                updateFromPushNotification(intent.getExtras().getString(WAYBILL_BARCODE), intent.getExtras().getBoolean(WAYBILL_SCANNED));
+            }
+        }
+    };
+    ArrayList<DeliveryHandoverDataObject> list;
+    int bagid;
+    private ViewHolder holder;
+    private View rootView;
+    private IncompleteScanDialog dialog;
+    private DeliveryHandoverAdapter listAdapter;
 
-	private ViewHolder holder;
-	private View rootView;
-	private IncompleteScanDialog dialog;
-	ArrayList<DeliveryHandoverDataObject> list;
-	private DeliveryHandoverAdapter listAdapter;
-	int bagid;
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
-		initViewHolder(inflater, container); // Inflate ViewHolder static instance
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
         bagid = Workflow.getInstance().currentBagID;
 
-		//list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
+        //list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 
-        list = Workflow.getInstance().getBagParcelsAsObjects( bagid);
+        list = Workflow.getInstance().getBagParcelsAsObjects(bagid);
 
-		listAdapter = new DeliveryHandoverAdapter(list);
+        listAdapter = new DeliveryHandoverAdapter(list);
 
-        listAdapter.registerDataSetObserver( new DataSetObserver() {
+        listAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
                 int parcelCount = listAdapter.getScannedCount();
-                holder.parcelsScanned.setText( "PARCEL" + (parcelCount==1?"":"S") + " (" + parcelCount + " / " + listAdapter.getCount() + " SCANNED)");
+                holder.parcelsScanned.setText("PARCEL" + (parcelCount == 1 ? "" : "S") + " (" + parcelCount + " / " + listAdapter.getCount() + " SCANNED)");
             }
         });
 
-		if ((listAdapter != null) & (list != null))
-		{
-			holder.list.setAdapter(listAdapter);
-		}
+        if ((listAdapter != null) & (list != null)) {
+            holder.list.setAdapter(listAdapter);
+        }
 
         listAdapter.notifyDataSetChanged();
 
-		holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> parent, final View view, int position, long id)
-			{
+        holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 // for debugging only, to simulate a GCM call
-                list.get( position).setParcelScanned((int) new Date().getTime() / 1000);
-			}
-		});
+                list.get(position).setParcelScanned((int) new Date().getTime() / 1000);
+            }
+        });
 
-		holder.button.setOnClickListener(new View.OnClickListener()
-		{
+        holder.button.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v)
-			{
-				if (list != null)
-				{
-					if (allParcelsScanned())
-					{
+            @Override
+            public void onClick(View v) {
+                if (list != null) {
+                    if (allParcelsScanned()) {
 
-                        Workflow.getInstance().setDeliveryStatus( bagid, Bag.STATUS_COMPLETED, "");
+                        Workflow.getInstance().setDeliveryStatus(bagid, Bag.STATUS_COMPLETED, "");
 
-						getActivity().finish();
-					}
-					else
-					{
+                        getActivity().finish();
+                    } else {
 
-						dialog = new IncompleteScanDialog(getActivity());
-						dialog.getWindow().setBackgroundDrawable( new ColorDrawable(Color.TRANSPARENT));
-						dialog.show();
+                        dialog = new IncompleteScanDialog(getActivity());
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.show();
 
-						LayoutInflater factory = LayoutInflater.from(getActivity());
+                        LayoutInflater factory = LayoutInflater.from(getActivity());
 
-						final Button button_continue = (Button) dialog.findViewById(R.id.button_incomplete_scan_continue);
+                        final Button button_continue = (Button) dialog.findViewById(R.id.button_incomplete_scan_continue);
 
-						button_continue.setOnClickListener(new OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								dialog.dismiss();
-								/*
-								FragmentTransaction ft = getActivity().getSupportFragmentManager()
-										.beginTransaction();
-								Fragment reasonFragment = new ReasonPartialDeliveryFragment();
-								ft.replace(R.id.activity_reason_partial_delivery_container,
-										reasonFragment);
-								ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-								ft.addToBackStack(null);
-								ft.commit();*/
-								Intent intent = new Intent(getActivity(), ReasonPartialDeliveryActivity.class);
+                        button_continue.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                                Intent intent = new Intent(getActivity(), ReasonPartialDeliveryActivity.class);
+                                Bundle b = new Bundle();
+                                Workflow.getInstance().doormat.put(VariableManager.UNSCANNED_PARCELS, getUnscannedParcels(list));
+                                getActivity().startActivityForResult(intent, VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
+                            }
+                        });
 
-								Bundle b = new Bundle();
-								/*b.putParcelableArrayList(
-										VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
-										getUnscannedParcels(list));*/
-								//intent.putExtra( VariableManager.EXTRA_NEXT_BAG_ID,	getActivity().getIntent().getStringExtra( VariableManager.EXTRA_NEXT_BAG_ID));
-                                Workflow.getInstance().doormat.put( VariableManager.UNSCANNED_PARCELS, getUnscannedParcels(list));
-								// intent.putExtra(VariableManager.EXTRA_UNSCANNED_PARCELS_BUNDLE,
-								// b);
-								// intent.putExtra(VariableManager.EXTRA_BAG_NO,
-								// ((Bag)holder.list.getItemAtPosition(position)).getBagNumber());
-								// startActivity(intent);
-								getActivity().startActivityForResult(intent, VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
-							}
-						});
+                        final Button button_scan = (Button) dialog.findViewById(R.id.button_incomplete_scan_scan);
+                        button_scan.setText("Wait for scan");
 
-						final Button button_scan = (Button) dialog.findViewById(R.id.button_incomplete_scan_scan);
+                        button_scan.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                }
+            }
+        });
 
-						button_scan.setOnClickListener(new OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								dialog.dismiss();
-							}
-						});
-					}
-				}
-			}
-		});
-
-		return rootView;
-	}
+        return rootView;
+    }
 
     @Override
     public void onDestroyView() {
@@ -161,141 +136,142 @@ public class DeliveryHandoverFragment extends Fragment
     }
 
     @Override
-	public void onResume()
-	{
-		super.onResume();
-		getActivity().registerReceiver(broadcastReceiver, new IntentFilter(GCMIntentService.BROADCAST_ACTION));
-	}
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(GCMIntentService.BROADCAST_ACTION));
+    }
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		getActivity().unregisterReceiver(broadcastReceiver);
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
 
-	/**
-	 * Checks list of parcels and returns a list of parcels which have not yet been scanned.
-	 * 
-	 * @param list
-	 * @return
-	 */
-	private ArrayList<DeliveryHandoverDataObject> getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list)
-	{
+    /**
+     * Checks list of parcels and returns a list of parcels which have not yet been scanned.
+     *
+     * @param list
+     * @return
+     */
+    private ArrayList<DeliveryHandoverDataObject> getUnscannedParcels(ArrayList<DeliveryHandoverDataObject> list) {
         ArrayList<DeliveryHandoverDataObject> list_unscanned = new ArrayList<DeliveryHandoverDataObject>();
 
-		for (int i = 0; i < list.size(); i++)
-		{
-			{
-                if (!list.get(i).isParcelScanned())
-                {
-                    list_unscanned.add( list.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            {
+                if (!list.get(i).isParcelScanned()) {
+                    list_unscanned.add(list.get(i));
                 }
-			}
-		}
+            }
+        }
 
-		return list_unscanned;
-	}
+        return list_unscanned;
+    }
 
-	/**
-	 * Checks if all parcels have been scanned into the branch
-	 * 
-	 * @return True boolean value if all parcels have been scanned.
-	 */
-	private boolean allParcelsScanned()
-	{
+    /**
+     * Checks if all parcels have been scanned into the branch
+     *
+     * @return True boolean value if all parcels have been scanned.
+     */
+    private boolean allParcelsScanned() {
 
-		boolean allScanned = true;
+        boolean allScanned = true;
 
-		if (list != null)
-		{
-			for (int i = 0; i < list.size(); i++)
-			{
-				if (list.get(i).isParcelScanned() == false)
-				{
-					allScanned = false;
-					break;
-				}
-			}
-		}
-		else
-		{
-			return false;
-		}
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).isParcelScanned() == false) {
+                    allScanned = false;
+                    break;
+                }
+            }
+        } else {
+            return false;
+        }
 
-		return allScanned;
-	}
-
+        return allScanned;
+    }
 
     // TODO: this needs to be changed to send the scanned timestamp instead of just a boolean
-	public void updateFromPushNotification(String parcel_id, boolean scanned)
-	{
-		// DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no, scanned);
+    public void updateFromPushNotification(String parcel_id, boolean scanned) {
+        // DbHandler.getInstance(getActivity().getApplicationContext()).setWaybillScanned(waybill_no, scanned);
 
-        JSONObject parcel = Workflow.getInstance().getParcelByParcelBarcode( parcel_id );
+        JSONObject parcel = Workflow.getInstance().getParcelByParcelBarcode(parcel_id);
 
-        if( parcel != null)
-        {
-            for (int i = 0; i < list.size(); i++)
-            {
-                if (list.get(i).getBarcode().equals( parcel_id))
-                {
-                    int timestamp = (int)(new Date().getTime() / 1000);
-                    list.get(i).setParcelScanned( timestamp);
+        if (parcel != null) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getBarcode().equals(parcel_id)) {
+                    int timestamp = (int) (new Date().getTime() / 1000);
+                    list.get(i).setParcelScanned(timestamp);
                 }
             }
 
             listAdapter.notifyDataSetChanged();
         }
-	}
+    }
 
-	private class DeliveryHandoverAdapter extends BaseAdapter
-	{
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_delivery_handover, null, false);
 
-		List<DeliveryHandoverDataObject> parcelList;
+            if (holder == null) {
+                holder = new ViewHolder();
+            }
 
-		public DeliveryHandoverAdapter(ArrayList<DeliveryHandoverDataObject> objects)
-		{
-			super();
-			parcelList = objects;
-		}
+            holder.list = (ListView) rootView.findViewById(R.id.deliveryHandover_listView_scannedParcels);
+            holder.button = (Button) rootView.findViewById(R.id.button_delivery_handover_complete);
+            holder.parcelsScanned = (TextView) rootView.findViewById(R.id.deliveryHandover_textView_ParcelsScanned);
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
+            // Store the holder with the view.
+            rootView.setTag(holder);
+        } else {
+            holder = (ViewHolder) rootView.getTag();
+
+            if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup)) {
+                ((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
+            } else {
+            }
+        }
+    }
+
+    // Creates static instances of resources.
+    // Increases performance by only finding and inflating resources only once.
+    static class ViewHolder {
+        ListView list;
+        Button button;
+        TextView parcelsScanned;
+    }
+
+    private class DeliveryHandoverAdapter extends BaseAdapter {
+
+        List<DeliveryHandoverDataObject> parcelList;
+
+        public DeliveryHandoverAdapter(ArrayList<DeliveryHandoverDataObject> objects) {
+            super();
+            parcelList = objects;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
             final int thisPosition = position;
 
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View rowView = inflater.inflate(R.layout.row_delivery_handover, parent, false);
             TextView parcelTitle = (TextView) rowView.findViewById(R.id.row_delivery_parcel);
             TextView waybillTile = (TextView) rowView.findViewById(R.id.row_delivery_waybill);
             ImageView hasScannedParcel = (ImageView) rowView.findViewById(R.id.row_delivery_handover_image);
 
             DeliveryHandoverDataObject dhdo = parcelList.get(thisPosition);
-            waybillTile.setText( dhdo.getMDX() + " (" + dhdo.getXof() + ")");
-            parcelTitle.setText( dhdo.getBarcode());
+            waybillTile.setText(dhdo.getMDX() + " (" + dhdo.getXof() + ")");
+            parcelTitle.setText(dhdo.getBarcode());
 
-            if( dhdo.isParcelScanned() == true)
-            {
+            if (dhdo.isParcelScanned() == true) {
                 parcelTitle.setTextColor(getResources().getColor(R.color.green_tick));
                 hasScannedParcel.setVisibility(View.VISIBLE);
-            }
-            else
-            {
+            } else {
                 hasScannedParcel.setVisibility(View.GONE);
             }
 
-            /*waybillTile.setOnClickListener( new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    parcelList.get( thisPosition).setParcelScanned((int) new Date().getTime() / 1000);
-                }
-            });*/
-
-
-            if( parcelList.get( thisPosition).data.countObservers() == 0)
-            {
-                parcelList.get( thisPosition).data.addObserver( new Observer() {
+            if (parcelList.get(thisPosition).data.countObservers() == 0) {
+                parcelList.get(thisPosition).data.addObserver(new Observer() {
                     @Override
                     public void update(Observable observable, Object data) {
                         listAdapter.notifyDataSetChanged();
@@ -303,92 +279,33 @@ public class DeliveryHandoverFragment extends Fragment
                 });
             }
 
-            parcelList.get( thisPosition).data.forceNotifyAllObservers();
+            parcelList.get(thisPosition).data.forceNotifyAllObservers();
 
-			return rowView;
-		}
+            return rowView;
+        }
 
-		@Override
-		public int getCount()
-		{
-			return parcelList.size();
-		}
+        @Override
+        public int getCount() {
+            return parcelList.size();
+        }
 
-		@Override
-		public Object getItem(int position)
-		{
-			return position;
-		}
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
 
-		@Override
-		public long getItemId(int position)
-		{
-			return position;
-		}
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-        public int getScannedCount()
-        {
+        public int getScannedCount() {
             int scanned = 0;
-            for( DeliveryHandoverDataObject item : this.parcelList )
-            {
-                if( item.isParcelScanned())
+            for (DeliveryHandoverDataObject item : this.parcelList) {
+                if (item.isParcelScanned())
                     scanned++;
             }
             return scanned;
         }
-	}
-
-	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			Log.d(TAG, "Receiver: " + intent.getAction());
-			if (intent.getAction() == GCMIntentService.BROADCAST_ACTION)
-			{
-				updateFromPushNotification(intent.getExtras().getString(WAYBILL_BARCODE), intent.getExtras().getBoolean(WAYBILL_SCANNED));
-			}
-		}
-	};
-
-	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
-	{
-		if (rootView == null)
-		{
-			rootView = inflater.inflate(R.layout.fragment_delivery_handover, null, false);
-
-			if (holder == null)
-			{
-				holder = new ViewHolder();
-			}
-
-			holder.list = (ListView) rootView.findViewById(R.id.deliveryHandover_listView_scannedParcels);
-			holder.button = (Button) rootView.findViewById(R.id.button_delivery_handover_complete);
-            holder.parcelsScanned = (TextView) rootView.findViewById(R.id.deliveryHandover_textView_ParcelsScanned);
-
-			// Store the holder with the view.
-			rootView.setTag(holder);
-		}
-		else
-		{
-			holder = (ViewHolder) rootView.getTag();
-
-			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
-			{
-				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			}
-			else
-			{
-			}
-		}
-	}
-
-	// Creates static instances of resources.
-	// Increases performance by only finding and inflating resources only once.
-	static class ViewHolder
-	{
-		ListView list;
-		Button button;
-        TextView parcelsScanned;
-	}
+    }
 }

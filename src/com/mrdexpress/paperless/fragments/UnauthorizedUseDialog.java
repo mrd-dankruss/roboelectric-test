@@ -6,8 +6,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.helper.FontHelper;
 
@@ -16,6 +18,7 @@ public class UnauthorizedUseDialog extends Dialog
 	private Activity context;
 	private TextView dialog_title;
 	private ImageButton dialog_close;
+    private Button okbutton;
 
 	public UnauthorizedUseDialog(Activity activity)
 	{
@@ -41,12 +44,21 @@ public class UnauthorizedUseDialog extends Dialog
 		
 		dialog_close.setOnClickListener(new View.OnClickListener()
 		{
-			
 			@Override
 			public void onClick(View v)
 			{
-				dismiss();
+                System.exit(0);
 			}
 		});
+
+        okbutton = (Button) findViewById(R.id.button_incomplete_scan_ok);
+        okbutton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.exit(0);
+            }
+        });
 	}
 }

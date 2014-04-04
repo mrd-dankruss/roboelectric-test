@@ -3,23 +3,23 @@ package com.mrdexpress.paperless;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
 import com.androidquery.AQuery;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -27,6 +27,8 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
+import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
+import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
@@ -84,16 +86,29 @@ public class MainActivity extends Activity implements LoginInterface {
         String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
             @Override
             public void execute( Object args) {
+                if (args != null){
                 ServerInterface.getInstance(null).getUsers( new CallBackFunction() {
                     @Override
                     public void execute( Object args) {
                         afterSetup();
+                        new UpdateApp().execute();
                     }
                 } );
+                } else {
+                    UnauthorizedUseDialog diag = new UnauthorizedUseDialog(MainActivity.this);
+                    diag.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    diag.setOnCancelListener( new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            MainActivity.this.finish();
+                        }
+                    });
+                    diag.show();
+                }
             }
         });
 
-        new UpdateApp().execute();
+
     }
 
     private void afterSetup()
@@ -367,8 +382,9 @@ public class MainActivity extends Activity implements LoginInterface {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Checking for updates");
-            this.dialog_progress.show();
+            //this.dialog_progress.setMessage("Checking for updates");
+            //this.dialog_progress.show();
+            Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_LONG).show();
         }
 
         @Override

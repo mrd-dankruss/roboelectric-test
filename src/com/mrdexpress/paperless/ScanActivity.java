@@ -325,7 +325,8 @@ public class ScanActivity extends FragmentActivity {
             toast.setText(getString(R.string.text_scan_next));
             toast.show();
             //TODO : MAKE IT STAY OPEN HERE
-            dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No", dialogClickListener).setPositiveButton("Yes", dialogClickListener).setTitle("Scan Another Bag").show();
+            //dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No", dialogClickListener).setPositiveButton("Yes", dialogClickListener).setTitle("Scan Another Bag").show();
+            startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
         }
     }
 

@@ -28,7 +28,6 @@ public class GCMIntentService extends IntentService
 
     public GCMIntentService()
     {
-
         super("GCMIntentService");
         Log.i("MRD", "GCM RECEIVED");
     }
