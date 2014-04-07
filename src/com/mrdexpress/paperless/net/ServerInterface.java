@@ -58,7 +58,7 @@ import java.util.Map;
 public class ServerInterface {
 
     private final static String TAG = "ServerInterface";
-    private static final String API_URL = "http://uat.mrdexpress.com/api/";
+    private static final String API_URL = "http://staging.mrdexpress.com/api/";
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
     private static ServerInterface server_interface;
     private static Context context;
@@ -329,9 +329,9 @@ public class ServerInterface {
         return status;
     }
 
-    public String updatePIN(String id, String new_pin, String imei , CallBackFunction func) {
+    public String updatePIN(String id, String new_pin, String source , CallBackFunction func) {
         String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken=" + Device.getInstance().getToken()
-                + "&driverPIN=" + new_pin + "&imei=" + Device.getInstance().getIMEI();
+                + "&driverPIN=" + new_pin + "&imei=" + Device.getInstance().getIMEI() + "&source=" + source;
 
         String response = postData(url);
 

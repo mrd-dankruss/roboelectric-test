@@ -114,6 +114,7 @@ public class Users implements Serializable
         private int id;
         private String pin = null;
         private String role;
+        private String source = null;
 
         public UserData(net.minidev.json.JSONObject obj){
             json = obj;
@@ -132,10 +133,19 @@ public class Users implements Serializable
                     }
                     id = Integer.parseInt(json.get("id").toString());
                     role = json.get("role").toString();
+                    source = json.get("source").toString();
                 } catch (Exception e) {
                     Log.e("MRD-EX", "Parsing variable exception , this should be fixed when it happens!! " + e.getMessage());
                 }
             }
+        }
+
+        public String getSource(){
+            return this.source;
+        }
+
+        public void setSource(String src){
+            this.source = src;
         }
 
         public Integer getid() {

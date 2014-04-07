@@ -398,7 +398,7 @@ public class Workflow extends Observable
             for( int i=0; i < rawbags.size(); i++)
             {
                 Bag bag = new Bag( (JSONObject)rawbags.get(i));
-                //bag.setScanned(1);
+                bag.setScanned(1);
                 bags.add(bag);
             }
         }

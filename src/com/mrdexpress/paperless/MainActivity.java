@@ -382,7 +382,7 @@ public class MainActivity extends Activity implements LoginInterface {
          */
         @Override
         protected void onPreExecute() {
-            //this.dialog_progress.setMessage("Checking for updates");
+            this.dialog_progress.setMessage("Downloading an update , please be patient.");
             //this.dialog_progress.show();
             Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_LONG).show();
         }
@@ -403,10 +403,14 @@ public class MainActivity extends Activity implements LoginInterface {
                     url = (String)xpath.evaluate("/update/url", new InputSource( updateURL), XPathConstants.STRING);
 
                     if (versionCode > pInfo.versionCode) {
+                        //if (dialog_progress.isShowing()) {
+                        //    dialog_progress.dismiss();
+                        //}
+                        this.dialog_progress.show();
+                        downloadAPK( url , path) ;
                         if (dialog_progress.isShowing()) {
                             dialog_progress.dismiss();
                         }
-                        downloadAPK( url , path) ;
                         mustInstall = true;
                     }
                 } catch (XPathExpressionException e) {
