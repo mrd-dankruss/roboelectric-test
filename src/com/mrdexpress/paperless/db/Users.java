@@ -109,8 +109,8 @@ public class Users implements Serializable
     public class UserData implements Parcelable
     {
         public net.minidev.json.JSONObject json;
-        private String firstName;
-        private String lastName;
+        private String firstName = "";
+        private String lastName = "";
         private int id;
         private String pin = null;
         private String role;

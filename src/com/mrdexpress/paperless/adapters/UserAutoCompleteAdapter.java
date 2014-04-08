@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public class UserAutoCompleteAdapter extends BaseAdapter implements Filterable
 					for (int i = 0; i < users_list.size(); i++)
 					{
 
+                        try{
 						if( (users_list.get(i).getfirstName().toLowerCase()).startsWith(constraint.toString().toLowerCase()) || (users_list.get(i).getlastName().toLowerCase()).startsWith(constraint.toString().toLowerCase()))
 						{
                             result_list2.add(users_list.get(i));
@@ -68,6 +70,10 @@ public class UserAutoCompleteAdapter extends BaseAdapter implements Filterable
                         {
                             result_list2.add(users_list.get(i));
                         } */
+
+                        }catch(Exception e){
+                            Log.e("MRD-EX" , e.getMessage());
+                        }
 					}
 
 					// Assign the data to the FilterResults

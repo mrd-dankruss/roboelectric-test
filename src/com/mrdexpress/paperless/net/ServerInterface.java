@@ -58,7 +58,7 @@ import java.util.Map;
 public class ServerInterface {
 
     private final static String TAG = "ServerInterface";
-    private static final String API_URL = "http://staging.mrdexpress.com/api/";
+    private static final String API_URL = "http://uat.mrdexpress.com/api/";
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
     private static ServerInterface server_interface;
     private static Context context;
@@ -398,7 +398,7 @@ public class ServerInterface {
      */
     public void authDriver(String PIN , final LoginInterface log) {
         String url = API_URL + "v1/auth/driver?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken()
-                + "&driverPIN=" + PIN + "&driverID=" + Users.getInstance().getActiveDriver().getStringid();
+                + "&driverPIN=" + PIN + "&driverID=" + Users.getInstance().getActiveDriver().getStringid() + "&source=" + Users.getInstance().getActiveDriver().getSource();
         AQuery ac = new AQuery(context);
         ac.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>() {
             @Override
