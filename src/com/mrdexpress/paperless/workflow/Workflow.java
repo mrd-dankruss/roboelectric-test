@@ -319,7 +319,6 @@ public class Workflow extends Observable
         JSONObject parcel = null;
         try
         {
-            //parcel = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?(@.id==" + Integer.toString( parcelid) + "])");
             JSONArray parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[*].flowdata.parcels[?]",
                     Filter.filter(Criteria.where("barcode").eq(barcode)));
             if( parcels.size() > 0)
@@ -341,7 +340,6 @@ public class Workflow extends Observable
         List<JSONArray> parcels = null;
         try
         {
-            //parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payloadid==" + Integer.toString( bagid) + " && @.payload eq 'bag')].flowdata.parcels");
             parcels = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.parcels",
                     Filter.filter(Criteria.where("payloadid").eq(bagid).and("payload").eq("bag")));
         }
@@ -391,14 +389,13 @@ public class Workflow extends Observable
 
         try
         {
-            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload == 'bag')]");
             JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
                     Filter.filter(Criteria.where("payload").eq("bag")));
 
             for( int i=0; i < rawbags.size(); i++)
             {
                 Bag bag = new Bag( (JSONObject)rawbags.get(i));
-                bag.setScanned(1);
+//              bag.setScanned(1);
                 bags.add(bag);
             }
         }
@@ -420,8 +417,6 @@ public class Workflow extends Observable
         try
         {
             JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata[0].payload=='bag' && @.tripstopdata[0].payloadid==" + Integer.toString(bagid) + ")]");
-            //JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?]",
-            //        Filter.filter(Criteria.where("payload").eq("bag").and("payloadid").eq(bagid)));
             if( stops.size() > 0)
                 stop = (JSONObject) stops.get(0);
         }
@@ -434,8 +429,6 @@ public class Workflow extends Observable
             Log.e("gary", e.toString());
         }
         return stop;
-        //$.response.workflow.workflow.tripstops[?(@.id==20)]
-        // $.response.workflow.workflow.tripstops[?(@.tripstopdata[0].id==22)]
     }
 
     public JSONArray getBagsScanned( Boolean scanned)
@@ -443,11 +436,7 @@ public class Workflow extends Observable
         JSONArray rawbags = new JSONArray();
         try
         {
-            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload == 'bag' && @.flowdata.scannedtime)]");
-            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]",
-                    Filter.filter(Criteria.where("payload").eq("bag")));
-                    //Filter.filter(Criteria.where("payload").eq("bag").and("flowdata.scannedtime").notEmpty()));
-            // workaround for jsonpath not allowing deeper paths in filter
+            JSONArray bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?]", Filter.filter(Criteria.where("payload").eq("bag")));
             for( int i=0; i < bags.size(); i++)
             {
                 JSONObject flowdata = JSONObjectHelper.getJSONObjectDef((JSONObject) bags.get(i), "flowdata", null);

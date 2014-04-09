@@ -204,6 +204,7 @@ public class MainActivity extends Activity implements LoginInterface {
             startActivity(intent);
         } else if (result == Paperless.PaperlessStatus.SPECIAL){
             Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
+            //this.finish();
             startActivity(intent);
         }
     }

@@ -39,6 +39,7 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:textSize="@dimen/font_size_text_field"
+        android:singleLine="true"
         android:inputType="numberPassword" />
     
     <AutoCompleteTextView
@@ -58,7 +59,8 @@
         android:textColor="@color/text_grey"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:textSize="@dimen/font_size_text_field" android:enabled="true">
+        android:singleLine="true"
+        android:textSize="@dimen/font_size_text_field" android:enabled="true" android:maxLines="1">
 
         <requestFocus />
     </AutoCompleteTextView>

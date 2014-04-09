@@ -23,6 +23,7 @@ import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.helper.MiscHelper;
+import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements TabListener
 
@@ -104,6 +105,11 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 			{
 			}
 		});
+
+        CustomToast toast = new CustomToast(this);
+        toast.setSuccess(true);
+        toast.setText("Delivery run started.");
+        toast.show();
 	}
 
 	@Override

@@ -6,23 +6,15 @@
     android:background="@color/colour_background"
     android:orientation="vertical" >
 
-     <ImageView
-        android:id="@+id/scan_image"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/margin_scan_image_NS"
-        android:layout_marginLeft="@dimen/margin_scan_image_WE"
-        android:layout_marginRight="@dimen/margin_scan_image_WE"
-        android:layout_marginTop="@dimen/margin_scan_image_NS"
-        android:cropToPadding="true"
-        android:clickable="true"
-        android:onClick="onBarcodeClick"
-        android:scaleType="centerInside"
-        android:src="@drawable/scan_image" android:contentDescription="Scan Image">
-    </ImageView>
-     
+    <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/start_scanning"
+            android:id="@+id/button_start_scanning"
+            android:background="@drawable/button_custom" android:textSize="@dimen/font_size_button"
+            android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+            android:layout_margin="@dimen/default_button_margin"/>
+
     <FrameLayout
         android:id="@+id/framelayout_scan_bottomframe"
         android:layout_width="fill_parent"
@@ -75,18 +67,17 @@
             android:layout_height="20dp"
             android:text="@string/test_scan_status"
             android:layout_above="@+id/framelayout_scan_bottomframe"
-            android:layout_alignRight="@+id/scan_image" android:layout_alignLeft="@+id/scan_image"
-            android:gravity="center" 
-            android:background="@color/white"/>
+            android:gravity="center"
+            android:background="@color/white" android:layout_centerHorizontal="true"/>
     
     <ListView
         android:id="@+id/scan_list"
         android:layout_width="match_parent"
         android:layout_height="240dp"
         android:layout_above="@id/activity_scan_textView_scanStatusBar"
-        android:layout_below="@+id/scan_image"
         android:layout_alignParentLeft="true"
-        android:background="@color/colour_white" >
+        android:background="@color/colour_white" android:layout_below="@+id/button_start_scanning">
     </ListView>
-    
+
+
 </RelativeLayout>

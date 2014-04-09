@@ -21,6 +21,7 @@ import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.service.GCMIntentService;
+import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
@@ -87,8 +88,12 @@ public class DeliveryHandoverFragment extends Fragment {
             public void onClick(View v) {
                 if (list != null) {
                     if (allParcelsScanned()) {
-
                         Workflow.getInstance().setDeliveryStatus(bagid, Bag.STATUS_COMPLETED, "");
+
+                        CustomToast toast = new CustomToast(getActivity());
+                        toast.setSuccess(true);
+                        toast.setText("Delivery completed successfully.");
+                        toast.show();
 
                         getActivity().finish();
                     } else {

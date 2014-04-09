@@ -47,6 +47,10 @@
         android:layout_marginRight="@dimen/margin_button_WE"
         android:layout_marginTop="@dimen/margin_button_NS"
         android:text="@string/delivery_button1"
+        android:background="@drawable/button_custom"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:textSize="@dimen/font_size_button"
         android:visibility="gone" />
 
 </RelativeLayout>

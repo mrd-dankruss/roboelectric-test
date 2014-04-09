@@ -13,7 +13,7 @@
     <string name="title_actionbar_enter_pin">Enter Pin</string>
     <string name="title_actionbar_map">Map</string>
     <string name="title_actionbar_select_manager">Select manager</string>
-    <string name="title_actionbar_manifest">Consignment details</string>
+    <string name="title_actionbar_manifest">Bag details</string>
     <string name="title_actionbar_manager_auth">Manager authorization required</string>
     <string name="title_actionbar_manager_auth_not_assigned">Manager authorization required</string>
     <string name="title_actionbar_delivery_details">Delivery Details</string>
@@ -24,8 +24,8 @@
 
     <!-- Button texts -->
     <string name="button_auth_new_delivery_run">Authorise new delivery run</string>
-    <string name="button_start_new_milkrun">Start new milkrun</string>
-    <string name="button_start_milkrun">Start Milkrun</string>
+    <string name="button_start_new_milkrun">Start new delivery run</string>
+    <string name="button_start_milkrun">Start delivery run</string>
     <string name="button_start_trainingrun">Start training run</string>
     <string name="button_update_status">Update Status</string>
     <string name="button_more">More</string>
@@ -68,11 +68,11 @@
     <string name="title_call">Call</string>
     <string name="title_search">Search</string>
     <string name="title_message">Message</string>
-    <string name="title_your_consignments">YOUR CONSIGNMENTS</string>
+    <string name="title_your_consignments">YOUR BAGS</string>
     <string name="title_next_delivery_food">YOUR NEXT FOOD DELIVERY</string>
     <string name="title_deliveries">Deliveries</string>
     <string name="title_signature">COLLECT PROOF OF COLLECTION</string>
-    <string name="title_scan_consignments">Scan Consignments</string>
+    <string name="title_scan_consignments">Scan Bags</string>
     <string name="title_reason_partial_deliveries">Reasons for Partial Deliveries</string>
     <string name="title_set_as_next_delivery">Set as next delivery</string>
     <string name="title_return">RETURN</string>
@@ -112,28 +112,28 @@
     <string name="text_enter_pin_incorrect">Incorrect PIN. Please try again.</string>
     <string name="text_enter_pin_invalid">Invalid PIN. Please try again.</string>
     <string name="text_search_hint">Search</string>
-    <string name="text_consignment">Consignment</string>
+    <string name="text_consignment">Bag</string>
     <string name="text_destination_branch">Destination branch:</string>
     <string name="text_scan_successful">Scan successful</string>
     <string name="text_play_services">Google Play services required</string>
     <string name="text_net_error">Connection error</string>
-    <string name="text_scan_next">Scan successful, Scan next item.</string>
-    <string name="text_incomplete_scan_message">You have not scanned all of your consignments!</string>
+    <string name="text_scan_next">Scanned successfully - scan next item.</string>
+    <string name="text_incomplete_scan_message">You have not scanned all of your bags!</string>
     <string name="text_incomplete_scan_title">Warning!</string>
-    <string name="text_manAuth_heading">The following consignments have not been scanned:</string>
+    <string name="text_manAuth_heading">The following bags have not been scanned:</string>
     <string name="text_manAuth_enter_pin">Please enter your PIN to authorize:</string>
     <string name="app_label">MrD</string>
-    <string name="text_todo_deliveries_complete_1">All packages delivered successfully!</string>
-    <string name="text_todo_deliveries_complete_2">Please return to Dispatch</string>
+    <string name="text_todo_deliveries_complete_1">All deliveries completed!</string>
+    <string name="text_todo_deliveries_complete_2">Please return to branch</string>
     <string name="text_transfer_data_uploading">Uploading data to server</string>
-    <string name="text_process_handover_successful">Process successful handover</string>
-    <string name="text_process_handover_failed">Process failed handover</string>
-    <string name="text_not_assigned_message">This consignment has not been assigned to you!</string>
+    <string name="text_process_handover_successful">Handover parcels to branch</string>
+    <string name="text_process_handover_failed">Could not deliver to branch</string>
+    <string name="text_not_assigned_message">This bag has not been assigned to you!</string>
     <string name="text_unauthorised">Authorisation Failed, Please Try Again.</string>
     <string name="text_unauthorised_use">Unauthorized device. The app will now close.</string>
     <string name="text_over_delivery">Parcel 0000234576 is not assigned to this branch.</string>
     <string name="text_no_deliveries">You do not have any deliveries assigned to you at this moment</string>
-    <string name="text_consignment_already_scanned">This consignment has already been scanned!</string>
+    <string name="text_consignment_already_scanned">This bag has already been scanned!</string>
     <string name="text_cod_delivery">This is a COD delivery</string>
     <string name="text_trainingrun_call">Pretending to make phonecall</string>
 
@@ -191,6 +191,6 @@
     <string name="manager_login_wrong_password">Password is wrong , please try again.</string>
     <string name="manager_assign_bag_invalid">The bag cannot be assigned to you, please contact MRD support.</string>
     <string name="manager_assign_bag_invalid_scan">The barcode does not belong to a MRD bag.</string>
-    <string name="driver_select_name">Type the first letter of your name</string>
+    <string name="driver_select_name">Type the first letter of your name</string><string name="start_scanning">Start Scanning</string>
 
 </resources>

@@ -123,7 +123,7 @@ public class PaperlessService extends Service{
 
     @Override
     public void onStart(Intent intent, int startId) {
-        Toast.makeText(this, "Paperless Service Started", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Paperless Service Started", Toast.LENGTH_SHORT).show();
         Log.d("MRD-EX", "onStart");
     }
 

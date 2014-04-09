@@ -72,6 +72,32 @@ public class ScanActivity extends FragmentActivity {
     }
 
     @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        //super.onBackPressed();  // optional depending on your needs
+        DialogInterface.OnClickListener dialogClickListener2 = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        finish();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+        if (Workflow.getInstance().getBagsScanned(true).size() > 0)
+            dialog_builder.setMessage("You will need to scan all bags again if you cancel the current delivery run").setNegativeButton("No", dialogClickListener2).setPositiveButton("Yes", dialogClickListener2).setTitle("Cancel delivery run for " + Users.getInstance().getActiveDriver().getFullName() ).show();
+        else
+            super.onBackPressed();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
@@ -167,6 +193,13 @@ public class ScanActivity extends FragmentActivity {
             }
         });
 
+        holder.button_start_scanning.setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBarcodeClick(view);
+            }
+        });
+
         adapter = new BarcodeListAdapter(this);
         holder.list.setAdapter(adapter);
 
@@ -176,7 +209,6 @@ public class ScanActivity extends FragmentActivity {
     private void startDelivery()
     {
         finish();
-
         Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
         startActivity(intent);
     }
@@ -203,7 +235,7 @@ public class ScanActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 holder.button_start_milkrun.setEnabled(true);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-                handleDecode(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE));
+                handleDecode(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE) , false);
             }
         }
 
@@ -215,6 +247,7 @@ public class ScanActivity extends FragmentActivity {
                 }
             }
         }*/
+
         if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH) {
             if (resultCode == RESULT_OK) {
                 if( Users.getInstance().getActiveManager() != null)
@@ -306,7 +339,7 @@ public class ScanActivity extends FragmentActivity {
         toast.show();
     }
 
-    void onBarcodeMatchSuccess() {
+    void onBarcodeMatchSuccess(Boolean scannedalready , Boolean redraw) {
         adapter.notifyDataSetChanged();
 
         UpdateBagsCounter();
@@ -321,30 +354,23 @@ public class ScanActivity extends FragmentActivity {
 
         } else {
             CustomToast toast = new CustomToast(this);
-            toast.setSuccess(true);
-            toast.setText(getString(R.string.text_scan_next));
+
+            if (scannedalready){
+                toast.setSuccess(false);
+                toast.setText("Already scanned - scan next item");
+            } else {
+                toast.setSuccess(true);
+                toast.setText(getString(R.string.text_scan_next));
+            }
+
             toast.show();
             //TODO : MAKE IT STAY OPEN HERE
             //dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No", dialogClickListener).setPositiveButton("Yes", dialogClickListener).setTitle("Scan Another Bag").show();
-            startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+            if (redraw) startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
         }
     }
 
-    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which){
-                case DialogInterface.BUTTON_POSITIVE:
-                    //Yes button clicked
-                    startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
-                    break;
 
-                case DialogInterface.BUTTON_NEGATIVE:
-                    //No button clicked
-                    break;
-            }
-        }
-    };
     DialogInterface.OnClickListener dialog1ClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -382,7 +408,8 @@ public class ScanActivity extends FragmentActivity {
      * Barcode has been successfully scanned.
      */
     //@Override
-    public void handleDecode(String barcodeString) {
+
+    public void handleDecode(String barcodeString, Boolean redrawscan) {
         Bag scannedBag = null;
 
         for (int i = 0; i < bags.size(); i++) {
@@ -398,12 +425,16 @@ public class ScanActivity extends FragmentActivity {
             boolean wasScanned = scannedBag.getScanned();
 
             // TODO: when does this get sent to the server?
-            if (wasScanned)
-                scannedBag.setScanned(-1);
-            else
+            if (wasScanned){
+                //scannedBag.setScanned(-1);
+                onBarcodeMatchSuccess(true , redrawscan);
+            }
+            else{
                 scannedBag.setScanned((int) new Date().getTime() / 1000);
+                onBarcodeMatchSuccess(false , redrawscan);
+            }
 
-            onBarcodeMatchSuccess();
+
         } else {
             Log.d(TAG, "handleDecode(): no match " + barcodeString);
             /*
@@ -413,8 +444,12 @@ public class ScanActivity extends FragmentActivity {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
             }
-            String new_bag_id = ServerInterface.getInstance( getApplicationContext()).scanBag( getApplicationContext(), barcodeString, Integer.toString( Users.getInstance().getActiveDriver().getid()));
-            if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null")) {
+            String new_bag_id = "";
+            if (barcodeString.contains("XMRDX"))
+                new_bag_id = ServerInterface.getInstance( getApplicationContext()).scanBag( getApplicationContext(), barcodeString, Integer.toString( Users.getInstance().getActiveDriver().getid()));
+
+
+            if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null") || !barcodeString.contains("XMRDX") ) {
                 CustomToast toast = new CustomToast(this);
                 toast.setSuccess(false);
                 toast.setText(getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
@@ -429,6 +464,9 @@ public class ScanActivity extends FragmentActivity {
         if (decodeCallback != null) {
             handler.postDelayed(decodeCallback, 10);
         }
+    }
+    public void handleDecode(String barcodeString){
+        this.handleDecode(barcodeString , true);
     }
 
 
@@ -519,6 +557,8 @@ public class ScanActivity extends FragmentActivity {
             holder.button_start_milkrun = (Button) root_view
                     .findViewById(R.id.scan_button_start_milkrun);
 
+            holder.button_start_scanning = (Button) root_view.findViewById(R.id.button_start_scanning);
+
             holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_scan_toast);
 
             holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_scan);
@@ -550,6 +590,7 @@ public class ScanActivity extends FragmentActivity {
         TextView textView_toast;
         RelativeLayout relativeLayout_toast;
         TextView textview_scanstatus;
+        Button button_start_scanning;
     }
 
     private void startNotAssignedActivity() {

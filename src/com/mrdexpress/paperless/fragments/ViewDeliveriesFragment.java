@@ -105,7 +105,8 @@ public class ViewDeliveriesFragment extends Fragment
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			
 			holder.button = (Button) rootView.findViewById(R.id.button_generic_report);
-			holder.button.setText(this.getResources().getString(R.string.button_ok));
+			//holder.button.setText(this.getResources().getString(R.string.button_ok));
+            holder.button.setText("End delivery run");
 			holder.button.setBackgroundResource(R.drawable.button_custom);
 			holder.button.setEnabled(false);
 			holder.button.setVisibility(View.GONE);
