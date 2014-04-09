@@ -14,7 +14,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 public class IncompleteScanDialog extends Dialog
 {
 	private Activity context;
-	private TextView dialog_title;
+	public TextView dialog_title;
 	private ImageButton dialog_close;
 
 	public IncompleteScanDialog(Activity activity)

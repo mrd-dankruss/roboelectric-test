@@ -56,7 +56,6 @@ public class ReasonForFailedHandoverFragment extends Fragment
 	{
 		super.onResume();
 
-		//values = DbHandler.getInstance(getActivity()).getFailedHandoverReasons();
         values = Workflow.getInstance().getFailedHandoverReasons();
 
 		adapter = new ReasonForFailedHandoverListAdapter(getActivity(), values, false);
@@ -75,7 +74,6 @@ public class ReasonForFailedHandoverFragment extends Fragment
 					setTick(position);
 					delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getSubText();
 					delay_reason = ((DialogDataObject) holder.list.getItemAtPosition(position)).getMainText();
-					//holder.report_button.setBackgroundResource(R.drawable.button_custom);
 				}
 			}
 		});

@@ -105,6 +105,10 @@ public class DeliveryHandoverFragment extends Fragment {
                         LayoutInflater factory = LayoutInflater.from(getActivity());
 
                         final Button button_continue = (Button) dialog.findViewById(R.id.button_incomplete_scan_continue);
+                        final TextView subtext = (TextView) dialog.findViewById(R.id.textView_manAuth_enter_pin);
+
+                        button_continue.setText("Log partial delivery");
+                        subtext.setText("The branch manager has not scanned all of the parcels yet.");
 
                         button_continue.setOnClickListener(new OnClickListener() {
                             @Override
