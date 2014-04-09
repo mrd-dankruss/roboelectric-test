@@ -48,7 +48,7 @@ public class ReasonPartialDeliveryFragment extends Fragment {
 
                         for (int r = 0; r < reasons.size(); r++) {
                             if (reasons.get(r).isSelected()) {
-                                Workflow.getInstance().setParcelDeliveryStatus(reasons.get(r).parcelid, reasons.get(r).getReasonID(), reasons.get(r).getReasonTitle());
+                                //Workflow.getInstance().setParcelDeliveryStatus(reasons.get(r).parcelid, reasons.get(r).getReasonID(), reasons.get(r).getReasonTitle());
                             }
                         }
                     }

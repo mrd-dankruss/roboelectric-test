@@ -565,8 +565,25 @@ public class Workflow extends Observable
             jsostatus.put("status", status);
             jsostatus.put("reason", reason);
             bag.put("status", jsostatus);
-            // TODO: propogate this to the server - Hook into this logic
-            ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
+
+            if ( status.equals(Bag.STATUS_COMPLETED) ){
+
+                //100% complete bag was delivered
+                // TODO: propogate this to the server - Hook into this logic
+                ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
+
+            } else if (status.equals(Bag.STATUS_PARTIAL) ){
+
+                //Partial Bag Delivery ( some parcels was already failed , we need to success the ones left
+                ArrayList<DeliveryHandoverDataObject> unscanned = (ArrayList<DeliveryHandoverDataObject>) Workflow.getInstance().doormat.get(VariableManager.UNSCANNED_PARCELS);
+                for(int i = 0; i < unscanned.size(); i++ )
+                {
+                    DeliveryHandoverDataObject temp = unscanned.get(i);
+                    ServerInterface.getInstance().setDeliveryStatus(status , temp.getMDX() , "Parcel " + temp.getBarcode() + " could not be delivered during the delivery run (Reason: " + reason + " )");
+                }
+
+            }
+
         }
     }
 

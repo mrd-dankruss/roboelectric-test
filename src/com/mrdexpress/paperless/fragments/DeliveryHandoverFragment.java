@@ -88,6 +88,8 @@ public class DeliveryHandoverFragment extends Fragment {
             public void onClick(View v) {
                 if (list != null) {
                     if (allParcelsScanned()) {
+
+                        //All parcels delivered
                         Workflow.getInstance().setDeliveryStatus(bagid, Bag.STATUS_COMPLETED, "");
 
                         CustomToast toast = new CustomToast(getActivity());
