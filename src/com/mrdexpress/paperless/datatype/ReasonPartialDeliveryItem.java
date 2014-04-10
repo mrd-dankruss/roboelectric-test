@@ -8,6 +8,7 @@ public class ReasonPartialDeliveryItem
 	private String reason_title;
 	private boolean is_selected;
     public int parcelid;
+    public String waybill_id;
 
 	/**
 	 * 
@@ -20,13 +21,14 @@ public class ReasonPartialDeliveryItem
 	 * @param is_selected
 	 */
 	public ReasonPartialDeliveryItem( int parcelid, String group_name, String reason_ID, String reason_title,
-			boolean is_selected)
+			boolean is_selected , String wid)
 	{
         this.parcelid = parcelid;
 		this.group_name = group_name;
 		this.reason_ID = reason_ID;
 		this.reason_title = reason_title;
 		this.is_selected = is_selected;
+        this.waybill_id = wid;
 	}
 
 	public String getGroupName()
@@ -68,5 +70,9 @@ public class ReasonPartialDeliveryItem
 	{
 		is_selected = new_is_selected;
 	}
+
+    public String getWaybill_id() { return this.waybill_id; }
+
+    public void setWaybill_id(String wid){ this.waybill_id = wid; }
 
 }

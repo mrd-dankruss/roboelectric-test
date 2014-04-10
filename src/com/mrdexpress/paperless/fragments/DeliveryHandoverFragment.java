@@ -118,7 +118,10 @@ public class DeliveryHandoverFragment extends Fragment {
                                 dialog.dismiss();
                                 Intent intent = new Intent(getActivity(), ReasonPartialDeliveryActivity.class);
                                 Bundle b = new Bundle();
+
                                 Workflow.getInstance().doormat.put(VariableManager.UNSCANNED_PARCELS, getUnscannedParcels(list));
+                                Workflow.getInstance().doormat.put("scannedparcels", getScannedParcels(list));
+
                                 getActivity().startActivityForResult(intent, VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
                             }
                         });
@@ -176,6 +179,26 @@ public class DeliveryHandoverFragment extends Fragment {
         }
 
         return list_unscanned;
+    }
+
+    /**
+     * Checks list of parcels and returns a list of parcels which have been scanned.
+     *
+     * @param list
+     * @return
+     */
+    private ArrayList<DeliveryHandoverDataObject> getScannedParcels(ArrayList<DeliveryHandoverDataObject> list) {
+        ArrayList<DeliveryHandoverDataObject> list_scanned = new ArrayList<DeliveryHandoverDataObject>();
+
+        for (int i = 0; i < list.size(); i++) {
+            {
+                if (list.get(i).isParcelScanned()) {
+                    list_scanned.add(list.get(i));
+                }
+            }
+        }
+
+        return list_scanned;
     }
 
     /**

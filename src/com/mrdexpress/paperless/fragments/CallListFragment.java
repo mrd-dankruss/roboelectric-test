@@ -52,7 +52,7 @@ public class CallListFragment extends Fragment
 	{
 		super.onResume();
 
-		adapter = new GenericDialogListAdapter( getActivity(),DbHandler.getInstance(getActivity()).getContacts( Integer.toString( bagid)), false);
+		adapter = new GenericDialogListAdapter( getActivity(),Workflow.getInstance().getContactsFromBagId(bagid) , false);
 
 		holder.list.setAdapter(adapter);
 

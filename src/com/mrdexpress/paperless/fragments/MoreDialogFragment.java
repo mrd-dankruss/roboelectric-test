@@ -13,10 +13,15 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import com.mrdexpress.paperless.*;
+import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MoreDialogFragment extends DialogFragment
 {
@@ -149,11 +154,19 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(getActivity(), CallActivity.class);
-
-				startActivity(intent);
-
-				dismiss();
+                if (Workflow.getInstance().getContactsFromBagId(bagid).size() > 0){
+                    Intent intent = new Intent(getActivity(), CallActivity.class);
+                    General.getInstance().setActivebagid(bagid);
+                    startActivity(intent);
+                    dismiss();
+                }
+                else
+                {
+                    CustomToast custom_toast = new CustomToast(getActivity());
+                    custom_toast.setSuccess(false);
+                    custom_toast.setText("No contact numbers available. Report issue your manager.");
+                    custom_toast.show();
+                }
 			}
 		});
 
@@ -162,11 +175,19 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(getActivity(), SmsActivity.class);
-
-				startActivity(intent);
-
-				dismiss();
+                if (Workflow.getInstance().getContactsFromBagId(bagid).size() > 0){
+                    General.getInstance().setActivebagid(bagid);
+                    Intent intent = new Intent(getActivity(), SmsActivity.class);
+                    startActivity(intent);
+                    dismiss();
+                }
+                else
+                {
+                    CustomToast custom_toast = new CustomToast(getActivity());
+                    custom_toast.setSuccess(false);
+                    custom_toast.setText("No contact numbers available. Report issue your manager.");
+                    custom_toast.show();
+                }
 			}
 		});
 

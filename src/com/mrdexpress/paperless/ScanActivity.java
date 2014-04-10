@@ -97,6 +97,16 @@ public class ScanActivity extends FragmentActivity {
             super.onBackPressed();
     }
 
+
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent e) {
+        switch(keycode) {
+            case KeyEvent.KEYCODE_MENU:
+                return true;
+        }
+        return super.onKeyDown(keycode, e);
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

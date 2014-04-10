@@ -43,13 +43,15 @@ public class MiscHelper {
 			{
 				destBuffer.append(subDest.trim() + subAddressSeparator);
 			}
-			formattedDestination = destBuffer.toString();
+			formattedDestination = destBuffer.toString().substring(0, destBuffer.toString().length()-2);
 		}
 		String suburb = bag.getDestination();
-		
-		return (MiscHelper.isNonEmptyString(destinationHubName) ? destinationHubName + subAddressSeparator: "") +
-				(MiscHelper.isNonEmptyString(formattedDestination) ? formattedDestination : "") +
-				(MiscHelper.isNonEmptyString(suburb) ? suburb : "");
+
+        String ret = (MiscHelper.isNonEmptyString(destinationHubName) ? destinationHubName + subAddressSeparator: "") +
+                (MiscHelper.isNonEmptyString(formattedDestination) ? formattedDestination : "");// +
+                //(MiscHelper.isNonEmptyString(suburb) ? suburb : "");
+
+		return ret;
 	}
 	
 	

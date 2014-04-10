@@ -422,11 +422,11 @@ public class Workflow extends Observable
         }
         catch( PathNotFoundException e)
         {
-            Log.e("workflow", e.toString());
+            Log.e("MRD-EX-2", e.toString());
         }
         catch( Exception e)
         {
-            Log.e("gary", e.toString());
+            Log.e("MRD-EX-1", e.toString());
         }
         return stop;
     }
@@ -472,10 +472,6 @@ public class Workflow extends Observable
         try
         {
             JSONArray bags = this.getBagsScanned(true);
-            //JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag' && @.flowdata.scannedtime)]");
-            //ret = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?].flowdata.barcode",
-            //        Filter.filter(Criteria.where("payload").eq("bag").and("scannedtime").notEmpty()));
-
             for( int i=0; i < bags.size(); i++)
             {
                 JSONObject flowdata = JSONObjectHelper.getJSONObjectDef( (JSONObject)bags.get(i), "flowdata", null);
@@ -558,7 +554,7 @@ public class Workflow extends Observable
 
     public void setDeliveryStatus( int bagid, String status, String reason)
     {
-        JSONObject bag = getBag( bagid);
+        JSONObject bag = getBag(bagid);
         if( bag != null)
         {
             JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( bag, "status", new JSONObject());
@@ -575,12 +571,19 @@ public class Workflow extends Observable
             } else if (status.equals(Bag.STATUS_PARTIAL) ){
 
                 //Partial Bag Delivery ( some parcels was already failed , we need to success the ones left
-                ArrayList<DeliveryHandoverDataObject> unscanned = (ArrayList<DeliveryHandoverDataObject>) Workflow.getInstance().doormat.get(VariableManager.UNSCANNED_PARCELS);
-                for(int i = 0; i < unscanned.size(); i++ )
+                //ArrayList<DeliveryHandoverDataObject> unscanned = (ArrayList<DeliveryHandoverDataObject>) Workflow.getInstance().doormat.get(VariableManager.UNSCANNED_PARCELS);
+                //for(int i = 0; i < unscanned.size(); i++ )
+                //{
+                    //DeliveryHandoverDataObject temp = unscanned.get(i);
+                    //ServerInterface.getInstance().setDeliveryStatus(status , temp.getMDX() , "Parcel " + temp.getBarcode() + " could not be delivered during the delivery run (Reason: " + reason + " )");
+                //}
+
+                /*ArrayList<DeliveryHandoverDataObject> scanned = (ArrayList<DeliveryHandoverDataObject>) Workflow.getInstance().doormat.get("scannedparcels");
+                for(int i = 0; i < scanned.size(); i++ )
                 {
-                    DeliveryHandoverDataObject temp = unscanned.get(i);
+                    DeliveryHandoverDataObject temp = scanned.get(i);
                     ServerInterface.getInstance().setDeliveryStatus(status , temp.getMDX() , "Parcel " + temp.getBarcode() + " could not be delivered during the delivery run (Reason: " + reason + " )");
-                }
+                }*/
 
             }
 
@@ -631,6 +634,32 @@ public class Workflow extends Observable
         bag.put(VariableManager.EXTRA_BAG_LAT, Float.toString( JSONObjectHelper.getFloatDef( stop.getCoOrds(), "lat", 0)));
         bag.put(VariableManager.EXTRA_BAG_LON, Float.toString( JSONObjectHelper.getFloatDef( stop.getCoOrds(), "lon", 0)));
         return bag;
+    }
+
+    public ArrayList<DialogDataObject> getContactsFromBagId(int bagid)
+    {
+        JSONObject trip_stop = getStopForBagId(bagid);
+        JSONObject contacts = (JSONObject) trip_stop.get("contacts");
+        ArrayList<org.json.JSONObject> contactslist = new ArrayList<org.json.JSONObject>();
+        ArrayList<DialogDataObject> clist = new ArrayList<DialogDataObject>();
+
+        try
+        {
+            if (contacts.size() > 0 )
+            {
+                clist.add(new DialogDataObject(contacts.get("contact").toString() , contacts.get("tel").toString() ) );
+                //JSONObject temp = (JSONObject)contacts.get(1);
+                //for(int i = 0; i < contacts.size(); i++)
+                //{
+                //    contactslist.add( (org.json.JSONObject)contacts.get(i) );
+                //}
+            }
+        }
+        catch(Exception e)
+        {
+            Log.e("MRD-EX" , "Contacts Parsing Error : " + e.getMessage());
+        }
+        return clist;
     }
 
     /////////////////////////////////////////

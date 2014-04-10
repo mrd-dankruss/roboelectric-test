@@ -16,8 +16,12 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.SmsDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -49,11 +53,9 @@ public class SmsListFragment extends Fragment
 
 		// SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 		// Context.MODE_PRIVATE);
-		final String bag_id = getActivity().getIntent().getStringExtra(
-				VariableManager.EXTRA_NEXT_BAG_ID);
-
-		adapter = new SmsDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity())
-				.getContacts(bag_id), false);
+		final String bag_id = General.getInstance().getActivebagid();
+        int bagid = Integer.parseInt(bag_id);
+		adapter = new SmsDialogListAdapter(getActivity(), Workflow.getInstance().getContactsFromBagId(bagid), false);
 
 		holder.list.setAdapter(adapter);
 

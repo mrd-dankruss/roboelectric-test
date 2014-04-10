@@ -18,7 +18,9 @@ import com.mrdexpress.paperless.adapters.ExpandableListAdapter;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
@@ -48,6 +50,8 @@ public class ReasonPartialDeliveryFragment extends Fragment {
 
                         for (int r = 0; r < reasons.size(); r++) {
                             if (reasons.get(r).isSelected()) {
+                                ReasonPartialDeliveryItem temp = reasons.get(r);
+                                ServerInterface.getInstance().setDeliveryStatus(Bag.STATUS_PARTIAL , temp.getWaybill_id() , "Parcel " + temp.getGroupName() + " could not be delivered during the delivery run (Reason: " + reasons.get(r).getReasonTitle() + " )");
                                 //Workflow.getInstance().setParcelDeliveryStatus(reasons.get(r).parcelid, reasons.get(r).getReasonID(), reasons.get(r).getReasonTitle());
                             }
                         }
@@ -55,7 +59,6 @@ public class ReasonPartialDeliveryFragment extends Fragment {
                     getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
                 }
-                // new PartialDeliveryTask().execute();
             }
         });
 
@@ -198,7 +201,7 @@ public class ReasonPartialDeliveryFragment extends Fragment {
             DeliveryHandoverDataObject d = waybill_IDs.get(i);
 
             for (int r = 0; r < reasons.size(); r++) {
-                reason_items.add(new ReasonPartialDeliveryItem(d.getID(), d.getBarcode(), reasons.get(r).getSubText(), reasons.get(r).getMainText(), false));
+                reason_items.add(new ReasonPartialDeliveryItem(d.getID(), d.getBarcode(), reasons.get(r).getSubText(), reasons.get(r).getMainText(), false , d.getMDX()));
             }
             data.add(reason_items);
         }
