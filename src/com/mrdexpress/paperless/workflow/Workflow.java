@@ -8,6 +8,7 @@ import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import net.minidev.json.JSONArray;
@@ -567,6 +568,7 @@ public class Workflow extends Observable
                 //100% complete bag was delivered
                 // TODO: propogate this to the server - Hook into this logic
                 ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
+                ServerInterface.getInstance().endStop( ((JSONObject)Workflow.getInstance().getStopForBagId(bagid)).get("id").toString() , Users.getInstance().getActiveDriver().getStringid() );
 
             } else if (status.equals(Bag.STATUS_PARTIAL) ){
 

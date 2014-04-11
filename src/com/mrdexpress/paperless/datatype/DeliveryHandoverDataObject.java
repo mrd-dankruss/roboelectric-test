@@ -10,17 +10,8 @@ public class DeliveryHandoverDataObject implements Parcelable
 {
     public ObservableJSONObject data;
 
-    //JSONObject data;
-	/*private String parcelID;
-	private boolean parcelScanned;
-	private String barcode;*/
-
-	//public DeliveryHandoverDataObject(String parcelID, boolean parcelScanned)
-    public DeliveryHandoverDataObject( ObservableJSONObject datain)
+    public DeliveryHandoverDataObject( ObservableJSONObject datain )
 	{
-		/*this.parcelID = parcelID;
-		this.parcelScanned = parcelScanned;
-		setBarcode("No Barcode");*/
         this.data = datain;
 	}
 

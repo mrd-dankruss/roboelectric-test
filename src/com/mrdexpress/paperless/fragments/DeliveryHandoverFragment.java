@@ -91,7 +91,6 @@ public class DeliveryHandoverFragment extends Fragment {
 
                         //All parcels delivered
                         Workflow.getInstance().setDeliveryStatus(bagid, Bag.STATUS_COMPLETED, "");
-
                         CustomToast toast = new CustomToast(getActivity());
                         toast.setSuccess(true);
                         toast.setText("Delivery completed successfully.");
@@ -312,7 +311,6 @@ public class DeliveryHandoverFragment extends Fragment {
                     }
                 });
             }
-
             parcelList.get(thisPosition).data.forceNotifyAllObservers();
 
             return rowView;

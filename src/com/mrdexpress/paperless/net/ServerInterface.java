@@ -477,7 +477,6 @@ public class ServerInterface {
     public void getMilkrunWorkflow(Context context) {
         String token = Device.getInstance().getToken();
         String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token+ "&driverID=" + Users.getInstance().getActiveDriver().getid();
-
         try {
             String response = getInputStreamFromUrl(url);
             Workflow.getInstance().setWorkflowFromJSON(response);
@@ -492,11 +491,42 @@ public class ServerInterface {
         }
     }
 
+    public void endMilkrun(String driverid){
+        String token = Device.getInstance().getToken();
+        String url = API_URL + "v1/milkrun/endmilkrun?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
+        AQuery ac = new AQuery(context);
+        if (Device.getInstance().isConnected()){
+            ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
+                @Override
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(url);
+        }
+    }
+
+    public void endStop(String stopid , String driverid){
+        String token = Device.getInstance().getToken();
+        String url = API_URL + "v1/milkrun/endstop?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid() + "&stopID=" + stopid;
+        AQuery ac = new AQuery(context);
+        if (Device.getInstance().isConnected()){
+            ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
+                @Override
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(url);
+        }
+    }
+
 
     /**
      * Report driver position.
      *
-     * @param bagid
      * @param accuracy
      * @param lat
      * @param longn

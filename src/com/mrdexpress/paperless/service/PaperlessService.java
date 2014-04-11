@@ -43,7 +43,7 @@ public class PaperlessService extends Service{
 
                 }else{
                     //use first bag
-                    bagid = bags.get(0).getBagID();
+                    bagid = -1; //bags.get(0).getBagID();
                 }
                 JSONObject activestop = Workflow.getInstance().getStopForBagId( bagid );
                 if (activestop != null){

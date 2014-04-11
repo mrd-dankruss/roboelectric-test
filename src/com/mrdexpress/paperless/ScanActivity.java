@@ -106,7 +106,7 @@ public class ScanActivity extends FragmentActivity {
         }
         return super.onKeyDown(keycode, e);
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -375,7 +375,6 @@ public class ScanActivity extends FragmentActivity {
 
             toast.show();
             //TODO : MAKE IT STAY OPEN HERE
-            //dialog_builder.setMessage("Continue Scanning ?").setNegativeButton("No", dialogClickListener).setPositiveButton("Yes", dialogClickListener).setTitle("Scan Another Bag").show();
             if (redraw) startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
         }
     }
@@ -387,7 +386,6 @@ public class ScanActivity extends FragmentActivity {
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
                     //Yes button clicked
-                    //startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
                     startNotAssignedActivity();
                     break;
 
