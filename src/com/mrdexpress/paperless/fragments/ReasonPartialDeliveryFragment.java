@@ -21,6 +21,7 @@ import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
@@ -57,6 +58,12 @@ public class ReasonPartialDeliveryFragment extends Fragment {
                         }
                     }
                     getActivity().setResult(Activity.RESULT_OK);
+
+                    CustomToast toast = new CustomToast(getActivity());
+                    toast.setSuccess(false);
+                    toast.setText("Partial delivery completed.");
+                    toast.show();
+
                     getActivity().finish();
                 }
             }
@@ -119,7 +126,7 @@ public class ReasonPartialDeliveryFragment extends Fragment {
         });
 
         for (int i = 0; i < data.size(); i++) {
-            holder.list.expandGroup(0);
+            holder.list.expandGroup(i);
         }
 
         return rootView;
@@ -129,7 +136,6 @@ public class ReasonPartialDeliveryFragment extends Fragment {
         int cnt = 0;
         for (int i = 0; i < data.size(); i++) {
             ArrayList<ReasonPartialDeliveryItem> reasons = data.get(i);
-
             for (int r = 0; r < reasons.size(); r++) {
                 if (reasons.get(r).isSelected()) {
                     cnt++;
@@ -149,7 +155,6 @@ public class ReasonPartialDeliveryFragment extends Fragment {
         // Enable button
         button_enabled = allTicked();
         holder.button_continue.setEnabled(button_enabled);
-        //holder.button_continue.setBackgroundResource(R.drawable.button_custom);
     }
 
     public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
@@ -171,10 +176,13 @@ public class ReasonPartialDeliveryFragment extends Fragment {
 
         } else {
             holder = (ViewHolder) rootView.getTag();
-
-            if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup)) {
+            if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
+            {
                 ((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-            } else {
+            }
+            else
+            {
+
             }
         }
     }

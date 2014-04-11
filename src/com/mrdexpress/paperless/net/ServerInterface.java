@@ -491,9 +491,25 @@ public class ServerInterface {
         }
     }
 
+    public void startMilkrun(String driverid){
+        String token = Device.getInstance().getToken();
+        String url = API_URL + "v1/milkruns/start-milkrun?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
+        AQuery ac = new AQuery(context);
+        if (Device.getInstance().isConnected()){
+            ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
+                @Override
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    String callstatus = null;
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(url);
+        }
+    }
+
     public void endMilkrun(String driverid){
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/milkrun/endmilkrun?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
+        String url = API_URL + "v1/milkruns/end-milkrun?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
         AQuery ac = new AQuery(context);
         if (Device.getInstance().isConnected()){
             ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
@@ -509,7 +525,7 @@ public class ServerInterface {
 
     public void endStop(String stopid , String driverid){
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/milkrun/endstop?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid() + "&stopID=" + stopid;
+        String url = API_URL + "v1/milkruns/end-stop?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid() + "&stopID=" + stopid;
         AQuery ac = new AQuery(context);
         if (Device.getInstance().isConnected()){
             ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {

@@ -172,6 +172,7 @@ public class ScanActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 if ((Workflow.getInstance().getBagsScanned(true).size() == holder.list.getCount()) & (holder.list.getCount() > 0)) {
+
                     startDelivery();
                 } else {
                     dialog = new IncompleteScanDialog(ScanActivity.this);
@@ -218,6 +219,7 @@ public class ScanActivity extends FragmentActivity {
 
     private void startDelivery()
     {
+        ServerInterface.getInstance().startMilkrun(Users.getInstance().getActiveDriver().getStringid());
         finish();
         Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
         startActivity(intent);
@@ -702,7 +704,13 @@ public class ScanActivity extends FragmentActivity {
 
             text_view_qty.setText("( " + bag.getNumberItems() + " ITEM" + (bag.getNumberItems() == 1 ? "" : "S") + " )");
             text_view_consignment.setText(bag.getBarcode());
-            text_view_hubcode.setText(JSONObjectHelper.getStringDef(bag.getDestinationExtra(), "hubcode", "!"));
+            String hcode = " ";
+            try {
+                hcode = JSONObjectHelper.getStringDef(bag.getDestinationExtra(), "hubcode", "!");
+            }catch(Exception e){
+
+            }
+            text_view_hubcode.setText(hcode);
 
             // re-set styling since view may be re-used
             if (bag.getScanned()) {

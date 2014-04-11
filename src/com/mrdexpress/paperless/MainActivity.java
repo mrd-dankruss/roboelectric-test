@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -72,6 +73,7 @@ public class MainActivity extends Activity implements LoginInterface {
     Context context;
     private boolean is_registration_successful;
     public ProgressDialog dialog_main;
+    public ProgressDialog dialog_progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,7 @@ public class MainActivity extends Activity implements LoginInterface {
         setTitle(R.string.title_actionbar_mainmenu);
         Device.getInstance().setIMEI();
         dialog_main = new ProgressDialog( this );
+        dialog_progress = new ProgressDialog(this);
 
         String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
             @Override
@@ -92,7 +95,12 @@ public class MainActivity extends Activity implements LoginInterface {
                     @Override
                     public void execute( Object args) {
                         afterSetup();
-                        new UpdateApp().execute();
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                // runs on UI thread
+                                new UpdateApp().execute();
+                            }
+                        });
                     }
                 } );
                 } else {
@@ -170,6 +178,10 @@ public class MainActivity extends Activity implements LoginInterface {
                 loginUser(selected_user.getUsertype());
             }
         }
+    }
+
+    public void showD(){
+
     }
 
     private void loginUser(Users.Type type) {
@@ -385,7 +397,6 @@ public class MainActivity extends Activity implements LoginInterface {
         String path = "/sdcard/paperless.apk";
         boolean mustInstall = false;
 
-        private ProgressDialog dialog_progress = new ProgressDialog(MainActivity.this);
 
         /** progress dialog to show user that the backup is processing. */
         /**
@@ -393,8 +404,6 @@ public class MainActivity extends Activity implements LoginInterface {
          */
         @Override
         protected void onPreExecute() {
-            this.dialog_progress.setMessage("Downloading an update , please be patient.");
-            //this.dialog_progress.show();
             Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_LONG).show();
         }
 
@@ -406,7 +415,6 @@ public class MainActivity extends Activity implements LoginInterface {
                 pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                 double versionCode = 0;
                 String url = "";
-
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 try {
                     String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
@@ -414,13 +422,11 @@ public class MainActivity extends Activity implements LoginInterface {
                     url = (String)xpath.evaluate("/update/url", new InputSource( updateURL), XPathConstants.STRING);
 
                     if (versionCode > pInfo.versionCode) {
-                        //if (dialog_progress.isShowing()) {
-                        //    dialog_progress.dismiss();
-                        //}
-                        this.dialog_progress.show();
-                        downloadAPK( url , path) ;
-                        if (dialog_progress.isShowing()) {
-                            dialog_progress.dismiss();
+                        try {
+                            Toast.makeText(getBaseContext() , "Downloading an update , please be patient" , Toast.LENGTH_LONG).show();
+                            downloadAPK( url , path) ;
+                        }catch(Exception e){
+                            Log.e("MRD-EX" , e.getMessage());
                         }
                         mustInstall = true;
                     }
@@ -442,16 +448,12 @@ public class MainActivity extends Activity implements LoginInterface {
                 i.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
                 startActivity(i);
             }
-
-            // Close progress spinner
-            if (dialog_progress.isShowing()) {
-                dialog_progress.dismiss();
-            }
         }
     }
 
     private void downloadAPK( String Url , String path) {
         try {
+
             URL url = new URL(Url);
             URLConnection connection = url.openConnection();
             connection.connect();
@@ -472,6 +474,7 @@ public class MainActivity extends Activity implements LoginInterface {
             output.flush();
             output.close();
             input.close();
+
         } catch (Exception e) {
             Log.e("MRD-EX", e.getMessage());
         }
