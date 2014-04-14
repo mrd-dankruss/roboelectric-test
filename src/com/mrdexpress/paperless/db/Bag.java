@@ -48,7 +48,8 @@ public class Bag implements Parcelable
 
     public JSONObject getDestinationExtra()
     {
-        JSONObject jso = Workflow.getInstance().getStopForBagId( this.getBagID() );
+        JSONObject jso = Workflow.getInstance().getTripStopByBag( this.getBagID() );
+        //JSONObject jso1 = Workflow.getInstance().getTripStopByBag( this.getBagID() );
         if( jso != null) {
             jso = JSONObjectHelper.getJSONObjectDef(jso, "destination", null);
             if( jso != null) {

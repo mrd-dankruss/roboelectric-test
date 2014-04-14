@@ -412,9 +412,45 @@ public class Workflow extends Observable
         return bags;
     }
 
+    public JSONObject getTripStopByBag( int bagid ){
+        JSONObject stop = null;
+        try
+        {
+            JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata[0].payload=='bag')]");
+            for(int i = 0; i < stops.size(); i++){
+                 JSONObject p = (JSONObject)stops.get(i);
+                if (p.containsKey("tripstopdata")){
+                    try{
+                        JSONArray jr = (JSONArray)p.get("tripstopdata");
+                        if (jr.size() > 0){
+                            for(int j = 0; j < jr.size(); j++){
+                                JSONObject pp = (JSONObject)jr.get(j);
+                                if (pp.containsKey("payloadid")){
+                                    if (pp.get("payloadid").toString().equals(Integer.toString(bagid)) ){
+                                        stop =  p;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                    }
+                }
+            }
+
+        }
+        catch(Exception e)
+        {
+            //Log.e("MRD-EX" , e.getMessage());
+        }
+        return stop;
+    }
+
     public JSONObject getStopForBagId( int bagid)
     {
-        JSONObject stop = null;
+        return this.getTripStopByBag( bagid );
+        /*JSONObject stop = null;
         try
         {
             JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[?(@.tripstopdata[0].payload=='bag' && @.tripstopdata[0].payloadid==" + Integer.toString(bagid) + ")]");
@@ -430,6 +466,7 @@ public class Workflow extends Observable
             Log.e("MRD-EX-1", e.toString());
         }
         return stop;
+        */
     }
 
     public JSONArray getBagsScanned( Boolean scanned)
