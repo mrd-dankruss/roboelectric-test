@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -77,9 +78,12 @@ public class LoginFragment extends Dialog
 
             @Override
             public void onClick(View v) {
+                try{
                 if( selectedUser != null){
                     //new ManagerLoginUserTask().execute();
-                    if ( selectedUser.getdriverPin().equals( PinManager.toMD5( holder.text_manager_pin.getText().toString()))) {
+                    String pin = selectedUser.getdriverPin();
+
+                    if ( pin != null && pin.equals( PinManager.toMD5( holder.text_manager_pin.getText().toString()))) {
                         Users.getInstance().setActiveManager(selectedUser);
                         if( callback != null)
                             callback.execute( selectedUser);
@@ -95,6 +99,9 @@ public class LoginFragment extends Dialog
                     toast.setText( "Select a manager first");
                     toast.setSuccess(false);
                     toast.show();
+                }
+                }catch(Exception e){
+                    e.printStackTrace();
                 }
             }
         });
@@ -155,6 +162,8 @@ public class LoginFragment extends Dialog
 
             }
         }
+
+        rootView.setBackgroundColor(Color.TRANSPARENT);
     }
 
     // Creates static instances of resources.

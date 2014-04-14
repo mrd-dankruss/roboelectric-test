@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -107,6 +108,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
 				values.get(i).setThirdText("false");
 			}
 		}
+
         holder.report_button.setEnabled(true);
 		adapter.notifyDataSetChanged();
 	}
@@ -127,7 +129,9 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
             holder.report_button.setEnabled(false);
-            holder.report_button.setVisibility( View.VISIBLE);
+            holder.report_button.setBackgroundColor(Color.GRAY);
+            holder.report_button.setVisibility( View.VISIBLE );
+
 			// Store the holder with the view.
 			rootView.setTag(holder);
 

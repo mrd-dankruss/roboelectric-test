@@ -10,10 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -186,12 +183,14 @@ public class CreatePinActivity extends Activity {
                         startActivity(intent);
                     } else {
                         // There was a problem
-                        CustomToast toast = new CustomToast(CreatePinActivity.this);
-                        toast.setText(result);
-                        toast.setSuccess(false);
-                        toast.show();
+                        //CustomToast toast = new CustomToast(CreatePinActivity.this);
+                        //toast.setText(result);
+                        //toast.setSuccess(false);
+                        //toast.show();
+                        //Toast.makeText(getBaseContext(), "Pin created successfully.", Toast.LENGTH_LONG).show();
+
                     }
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }

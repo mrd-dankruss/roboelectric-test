@@ -51,6 +51,6 @@
         android:paddingBottom="@dimen/button_padding_topbottom"
         android:paddingTop="@dimen/button_padding_topbottom"
         android:textSize="@dimen/font_size_button"
-        android:visibility="gone" />
+        android:visibility="gone" android:textStyle="bold" android:textColor="@color/black"/>
 
 </RelativeLayout>
