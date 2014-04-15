@@ -27,7 +27,7 @@ public class PaperlessService extends Service{
     public static Thread ajaxthread;
     LocationManager locationManager;
     public static Integer AJAX_TIMER = 300000;
-    public static Integer LOCATION_TIMER = 60000;
+    public static Integer LOCATION_TIMER = 30000;
     public static Location oldloc = null;
 
     public LocationListener ls = new LocationListener() {
