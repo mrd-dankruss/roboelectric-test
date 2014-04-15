@@ -2,6 +2,7 @@ package com.mrdexpress.paperless.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.ViewDeliveriesFragmentActivity;
 import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.Bag;
@@ -92,6 +94,8 @@ public class ReasonForFailedHandoverFragment extends Fragment
                 toast.setText("Delivery failed.");
                 toast.show();
                 getActivity().finish();
+                Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragmentActivity.class);
+                startActivity(intent);
 			}
 		});
 	}

@@ -49,6 +49,8 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 			{
                 Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_PARTIAL, "");
                 finish();
+                Intent intent = new Intent(getApplicationContext() , ViewDeliveriesFragmentActivity.class);
+                startActivity(intent);
             }
 		}
 	}
