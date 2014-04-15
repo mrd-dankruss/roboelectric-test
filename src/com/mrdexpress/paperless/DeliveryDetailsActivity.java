@@ -49,7 +49,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 		intent = getIntent();
 		position = intent.getIntExtra("ACTIVE_BAG_POSITION", -1);
         BagID = intent.getIntExtra("ACTIVE_BAG_ID", -1);
-        Workflow.getInstance().currentBagID = BagID;
+        //Workflow.getInstance().currentBagID = BagID;
         JSONObject jso =  Workflow.getInstance().getBag( BagID);
         bag = new Bag(jso);
 	}
@@ -110,8 +110,15 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			public void onClick(View v)
 			{
 				boolean isNextBag = bag.getBagID() == MiscHelper.getNextDeliveryId(DeliveryDetailsActivity.this);
-				DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagID());
-				newFragment.show(getSupportFragmentManager(), "dialog");
+                int curbagid = Workflow.getInstance().currentBagID;
+
+                if (bag.getBagID() == curbagid){
+                    DialogFragment newFragment = MoreDialogFragment.newInstance(false,bag.getBagID());
+                    newFragment.show(getSupportFragmentManager(), "dialog");
+                } else {
+                    DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagID());
+                    newFragment.show(getSupportFragmentManager(), "dialog");
+                }
 			}
 		});
 	}
@@ -125,9 +132,8 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			custom_toast.setSuccess(true);
 			custom_toast.setText("Successfully changed next delivery.");
 			custom_toast.show();
-			
+			Workflow.getInstance().currentBagID = bagId;
 			MiscHelper.setNextDeliveryId(bagId, this);
-			
 			finish();
 		}
 

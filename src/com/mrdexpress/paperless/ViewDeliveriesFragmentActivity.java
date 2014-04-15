@@ -23,6 +23,7 @@ import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.helper.MiscHelper;
+import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ViewDeliveriesFragmentActivity extends FragmentActivity implements TabListener
@@ -106,10 +107,15 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 			}
 		});
 
-        CustomToast toast = new CustomToast(this);
-        toast.setSuccess(true);
-        toast.setText("Delivery run started.");
-        toast.show();
+        if (!Users.getInstance().getMilkrunactive()){
+            CustomToast toast = new CustomToast(this);
+            toast.setSuccess(true);
+            toast.setText("Delivery run started.");
+            toast.show();
+            Users.getInstance().setMilkrunactive(true);
+        }
+
+
 	}
 
 	@Override
@@ -217,6 +223,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
             public void onClick(View v) {
                 Intent intent = new Intent(ViewDeliveriesFragmentActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                //ServerInterface.getInstance().endMilkrun(Users.getInstance().getActiveDriver().getStringid());
                 startActivity(intent);
             }
         });

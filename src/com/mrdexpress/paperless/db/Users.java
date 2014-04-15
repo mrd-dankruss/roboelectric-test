@@ -28,6 +28,8 @@ public class Users implements Serializable
     public ArrayList<UserData> managersList;
     private int activeManagerIndex = -1;
 
+    private Boolean milkrunactive = false;
+
     public static Users getInstance() {
         if (_instance == null) {
             _instance = new Users();
@@ -50,6 +52,14 @@ public class Users implements Serializable
 
     public void setActiveManager( UserData user){
         activeManagerIndex = managersList.indexOf( user);
+    }
+
+    public void setMilkrunactive(Boolean status){
+        this.milkrunactive = status;
+    }
+
+    public Boolean getMilkrunactive(){
+        return this.milkrunactive;
     }
 
     public UserData getActiveManager(){

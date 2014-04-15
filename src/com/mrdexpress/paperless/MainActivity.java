@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -23,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -41,6 +45,7 @@ import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import javax.xml.xpath.XPath;
@@ -74,6 +79,7 @@ public class MainActivity extends Activity implements LoginInterface {
     private boolean is_registration_successful;
     public ProgressDialog dialog_main;
     public ProgressDialog dialog_progress;
+    public Dialog dialog_file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +92,7 @@ public class MainActivity extends Activity implements LoginInterface {
         Device.getInstance().setIMEI();
         dialog_main = new ProgressDialog( this );
         dialog_progress = new ProgressDialog(this);
+        dialog_file = new Dialog(this);
 
         String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
             @Override
@@ -95,14 +102,9 @@ public class MainActivity extends Activity implements LoginInterface {
                     @Override
                     public void execute( Object args) {
                         afterSetup();
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                // runs on UI thread
-                                new UpdateApp().execute();
-                            }
-                        });
+                        //new UpdateApp().execute();
                     }
-                } );
+                });
                 } else {
                     UnauthorizedUseDialog diag = new UnauthorizedUseDialog(MainActivity.this);
                     diag.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -166,6 +168,69 @@ public class MainActivity extends Activity implements LoginInterface {
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+
+        Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_SHORT).show();
+
+        String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
+        ac.ajax(updateURL , String.class , new AjaxCallback<String>(){
+            @Override
+            public void callback(String urll, String json, AjaxStatus status) {
+                String callstatus = null;
+                String path = "/sdcard/paperless";
+                final PackageInfo pInfo;
+                try {
+                    pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    double versionCode = 0;
+                    String url = "";
+                    XPath xpath = XPathFactory.newInstance().newXPath();
+                    try {
+                        InputSource xml = new InputSource(new StringReader(json));
+                        String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
+                        versionCode = (Double)xpath.evaluate("/update/versionCode", xml , XPathConstants.NUMBER);
+                        xml = new InputSource(new StringReader(json));
+                        final String versionpath = (String)xpath.evaluate("/update/url", xml, XPathConstants.STRING);
+                        final String urlpath = path + versionCode + ".apk";
+                        if (versionCode > pInfo.versionCode) {
+                            try {
+                                Toast.makeText(getBaseContext() , "Downloading an update , please be patient" , Toast.LENGTH_SHORT).show();
+                                url = versionpath;
+                                File ext = Environment.getExternalStorageDirectory();
+                                File target = new File(ext, "paperless.apk");
+                                AQuery aq = new AQuery(root_view);
+
+                                dialog_progress.setTitle("Please wait.");
+                                dialog_progress.setMessage("Downloading update.");
+                                dialog_progress.setIndeterminate(true);
+                                dialog_progress.setCancelable(false);
+                                dialog_progress.setInverseBackgroundForced(false);
+                                dialog_progress.setCanceledOnTouchOutside(false);
+
+                                aq.progress(dialog_progress).download(url, target, new AjaxCallback<File>(){
+                                    public void callback(String url, File file, AjaxStatus status) {
+                                        if(file != null){
+                                            //showResult("File:" + file.length() + ":" + file, status);
+                                            Intent i = new Intent();
+                                            i.setAction(Intent.ACTION_VIEW);
+                                            i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                                            startActivity(i);
+                                        }else{
+                                            //showResult("Failed", status);
+                                            Toast.makeText(getBaseContext() , "Update failed , please contact MRD." , Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                            }catch(Exception e){
+                                Log.e("MRD-EX" , e.getMessage());
+                            }
+                        }
+                    } catch (XPathExpressionException e) {
+                        e.printStackTrace();
+                    }
+                } catch (NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void triggerLogin(View view){
@@ -394,7 +459,7 @@ public class MainActivity extends Activity implements LoginInterface {
 
 
     private class UpdateApp extends AsyncTask<Void, Void, Void> {
-        String path = "/sdcard/paperless.apk";
+        String path = "/sdcard/paperless-mrd.apk";
         boolean mustInstall = false;
 
 
@@ -405,6 +470,13 @@ public class MainActivity extends Activity implements LoginInterface {
         @Override
         protected void onPreExecute() {
             Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_LONG).show();
+            try {
+                // delete the original file
+                new File(path).delete();
+            }
+            catch (Exception e) {
+                Log.e("MRD-EX", e.getMessage());
+            }
         }
 
         @Override
@@ -425,6 +497,7 @@ public class MainActivity extends Activity implements LoginInterface {
                         try {
                             Toast.makeText(getBaseContext() , "Downloading an update , please be patient" , Toast.LENGTH_LONG).show();
                             downloadAPK( url , path) ;
+
                         }catch(Exception e){
                             Log.e("MRD-EX" , e.getMessage());
                         }
@@ -454,6 +527,14 @@ public class MainActivity extends Activity implements LoginInterface {
     private void downloadAPK( String Url , String path) {
         try {
 
+            try {
+                // delete the original file
+                new File(path).delete();
+            }
+            catch (Exception e) {
+                Log.e("MRD-EX", e.getMessage());
+            }
+
             URL url = new URL(Url);
             URLConnection connection = url.openConnection();
             connection.connect();
@@ -474,6 +555,12 @@ public class MainActivity extends Activity implements LoginInterface {
             output.flush();
             output.close();
             input.close();
+
+            Intent i = new Intent();
+            i.setAction(Intent.ACTION_VIEW);
+            i.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
+            startActivity(i);
+
 
         } catch (Exception e) {
             Log.e("MRD-EX", e.getMessage());

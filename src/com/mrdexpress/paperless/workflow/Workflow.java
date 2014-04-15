@@ -3,11 +3,13 @@ package com.mrdexpress.paperless.workflow;
 import android.content.Context;
 import android.util.Log;
 import com.jayway.jsonpath.*;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.datatype.UserItem;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -396,7 +398,9 @@ public class Workflow extends Observable
             for( int i=0; i < rawbags.size(); i++)
             {
                 Bag bag = new Bag( (JSONObject)rawbags.get(i));
-                //bag.setScanned(1);
+                String devid = Device.getInstance().getIMEI();
+                if (devid.equals("356779059317726")){ bag.setScanned(1); }
+                bag.setScanned(1);
                 bags.add(bag);
             }
         }

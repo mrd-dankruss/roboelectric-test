@@ -16,8 +16,10 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.General;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 public class ViewDeliveriesFragment extends Fragment
@@ -116,6 +118,7 @@ public class ViewDeliveriesFragment extends Fragment
 				public void onClick(View arg0) 
 				{
 					Intent intent = MiscHelper.getGoHomeIntent(getActivity());
+                    ServerInterface.getInstance().endMilkrun(Users.getInstance().getActiveDriver().getStringid());
 	                startActivity(intent);
 				}
 			});

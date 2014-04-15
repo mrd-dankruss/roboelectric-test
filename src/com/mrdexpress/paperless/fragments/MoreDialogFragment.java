@@ -117,10 +117,13 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
+                CustomToast custom_toast = new CustomToast(activity);
+                custom_toast.setSuccess(true);
+                custom_toast.setText("Successfully changed next delivery.");
+                custom_toast.show();
                 Workflow.getInstance().setNextStop( bagid);
 				dismiss();
                 getActivity().finish();
-				//new SetNextDelivery().execute();
 			}
 		});
 
@@ -192,33 +195,5 @@ public class MoreDialogFragment extends DialogFragment
 		});
 
 		return v;
-	}
-	
-	private class SetNextDelivery extends AsyncTask<Void, Void, String>
-	{
-		@Override
-		protected String doInBackground(Void... params)
-		{
-			return ServerInterface.getInstance(getActivity()).setNextDelivery(bagid);
-		}
-
-		@Override
-		protected void onPostExecute(String result)
-		{
-
-			try
-			{
-				if (result.equals("success"))
-				{
-					SetNextDeliveryListener activity_next_delivery = (SetNextDeliveryListener) activity;
-					activity_next_delivery.onSetNextDelivery(true, bagid);
-		            dismiss();
-				}
-			}
-			catch (NumberFormatException e)
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 }
