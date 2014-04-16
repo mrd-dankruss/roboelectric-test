@@ -37,16 +37,20 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button_generic_report"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="7dp"
-        android:background="@drawable/button_custom_grey"
-        android:text="@string/delivery_button1"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:visibility="gone" />
+            android:id="@+id/button_generic_report"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="24dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/button_custom"
+            android:paddingBottom="@dimen/button_padding_topbottom"
+            android:paddingTop="@dimen/button_padding_topbottom"
+            android:text="@string/delivery_button1"
+            android:textSize="@dimen/font_size_button"
+            android:visibility="gone"
+    />
 
 </RelativeLayout>

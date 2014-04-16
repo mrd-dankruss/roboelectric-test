@@ -60,8 +60,8 @@ public class ReasonPartialDeliveryFragment extends Fragment {
                     getActivity().setResult(Activity.RESULT_OK);
 
                     CustomToast toast = new CustomToast(getActivity());
-                    toast.setSuccess(false);
-                    toast.setText("Partial delivery completed.");
+                    toast.setSuccess(true);
+                    toast.setText("Partial delivery logged.");
                     toast.show();
 
                     getActivity().finish();

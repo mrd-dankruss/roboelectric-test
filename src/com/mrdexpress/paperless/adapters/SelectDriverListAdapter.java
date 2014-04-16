@@ -4,7 +4,7 @@ package com.mrdexpress.paperless.adapters;
  * Created by hannobean on 2014/03/26.
  */
 
-;
+
 
 /*public class SelectDriverListAdapter extends BaseAdapter
 {

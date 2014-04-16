@@ -72,6 +72,12 @@ public class ViewDeliveriesFragment extends Fragment
 		}
 
 		holder.list.setAdapter(adapter);
+        try {
+            //adapter.getItem(0);
+        }catch(Exception e){
+
+        }
+
 
 		holder.list.setOnItemClickListener(new OnItemClickListener()
 		{
@@ -83,6 +89,7 @@ public class ViewDeliveriesFragment extends Fragment
                 Integer bagid = ((Bag)holder.list.getItemAtPosition(position)).getBagID();
                 intent.putExtra("ACTIVE_BAG_ID", bagid);
                 intent.putExtra("ACTIVE_BAG_POSITION", position);
+                if (position == 0) Workflow.getInstance().currentBagID = bagid;
                 General.getInstance().setActivebagid(bagid);
                 startActivity(intent);
 			}

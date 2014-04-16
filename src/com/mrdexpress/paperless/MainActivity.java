@@ -146,7 +146,17 @@ public class MainActivity extends Activity implements LoginInterface {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 selected_user = ((Users.UserData) holder.text_name.getAdapter().getItem(position));
                 Users.getInstance().setActiveDriverIndex(Users.getInstance().driversList.indexOf(selected_user));
-                holder.text_password.requestFocus();
+                try {
+                    if ( selected_user.getdriverPin() == null ){
+                        //do something here
+                        Intent intent = new Intent(getApplicationContext(), CreatePinActivity.class);
+                        startActivity(intent);
+                    }else{
+                        holder.text_password.requestFocus();
+                    }
+                }catch(Exception e){
+                    Log.e("MRD-EX" , e.getMessage());
+                }
             }
         });
 
@@ -576,7 +586,7 @@ public class MainActivity extends Activity implements LoginInterface {
             if (holder == null) {
                 holder = new ViewHolder();
             }
-            //holder.name_view =
+
             Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_BOLD));

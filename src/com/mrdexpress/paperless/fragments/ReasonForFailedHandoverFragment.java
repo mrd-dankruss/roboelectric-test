@@ -133,7 +133,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
 			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
             holder.report_button.setEnabled(false);
-            holder.report_button.setBackgroundColor(Color.GRAY);
+            //holder.report_button.setBackgroundColor(Color.GRAY);
             holder.report_button.setVisibility( View.VISIBLE );
 
 			// Store the holder with the view.

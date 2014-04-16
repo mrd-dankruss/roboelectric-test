@@ -220,6 +220,7 @@ public class ScanActivity extends FragmentActivity {
     private void startDelivery()
     {
         ServerInterface.getInstance().startMilkrun(Users.getInstance().getActiveDriver().getStringid());
+        //Workflow.getInstance().currentBagID = Workflow.getInstance().getBags().get(0).getBagID();
         finish();
         Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
         startActivity(intent);
