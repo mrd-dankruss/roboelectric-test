@@ -174,7 +174,7 @@ public class ServerInterface {
     }
 
     public void setBagScanned(String bagid){
-        String url = API_URL + "v1/workflow/scanbagtodriver?" + Device.getInstance().getTokenIMEIUrl() + "&driverID=" + Users.getInstance().getActiveDriver();
+        String url = API_URL + "v1/workflow/scanbagtodriver?" + Device.getInstance().getTokenIMEIUrl() + "&driverID=" + Users.getInstance().getActiveDriver().getStringid();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("driverID", Users.getInstance().getActiveDriver());
         params.put("bagid", bagid);

@@ -371,6 +371,7 @@ public class ScanActivity extends FragmentActivity {
                 toast.setSuccess(false);
                 toast.setText("Already scanned - scan next item");
             } else {
+                Workflow.getInstance().setWaybillScanned(last_scanned_barcode , 1);
                 toast.setSuccess(true);
                 toast.setText(getString(R.string.text_scan_next));
             }
@@ -421,6 +422,7 @@ public class ScanActivity extends FragmentActivity {
 
     public void handleDecode(String barcodeString, Boolean redrawscan) {
         Bag scannedBag = null;
+        last_scanned_barcode = barcodeString;
 
         for (int i = 0; i < bags.size(); i++) {
             Bag b = bags.get(i);
