@@ -219,7 +219,7 @@ public class ScanActivity extends FragmentActivity {
 
     private void startDelivery()
     {
-        ServerInterface.getInstance().startMilkrun(Users.getInstance().getActiveDriver().getStringid());
+        ServerInterface.getInstance().startTrip();
         finish();
         Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
         startActivity(intent);

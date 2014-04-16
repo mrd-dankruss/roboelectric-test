@@ -118,7 +118,7 @@ public class ViewDeliveriesFragment extends Fragment
 				public void onClick(View arg0) 
 				{
 					Intent intent = MiscHelper.getGoHomeIntent(getActivity());
-                    ServerInterface.getInstance().endMilkrun(Users.getInstance().getActiveDriver().getStringid());
+                    ServerInterface.getInstance().endTrip();
 	                startActivity(intent);
 				}
 			});

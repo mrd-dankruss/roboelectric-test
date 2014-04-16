@@ -49,10 +49,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 
 public class ServerInterface {
@@ -154,6 +151,7 @@ public class ServerInterface {
         params.put("status", status);
         params.put("bagid", bagid);
         params.put("reason", reason);
+        params.put("statustime", new Date().getTime());
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
                 public void callback(String url, JSONObject json, AjaxStatus status) {
@@ -180,6 +178,7 @@ public class ServerInterface {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("driverID", Users.getInstance().getActiveDriver());
         params.put("bagid", bagid);
+        params.put("scantime", new Date().getTime());
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
                 public void callback(String url, JSONObject json, AjaxStatus status) {
@@ -491,9 +490,9 @@ public class ServerInterface {
         }
     }
 
-    public void startMilkrun(String driverid){
+    public void startTrip(){
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/milkruns/start-milkrun?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
+        String url = API_URL + "v1/milkruns/start-milkrun?mrdToken=" + token + "&tripID=" + Workflow.getInstance().getTripID();
         AQuery ac = new AQuery(context);
         if (Device.getInstance().isConnected()){
             ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
@@ -507,9 +506,9 @@ public class ServerInterface {
         }
     }
 
-    public void endMilkrun(String driverid){
+    public void endTrip(){
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/milkruns/end-milkrun?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid();
+        String url = API_URL + "v1/milkruns/end-trip?mrdToken=" + token + "&tripID=" + Workflow.getInstance().getTripID();
         AQuery ac = new AQuery(context);
         if (Device.getInstance().isConnected()){
             ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
