@@ -58,20 +58,29 @@
 
         <TextView
             android:id="@+id/textView_manAuth_enter_pin"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/background_grey"
             android:padding="14dp"
             android:text="@string/text_unauthorised_use"
             android:textSize="@dimen/font_size_dialog_content" />
 
+        <TextView
+                android:id="@+id/textView_unauth_imei"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_grey"
+                android:textStyle="bold"
+                android:padding="14dp"
+                android:text="IMEI:"
+                android:textSize="@dimen/font_size_dialog_content" />
 
         <Button
             android:id="@+id/button_incomplete_scan_ok"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_change_driver"
-            android:text="@string/button_ok"
+            android:text="OK"
             android:textSize="@dimen/font_size_button" />
 
     </LinearLayout>

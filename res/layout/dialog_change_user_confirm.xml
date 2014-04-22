@@ -79,7 +79,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_change_driver"
-            android:text="@string/button_cancel"
+            android:text="Cancel"
             android:textSize="@dimen/font_size_button"
             android:layout_weight="1" />
             
@@ -93,7 +93,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_change_driver"
-            android:text="@string/button_ok"
+            android:text="OK"
             android:textSize="@dimen/font_size_button"
             android:layout_weight="1" />
             

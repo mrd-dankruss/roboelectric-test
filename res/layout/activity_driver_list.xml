@@ -74,7 +74,7 @@
             android:layout_gravity="bottom"
             android:layout_margin="@dimen/margin_standard"
             android:background="@drawable/button_custom_grey"
-            android:text="@string/button_cancel"
+            android:text="Cancel"
             android:textStyle="bold" />
     </FrameLayout>
 
