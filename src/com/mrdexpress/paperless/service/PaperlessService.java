@@ -67,6 +67,15 @@ public class PaperlessService extends Service{
                     }
                     oldloc = location;
                 }
+                else {
+                    ServerInterface.getInstance().postDriverPosition(
+                            Float.toString(location.getAccuracy()) ,
+                            Double.toString(location.getLatitude()) ,
+                            Double.toString(location.getLongitude()) ,
+                            "-1" ,
+                            Long.toString(System.currentTimeMillis())
+                    );
+                }
 
             }
         }
