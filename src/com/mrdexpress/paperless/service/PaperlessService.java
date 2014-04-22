@@ -25,11 +25,9 @@ import java.util.ArrayList;
 
 public class PaperlessService extends Service{
     public static Thread ajaxthread;
-    LocationManager locationManager;
     public static Integer AJAX_TIMER = 300000;
     public static Integer LOCATION_TIMER = 30000;
     public static Location oldloc = null;
-
     public LocationListener ls = new LocationListener() {
         @Override
         public void onLocationChanged(Location location)
@@ -40,7 +38,6 @@ public class PaperlessService extends Service{
                 bagid = Workflow.getInstance().currentBagID;
                 if (bagid > 0){
                     //bag is set
-
                 }else{
                     //use first bag
                     bagid = -1; //bags.get(0).getBagID();
@@ -99,8 +96,7 @@ public class PaperlessService extends Service{
 
         }
     };
-
-
+    LocationManager locationManager;
 
     @Override
     public IBinder onBind(Intent arg0) {

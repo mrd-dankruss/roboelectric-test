@@ -1,6 +1,5 @@
 package com.mrdexpress.paperless.net;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -13,11 +12,11 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.maps.model.LatLng;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.*;
+import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
-import com.mrdexpress.paperless.Paperless;
-import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 import org.apache.http.HttpEntity;
@@ -46,7 +45,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.util.*;
@@ -55,7 +53,10 @@ import java.util.*;
 public class ServerInterface {
 
     private final static String TAG = "ServerInterface";
-    private static final String API_URL = "http://www.mrdexpress.com/api/";
+    //private static final String API_URL = "http://www.mrdexpress.com/api/";
+
+    private static final String API_URL = "http://uat.mrdexpress.com/api/";
+
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
     private static ServerInterface server_interface;
     private static Context context;
@@ -69,8 +70,6 @@ public class ServerInterface {
     // Return singleton instance of DbHandler
     public static ServerInterface getInstance(Context context) {
         if (server_interface == null) {
-            //server_interface = new ServerInterface(context.getApplicationContext());
-
             server_interface = new ServerInterface(Paperless.getContext());
             if (prefs == null) {
                 prefs = Paperless.getContext().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
@@ -118,6 +117,12 @@ public class ServerInterface {
         });
     }
 
+    /**
+     *
+     * @param status
+     * @param bagid
+     * @param reason
+     */
     public void setDeliveryStatus(String status , String bagid , String reason){
         String url = API_URL + "v1/workflow/updatestatus?" + Device.getInstance().getTokenIMEIUrl();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -127,24 +132,32 @@ public class ServerInterface {
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
                 public void callback(String url, JSONObject json, AjaxStatus status) {
-                    String callstatus = null;
                     try{
                         if (json != null){
                             //Logic here
 
                         }else{
+                            Device.getInstance().addDeviceLog("Null JSON at setDeliveryStatus" , status.getMessage());
                             Log.e("MRD-EX" , "EMPTY JSON");
                         }
                     }catch(Exception e){
+                        Device.getInstance().addDeviceLog("Exception setDeliveryStatus" , status.getMessage());
                         Log.e("MRD-EX" , e.getMessage());
                     }
                 }
             });
         } else {
+            Device.getInstance().addDeviceLog("setDeliveryStatus added to Queue");
             Ajax.getInstance().addQueue(params , url);
         }
     }
 
+    /**
+     *
+     * @param status
+     * @param bagid
+     * @param reason
+     */
     public void setParcelDeliveryStatus(String status , String bagid , String reason){
         String url = API_URL + "v1/workflow/updateparcelstatus?" + Device.getInstance().getTokenIMEIUrl();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -155,24 +168,32 @@ public class ServerInterface {
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
                 public void callback(String url, JSONObject json, AjaxStatus status) {
-                    String callstatus = null;
+
                     try{
                         if (json != null){
                             //Logic here
 
                         }else{
+                            Device.getInstance().addDeviceLog("Null JSON at setParcelDeliveryStatus" , status.getMessage());
                             Log.e("MRD-EX" , "EMPTY JSON");
                         }
                     }catch(Exception e){
+                        Device.getInstance().addDeviceLog("Exception at setParcelDeliveryStatus" , status.getMessage());
                         Log.e("MRD-EX" , e.getMessage());
                     }
                 }
             });
         } else {
+            Device.getInstance().addDeviceLog("setParcelDeliveryStatus added to Queue");
             Ajax.getInstance().addQueue(params , url);
         }
     }
 
+
+    /**
+     *
+     * @param bagid
+     */
     public void setBagScanned(String bagid){
         String url = API_URL + "v1/workflow/scanbagtodriver?" + Device.getInstance().getTokenIMEIUrl() + "&driverID=" + Users.getInstance().getActiveDriver().getStringid();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -209,6 +230,10 @@ public class ServerInterface {
 
     public void getUsers( final CallBackFunction callback) {
         String url = getUsersURL();
+        //Device.getInstance().addDeviceLog("testing");
+        //Device.getInstance().saveArrayList("hb" , Device.getInstance().devicelogs);
+        //Object test = Device.getInstance().getArrayList("hb");
+
         aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
             @Override
             public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
@@ -232,7 +257,6 @@ public class ServerInterface {
 
     public String requestToken( final CallBackFunction callback) {
         String url = getTokenUrl();
-        AjaxCallback<JSONObject> cb = new AjaxCallback<JSONObject>();
         aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
             @Override
             public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
@@ -246,7 +270,6 @@ public class ServerInterface {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     } else if (jObject.has("error")) {
                         Token = null;
                     }
@@ -1157,6 +1180,18 @@ public class ServerInterface {
 
     }
 
+    public void getGoogleDrivingDirections( String key, LatLng myLocation, LatLng destination, final CallBackFunction callback)
+    {
+        String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + myLocation.latitude+ "," + myLocation.longitude + "&destination=" + destination.latitude+ "," + destination.longitude + "&sensor=false";
+        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                if( callback != null)
+                    callback.execute( jObject);
+            }
+        });
+
+    }
 
     private class QueryTask extends AsyncTask<String, Void, String> {
 
@@ -1189,18 +1224,5 @@ public class ServerInterface {
         protected void onPostExecute(String result) {
             //showDialog("Downloaded " + result + " bytes");
         }
-    }
-
-    public void getGoogleDrivingDirections( String key, LatLng myLocation, LatLng destination, final CallBackFunction callback)
-    {
-        String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + myLocation.latitude+ "," + myLocation.longitude + "&destination=" + destination.latitude+ "," + destination.longitude + "&sensor=false";
-        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
-            @Override
-            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
-                if( callback != null)
-                    callback.execute( jObject);
-            }
-        });
-
     }
 }
