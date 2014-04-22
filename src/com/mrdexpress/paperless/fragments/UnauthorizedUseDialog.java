@@ -11,12 +11,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.helper.FontHelper;
 
 public class UnauthorizedUseDialog extends Dialog
 {
 	private Activity context;
-	private TextView dialog_title;
+	private TextView dialog_title, dialog_imei;
 	private ImageButton dialog_close;
     private Button okbutton;
 
@@ -39,6 +40,7 @@ public class UnauthorizedUseDialog extends Dialog
 		
 		dialog_title = (TextView) findViewById(R.id.textView_manAuth_manager_name);
 		dialog_close = (ImageButton) findViewById(R.id.button_incomplete_scan_closeButton);
+        dialog_imei = (TextView) findViewById(R.id.textView_unauth_imei);
 		
 		dialog_title.setTypeface(typeface_roboto_bold);
 		
@@ -50,6 +52,8 @@ public class UnauthorizedUseDialog extends Dialog
                 System.exit(0);
 			}
 		});
+
+        dialog_imei.setText( "IMEI: " + Device.getInstance().getIMEI());
 
         okbutton = (Button) findViewById(R.id.button_incomplete_scan_ok);
         okbutton.setOnClickListener(new View.OnClickListener()
