@@ -55,6 +55,7 @@ public class ScanActivity extends FragmentActivity {
     static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
     static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
     static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
+    static final int RESULT_MANUAL_ENTRY = 2002;
     private Intent intent_manual_barcode;
     private String user_name;
 
@@ -121,6 +122,9 @@ public class ScanActivity extends FragmentActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
+
+        initViewHolder();
+
         int width = (int) (size.x - (size.x * 0.1));
         int height = (int) (size.y - (size.y * 0.1));
 
@@ -138,7 +142,6 @@ public class ScanActivity extends FragmentActivity {
 
         user_name = Users.getInstance().getActiveDriver().getfirstName();
 
-        initViewHolder();
         UpdateBagsCounter();
 
         // Set click listener for list items (selecting a driver)
@@ -161,7 +164,7 @@ public class ScanActivity extends FragmentActivity {
                         intent.putExtra("bag_dest", bag.getDestination() );
                         intent.putExtra("bag_items", Integer.toString(bag.getNumberItems()) );
 
-                        startActivity(intent);
+                        startActivityForResult( intent, RESULT_MANUAL_ENTRY);
                     }
                 }
             }
@@ -259,6 +262,12 @@ public class ScanActivity extends FragmentActivity {
                 }
             }
         }*/
+
+        if( requestCode == RESULT_MANUAL_ENTRY){
+            if( resultCode == RESULT_MANUAL_ENTRY){
+                getManualBarcode();
+            }
+        }
 
         if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH) {
             if (resultCode == RESULT_OK) {
@@ -378,7 +387,9 @@ public class ScanActivity extends FragmentActivity {
 
             toast.show();
             //TODO : MAKE IT STAY OPEN HERE
-            if (redraw) startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+            if (redraw){
+                startActivityForResult(scan_intent, VariableManager.CALLBACK_SCAN_BARCODE_GENERAL);
+            }
         }
     }
 
@@ -525,7 +536,7 @@ public class ScanActivity extends FragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.scan, menu);
+        //getMenuInflater().inflate(R.menu.scan, menu);
         return true;
     }
 
@@ -538,8 +549,7 @@ public class ScanActivity extends FragmentActivity {
                 return true;
             case R.id.action_scan_enter_barcode:
                 Log.d(TAG, "Enter barcode manually");
-                intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
-                startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
+                getManualBarcode();
                 return true;
             case R.id.action_scan_change_driver:
                 Log.d(TAG, "Change driver");
@@ -549,6 +559,10 @@ public class ScanActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void getManualBarcode(){
+        intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
+        startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
+    }
 
     public void initViewHolder() {
 

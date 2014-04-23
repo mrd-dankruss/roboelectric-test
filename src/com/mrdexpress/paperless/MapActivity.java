@@ -316,14 +316,13 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
     private void showRoute( LatLng destination)
     {
         final LatLng theDestination = destination;
-        final
 
         AsyncTask asyncTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
                 ServerInterface.getInstance(getApplicationContext()).getGoogleDrivingDirections( API_KEY, myLocation, theDestination, new CallBackFunction() {
                     @Override
-                    public void execute(Object args) {
+                    public boolean execute(Object args) {
                         JSONObject jso = (JSONObject)args;
                         try {
                             if( jso.get("status").equals("OK"))
@@ -365,6 +364,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        return true;
                     }
                 });
                 return null;

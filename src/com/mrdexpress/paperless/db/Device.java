@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.net.NetworkStatus;
 
 /**
  * Created by hannobean on 2014/03/27.
@@ -13,7 +14,7 @@ import com.mrdexpress.paperless.Paperless;
 public class Device {
     private static Device _instance = null;
     private static Context _context = null;
-    private String IMEI = null;
+    private static String IMEI = null;
     private String Token = "400";
     private String GCMID = null;
     private String GCMGOOGLEID = null;
@@ -23,6 +24,8 @@ public class Device {
     public static Device getInstance() {
         if (_instance == null) {
             _instance = new Device();
+            TelephonyManager m = (TelephonyManager) Paperless.getContext().getSystemService(Context.TELEPHONY_SERVICE);
+            IMEI = m.getDeviceId();
         }
         return _instance;
     }
@@ -54,12 +57,6 @@ public class Device {
         return this.GCMGOOGLEID;
     }
 
-    public void setIMEI(){
-        TelephonyManager m = (TelephonyManager) Paperless.getContext()
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        IMEI = m.getDeviceId();
-    }
-
     public void setToken(String token){
         this.Token = token;
     }
@@ -69,13 +66,7 @@ public class Device {
     }
 
     public Boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) Paperless.getInstance().getSystemService(Paperless.getInstance().getApplicationContext().CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        if (ni == null) {
-            // There are no active networks.
-            return false;
-        } else
-            return true;
+        return NetworkStatus.getInstance().connected();
     }
 
     public String getTokenIMEIUrl(){

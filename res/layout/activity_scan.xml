@@ -73,7 +73,7 @@
     <ListView
         android:id="@+id/scan_list"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="match_parent"
         android:layout_above="@id/activity_scan_textView_scanStatusBar"
         android:layout_alignParentLeft="true"
         android:background="@color/colour_white" android:layout_below="@+id/button_start_scanning">

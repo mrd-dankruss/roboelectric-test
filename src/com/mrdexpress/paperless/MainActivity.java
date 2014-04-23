@@ -3,15 +3,14 @@ package com.mrdexpress.paperless;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,12 +38,15 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
+import com.mrdexpress.paperless.net.NetworkStateReceiver;
+import com.mrdexpress.paperless.net.NetworkStatus;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.CheckConnectivity;
 import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
@@ -56,6 +58,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends Activity implements LoginInterface {
@@ -72,6 +75,7 @@ public class MainActivity extends Activity implements LoginInterface {
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private String SENDER_ID = "426772637351";
+    static final int ACTIVITY_CHECK_CONNECTIVITY = 1001001;
     private GoogleCloudMessaging gcm;
     private String regid;
     AtomicInteger msgId = new AtomicInteger();
@@ -89,37 +93,59 @@ public class MainActivity extends Activity implements LoginInterface {
         initViewHolder();
 
         setTitle(R.string.title_actionbar_mainmenu);
-        Device.getInstance().setIMEI();
+
         dialog_main = new ProgressDialog( this );
         dialog_progress = new ProgressDialog(this);
         dialog_file = new Dialog(this);
 
-        String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
-            @Override
-            public void execute( Object args) {
-                if (args != null){
-                ServerInterface.getInstance(null).getUsers( new CallBackFunction() {
-                    @Override
-                    public void execute( Object args) {
-                        afterSetup();
-                        //new UpdateApp().execute();
+        NetworkStatus.getInstance().register(context);
+        //NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
+
+        checkConnected();
+    }
+
+    private void checkConnected(){
+
+        if( NetworkStatus.getInstance().connected()){
+            String token = ServerInterface.getInstance(null).requestToken( new CallBackFunction() {
+                @Override
+                public boolean execute( Object args) {
+                    if (args != null){
+                        ServerInterface.getInstance(null).getUsers( new CallBackFunction() {
+                            @Override
+                            public boolean execute( Object args) {
+                                afterSetup();
+                                //new UpdateApp().execute();
+                                return true;
+                            }
+                        });
+                    } else {
+                        UnauthorizedUseDialog diag = new UnauthorizedUseDialog(MainActivity.this);
+                        diag.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        diag.setOnCancelListener( new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                MainActivity.this.finish();
+                            }
+                        });
+                        diag.show();
                     }
-                });
-                } else {
-                    UnauthorizedUseDialog diag = new UnauthorizedUseDialog(MainActivity.this);
-                    diag.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    diag.setOnCancelListener( new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            MainActivity.this.finish();
-                        }
-                    });
-                    diag.show();
+                    return true;
                 }
-            }
-        });
+            });
+        } else {
+            startActivityForResult(new Intent(this, CheckConnectivity.class), ACTIVITY_CHECK_CONNECTIVITY);
+            //displayToast("Device is offline");
+        }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if( requestCode == ACTIVITY_CHECK_CONNECTIVITY){
+            checkConnected();
+        }
     }
 
     @Override
@@ -265,22 +291,23 @@ public class MainActivity extends Activity implements LoginInterface {
         ServerInterface.getInstance(getApplicationContext()).authDriver(holder.text_password.getText().toString(), this);
     }
 
+    @Override
+    protected void onPause() {
+        //NetworkStatus.getInstance().unregister();
+        super.onPause();
+    }
+
     /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
+         * @see android.app.Activity#onResume()
+         */
     @Override
     protected void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
         SharedPreferences prefs = getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_NAME);
-        editor.remove(VariableManager.LAST_LOGGED_IN_MANAGER_ID);
-        editor.remove(VariableManager.PREF_DRIVERID);
-        editor.remove(VariableManager.PREF_CURRENT_STOPID);
         editor.apply();
-        holder.text_name.setText("");
-        holder.text_password.setText("");
+
+        //NetworkStatus.getInstance().register(context);
+        super.onResume();
     }
 
     /**
@@ -333,7 +360,7 @@ public class MainActivity extends Activity implements LoginInterface {
     private void displayToast(String msg) {
         CustomToast toast_main_menu = new CustomToast(this);
         toast_main_menu.setSuccess(false);
-        toast_main_menu.setText("Please check your PIN length");
+        toast_main_menu.setText(msg);
         toast_main_menu.show();
     }
 

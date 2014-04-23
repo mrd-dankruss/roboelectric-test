@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.*;
 import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.Users;
@@ -122,14 +123,11 @@ public class CreatePinActivity extends Activity {
                             FontHelper.STYLE_REGULAR));
 
             holder.button_create = (Button) root_view.findViewById(R.id.button_create_pin_create);
-            holder.button_change = (Button) root_view
-                    .findViewById(R.id.button_create_pin_change_driver);
+            holder.button_change = (Button) root_view.findViewById(R.id.button_create_pin_change_driver);
             holder.editText_pin1 = (EditText) root_view.findViewById(R.id.editText_create_pin_1);
             holder.editText_pin2 = (EditText) root_view.findViewById(R.id.editText_create_pin_2);
-            holder.textView_toast = (TextView) root_view
-                    .findViewById(R.id.textView_create_pin_toast);
-            holder.relativeLayout_toast = (RelativeLayout) root_view
-                    .findViewById(R.id.toast_create_pin);
+            holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_create_pin_toast);
+            holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_create_pin);
 
             holder.button_create.setTypeface(typeface_roboto_bold);
             holder.button_change.setTypeface(typeface_roboto_bold);
@@ -140,6 +138,9 @@ public class CreatePinActivity extends Activity {
 
             // Store the holder with the view.
             root_view.setTag(holder);
+
+            holder.editText_pin1.requestFocus();
+            //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         } else {
             holder = (ViewHolder) root_view.getTag();
@@ -170,7 +171,7 @@ public class CreatePinActivity extends Activity {
     private class CreatePINTask extends AsyncTask<Void, Void, String> {
         public CallBackFunction cback = new CallBackFunction() {
             @Override
-            public void execute(Object args) {
+            public boolean execute(Object args) {
                 String result = args.toString();
                 dialog_main.dismiss();
                 try {
@@ -194,6 +195,7 @@ public class CreatePinActivity extends Activity {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                return true;
             }
         };
 

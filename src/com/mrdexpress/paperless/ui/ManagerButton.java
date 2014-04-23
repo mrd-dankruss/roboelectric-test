@@ -33,8 +33,9 @@ public class ManagerButton extends Button{
                 dialog = new LoginFragment( pa);
                 dialog.callback = new CallBackFunction() {
                     @Override
-                    public void execute(Object args) {
+                    public boolean execute(Object args) {
                         l.onClick( theView);
+                        return false;
                     }
                 };
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
