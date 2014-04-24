@@ -10,11 +10,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+import com.mrdexpress.paperless.MainActivity;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.net.Ajax;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
@@ -51,7 +55,7 @@ public class PaperlessService extends Service{
                                 Double.toString(location.getLatitude()) ,
                                 Double.toString(location.getLongitude()) ,
                                 activestop.get("id").toString() ,
-                                Long.toString(System.currentTimeMillis())
+                                Long.toString(System.currentTimeMillis()) , location
                         );
                     } else if (oldloc.getLatitude() != location.getLatitude()){
                         ServerInterface.getInstance().postDriverPosition(
@@ -59,7 +63,7 @@ public class PaperlessService extends Service{
                                 Double.toString(location.getLatitude()) ,
                                 Double.toString(location.getLongitude()) ,
                                 activestop.get("id").toString() ,
-                                Long.toString(System.currentTimeMillis())
+                                Long.toString(System.currentTimeMillis()) , location
                         );
                     }
                     oldloc = location;
@@ -70,7 +74,7 @@ public class PaperlessService extends Service{
                             Double.toString(location.getLatitude()) ,
                             Double.toString(location.getLongitude()) ,
                             "-1" ,
-                            Long.toString(System.currentTimeMillis())
+                            Long.toString(System.currentTimeMillis()) , location
                     );
                 }
 
@@ -128,13 +132,13 @@ public class PaperlessService extends Service{
 
     @Override
     public void onStart(Intent intent, int startId) {
-        Toast.makeText(this, "Paperless Service Started", Toast.LENGTH_SHORT).show();
+        Device.getInstance().displayInfo("Paperless Service Started");
         Log.d("MRD-EX", "onStart");
     }
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Paperless Service Stopped", Toast.LENGTH_LONG).show();
+        Device.getInstance().displayInfo("Paperless Service Stopped");
         ajaxthread.stop();
         Log.d("MRD-EX", "onDestroy");
     }

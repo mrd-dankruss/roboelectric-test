@@ -90,6 +90,7 @@ public class MainActivity extends Activity implements LoginInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        Paperless.getInstance().setMainActivity(this);
         initViewHolder();
 
         setTitle(R.string.title_actionbar_mainmenu);

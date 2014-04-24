@@ -112,6 +112,8 @@ public class ScanActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
+        Paperless.getInstance().setMainActivity(this);
+        ServerInterface.displayToast("HANAHANAHANAHANAHANAHANAH");
 
         handler = new Handler();
         driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );

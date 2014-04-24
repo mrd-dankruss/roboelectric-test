@@ -1,13 +1,20 @@
 package com.mrdexpress.paperless.db;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.Gravity;
 import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.ObjectSerializer;
 import com.mrdexpress.paperless.net.NetworkStatus;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -192,5 +199,66 @@ public class Device {
             Log.e("Devicelog" , "Time : " + this.datetime + " Message : " + this.message + " Extra : " + this.extra);
         }
     }
+
+    public Style successm = new Style.Builder()
+            .setBackgroundColorValue(Color.GREEN)
+            .setGravity(Gravity.CENTER)
+            .setTextColorValue(Color.BLACK)
+            .setHeight(50)
+            .setTextSize(15)
+            .build();
+
+    public Style failedm = new Style.Builder()
+            .setBackgroundColorValue(Color.RED)
+            .setGravity(Gravity.CENTER)
+            .setTextColorValue(Color.BLACK)
+            .setHeight(50)
+            .setTextSize(15)
+            .build();
+
+    public Style infom = new Style.Builder()
+            .setBackgroundColorValue(Paperless.getInstance().getResources().getColor(R.color.colour_yellow))
+            .setGravity(Gravity.CENTER)
+            .setTextColorValue(Color.BLACK)
+            .setHeight(50)
+            .setTextSize(15)
+            .build();
+
+    public void displayMessage(String message , Style st , Activity act){
+        try {
+            if (null != act){
+                Crouton.makeText(act , message , st ).show();
+            } else {
+                Crouton.makeText(Paperless.getInstance().getActivity() , message , st ).show();
+            }
+        } catch (Exception e){
+            Paperless.handleException(e);
+        }
+    }
+
+    public void displayInfo(String message , Activity act){
+        displayMessage(message , infom , act);
+    }
+
+    public void displayInfo(String message){
+        displayInfo(message , null);
+    }
+
+    public void displaySuccess(String message , Activity act){
+        displayMessage(message , successm , act);
+    }
+
+    public void displaySuccess(String message){
+        displaySuccess(message , null);
+    }
+
+    public void displayFailed(String message , Activity act){
+        displayMessage(message , failedm , act);
+    }
+
+    public void displayFailed(String message){
+        displayFailed(message , null);
+    }
+
 
 }

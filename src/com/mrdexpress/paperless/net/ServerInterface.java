@@ -1,7 +1,10 @@
 package com.mrdexpress.paperless.net;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +22,8 @@ import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -110,7 +115,9 @@ public class ServerInterface {
             @Override
             public void run() {
                 Log.e(TAG, "Test: " + message);
-                Toast.makeText(VariableManager.context, message, Toast.LENGTH_SHORT).show();
+                //Crouton.makeText(Paperless.getActivity() , "HANNO TEST" , Device.getInstance().infom).show();
+                //Toast.makeText(Paperless.getContext(), message, Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -571,7 +578,7 @@ public class ServerInterface {
      * @return
      */
     public void postDriverPosition(String accuracy, String lat, String longn,
-                                     String trip_stop_id, String time) {
+                                     String trip_stop_id, String time , Location loc) {
         String url = API_URL + "v1/trips/tracking?mrdToken=" + Device.getInstance().getToken();
 
         AQuery ac = new AQuery(context);
@@ -581,6 +588,8 @@ public class ServerInterface {
         params.put("lon", longn);
         params.put("tripstopid", trip_stop_id);
         params.put("time", time);
+        params.put("heading" , loc.getBearing());
+        params.put("speed" , loc.getSpeed());
 
         if (Device.getInstance().isConnected()){
             ac.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
