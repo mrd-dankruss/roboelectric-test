@@ -2,10 +2,12 @@ package com.mrdexpress.paperless;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.*;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
@@ -32,6 +34,16 @@ public class ViewBagManifestActivity extends Activity
 
 		// Inflate views
 		initViewHolder();
+
+        holder.button_enterBarcode.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                //intent.putExtra(MANAGER_AUTH_INCOMPLETE_SCAN, true);
+                setResult(ScanActivity.RESULT_MANUAL_ENTRY, intent);
+                finish();
+            }
+        });
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -152,7 +164,7 @@ public class ViewBagManifestActivity extends Activity
 			holder.list = (ListView) root_view.findViewById(R.id.listView_manifest_consignment);
 			holder.text_view_consignment_number = (TextView) root_view.findViewById(R.id.textView_manifest_consignment_number);
 			holder.text_view_consignment_destination = (TextView) root_view.findViewById(R.id.textView_manifest_consignment_destination);
-
+            holder.button_enterBarcode = (Button) root_view.findViewById(R.id.buttonManifestScanBarcode);
 			// Store the holder with the view.
 			root_view.setTag(holder);
 		}
@@ -180,8 +192,8 @@ public class ViewBagManifestActivity extends Activity
 		TextView text_view_consignment_number;
 		TextView text_view_consignment_destination;
 		// TextView text_view_manifest_weight;
+        Button button_enterBarcode;
 		ListView list;
-
 	}
 
 }

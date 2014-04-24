@@ -1,10 +1,13 @@
 package com.mrdexpress.paperless;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,8 +44,16 @@ public class EnterBarcodeActivity extends FragmentActivity
 		});
 	}
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if( keyCode == KeyEvent.KEYCODE_ENTER){
+            holder.button_ok.callOnClick();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	public void initViewHolder()
+    public void initViewHolder()
 	{
 
 		if (rootView == null)

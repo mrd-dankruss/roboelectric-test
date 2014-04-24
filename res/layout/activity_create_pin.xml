@@ -104,6 +104,7 @@
         android:layout_marginRight="@dimen/margin_standard"
         android:background="@drawable/button_custom_grey"
         android:text="@string/button_change_driver"
+        android:visibility="gone"
         android:textStyle="bold" />
 
 </RelativeLayout>

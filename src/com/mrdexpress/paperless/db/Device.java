@@ -2,17 +2,16 @@ package com.mrdexpress.paperless.db;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.datatype.ObjectSerializer;
+import com.mrdexpress.paperless.net.NetworkStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by hannobean on 2014/03/27.
@@ -20,19 +19,21 @@ import java.util.List;
 public class Device {
     private static Device _instance = null;
     private static Context _context = null;
-    private String IMEI = null;
+    private static String IMEI = null;
+    private static SharedPreferences app_preferences = null;
+    private static SharedPreferences.Editor editor;
+    public ArrayList<DeviceLog> devicelogs = new ArrayList<DeviceLog>();
     private String Token = "400";
     private String GCMID = null;
     private String GCMGOOGLEID = null;
     private Integer AppVersion = null;
     private long QueryTimeOut = 10000;//10 seconds
-    public ArrayList<DeviceLog> devicelogs = new ArrayList<DeviceLog>();
-    private static SharedPreferences app_preferences = null;
-    private static SharedPreferences.Editor editor;
 
     public static Device getInstance() {
         if (_instance == null) {
             _instance = new Device();
+            TelephonyManager m = (TelephonyManager) Paperless.getContext().getSystemService(Context.TELEPHONY_SERVICE);
+            IMEI = m.getDeviceId();
         }
         if (app_preferences == null){
             app_preferences = Paperless.getContext().getSharedPreferences("Paperless" , 0);
@@ -143,13 +144,7 @@ public class Device {
     }
 
     public Boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) Paperless.getInstance().getSystemService(Paperless.getInstance().getApplicationContext().CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        if (ni == null) {
-            // There are no active networks.
-            return false;
-        } else
-            return true;
+        return NetworkStatus.getInstance().connected();
     }
 
     public String getTokenIMEIUrl(){
