@@ -8,7 +8,7 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,7 +113,7 @@ public class DeliveryHandoverFragment extends Fragment {
                         final TextView subtext = (TextView) dialog.findViewById(R.id.textView_manAuth_enter_pin);
 
                         button_continue.setText("Log partial delivery");
-                        subtext.setText("The branch manager has not scanned all of the parcels yet.");
+                        subtext.setText("Branch manager has not scanned all parcels");
 
                         button_continue.setOnClickListener(new OnClickListener() {
                             @Override

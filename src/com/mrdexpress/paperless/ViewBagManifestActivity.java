@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class ViewBagManifestActivity extends Activity
             public void onClick(View v) {
                 Intent intent = new Intent();
                 //intent.putExtra(MANAGER_AUTH_INCOMPLETE_SCAN, true);
-                setResult(ScanActivity.RESULT_MANUAL_ENTRY, intent);
+                setResult(ScanFragment.RESULT_MANUAL_ENTRY, intent);
                 finish();
             }
         });

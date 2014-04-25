@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -126,7 +127,7 @@ public class EnterPinActivity extends Activity {
 
 			/*
              * Make API call authenticating driver credentials in a thread.
-			 * When finished, send msg to thread handler to start ScanActivity
+			 * When finished, send msg to thread handler to start ScanFragment
 			 * 
 			 */
             final MyHandler handler = new MyHandler(this);
@@ -315,7 +316,7 @@ public class EnterPinActivity extends Activity {
                 dialog_progress.dismiss();
             }
 
-            Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ScanFragment.class);
 
             DbHandler.getInstance(getApplicationContext());
             // Pass driver name on

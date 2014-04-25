@@ -1,12 +1,12 @@
 package com.mrdexpress.paperless;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentManager;
 import com.mrdexpress.paperless.fragments.TransferDataFragment;
 
-public class TransferDataActivity extends FragmentActivity
+public class TransferDataActivity extends Activity
 {
 
 	@Override
@@ -16,7 +16,7 @@ public class TransferDataActivity extends FragmentActivity
 		setContentView(R.layout.activity_transfer_data);
 
 		// Fragment: TransferData Begin
-		FragmentManager fm = getSupportFragmentManager();
+		FragmentManager fm = getFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.activity_transfer_data_container);
 		if (fragment == null)
 		{

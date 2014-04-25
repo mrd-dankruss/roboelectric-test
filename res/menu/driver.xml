@@ -7,9 +7,6 @@
         android:title="@string/action_settings">
         <menu>
             <item
-                android:id="@+id/action_home"
-                android:title="@string/title_actionbar_home"/>
-            <item
                 android:id="@+id/action_logout"
                 android:title="@string/button_logout"/>
         </menu>

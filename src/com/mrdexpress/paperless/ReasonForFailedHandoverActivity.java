@@ -1,12 +1,12 @@
 package com.mrdexpress.paperless;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentManager;
 import com.mrdexpress.paperless.fragments.ReasonForFailedHandoverFragment;
 
-public class ReasonForFailedHandoverActivity extends FragmentActivity
+public class ReasonForFailedHandoverActivity extends Activity
 {
 	Fragment fragment;
 
@@ -17,7 +17,7 @@ public class ReasonForFailedHandoverActivity extends FragmentActivity
 		setContentView(R.layout.activity_report_delay);
 
 		// Fragment: Home Begin
-		FragmentManager fm = getSupportFragmentManager();
+		FragmentManager fm = getFragmentManager();
 		fragment = fm.findFragmentById(R.id.activity_report_delay_container);
 		if (fragment == null)
 		{

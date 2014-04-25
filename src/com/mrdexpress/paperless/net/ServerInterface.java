@@ -55,7 +55,7 @@ import java.util.*;
 public class ServerInterface {
 
     private final static String TAG = "ServerInterface";
-    private static final String API_URL = "http://staging.mrdexpress.com/api/";
+    private static final String API_URL = "http://uat.mrdexpress.com/api/";
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
     private static ServerInterface server_interface;
     private static Context context;

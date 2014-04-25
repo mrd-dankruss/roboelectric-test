@@ -95,7 +95,7 @@ public class GCMIntentService extends IntentService
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
-				MainActivity.class), 0);
+				LoginActivity.class), 0);
 
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
 				.setSmallIcon(R.drawable.mrd_logo_small).setContentTitle("GCM Notification")

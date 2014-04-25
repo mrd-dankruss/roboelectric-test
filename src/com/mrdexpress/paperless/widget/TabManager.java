@@ -2,9 +2,9 @@ package com.mrdexpress.paperless.widget;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TabHost;
 
@@ -22,7 +22,7 @@ import java.util.HashMap;
  * whenever the selected tab changes.
  */
 public class TabManager implements TabHost.OnTabChangeListener {
-    private final FragmentActivity mActivity;
+    private final Activity mActivity;
     private final TabHost mTabHost;
     private final int mContainerId;
     private final HashMap<String, TabInfo> mTabs = new HashMap<String, TabInfo>();
@@ -57,7 +57,7 @@ public class TabManager implements TabHost.OnTabChangeListener {
         }
     }
 
-    public TabManager(FragmentActivity activity, TabHost tabHost, int containerId) {
+    public TabManager(Activity activity, TabHost tabHost, int containerId) {
         mActivity = activity;
         mTabHost = tabHost;
         mContainerId = containerId;
@@ -73,9 +73,9 @@ public class TabManager implements TabHost.OnTabChangeListener {
         // Check to see if we already have a fragment for this tab, probably
         // from a previously saved state.  If so, deactivate it, because our
         // initial state is that a tab isn't shown.
-        info.fragment = mActivity.getSupportFragmentManager().findFragmentByTag(tag);
+        info.fragment = mActivity.getFragmentManager().findFragmentByTag(tag);
         if (info.fragment != null && !info.fragment.isDetached()) {
-            FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+            FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
             ft.detach(info.fragment);
             ft.commit();
         }
@@ -88,7 +88,7 @@ public class TabManager implements TabHost.OnTabChangeListener {
     public void onTabChanged(String tabId) {
         TabInfo newTab = mTabs.get(tabId);
         if (mLastTab != newTab) {
-            FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+            FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
             if (mLastTab != null) {
                 if (mLastTab.fragment != null) {
                     ft.detach(mLastTab.fragment);
@@ -106,7 +106,7 @@ public class TabManager implements TabHost.OnTabChangeListener {
 
             mLastTab = newTab;
             ft.commit();
-            mActivity.getSupportFragmentManager().executePendingTransactions();
+            mActivity.getFragmentManager().executePendingTransactions();
         }
     }
 }

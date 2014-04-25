@@ -2,7 +2,7 @@ package com.mrdexpress.paperless.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +29,7 @@ public class TransferDataFragment extends Fragment
 	}
 
 	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onResume()
+	 * @see android.app.Fragment#onResume()
 	 */
 	@Override
 	public void onResume()

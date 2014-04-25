@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -22,11 +22,9 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.ChangeUserDialog;
-import com.mrdexpress.paperless.helper.MiscHelper;
-import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
 
-public class ViewDeliveriesFragmentActivity extends FragmentActivity implements TabListener
+public class ViewDeliveriesFragmentActivity extends Activity implements TabListener
 
 {
 	private final String TAG = "ViewDeliveriesFragmentActivity";
@@ -69,7 +67,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 		// Initilization
 		mPager = (ViewPager) findViewById(R.id.view_deliveries_pager);
 		actionBar = getActionBar();
-		mPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+		mPagerAdapter = new TabsPagerAdapter(getFragmentManager());
 
 		mPager.setAdapter(mPagerAdapter);
 		actionBar.setHomeButtonEnabled(false);
@@ -146,11 +144,11 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_home:
+            /*case R.id.action_home:
                 Log.d(TAG, "go Home");
                 Intent intent = MiscHelper.getGoHomeIntent(ViewDeliveriesFragmentActivity.this);
                 startActivity(intent);
-                return true;
+                return true;*/
             case R.id.action_logout:
                 Log.d(TAG, "Logout");
                 setupChangeUserDialog();
@@ -186,14 +184,14 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
 	
 	/**
 	 * display change user dialog
-	 * TODO basically duplicate of code on ScanActivity -- recommend create project activity superclass that include common funcs like this OR make static to helper method
+	 * TODO basically duplicate of code on ScanFragment -- recommend create project activity superclass that include common funcs like this OR make static to helper method
 	 */
     private void setupChangeUserDialog() {
     	final ChangeUserDialog dialog_change_user = new ChangeUserDialog(this);
         dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog_change_user.show();
 
-        // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+        // LayoutInflater factory = LayoutInflater.from(ScanFragment.this);
 
         final ImageButton button_close = (ImageButton) dialog_change_user.findViewById(R.id.button_change_user_closeButton);
         final Button button_cancel = (Button) dialog_change_user.findViewById(R.id.button_change_user_cancel);
@@ -221,7 +219,7 @@ public class ViewDeliveriesFragmentActivity extends FragmentActivity implements 
         button_ok.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ViewDeliveriesFragmentActivity.this, MainActivity.class);
+                Intent intent = new Intent(ViewDeliveriesFragmentActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 //ServerInterface.getInstance().endMilkrun(Users.getInstance().getActiveDriver().getStringid());
                 startActivity(intent);
