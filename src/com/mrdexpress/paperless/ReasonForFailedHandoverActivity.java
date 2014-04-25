@@ -15,7 +15,7 @@ public class ReasonForFailedHandoverActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_report_delay);
-
+        Paperless.getInstance().setMainActivity(this);
 		// Fragment: Home Begin
 		FragmentManager fm = getFragmentManager();
 		fragment = fm.findFragmentById(R.id.activity_report_delay_container);

@@ -23,6 +23,7 @@ import com.mrdexpress.paperless.ViewDeliveriesFragmentActivity;
 import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
@@ -87,12 +88,13 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-
+                // FAILED DELIVERY LOGGING
                 Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, delay_reason);
-                CustomToast toast = new CustomToast(getActivity());
-                toast.setSuccess(false);
-                toast.setText("Delivery failed.");
-                toast.show();
+                Device.getInstance().displayFailed("Delivery failed." , getActivity());
+                //CustomToast toast = new CustomToast(getActivity());
+                //toast.setSuccess(false);
+                //toast.setText("Delivery failed.");
+                //toast.show();
                 getActivity().finish();
                 Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragmentActivity.class);
                 startActivity(intent);

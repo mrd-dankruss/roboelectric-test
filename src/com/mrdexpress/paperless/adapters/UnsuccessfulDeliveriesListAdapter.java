@@ -61,6 +61,11 @@ public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
 
 		text_address.setText(values.get(position).getDestinationAddress());
 		text_bag_ids.setText(values.get(position).getBarcode());
+
+        Bag bag = values.get(position);
+
+        String status = bag.getStatus();
+
 		
 		/*Date date = values.get(position).getSubmissionDate();
 		// java.text.DateFormat date_format = android.text.format.DateFormat.getDateFormat(activity
@@ -76,7 +81,7 @@ public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
 				
 		//text_failed_reason.setText("Reason: " + values.get(position).getStatusReason()); // TODO: Remove hardcoded values
 
-        text_failed_reason.setText("Reason: TODO...");
+        text_failed_reason.setText("Reason: " + status);
 
 		return rowView;
 	}

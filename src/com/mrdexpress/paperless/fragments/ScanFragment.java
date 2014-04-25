@@ -285,8 +285,8 @@ public class ScanFragment extends Fragment {
     {
         ServerInterface.getInstance().startTrip();
         ((FragmentResultInterface)getActivity()).onFragmentResult(2,2,null);
-        //finish();
-        //Intent intent = new Intent( getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+        //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
+        //Intent intent = new Intent( Paperless.getContext() , ViewDeliveriesFragmentActivity.class);
         //startActivity(intent);
     }
 
@@ -488,6 +488,7 @@ public class ScanFragment extends Fragment {
     //@Override
 
     public void handleDecode(String barcodeString, Boolean redrawscan) {
+        barcodeString = barcodeString.replaceAll("\\s+","");
         Bag scannedBag = null;
         last_scanned_barcode = barcodeString;
 

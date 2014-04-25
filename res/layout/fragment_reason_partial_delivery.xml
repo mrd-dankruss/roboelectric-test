@@ -44,6 +44,12 @@
         android:layout_marginLeft="@dimen/margin_button_WE"
         android:layout_marginRight="@dimen/margin_button_WE"
         android:layout_marginTop="@dimen/margin_button_NS"
-        android:text="@string/button_continue" />
+        android:text="@string/button_continue"
+        android:background="@drawable/button_custom"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:textSize="@dimen/font_size_button"
+        android:textColor="@color/black"
+            />
 
 </RelativeLayout>
