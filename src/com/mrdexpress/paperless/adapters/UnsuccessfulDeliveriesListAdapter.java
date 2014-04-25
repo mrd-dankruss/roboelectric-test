@@ -61,6 +61,8 @@ public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
 
 		text_address.setText(values.get(position).getDestinationAddress());
 		text_bag_ids.setText(values.get(position).getBarcode());
+
+        Bag bag = values.get(position);
 		
 		/*Date date = values.get(position).getSubmissionDate();
 		// java.text.DateFormat date_format = android.text.format.DateFormat.getDateFormat(activity

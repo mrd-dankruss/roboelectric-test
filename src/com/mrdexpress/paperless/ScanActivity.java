@@ -434,6 +434,7 @@ public class ScanActivity extends FragmentActivity {
     //@Override
 
     public void handleDecode(String barcodeString, Boolean redrawscan) {
+        barcodeString = barcodeString.replaceAll("\\s+","");
         Bag scannedBag = null;
         last_scanned_barcode = barcodeString;
 
