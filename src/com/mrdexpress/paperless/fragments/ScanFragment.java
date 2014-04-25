@@ -28,6 +28,7 @@ import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.interfaces.FragmentCallBackFunction;
 import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
@@ -190,8 +191,6 @@ public class ScanFragment extends Fragment {
 
         user_name = Users.getInstance().getActiveDriver().getfirstName();
 
-        UpdateBagsCounter();
-
         // Set click listener for list items (selecting a driver)
 
         holder.list.setOnItemClickListener(new OnItemClickListener() {
@@ -203,9 +202,12 @@ public class ScanFragment extends Fragment {
 
                     Bag bag = (Bag) holder.list.getItemAtPosition(position);
                     if (bag != null) {
-                        ViewBagManifestDialogFragment viewbag = ViewBagManifestDialogFragment.newInstance( new CallBackFunction() {
+                        ViewBagManifestDialogFragment viewbag = ViewBagManifestDialogFragment.newInstance( new FragmentCallBackFunction() {
                             @Override
-                            public boolean execute(Object args) {
+                            public boolean onFragmentResult(int requestCode, int resultCode, Intent data) {
+                                if( requestCode == DriverHomeActivity.MANUAL_BARCODE) {
+                                    handleDecode( data.getStringExtra("barcode"));
+                                }
                                 return false;
                             }
                         });
@@ -284,9 +286,9 @@ public class ScanFragment extends Fragment {
     private void startDelivery()
     {
         ServerInterface.getInstance().startTrip();
-        ((FragmentResultInterface)getActivity()).onFragmentResult(2,2,null);
+        ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_DELIVERY,2,null);
         //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
-        //Intent intent = new Intent( Paperless.getContext() , ViewDeliveriesFragmentActivity.class);
+        //Intent intent = new Intent( Paperless.getContext() , TabViewDeliveriesFragment.class);
         //startActivity(intent);
     }
 
@@ -329,7 +331,7 @@ public class ScanFragment extends Fragment {
             if (resultCode == this.getActivity().RESULT_OK) {
                 if( Users.getInstance().getActiveManager() != null)
                 {
-                    Intent intent = new Intent(this.getActivity().getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+                    Intent intent = new Intent(this.getActivity().getApplicationContext(), ViewDeliveriesFragment.class);
                     startActivity(intent);
                 }
             }
@@ -636,8 +638,7 @@ public class ScanFragment extends Fragment {
 
             holder.list = (ListView) root_view.findViewById(R.id.scan_list);
 
-            holder.button_start_milkrun = (Button) root_view
-                    .findViewById(R.id.scan_button_start_milkrun);
+            holder.button_start_milkrun = (Button) root_view.findViewById(R.id.scan_button_start_milkrun);
 
             holder.button_start_scanning = (Button) root_view.findViewById(R.id.button_start_scanning);
 
@@ -735,6 +736,15 @@ public class ScanFragment extends Fragment {
         } catch (Exception e) {
             Log.e("MRDEX:", e.toString());
         }
+
+        if (Workflow.getInstance().getBagBarcodesScanned().size() == 0) {
+            holder.button_start_milkrun.setEnabled(false);
+            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+        } else {
+            holder.button_start_milkrun.setEnabled(true);
+            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+        }
+
     }
 
 

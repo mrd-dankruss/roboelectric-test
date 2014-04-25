@@ -5,16 +5,17 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.CompletedDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.workflow.Workflow;
 
-public class CompletedDeliveriesFragment extends Fragment
+public class TabPartialDeliveriesFragment extends Fragment
 {
 
-	private static final String TAG = "ViewDeliveriesFragment";
+	private static final String TAG = "ViewPartialDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
 	private CompletedDeliveriesListAdapter adapter;
@@ -35,17 +36,10 @@ public class CompletedDeliveriesFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		//adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
-		//		getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
-
-        adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus( Bag.STATUS_COMPLETED));
-
+		adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_PARTIAL));
 		holder.list.setAdapter(adapter);
 
-        adapter.notifyDataSetChanged();
-
-
-        /*holder.button_completed.setOnClickListener(new View.OnClickListener()
+		/*holder.button_completed.setOnClickListener(new View.OnClickListener()
 		{
 
 			@Override
@@ -73,9 +67,8 @@ public class CompletedDeliveriesFragment extends Fragment
 				holder.list.setAdapter(adapter);
 				adapter.notifyDataSetChanged();
 			}
-		}); */
-
-	}
+		} */
+    }
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser)
@@ -100,19 +93,18 @@ public class CompletedDeliveriesFragment extends Fragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null,	false);
+			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null, false);
 
 			if (holder == null)
 			{
 				holder = new ViewHolder();
 			}
 
-			holder.list = (ListView) rootView
-					.findViewById(R.id.fragment_successful_deliveries_container);
+			holder.list = (ListView)rootView.findViewById(R.id.fragment_successful_deliveries_container);
 			/*holder.button_completed = (Button) rootView
 					.findViewById(R.id.fragment_successful_deliveries_completed_button);
 			holder.button_partial = (Button) rootView
-					.findViewById(R.id.fragment_successful_deliveries_partial_button);*/
+					.findViewById(R.id.fragment_successful_deliveries_partial_button); */
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -137,6 +129,6 @@ public class CompletedDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
-		//Button button_completed, button_partial;
+		Button button_completed, button_partial;
 	}
 }

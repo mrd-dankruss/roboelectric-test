@@ -1,11 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -18,18 +13,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.ViewDeliveriesFragmentActivity;
+import com.mrdexpress.paperless.*;
 import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -96,7 +85,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
                 //toast.setText("Delivery failed.");
                 //toast.show();
                 getActivity().finish();
-                Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragmentActivity.class);
+                Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragment.class);
                 startActivity(intent);
 			}
 		});

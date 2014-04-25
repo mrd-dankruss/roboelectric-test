@@ -13,13 +13,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.mrdexpress.paperless.DeliveryHandoverFragmentActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ReasonForFailedHandoverActivity;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;

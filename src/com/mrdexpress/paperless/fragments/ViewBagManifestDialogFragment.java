@@ -1,20 +1,20 @@
-package com.mrdexpress.paperless;
+package com.mrdexpress.paperless.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.view.*;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.mrdexpress.paperless.DriverHomeActivity;
+import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
-import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.interfaces.FragmentCallBackFunction;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
@@ -28,13 +28,13 @@ public class ViewBagManifestDialogFragment extends DialogFragment
     private DeliveryHandoverAdapter listAdapter;
 
 
-    public ViewBagManifestDialogFragment(CallBackFunction _callback) {
+    public ViewBagManifestDialogFragment( FragmentCallBackFunction _callback) {
         callback = _callback;
     }
 
-    private static CallBackFunction callback;
+    private static FragmentCallBackFunction callback;
 
-    public static ViewBagManifestDialogFragment newInstance(final CallBackFunction callback)
+    public static ViewBagManifestDialogFragment newInstance(final FragmentCallBackFunction callback)
     {
         ViewBagManifestDialogFragment f = new ViewBagManifestDialogFragment( callback);
         return f;
@@ -79,14 +79,24 @@ public class ViewBagManifestDialogFragment extends DialogFragment
                 //intent.putExtra(MANAGER_AUTH_INCOMPLETE_SCAN, true);
                 //setResult(ScanFragment.RESULT_MANUAL_ENTRY, intent);
                 //finish();
-                callback.execute(true);
+                EnterBarcodeFragment getBarcode = EnterBarcodeFragment.newInstance( new CallBackFunction() {
+                    @Override
+                    public boolean execute(Object args) {
+                        callback.onFragmentResult( DriverHomeActivity.MANUAL_BARCODE, 1, new Intent().putExtra("barcode", (String)args));
+                        return false;
+                    }
+                }  );
+                getBarcode.show( getActivity().getFragmentManager(), getTag());
+                    //intent_manual_barcode = new Intent(this.getActivity().getApplicationContext(), EnterBarcodeFragment.class);
+                    //startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
                 dismiss();
             }
         });
 
         //getActionBar().setDisplayHomeAsUpEnabled(true);
+        Bundle args = getArguments();
 
-        list = Workflow.getInstance().getBagParcelsAsObjects( savedInstanceState.getInt("bag_id"));
+        list = Workflow.getInstance().getBagParcelsAsObjects( args.getInt("bag_id"));
         listAdapter = new DeliveryHandoverAdapter(list);
 
         if ((listAdapter != null) & (list != null))
@@ -101,8 +111,8 @@ public class ViewBagManifestDialogFragment extends DialogFragment
         holder.text_view_consignment_number.setIncludeFontPadding(false);
 
         // Set titles
-        holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( savedInstanceState.getInt("bag_id")) + " (" +  list.size() + " items)");
-        holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + savedInstanceState.getString("bag_dest"));
+        holder.text_view_consignment_number.setText(getString(R.string.text_consignment) + " " + Integer.toString( args.getInt("bag_id")) + " (" +  list.size() + " items)");
+        holder.text_view_consignment_destination.setText(getString(R.string.text_destination_branch) + " " + args.getString("bag_dest"));
     }
 
     private class DeliveryHandoverAdapter extends BaseAdapter

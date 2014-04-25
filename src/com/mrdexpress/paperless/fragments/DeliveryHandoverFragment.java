@@ -15,10 +15,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
-import com.mrdexpress.paperless.ViewDeliveriesFragmentActivity;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
@@ -98,7 +96,7 @@ public class DeliveryHandoverFragment extends Fragment {
                         toast.setText("Delivery completed successfully.");
                         toast.show();
                         getActivity().finish();
-                        Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragmentActivity.class);
+                        Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragment.class);
                         startActivity(intent);
 
                     } else {

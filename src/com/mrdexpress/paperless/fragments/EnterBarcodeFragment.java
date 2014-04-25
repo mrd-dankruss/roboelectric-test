@@ -22,11 +22,6 @@ public class EnterBarcodeFragment extends DialogFragment
         callback = _callback;
     }
 
-    public interface barcodeListener{
-        public void cancel();
-        public void gotBarcode( String barcode);
-    }
-
     private static CallBackFunction callback;
 
     public static EnterBarcodeFragment newInstance(final CallBackFunction callback)
