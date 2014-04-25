@@ -13,10 +13,10 @@ import com.mrdexpress.paperless.adapters.UnsuccessfulDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.workflow.Workflow;
 
-public class UnsuccessfulDeliveriesFragment extends ListFragment
+public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 {
 
-	private static final String TAG = "UnsuccessfulDeliveriesFragment";
+	private static final String TAG = "TabUnsuccessfulDeliveriesFragment";
 	private ViewHolder holder;
 	private View rootView;
 	private UnsuccessfulDeliveriesListAdapter adapter;

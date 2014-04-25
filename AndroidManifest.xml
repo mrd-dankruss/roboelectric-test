@@ -73,7 +73,7 @@
     		android:value="@integer/google_play_services_version" />
     
         <activity
-            android:name="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:name=".fragments.ViewDeliveriesFragment"
             android:label="@string/title_deliveries"
             android:parentActivityName=".fragments.ScanFragment"
             android:screenOrientation="portrait" >
@@ -117,7 +117,7 @@
         <activity
             android:name="com.mrdexpress.paperless.MapActivity"
             android:label="@string/title_activity_map"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -130,7 +130,7 @@
             android:value="@string/key_googlemaps_api_debug" />
 
         <activity
-            android:name="com.mrdexpress.paperless.ViewBagManifestActivity"
+            android:name=".fragments.ViewBagManifestDialogFragment"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_view_bag_manifest"
             android:launchMode="singleTop"
@@ -153,7 +153,7 @@
             android:name="com.mrdexpress.paperless.ReportDelayActivity"
             android:label="@string/title_report_delay"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -163,7 +163,7 @@
             android:name="com.mrdexpress.paperless.CallActivity"
             android:label="@string/title_call"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -173,17 +173,17 @@
             android:name="com.mrdexpress.paperless.SmsActivity"
             android:label="@string/title_sms"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity" />
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.DeliveryHandoverFragmentActivity"
+            android:name=".fragments.DeliveryHandoverFragmentActivity"
             android:label="@string/title_deliveryHandover"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -193,7 +193,7 @@
             android:name="com.mrdexpress.paperless.DeliveryDetailsActivity"
             android:label="@string/title_actionbar_delivery_details"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -203,7 +203,7 @@
             android:name="com.mrdexpress.paperless.TransferDataActivity"
             android:label="@string/title_actionbar_transfer_data"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -213,7 +213,7 @@
             android:name="com.mrdexpress.paperless.ReasonForFailedHandoverActivity"
             android:label="@string/title_actionbar_failed_delivery"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
+            android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -223,7 +223,7 @@
             android:name="com.mrdexpress.paperless.ReasonPartialDeliveryActivity"
             android:label="@string/title_reason_partial_deliveries"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.DeliveryHandoverFragmentActivity"
+            android:parentActivityName=".fragments.DeliveryHandoverFragmentActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -239,7 +239,7 @@
                 android:value="com.mrdexpress.paperless.MainActivity" />
         </activity>
         <activity
-            android:name=".EnterBarcodeFragment"
+            android:name=".fragments.EnterBarcodeFragment"
             android:label="@string/title_actionbar_enter_barcode"
             android:parentActivityName=".DriverHomeActivity"
             android:screenOrientation="portrait" 

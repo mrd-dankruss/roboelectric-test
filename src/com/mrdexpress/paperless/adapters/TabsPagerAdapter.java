@@ -3,11 +3,11 @@ package com.mrdexpress.paperless.adapters;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
-import com.mrdexpress.paperless.fragments.CompletedDeliveriesFragment;
-import com.mrdexpress.paperless.fragments.PartialDeliveriesFragment;
-import com.mrdexpress.paperless.fragments.UnsuccessfulDeliveriesFragment;
-import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
- 
+import com.mrdexpress.paperless.fragments.TabCompletedDeliveriesFragment;
+import com.mrdexpress.paperless.fragments.TabPartialDeliveriesFragment;
+import com.mrdexpress.paperless.fragments.TabViewDeliveriesFragment;
+import com.mrdexpress.paperless.fragments.TabUnsuccessfulDeliveriesFragment;
+
 public class TabsPagerAdapter extends FragmentPagerAdapter {
  
     public TabsPagerAdapter(FragmentManager fm) {
@@ -19,13 +19,13 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
  
         switch (index) {
         case 0:
-            return new ViewDeliveriesFragment();
+            return new TabViewDeliveriesFragment();
         case 1:
-            return new CompletedDeliveriesFragment();
+            return new TabCompletedDeliveriesFragment();
         case 2:
-            return new PartialDeliveriesFragment();
+            return new TabPartialDeliveriesFragment();
         case 3:
-            return new UnsuccessfulDeliveriesFragment();
+            return new TabUnsuccessfulDeliveriesFragment();
         }
         return null;
     }

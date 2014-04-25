@@ -4,12 +4,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.util.Log;
-import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
-
+import com.mrdexpress.paperless.fragments.TabViewDeliveriesFragment;
 
 
 /**
- * A simple pager adapter that represents ViewDeliveriesFragment objects, in
+ * A simple pager adapter that represents TabViewDeliveriesFragment objects, in
  * sequence.
  */
 public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
@@ -34,9 +33,9 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
 		Log.d("fi.gfarr.mrd", "Position: " + position);
 		Fragment fragment = null;
 		switch (position) {
-            case 0:	fragment = new ViewDeliveriesFragment();
-            case 1: fragment = new ViewDeliveriesFragment();
-            case 2: fragment = new ViewDeliveriesFragment();
+            case 0:	fragment = new TabViewDeliveriesFragment();
+            case 1: fragment = new TabViewDeliveriesFragment();
+            case 2: fragment = new TabViewDeliveriesFragment();
         }
 		return fragment;
 	}

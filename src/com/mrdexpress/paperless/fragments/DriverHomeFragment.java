@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
@@ -36,14 +37,6 @@ public class DriverHomeFragment extends Fragment {
 
         SharedPreferences.Editor editor = prefs.edit();
         editor.apply();
-
-        holder.button_milkrun.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((FragmentResultInterface)getActivity()).onFragmentResult(2,1,null);
-                //new RetrieveBagsTask().execute();
-            }
-        });
     }
 
     public void initViewHolder(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
@@ -67,6 +60,14 @@ public class DriverHomeFragment extends Fragment {
             holder.button_milkrun.setTypeface(typeface_robotoBold);
             holder.button_training_run.setTypeface(typeface_robotoBold);
             holder.button_training_run.setVisibility(View.GONE);
+
+            holder.button_milkrun.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_SCAN,1,null);
+                    //new RetrieveBagsTask().execute();
+                }
+            });
 
             // Store the holder with the view.
             rootView.setTag(holder);
