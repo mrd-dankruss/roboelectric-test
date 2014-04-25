@@ -10,11 +10,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+import com.mrdexpress.paperless.LoginActivity;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.net.Ajax;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
@@ -25,11 +29,9 @@ import java.util.ArrayList;
 
 public class PaperlessService extends Service{
     public static Thread ajaxthread;
-    LocationManager locationManager;
     public static Integer AJAX_TIMER = 300000;
     public static Integer LOCATION_TIMER = 30000;
     public static Location oldloc = null;
-
     public LocationListener ls = new LocationListener() {
         @Override
         public void onLocationChanged(Location location)
@@ -40,7 +42,6 @@ public class PaperlessService extends Service{
                 bagid = Workflow.getInstance().currentBagID;
                 if (bagid > 0){
                     //bag is set
-
                 }else{
                     //use first bag
                     bagid = -1; //bags.get(0).getBagID();
@@ -54,7 +55,7 @@ public class PaperlessService extends Service{
                                 Double.toString(location.getLatitude()) ,
                                 Double.toString(location.getLongitude()) ,
                                 activestop.get("id").toString() ,
-                                Long.toString(System.currentTimeMillis())
+                                Long.toString(System.currentTimeMillis()) , location
                         );
                     } else if (oldloc.getLatitude() != location.getLatitude()){
                         ServerInterface.getInstance().postDriverPosition(
@@ -62,7 +63,7 @@ public class PaperlessService extends Service{
                                 Double.toString(location.getLatitude()) ,
                                 Double.toString(location.getLongitude()) ,
                                 activestop.get("id").toString() ,
-                                Long.toString(System.currentTimeMillis())
+                                Long.toString(System.currentTimeMillis()) , location
                         );
                     }
                     oldloc = location;
@@ -73,7 +74,7 @@ public class PaperlessService extends Service{
                             Double.toString(location.getLatitude()) ,
                             Double.toString(location.getLongitude()) ,
                             "-1" ,
-                            Long.toString(System.currentTimeMillis())
+                            Long.toString(System.currentTimeMillis()) , location
                     );
                 }
 
@@ -99,8 +100,7 @@ public class PaperlessService extends Service{
 
         }
     };
-
-
+    LocationManager locationManager;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -132,13 +132,14 @@ public class PaperlessService extends Service{
 
     @Override
     public void onStart(Intent intent, int startId) {
-        Toast.makeText(this, "Paperless Service Started", Toast.LENGTH_SHORT).show();
+        Device.getInstance().displayInfo("Paperless Service Started");
         Log.d("MRD-EX", "onStart");
+        Paperless.getInstance().ottobus.post(new String("TEST"));
     }
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Paperless Service Stopped", Toast.LENGTH_LONG).show();
+        Device.getInstance().displayInfo("Paperless Service Stopped");
         ajaxthread.stop();
         Log.d("MRD-EX", "onDestroy");
     }

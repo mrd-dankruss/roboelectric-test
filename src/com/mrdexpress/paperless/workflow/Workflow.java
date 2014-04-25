@@ -420,7 +420,7 @@ public class Workflow extends Observable
                 Bag bag = new Bag( (JSONObject)rawbags.get(i));
                 String devid = Device.getInstance().getIMEI();
                 //if (devid.equals("356779059317726")){ bag.setScanned(1); }
-                //bag.setScanned(1);
+                bag.setScanned(1);
                 bags.add(bag);
             }
         }

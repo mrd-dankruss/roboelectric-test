@@ -101,6 +101,7 @@ public class ScanFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Paperless.getInstance().setMainActivity(this.getActivity());
         super.onCreate(savedInstanceState);
     }
 
@@ -162,7 +163,6 @@ public class ScanFragment extends Fragment {
 
         new RetrieveBagsTask().execute();
     }
-
 
     private void gotData(){
         handler = new Handler();
