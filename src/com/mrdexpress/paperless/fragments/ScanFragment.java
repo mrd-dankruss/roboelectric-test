@@ -1,6 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -25,7 +23,6 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.*;
-import com.mrdexpress.paperless.EnterBarcodeFragment;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -206,8 +203,21 @@ public class ScanFragment extends Fragment {
 
                     Bag bag = (Bag) holder.list.getItemAtPosition(position);
                     if (bag != null) {
-                        Intent intent = new Intent(getActivity().getApplicationContext(),
-                                ViewBagManifestActivity.class);
+                        ViewBagManifestDialogFragment viewbag = ViewBagManifestDialogFragment.newInstance( new CallBackFunction() {
+                            @Override
+                            public boolean execute(Object args) {
+                                return false;
+                            }
+                        });
+
+                       Bundle args = new Bundle();
+                       args.putInt("bag_id", bag.getBagID() );
+                       args.putString("bag_dest", bag.getDestination() );
+                       args.putString("bag_items", Integer.toString(bag.getNumberItems()) );
+                       viewbag.setArguments( args);
+                       viewbag.show(getActivity().getFragmentManager(), getTag());
+                       /*
+                       Intent intent = new Intent(getActivity().getApplicationContext(), ViewBagManifestDialogFragment.class);
 
                         // Pass info to view manifest activity
 
@@ -215,7 +225,7 @@ public class ScanFragment extends Fragment {
                         intent.putExtra("bag_dest", bag.getDestination() );
                         intent.putExtra("bag_items", Integer.toString(bag.getNumberItems()) );
 
-                        startActivityForResult( intent, RESULT_MANUAL_ENTRY);
+                        startActivityForResult( intent, RESULT_MANUAL_ENTRY); */
                     }
                 }
             }
@@ -314,12 +324,6 @@ public class ScanFragment extends Fragment {
                 }
             }
         }*/
-
-        if( requestCode == RESULT_MANUAL_ENTRY){
-            if( resultCode == RESULT_MANUAL_ENTRY){
-                getManualBarcode();
-            }
-        }
 
         if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH) {
             if (resultCode == this.getActivity().RESULT_OK) {
@@ -613,7 +617,7 @@ public class ScanFragment extends Fragment {
                 return false;
             }
         }  );
-        getBarcode.show( getActivity().getFragmentManager(), "");
+        getBarcode.show( getActivity().getFragmentManager(), getTag());
         //intent_manual_barcode = new Intent(this.getActivity().getApplicationContext(), EnterBarcodeFragment.class);
         //startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
     }
@@ -647,9 +651,6 @@ public class ScanFragment extends Fragment {
             // Store the holder with the view.
             root_view.setTag(holder);
 
-    }
-
-    public interface onDoneListener{
     }
 
     /**

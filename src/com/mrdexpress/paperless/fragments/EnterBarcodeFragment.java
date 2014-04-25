@@ -1,77 +1,119 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.*;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.app.Activity;
+import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 
-public class EnterBarcodeFragment extends Fragment
+public class EnterBarcodeFragment extends DialogFragment
 {
-
 	private final String TAG = "EnterBarcodeFragment";
 	private ViewHolder holder;
 	private View rootView;
+	public final static String MANUAL_BARCODE = "MANUAL_BARCODE";
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public EnterBarcodeFragment( CallBackFunction _callback) {
+        callback = _callback;
+    }
+
+    public interface barcodeListener{
+        public void cancel();
+        public void gotBarcode( String barcode);
+    }
+
+    private static CallBackFunction callback;
+
+    public static EnterBarcodeFragment newInstance(final CallBackFunction callback)
+    {
+        EnterBarcodeFragment f = new EnterBarcodeFragment( callback);
+        return f;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
 	{
-
-		initViewHolder(inflater, container); // Inflate ViewHolder static instance
-
-		return rootView;
+		super.onCreate(savedInstanceState);
 	}
 
-	public void onResume()
-	{
-		super.onResume();
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
 
-		holder.button_ok.setOnClickListener(new View.OnClickListener()
-		{
-			
-			@Override
-			public void onClick(View v)
-			{
-				// TODO Auto-generated method stub
-				
-			}
-		});
-	}
-	
-	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
-	{
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        initViewHolder(inflater, container);
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        holder.text_barcode.setOnKeyListener( new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if( event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+                    holder.button_ok.callOnClick();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        holder.button_ok.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //Intent intent = new Intent();
+                //intent.putExtra(MANUAL_BARCODE, holder.text_barcode.getText().toString());
+                //setResult(Activity.RESULT_OK, intent);
+                //finish();
+                callback.execute(holder.text_barcode.getText().toString());
+                dismiss();
+            }
+        });
+
+    }
+
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container){
 		if (rootView == null)
 		{
-
-			rootView = inflater.inflate(R.layout.fragment_enter_barcode, null, false);
+            rootView = inflater.inflate(R.layout.fragment_enter_barcode, container, false);
+            //getActivity().setContentView();
 
 			if (holder == null)
 			{
 				holder = new ViewHolder();
 			}
 
+			Typeface typeface_roboto_bold = Typeface.createFromAsset( getActivity().getAssets(), FontHelper
+					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
+							FontHelper.STYLE_BOLD));
+
 			holder.text_barcode = (EditText) rootView.findViewById(R.id.text_enter_barcode);
 			holder.button_ok = (Button) rootView.findViewById(R.id.button_enter_barcode_ok);
 
-			// Store the holder with the view.
+			holder.button_ok.setTypeface(typeface_roboto_bold);
+
 			rootView.setTag(holder);
-
-		}
-		else
-		{
-			holder = (ViewHolder) rootView.getTag();
-
-			if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup))
-			{
-				((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
-			}
-			else
-			{
-			}
 		}
 	}
 
@@ -82,5 +124,4 @@ public class EnterBarcodeFragment extends Fragment
 		EditText text_barcode;
 		Button button_ok;
 	}
-
 }

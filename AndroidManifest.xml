@@ -130,7 +130,7 @@
             android:value="@string/key_googlemaps_api_debug" />
 
         <activity
-            android:name="com.mrdexpress.paperless.ViewBagManifestActivity"
+            android:name=".ViewBagManifestDialogFragment"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_view_bag_manifest"
             android:launchMode="singleTop"
@@ -239,7 +239,7 @@
                 android:value="com.mrdexpress.paperless.MainActivity" />
         </activity>
         <activity
-            android:name=".EnterBarcodeFragment"
+            android:name=".fragments.EnterBarcodeFragment"
             android:label="@string/title_actionbar_enter_barcode"
             android:parentActivityName=".DriverHomeActivity"
             android:screenOrientation="portrait" 
