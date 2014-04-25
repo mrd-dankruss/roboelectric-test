@@ -98,7 +98,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 		more = (Button) rowView.findViewById(R.id.deliveries_button_more);
 		more.setTypeface(typeface_roboto_bold);
-
+        //more.setText("More Options");
 		
 		// Icon
 		// Only doing Milkruns for now so hardcode

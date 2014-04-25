@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.ScanFragment;
+import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
 
 public class DriverHomeActivity extends Activity implements FragmentResultInterface
@@ -57,6 +58,8 @@ public class DriverHomeActivity extends Activity implements FragmentResultInterf
                 else{
                     if (2 == resultCode){
                         finish();
+                        Intent intent = new Intent(DriverHomeActivity.this, ViewDeliveriesFragmentActivity.class);
+                        startActivity(intent);
                         //Intent intent = new Intent( getApplicationContext(), ViewDeliveriesFragmentActivity.class);
                         //startActivity(intent);
                     }

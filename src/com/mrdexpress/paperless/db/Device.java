@@ -232,6 +232,7 @@ public class Device {
                 Crouton.makeText(Paperless.getInstance().getActivity() , message , st ).show();
             }
         } catch (Exception e){
+            Log.e("MRD-EX" , e.getMessage());
             Paperless.handleException(e);
         }
     }

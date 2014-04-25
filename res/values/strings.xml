@@ -78,9 +78,9 @@
     <string name="title_return">RETURN</string>
     <string name="title_report_delay">Report delay</string>
     <string name="title_call">Phone</string>
-    <string name="title_sms">SMS</string>
+    <string name="title_sms">Send Message</string>
     <string name="trafficDelay_title">Traffic</string>
-    <string name="title_updateStatusDialog">SMS</string>
+    <string name="title_updateStatusDialog">Send Message</string>
     <string name="title_deliveryHandover">Delivery Handover</string>
     <string name="title_transfer_data_subTitle">Connected to Dispatch Wireless network</string>
     <string name="title_geofence_enter">Arrived at destination!</string>

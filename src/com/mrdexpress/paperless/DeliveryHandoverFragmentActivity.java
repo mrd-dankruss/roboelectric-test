@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.Activity;
 import android.app.FragmentManager;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -48,6 +49,7 @@ public class DeliveryHandoverFragmentActivity extends Activity
 			if (resultCode == RESULT_OK)
 			{
                 Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_PARTIAL, "");
+                Device.getInstance().displaySuccess("Delivery Logged." , this);
                 finish();
                 Intent intent = new Intent(getApplicationContext() , ViewDeliveriesFragmentActivity.class);
                 startActivity(intent);

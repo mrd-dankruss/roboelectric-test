@@ -90,11 +90,10 @@ public class ReasonForFailedHandoverFragment extends Fragment
 			{
                 // FAILED DELIVERY LOGGING
                 Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, delay_reason);
-                Device.getInstance().displayFailed("Delivery failed." , getActivity());
-                //CustomToast toast = new CustomToast(getActivity());
-                //toast.setSuccess(false);
-                //toast.setText("Delivery failed.");
-                //toast.show();
+                CustomToast toast = new CustomToast(getActivity());
+                toast.setSuccess(false);
+                toast.setText("Delivery failed.");
+                toast.show();
                 getActivity().finish();
                 Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragmentActivity.class);
                 startActivity(intent);

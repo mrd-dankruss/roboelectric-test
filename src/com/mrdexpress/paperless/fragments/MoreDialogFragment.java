@@ -88,7 +88,8 @@ public class MoreDialogFragment extends DialogFragment
 		{
 			isExtendedDialaog = args.getBoolean(EXTENDED_DIALOG);
 		}
-		
+
+
 		ImageButton closeDialogButton = (ImageButton) v.findViewById(R.id.button_deliveriesMore_closeButton);
 		Button setAsNextDelivery = (Button) v.findViewById(R.id.button_deliveriesMore_setAsNextDelivery);
 		View setAsNextDeliveryDivider = (View) v.findViewById(R.id.seperator_deliveriesMore_nextDelivery);

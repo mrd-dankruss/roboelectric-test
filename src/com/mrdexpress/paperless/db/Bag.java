@@ -119,12 +119,29 @@ public class Bag implements Parcelable
 	public String getBarcode()
 	{
         JSONObject flowdata = data.getJSONObject("flowdata");
-        return JSONObjectHelper.getStringDef(flowdata, "barcode", "!");		}
+        return JSONObjectHelper.getStringDef(flowdata, "barcode", "!");
+    }
 
 	public String getStatus()
 	{
-		return status;
+        JSONObject thestatus = data.getJSONObject("status");
+        return JSONObjectHelper.getStringDef(thestatus, "status", "");
+        //return status;
 	}
+
+    public String getReason()
+    {
+        JSONObject thestatus = data.getJSONObject("status");
+        return JSONObjectHelper.getStringDef(thestatus, "reason", "");
+        //return status;
+    }
+
+    public String getReasonDate()
+    {
+        JSONObject thestatus = data.getJSONObject("status");
+        return JSONObjectHelper.getStringDef(thestatus, "date", "");
+        //return status;
+    }
 
 	public ArrayList<Contact> getContacts()
 	{

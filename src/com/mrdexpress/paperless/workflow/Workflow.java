@@ -621,6 +621,7 @@ public class Workflow extends Observable
             JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( bag, "status", new JSONObject());
             jsostatus.put("status", status);
             jsostatus.put("reason", reason);
+            jsostatus.put("date" , Paperless.getFormattedDate() + " " + Paperless.getFormattedTime());
             bag.put("status", jsostatus);
 
             if ( status.equals(Bag.STATUS_COMPLETED) ){
@@ -631,21 +632,6 @@ public class Workflow extends Observable
 
             } else if (status.equals(Bag.STATUS_PARTIAL) ){
                 ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
-                //Partial Bag Delivery ( some parcels was already failed , we need to success the ones left
-                //ArrayList<DeliveryHandoverDataObject> unscanned = (ArrayList<DeliveryHandoverDataObject>) Workflow.getInstance().doormat.get(VariableManager.UNSCANNED_PARCELS);
-                //for(int i = 0; i < unscanned.size(); i++ )
-                //{
-                    //DeliveryHandoverDataObject temp = unscanned.get(i);
-                    //ServerInterface.getInstance().setDeliveryStatus(status , temp.getMDX() , "Parcel " + temp.getBarcode() + " could not be delivered during the delivery run (Reason: " + reason + " )");
-                //}
-
-                /*ArrayList<DeliveryHandoverDataObject> scanned = (ArrayList<DeliveryHandoverDataObject>) Workflow.getInstance().doormat.get("scannedparcels");
-                for(int i = 0; i < scanned.size(); i++ )
-                {
-                    DeliveryHandoverDataObject temp = scanned.get(i);
-                    ServerInterface.getInstance().setDeliveryStatus(status , temp.getMDX() , "Parcel " + temp.getBarcode() + " could not be delivered during the delivery run (Reason: " + reason + " )");
-                }*/
-
             }
 
         }

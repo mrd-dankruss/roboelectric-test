@@ -57,7 +57,8 @@ public class ViewDeliveriesFragmentActivity extends Activity implements TabListe
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_view_deliveries);
+	    setContentView(R.layout.activity_view_deliveries);
+        Paperless.getInstance().setMainActivity(this);
 
 		String[] tabs =	{ getResources().getString(R.string.tab_todo),
                             getResources().getString(R.string.tab_completed),
@@ -97,11 +98,13 @@ public class ViewDeliveriesFragmentActivity extends Activity implements TabListe
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2)
 			{
+
 			}
 
 			@Override
 			public void onPageScrollStateChanged(int arg0)
 			{
+
 			}
 		});
 

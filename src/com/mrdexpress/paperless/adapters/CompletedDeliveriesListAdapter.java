@@ -3,15 +3,18 @@ package com.mrdexpress.paperless.adapters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.app.Activity;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.helper.MiscHelper;
 
 import java.util.ArrayList;
 
@@ -63,14 +66,9 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 
 		text_address.setText(values.get(position).getDestinationAddress());
 		text_bag_ids.setText(values.get(position).getBarcode());
-
-		/*Date date = values.get(position).getSubmissionDate();
-		// java.text.DateFormat date_format = android.text.format.DateFormat.getDateFormat(activity
-		// .getApplicationContext());
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");		
-
-		text_failed_time.setText("Delivery at " + format.format(date));*/
-		// values
+        text_address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
+        Bag bag = values.get(position);
+        text_failed_time.setText("Delivered on : " + bag.getReasonDate());
 
 		return rowView;
 	}

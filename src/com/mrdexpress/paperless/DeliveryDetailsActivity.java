@@ -103,6 +103,8 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
 			}
 		});
 
+        //holder.button_more.setText("More Options");
+
 		holder.button_more.setOnClickListener(new View.OnClickListener()
 		{
 

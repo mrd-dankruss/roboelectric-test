@@ -43,6 +43,7 @@ public class CreatePinActivity extends Activity {
 
         // button click
         // Click create button
+        holder.button_create.setText("Create PIN");
         holder.button_create.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
