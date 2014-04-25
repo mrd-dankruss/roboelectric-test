@@ -20,8 +20,11 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
+import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Device;
 
 /**
  * This {@code WakefulBroadcastReceiver} takes care of creating and managing a
@@ -43,7 +46,10 @@ public class GCMBroadcastReceiver extends WakefulBroadcastReceiver
 		ComponentName comp = new ComponentName(context.getPackageName(),
 				GCMIntentService.class.getName());
 		// Start the service, keeping the device awake while it is launching.
-		startWakefulService(context, (intent.setComponent(comp)));
+        //Device.getInstance().displayInfo(intent.getExtras().getString("data"));
+        Paperless.getInstance().gcmbus.post(new Bundle(intent.getExtras()));
+		//startWakefulService(context, (intent.setComponent(comp)));
 		setResultCode(Activity.RESULT_OK);
-	}
+
+    }
 }

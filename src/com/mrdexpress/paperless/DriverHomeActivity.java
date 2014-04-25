@@ -16,6 +16,7 @@ public class DriverHomeActivity extends FragmentActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+        Paperless.getInstance().setMainActivity(this);
 
 		// Fragment: Home Begin
 		FragmentManager fm = getSupportFragmentManager();

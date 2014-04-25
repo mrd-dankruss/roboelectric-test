@@ -113,7 +113,7 @@ public class ScanActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
         Paperless.getInstance().setMainActivity(this);
-        ServerInterface.displayToast("HANAHANAHANAHANAHANAHANAH");
+        Paperless.getInstance().ottobus.post(new String("TEST"));
 
         handler = new Handler();
         driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );

@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 import com.mrdexpress.paperless.db.Device;
+import com.squareup.otto.Bus;
 
 /**
  * Created by hannobean on 2014/03/27.
@@ -13,6 +14,8 @@ import com.mrdexpress.paperless.db.Device;
 public class Paperless extends Application {
     private static Paperless instance;
     private static Activity mainActivity;
+    public Bus ottobus;
+    public Bus gcmbus;
 
     public static Paperless getInstance() {
         return instance;
@@ -30,6 +33,8 @@ public class Paperless extends Application {
     @Override
     public void onCreate() {
         instance = this;
+        ottobus = new Bus();
+        gcmbus = new Bus();
         super.onCreate();
     }
 

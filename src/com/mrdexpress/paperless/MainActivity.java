@@ -47,6 +47,7 @@ import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.CheckConnectivity;
+import com.squareup.otto.Subscribe;
 import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
@@ -103,6 +104,20 @@ public class MainActivity extends Activity implements LoginInterface {
         //NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
 
         checkConnected();
+
+        Paperless.getInstance().gcmbus.register(this);
+    }
+
+    @Subscribe public void mytestevent(String event){
+        Log.e("MRD-EX" , event);
+    }
+    @Subscribe public void mygcm(Bundle extra){
+        if (!extra.isEmpty()){
+            String test123 = extra.getString("data");
+            Device.getInstance().displayInfo(test123);
+            //Toast.makeText(getApplicationContext() , extra.getString("data") , Toast.LENGTH_LONG);
+
+        }
     }
 
     private void checkConnected(){

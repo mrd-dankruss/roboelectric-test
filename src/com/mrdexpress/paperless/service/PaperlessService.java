@@ -134,6 +134,7 @@ public class PaperlessService extends Service{
     public void onStart(Intent intent, int startId) {
         Device.getInstance().displayInfo("Paperless Service Started");
         Log.d("MRD-EX", "onStart");
+        Paperless.getInstance().ottobus.post(new String("TEST"));
     }
 
     @Override
