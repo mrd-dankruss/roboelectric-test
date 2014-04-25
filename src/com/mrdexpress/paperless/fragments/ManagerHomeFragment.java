@@ -3,13 +3,12 @@ package com.mrdexpress.paperless.fragments;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.ScanActivity;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 
@@ -40,7 +39,7 @@ public class ManagerHomeFragment extends Fragment
 			public void onClick(View v)
 			{
 				// Start scan activity
-				Intent intent = new Intent(getActivity(), ScanActivity.class);
+				Intent intent = new Intent(getActivity(), ScanFragment.class);
 
 				// Pass driver name on
 				intent.putExtra(VariableManager.EXTRA_DRIVER, getActivity().getIntent()

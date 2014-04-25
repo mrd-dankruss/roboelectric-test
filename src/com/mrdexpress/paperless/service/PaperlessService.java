@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-import com.mrdexpress.paperless.MainActivity;
+import com.mrdexpress.paperless.LoginActivity;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;

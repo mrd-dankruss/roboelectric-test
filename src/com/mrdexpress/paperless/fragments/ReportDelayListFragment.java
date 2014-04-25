@@ -4,9 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,7 +74,7 @@ public class ReportDelayListFragment extends Fragment
 			{
 				parentItemPosition = position;// (Integer) getListAdapter().getItem(position);
 
-				FragmentManager fm = getActivity().getSupportFragmentManager();
+				FragmentManager fm = getActivity().getFragmentManager();
 
 				if (holder.list.getItemAtPosition(position) != null)
 				{

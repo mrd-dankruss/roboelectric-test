@@ -1,4 +1,4 @@
-package com.mrdexpress.paperless;
+package com.mrdexpress.paperless.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,7 +15,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.support.v4.app.FragmentActivity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -23,15 +24,15 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.google.zxing.client.android.Intents;
+import com.mrdexpress.paperless.*;
+import com.mrdexpress.paperless.EnterBarcodeFragment;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Users;
-import com.mrdexpress.paperless.fragments.ChangeUserDialog;
-import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
-import com.mrdexpress.paperless.fragments.NotAssignedToUserDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -39,12 +40,12 @@ import com.mrdexpress.paperless.workflow.Workflow;
 import java.util.Date;
 import java.util.List;
 
-public class ScanActivity extends FragmentActivity {
+public class ScanFragment extends Fragment {
 
     private ViewHolder holder;
     private View root_view;
 
-    private static final String TAG = "ScanActivity";
+    private static final String TAG = "ScanFragment";
 
     private IncompleteScanDialog dialog;
     private ChangeUserDialog dialog_change_user;
@@ -55,7 +56,7 @@ public class ScanActivity extends FragmentActivity {
     static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
     static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
     static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
-    static final int RESULT_MANUAL_ENTRY = 2002;
+    public static final int RESULT_MANUAL_ENTRY = 2002;
     private Intent intent_manual_barcode;
     private String user_name;
 
@@ -72,7 +73,7 @@ public class ScanActivity extends FragmentActivity {
         UpdateBagsCounter();
     }
 
-    @Override
+    /*@Override
     public void onBackPressed()
     {
         // code here to show dialog
@@ -83,7 +84,7 @@ public class ScanActivity extends FragmentActivity {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked
-                        finish();
+                        ((FragmentResultInterface)getActivity()).onFragmentResult(1,2,null);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -95,49 +96,97 @@ public class ScanActivity extends FragmentActivity {
         if (Workflow.getInstance().getBagsScanned(true).size() > 0)
             dialog_builder.setMessage("You will need to scan all bags again if you cancel the current delivery run").setNegativeButton("No", dialogClickListener2).setPositiveButton("Yes", dialogClickListener2).setTitle("Cancel delivery run for " + Users.getInstance().getActiveDriver().getFullName() ).show();
         else
-            super.onBackPressed();
-    }
-
-
-    @Override
-    public boolean onKeyDown(int keycode, KeyEvent e) {
-        switch(keycode) {
-            case KeyEvent.KEYCODE_MENU:
-                return true;
-        }
-        return super.onKeyDown(keycode, e);
-    }
+            getActivity().onBackPressed();
+    } */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Paperless.getInstance().setMainActivity(this.getActivity());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan);
-        Paperless.getInstance().setMainActivity(this);
-        Paperless.getInstance().ottobus.post(new String("TEST"));
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        super.onCreateView(inflater, container, savedInstanceState);
+        initViewHolder(inflater, container);
+        return root_view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getData();
+    }
+
+    private void getData(){
+        class RetrieveBagsTask extends AsyncTask<Void, Void, Void> {
+            private ProgressDialog dialog_progress = new ProgressDialog(getActivity());
+
+            /** progress dialog to show user that the backup is processing. */
+            /**
+             * application context.
+             */
+            @Override
+            protected void onPreExecute() {
+                this.dialog_progress.setMessage("Retrieving Workflow");
+                this.dialog_progress.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... urls) {
+                SharedPreferences prefs = getActivity().getApplicationContext().getSharedPreferences( VariableManager.PREF, Context.MODE_PRIVATE);
+
+                ServerInterface.getInstance(getActivity().getApplicationContext()).getMilkrunWorkflow( getActivity().getApplicationContext());
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void nothing) {
+                // Close progress spinner
+                if (dialog_progress.isShowing()) {
+                    dialog_progress.dismiss();
+                }
+
+                gotData();
+                //((FragmentResultInterface)getActivity()).onFragmentResult(2,1,null);
+                // Start scan activity
+            /*Intent intent = new Intent(getActivity(), ScanFragment.class);
+
+            intent.putExtra(VariableManager.EXTRA_DRIVER, Users.getInstance().getActiveDriver().getfirstName());
+
+            startActivity(intent);*/
+            }
+        }
+
+        new RetrieveBagsTask().execute();
+    }
+
+    private void gotData(){
         handler = new Handler();
         driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );
         bags = Workflow.getInstance().getBags();
-        dialog_builder = new AlertDialog.Builder(this);
+        dialog_builder = new AlertDialog.Builder(getActivity());
 
         // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
-        Display display = getWindowManager().getDefaultDisplay();
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
 
-        initViewHolder();
 
         int width = (int) (size.x - (size.x * 0.1));
         int height = (int) (size.y - (size.y * 0.1));
 
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
         intent.setAction(Intents.Scan.ACTION);
         intent.putExtra(Intents.Scan.WIDTH, width);
         intent.putExtra(Intents.Scan.HEIGHT, height);
         scan_intent = new Intent("com.google.zxing.client.android.SCAN");
 
         try{
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         }catch(Exception e){
             Log.e("MRD-EX" , e.getMessage());
         }
@@ -157,7 +206,7 @@ public class ScanActivity extends FragmentActivity {
 
                     Bag bag = (Bag) holder.list.getItemAtPosition(position);
                     if (bag != null) {
-                        Intent intent = new Intent(getApplicationContext(),
+                        Intent intent = new Intent(getActivity().getApplicationContext(),
                                 ViewBagManifestActivity.class);
 
                         // Pass info to view manifest activity
@@ -180,19 +229,19 @@ public class ScanActivity extends FragmentActivity {
 
                     startDelivery();
                 } else {
-                    dialog = new IncompleteScanDialog(ScanActivity.this);
+                    dialog = new IncompleteScanDialog( getActivity());
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialog.show();
 
-                    // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+                    // LayoutInflater factory = LayoutInflater.from(ScanFragment.this);
 
                     final Button button_continue = (Button) dialog.findViewById(R.id.button_incomplete_scan_continue);
 
                     button_continue.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
-                            startActivityForResult(intent, ScanActivity.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
+                            Intent intent = new Intent(getActivity().getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
+                            startActivityForResult(intent, ScanFragment.RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN);
                             dialog.dismiss();
                         }
                     });
@@ -216,7 +265,7 @@ public class ScanActivity extends FragmentActivity {
             }
         });
 
-        adapter = new BarcodeListAdapter(this);
+        adapter = new BarcodeListAdapter(getActivity());
         holder.list.setAdapter(adapter);
 
         UpdateBagsCounter();
@@ -225,9 +274,10 @@ public class ScanActivity extends FragmentActivity {
     private void startDelivery()
     {
         ServerInterface.getInstance().startTrip();
-        finish();
-        Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
-        startActivity(intent);
+        ((FragmentResultInterface)getActivity()).onFragmentResult(2,2,null);
+        //finish();
+        //Intent intent = new Intent( getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+        //startActivity(intent);
     }
 
     @Override
@@ -249,10 +299,10 @@ public class ScanActivity extends FragmentActivity {
             }
         }
         if (requestCode == REQUEST_MANUAL_BARCODE) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == this.getActivity().RESULT_OK) {
                 holder.button_start_milkrun.setEnabled(true);
                 holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-                handleDecode(data.getStringExtra(EnterBarcodeActivity.MANUAL_BARCODE) , false);
+                handleDecode(data.getStringExtra(EnterBarcodeFragment.MANUAL_BARCODE) , false);
             }
         }
 
@@ -272,16 +322,16 @@ public class ScanActivity extends FragmentActivity {
         }
 
         if (requestCode == RESULT_INCOMPLETE_SCAN_AUTH) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == this.getActivity().RESULT_OK) {
                 if( Users.getInstance().getActiveManager() != null)
                 {
-                    Intent intent = new Intent(getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+                    Intent intent = new Intent(this.getActivity().getApplicationContext(), ViewDeliveriesFragmentActivity.class);
                     startActivity(intent);
                 }
             }
         }
         if (requestCode == RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == this.getActivity().RESULT_OK) {
                 if( Users.getInstance().getActiveManager() != null)
                 {
                     startDelivery();
@@ -289,15 +339,15 @@ public class ScanActivity extends FragmentActivity {
             }
         }
         if (requestCode == RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == this.getActivity().RESULT_OK) {
                 if (data.getBooleanExtra( ManagerAuthIncompleteScanActivity.MANAGER_AUTH_INCOMPLETE_SCAN, false))
                 {
                     startNotAssignedActivity();
                 }
             }
         }
-        if (requestCode == VariableManager.CALLBACK_SCAN_BARCODE_GENERAL) {
-            if (resultCode == RESULT_OK) {
+        /*if (requestCode == VariableManager.CALLBACK_SCAN_BARCODE_GENERAL) {
+            if (resultCode == this.getActivity().RESULT_OK) {
                 String contents = data.getStringExtra("SCAN_RESULT");
 
                 if (contents != null) {
@@ -307,15 +357,15 @@ public class ScanActivity extends FragmentActivity {
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Handle cancel
             }
-        }
+        }*/
     }
 
     private void setupChangeUserDialog() {
-        dialog_change_user = new ChangeUserDialog(ScanActivity.this);
+       /* dialog_change_user = new ChangeUserDialog(this.getActivity().);
         dialog_change_user.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog_change_user.show();
 
-        // LayoutInflater factory = LayoutInflater.from(ScanActivity.this);
+        // LayoutInflater factory = LayoutInflater.from(ScanFragment.this);
 
         final ImageButton button_close = (ImageButton) dialog_change_user
                 .findViewById(R.id.button_change_user_closeButton);
@@ -345,20 +395,20 @@ public class ScanActivity extends FragmentActivity {
         button_ok.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(ScanActivity.this, LocationService.class));
+                stopService(new Intent(ScanFragment.this, LocationService.class));
                 dialog_change_user.dismiss();
-                Intent intent = new Intent(ScanActivity.this, MainActivity.class);
+                Intent intent = new Intent(ScanFragment.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
-        });
+        });       */
     }
 
 
     void barCodeScanFailed() {
-        CustomToast toast = new CustomToast(this);
+        CustomToast toast = new CustomToast(getActivity());
         toast.setSuccess(true);
-        toast.setText(getApplicationContext().getString(R.string.manager_login_wrong_password));
+        toast.setText(this.getActivity().getApplicationContext().getString(R.string.manager_login_wrong_password));
         toast.show();
     }
 
@@ -370,13 +420,13 @@ public class ScanActivity extends FragmentActivity {
         holder.button_start_milkrun.setEnabled(Workflow.getInstance().getBagsScanned(true).size() > 0);
 
         if (Workflow.getInstance().getBagsScanned(true).size() == Workflow.getInstance().getBags().size()) {
-            CustomToast toast = new CustomToast(this);
+            CustomToast toast = new CustomToast(this.getActivity());
             toast.setSuccess(true);
             toast.setText(getString(R.string.text_scan_successful));
             toast.show();
 
         } else {
-            CustomToast toast = new CustomToast(this);
+            CustomToast toast = new CustomToast(this.getActivity());
 
             if (scannedalready){
                 toast.setSuccess(false);
@@ -413,11 +463,11 @@ public class ScanActivity extends FragmentActivity {
     };
 
     void onBarcodeMatchFail() {
-        //dialog_not_assigned = new NotAssignedToUserDialog(ScanActivity.this);
+        //dialog_not_assigned = new NotAssignedToUserDialog(ScanFragment.this);
         //dialog_not_assigned.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         //dialog_not_assigned.show();
         //final Button button_continue = (Button) dialog_not_assigned.findViewById(R.id.button_not_assigned_continue);
-        AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
+        AlertDialog.Builder dialog1 = new AlertDialog.Builder(this.getActivity());
         dialog1.setMessage("Manager authorisation required.").setNegativeButton("No" , dialog1ClickListener).setPositiveButton("Yes" , dialog1ClickListener ).setTitle("Do you want to take ownership of this bag ?").show();
     }
 
@@ -472,13 +522,13 @@ public class ScanActivity extends FragmentActivity {
             }
             String new_bag_id = "";
             if (barcodeString.contains("XMRDX"))
-                new_bag_id = ServerInterface.getInstance( getApplicationContext()).scanBag( getApplicationContext(), barcodeString, Integer.toString( Users.getInstance().getActiveDriver().getid()));
+                new_bag_id = ServerInterface.getInstance( this.getActivity().getApplicationContext()).scanBag( this.getActivity().getApplicationContext(), barcodeString, Integer.toString( Users.getInstance().getActiveDriver().getid()));
 
 
             if (new_bag_id.isEmpty() || new_bag_id.toString().contains("null") || !barcodeString.contains("XMRDX") ) {
-                CustomToast toast = new CustomToast(this);
+                CustomToast toast = new CustomToast(getActivity());
                 toast.setSuccess(false);
-                toast.setText(getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
+                toast.setText(this.getActivity().getApplicationContext().getString(R.string.manager_assign_bag_invalid_scan));
                 toast.show();
 
             } else {
@@ -537,18 +587,11 @@ public class ScanActivity extends FragmentActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.scan, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                NavUtils.navigateUpFromSameTask(getActivity());
                 return true;
             case R.id.action_scan_enter_barcode:
                 Log.d(TAG, "Enter barcode manually");
@@ -563,21 +606,27 @@ public class ScanActivity extends FragmentActivity {
     }
 
     private void getManualBarcode(){
-        intent_manual_barcode = new Intent(getApplicationContext(), EnterBarcodeActivity.class);
-        startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
+
+        EnterBarcodeFragment getBarcode = EnterBarcodeFragment.newInstance( new CallBackFunction() {
+            @Override
+            public boolean execute(Object args) {
+                handleDecode( (String)args);
+                return false;
+            }
+        }  );
+        getBarcode.show( getActivity().getFragmentManager(), "");
+        //intent_manual_barcode = new Intent(this.getActivity().getApplicationContext(), EnterBarcodeFragment.class);
+        //startActivityForResult(intent_manual_barcode, REQUEST_MANUAL_BARCODE);
     }
 
-    public void initViewHolder() {
-
-        if (root_view == null) {
-
-            root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container){
+            root_view = inflater.inflate(R.layout.activity_scan, container, false);
 
             if (holder == null) {
                 holder = new ViewHolder();
             }
 
-            Typeface typeface_robotoBold = Typeface.createFromAsset(getAssets(), FontHelper
+            Typeface typeface_robotoBold = Typeface.createFromAsset(this.getActivity().getAssets(), FontHelper
                     .getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
                             FontHelper.STYLE_BOLD));
 
@@ -599,14 +648,9 @@ public class ScanActivity extends FragmentActivity {
             // Store the holder with the view.
             root_view.setTag(holder);
 
-        } else {
-            holder = (ViewHolder) root_view.getTag();
+    }
 
-            if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup)) {
-                ((ViewGroup) root_view.getParent()).removeAllViewsInLayout();
-            } else {
-            }
-        }
+    public interface onDoneListener{
     }
 
     /**
@@ -633,13 +677,13 @@ public class ScanActivity extends FragmentActivity {
 
     private void startIncompleteScanActivity() {
         // Start manager authorization activity
-        Intent intent = new Intent(getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
+        Intent intent = new Intent(this.getActivity().getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
         startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
     }
 
     private class AddBagToDriver extends AsyncTask<Void, Void, Void> {
 
-        private ProgressDialog dialog_progress = new ProgressDialog(ScanActivity.this);
+        private ProgressDialog dialog_progress = new ProgressDialog(getActivity());
 
         @Override
         protected void onPreExecute() {
@@ -650,7 +694,7 @@ public class ScanActivity extends FragmentActivity {
         @Override
         protected Void doInBackground(Void... urls) {
             final String driverid = Integer.toString(Users.getInstance().getActiveDriver().getid());
-            String new_bag_id = ServerInterface.getInstance(getApplicationContext()).scanBag(getApplicationContext(), last_scanned_barcode, driverid);
+            String new_bag_id = ServerInterface.getInstance(getActivity().getApplicationContext()).scanBag(getActivity().getApplicationContext(), last_scanned_barcode, driverid);
             if (!new_bag_id.isEmpty()) {
                 // TODO: Gary wire this back in...!!
                 //ServerInterface.getInstance(getApplicationContext()).downloadBag( getApplicationContext(),new_bag_id,driverid);
@@ -670,7 +714,7 @@ public class ScanActivity extends FragmentActivity {
              * TODO: ADDING A NEW BAG TO THE DRIVER CONSIGNMENTS HERE!!! AND THEN UPDATING THE LISTVIEW DISPLAY
              */
             // handleDecode(new Result(last_scanned_barcode, null, null, null), null, 0);
-            // getLoaderManager().restartLoader(URL_LOADER, null, ScanActivity.this);
+            // getLoaderManager().restartLoader(URL_LOADER, null, ScanFragment.this);
 
             // Refresh list
             // cursor_adapter.notifyDataSetChanged();

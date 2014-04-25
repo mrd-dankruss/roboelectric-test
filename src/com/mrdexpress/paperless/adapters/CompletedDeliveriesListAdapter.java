@@ -2,7 +2,7 @@ package com.mrdexpress.paperless.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +18,14 @@ import java.util.ArrayList;
 public class CompletedDeliveriesListAdapter extends BaseAdapter
 {
 	private final String TAG = "ViewDeliveriesListAdapter";
-	private final FragmentActivity activity;
+	private final Activity activity;
 	private final Context context;
 	ArrayList<Bag> values;
 	private String bag_id;
 
 	private TextView text_address, text_bag_ids, text_failed_time;
 
-	public CompletedDeliveriesListAdapter(FragmentActivity activity, ArrayList<Bag> values)
+	public CompletedDeliveriesListAdapter(Activity activity, ArrayList<Bag> values)
 	{
 		super();
 		this.activity = activity;

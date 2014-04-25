@@ -1,12 +1,12 @@
 package com.mrdexpress.paperless;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentManager;
 import com.mrdexpress.paperless.fragments.ReasonPartialDeliveryFragment;
 
-public class ReasonPartialDeliveryActivity extends FragmentActivity
+public class ReasonPartialDeliveryActivity extends Activity
 {
 
 	Fragment fragment;
@@ -18,7 +18,7 @@ public class ReasonPartialDeliveryActivity extends FragmentActivity
 		setContentView(R.layout.activity_reason_partial_delivery);
 
 		// Fragment: Home Begin
-		FragmentManager fm = getSupportFragmentManager();
+		FragmentManager fm = getFragmentManager();
 		fragment = fm.findFragmentById(R.id.activity_reason_partial_delivery_container);
 		if (fragment == null)
 		{

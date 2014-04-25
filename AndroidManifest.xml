@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mrdexpress.paperless"
-    android:versionCode="4"
-    android:versionName="0.0.1" >
+    android:versionCode="5"
+    android:versionName="0.0.5" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -57,7 +57,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Mrdstyle" >
         <activity
-            android:name="com.mrdexpress.paperless.MainActivity"
+            android:name=".LoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
@@ -75,7 +75,7 @@
         <activity
             android:name="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity"
             android:label="@string/title_deliveries"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
+            android:parentActivityName=".fragments.ScanFragment"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -85,7 +85,7 @@
                 android:value="com.mrdexpress.paperless.ScanActivity" />
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.ScanActivity"
+            android:name=".fragments.ScanFragment"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_scan_consignments"
             android:launchMode="singleTop"
@@ -99,7 +99,7 @@
         <activity
             android:name="com.mrdexpress.paperless.SignatureActivity"
             android:label="@string/title_activity_signature"
-            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
+            android:parentActivityName=".LoginActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -108,7 +108,7 @@
         <activity
                 android:name="com.mrdexpress.paperless.CreatePinActivity"
                 android:label="@string/title_activity_create_pin"
-                android:parentActivityName="com.mrdexpress.paperless.MainActivity"
+                android:parentActivityName=".LoginActivity"
                 android:screenOrientation="portrait" >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -134,7 +134,7 @@
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_view_bag_manifest"
             android:launchMode="singleTop"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
+            android:parentActivityName=".DriverHomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -143,7 +143,7 @@
         <activity
             android:name="com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity"
             android:label="@string/title_activity_manager_auth_incomplete_scan"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
+            android:parentActivityName=".fragments.ScanFragment"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -232,16 +232,16 @@
         <activity
             android:name="com.mrdexpress.paperless.DriverHomeActivity"
             android:label="@string/title_actionbar_home"
-            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
+            android:parentActivityName=".LoginActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mrdexpress.paperless.MainActivity" />
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.EnterBarcodeActivity"
+            android:name=".EnterBarcodeFragment"
             android:label="@string/title_actionbar_enter_barcode"
-            android:parentActivityName="com.mrdexpress.paperless.ScanActivity"
+            android:parentActivityName=".DriverHomeActivity"
             android:screenOrientation="portrait" 
 			android:windowSoftInputMode="stateAlwaysVisible">
             <meta-data
@@ -251,7 +251,7 @@
         <activity
             android:name="com.mrdexpress.paperless.ManagerHomeActivity"
             android:label="@string/title_actionbar_mainmenu"
-            android:parentActivityName="com.mrdexpress.paperless.MainActivity"
+            android:parentActivityName=".LoginActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

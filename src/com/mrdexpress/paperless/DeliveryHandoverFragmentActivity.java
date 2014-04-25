@@ -2,16 +2,16 @@ package com.mrdexpress.paperless;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentManager;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
-public class DeliveryHandoverFragmentActivity extends FragmentActivity
+public class DeliveryHandoverFragmentActivity extends Activity
 {
 	private final String TAG = "DeliveryHandoverFragmentActivity";
 	Fragment fragment;
@@ -23,7 +23,7 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 		setContentView(R.layout.activity_handover);
 
 		// Fragment: Home Begin
-		FragmentManager fm = getSupportFragmentManager();
+		FragmentManager fm = getFragmentManager();
 		fragment = fm.findFragmentById(R.id.activity_handover_container);
 		if (fragment == null)
 		{
@@ -34,7 +34,7 @@ public class DeliveryHandoverFragmentActivity extends FragmentActivity
 	}
 
 	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)

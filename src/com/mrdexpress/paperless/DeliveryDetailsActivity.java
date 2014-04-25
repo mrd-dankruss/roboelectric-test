@@ -3,8 +3,8 @@ package com.mrdexpress.paperless;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,7 @@ import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class DeliveryDetailsActivity extends FragmentActivity implements SetNextDeliveryListener
+public class DeliveryDetailsActivity extends Activity implements SetNextDeliveryListener
 {
 
 	private ViewHolder holder;
@@ -99,7 +99,7 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 			public void onClick(View v)
 			{
 				DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID());
-				newFragment.show(getSupportFragmentManager(), "dialog");
+				newFragment.show(getFragmentManager(), "dialog");
 			}
 		});
 
@@ -114,10 +114,10 @@ public class DeliveryDetailsActivity extends FragmentActivity implements SetNext
 
                 if (bag.getBagID() == curbagid){
                     DialogFragment newFragment = MoreDialogFragment.newInstance(false,bag.getBagID());
-                    newFragment.show(getSupportFragmentManager(), "dialog");
+                    newFragment.show(getFragmentManager(), "dialog");
                 } else {
                     DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagID());
-                    newFragment.show(getSupportFragmentManager(), "dialog");
+                    newFragment.show(getFragmentManager(), "dialog");
                 }
 			}
 		});

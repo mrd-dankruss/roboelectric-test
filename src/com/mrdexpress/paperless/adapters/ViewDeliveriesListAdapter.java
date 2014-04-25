@@ -2,8 +2,8 @@ package com.mrdexpress.paperless.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +21,7 @@ import java.util.List;
 public class ViewDeliveriesListAdapter extends BaseAdapter
 {
 	private final String TAG = "ViewDeliveriesListAdapter";
-	private final FragmentActivity activity;
+	private final Activity activity;
 	private final Context context;
 	List<Bag> values;
 	private ImageView deliveryType, companyLogo;
@@ -40,7 +40,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		FNB, TAKEALOT, NONE, MRD
 	}
 
-	public ViewDeliveriesListAdapter(FragmentActivity activity, List<Bag> values)
+	public ViewDeliveriesListAdapter(Activity activity, List<Bag> values)
 	{
 		super();
 		this.activity = activity;
@@ -155,7 +155,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				public void onClick(View v)
 				{
 					DialogFragment newFragment = UpdateStatusDialog.newInstance(bag_id);
-					newFragment.show(activity.getSupportFragmentManager(), "dialog");
+					newFragment.show(activity.getFragmentManager(), "dialog");
 				}
 			});
 
@@ -166,7 +166,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				public void onClick(View v)
 				{
 					DialogFragment newFragment = MoreDialogFragment.newInstance(false, bag_id);
-					newFragment.show(activity.getSupportFragmentManager(), "dialog");
+					newFragment.show(activity.getFragmentManager(), "dialog");
 				}
 			});
 		}

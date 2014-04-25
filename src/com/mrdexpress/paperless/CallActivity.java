@@ -1,12 +1,12 @@
 package com.mrdexpress.paperless;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentManager;
 import com.mrdexpress.paperless.fragments.CallListFragment;
 
-public class CallActivity extends FragmentActivity
+public class CallActivity extends Activity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -15,7 +15,7 @@ public class CallActivity extends FragmentActivity
 		setContentView(R.layout.activity_call);
 
 		// Fragment: Home Begin
-		FragmentManager fm = getSupportFragmentManager();
+		FragmentManager fm = getFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.activity_call_container);
 		if (fragment == null)
 		{

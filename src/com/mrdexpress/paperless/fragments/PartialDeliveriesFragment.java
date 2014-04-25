@@ -1,7 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +30,7 @@ public class PartialDeliveriesFragment extends Fragment
 	}
 
 	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onResume()
+	 * @see android.app.Fragment#onResume()
 	 */
 	@Override
 	public void onResume()
@@ -93,8 +93,7 @@ public class PartialDeliveriesFragment extends Fragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null,
-					false);
+			rootView = inflater.inflate(R.layout.fragment_successful_deliveries_content, null, false);
 
 			if (holder == null)
 			{

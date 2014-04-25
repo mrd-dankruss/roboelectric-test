@@ -1,7 +1,7 @@
 package com.mrdexpress.paperless.adapters;
 
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 public class GenericDialogListAdapter extends BaseAdapter
 {
-	private final FragmentActivity activity;
+	private final Activity activity;
 	private final Context context;
 	ArrayList<DialogDataObject> values;
 	boolean isDialog;
 
-	public GenericDialogListAdapter(FragmentActivity activity, ArrayList<DialogDataObject> values,
+	public GenericDialogListAdapter(Activity activity, ArrayList<DialogDataObject> values,
 			boolean isDialog)
 	{
 		super();

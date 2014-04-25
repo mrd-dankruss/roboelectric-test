@@ -8,14 +8,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.net.wifi.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Looper;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -33,16 +29,13 @@ import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
-import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
-import com.mrdexpress.paperless.net.NetworkStateReceiver;
 import com.mrdexpress.paperless.net.NetworkStatus;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.security.PinManager;
-import com.mrdexpress.paperless.service.AjaxQueueService;
 import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
@@ -59,14 +52,13 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MainActivity extends Activity implements LoginInterface {
+public class LoginActivity extends Activity implements LoginInterface {
     private ViewHolder holder;
     private View root_view;
-    private MainActivity globalthis = this;
-    private final String TAG = "MainActivity";
+    private LoginActivity globalthis = this;
+    private final String TAG = "LoginActivity";
     private ArrayList<Users.UserData> person_item_list;
     private Users.UserData selected_user;
 
@@ -101,7 +93,7 @@ public class MainActivity extends Activity implements LoginInterface {
         dialog_file = new Dialog(this);
 
         NetworkStatus.getInstance().register(context);
-        //NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
+        NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
 
         checkConnected();
 
@@ -136,12 +128,12 @@ public class MainActivity extends Activity implements LoginInterface {
                             }
                         });
                     } else {
-                        UnauthorizedUseDialog diag = new UnauthorizedUseDialog(MainActivity.this);
+                        UnauthorizedUseDialog diag = new UnauthorizedUseDialog(LoginActivity.this);
                         diag.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                         diag.setOnCancelListener( new DialogInterface.OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialogInterface) {
-                                MainActivity.this.finish();
+                                LoginActivity.this.finish();
                             }
                         });
                         diag.show();
@@ -335,7 +327,7 @@ public class MainActivity extends Activity implements LoginInterface {
         //
         dialog_main.dismiss();
         if (result == Paperless.PaperlessStatus.FAILED){
-            CustomToast toast = new CustomToast(MainActivity.this);
+            CustomToast toast = new CustomToast(LoginActivity.this);
             toast.setText(getString(R.string.text_unauthorised));
             toast.setSuccess(false);
             toast.show();
@@ -437,7 +429,7 @@ public class MainActivity extends Activity implements LoginInterface {
     private SharedPreferences getGCMPreferences(Context context) {
         // This sample app persists the registration ID in shared preferences, but
         // how you store the regID in your app is up to you.
-        return getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
+        return getSharedPreferences(LoginActivity.class.getSimpleName(), Context.MODE_PRIVATE);
     }
 
     /**
@@ -484,12 +476,12 @@ public class MainActivity extends Activity implements LoginInterface {
             @Override
             protected void onPostExecute(String msg) {
                 /*if (is_registration_successful) {
-                    CustomToast toast = new CustomToast(MainActivity.this);
+                    CustomToast toast = new CustomToast(LoginActivity.this);
                     toast.setText("Sending device registration ID successful!");
                     toast.setSuccess(true);
                     toast.show();
                 } else {
-                    CustomToast toast = new CustomToast(MainActivity.this);
+                    CustomToast toast = new CustomToast(LoginActivity.this);
                     toast.setText("Sending device registration ID failed!");
                     toast.setSuccess(false);
                     toast.show();
@@ -643,6 +635,18 @@ public class MainActivity extends Activity implements LoginInterface {
             holder.text_password = (EditText) root_view.findViewById(R.id.text_mainmenu_password);
             holder.text_password.setTypeface(typeface_roboto_regular);
             root_view.setTag(holder);
+
+            holder.text_password.setOnKeyListener( new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if( event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+                        holder.button_login.callOnClick();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
         } else {
             holder = (ViewHolder) root_view.getTag();
             if ((root_view.getParent() != null) && (root_view.getParent() instanceof ViewGroup)) {
