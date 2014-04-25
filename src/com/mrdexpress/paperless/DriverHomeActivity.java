@@ -52,10 +52,17 @@ public class DriverHomeActivity extends Activity implements FragmentResultInterf
                         scanFragment = existingFragment;
                     else
                         scanFragment = new ScanFragment();
+                    fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).addToBackStack(null).commit();
                 }
-                fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).addToBackStack(null).commit();
-                //Intent intent = new Intent( getApplicationContext(), ViewDeliveriesFragmentActivity.class);
-                //startActivity(intent);
+                else{
+                    if (2 == resultCode){
+                        finish();
+                        //Intent intent = new Intent( getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+                        //startActivity(intent);
+                    }
+                }
+
+
             break;
         }
         return false;

@@ -275,8 +275,8 @@ public class ScanFragment extends Fragment {
     {
         ServerInterface.getInstance().startTrip();
         ((FragmentResultInterface)getActivity()).onFragmentResult(2,2,null);
-        //finish();
-        //Intent intent = new Intent( getApplicationContext(), ViewDeliveriesFragmentActivity.class);
+        //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
+        //Intent intent = new Intent( Paperless.getContext() , ViewDeliveriesFragmentActivity.class);
         //startActivity(intent);
     }
 
