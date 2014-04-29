@@ -9,14 +9,16 @@ import com.mrdexpress.paperless.fragments.TabViewDeliveriesFragment;
 import com.mrdexpress.paperless.fragments.TabUnsuccessfulDeliveriesFragment;
 
 public class TabsPagerAdapter extends FragmentPagerAdapter {
- 
+
+    private FragmentManager _fm;
+
     public TabsPagerAdapter(FragmentManager fm) {
         super(fm);
+        _fm = fm;
     }
  
     @Override
     public Fragment getItem(int index) {
- 
         switch (index) {
         case 0:
             return new TabViewDeliveriesFragment();

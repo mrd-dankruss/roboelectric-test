@@ -161,24 +161,15 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_REGULAR));
 
-			holder.text_delivery_number = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_deliveryNumber);
-			holder.text_delivery_title = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_titleDetail);
-			holder.text_delivery_addressee = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_addressee);
-			holder.text_delivery_address = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_address);
-			holder.text_delivery_bad_id = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_id);
-			holder.text_delivery_communication_title = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_communicationTitle);
-			holder.text_delivery_communication_log = (TextView) rootView
-					.findViewById(R.id.deliveryDetails_textView_communicationLog);
-			holder.image_company_logo = (ImageView) rootView
-					.findViewById(R.id.deliveryDetails_imageView_companyLogo);
-			holder.button_update_status = (Button) rootView
-					.findViewById(R.id.deliveryDetails_button_updateStatus);
+			holder.text_delivery_number = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_deliveryNumber);
+			holder.text_delivery_title = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_titleDetail);
+			holder.text_delivery_addressee = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_addressee);
+			holder.text_delivery_address = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_address);
+			holder.text_delivery_bad_id = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_id);
+			holder.text_delivery_communication_title = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_communicationTitle);
+			holder.text_delivery_communication_log = (TextView) rootView.findViewById(R.id.deliveryDetails_textView_communicationLog);
+			holder.image_company_logo = (ImageView) rootView.findViewById(R.id.deliveryDetails_imageView_companyLogo);
+			holder.button_update_status = (Button) rootView.findViewById(R.id.deliveryDetails_button_updateStatus);
 			holder.button_more = (Button) rootView.findViewById(R.id.deliveryDetails_button_more);
 
 			holder.text_delivery_number.setTypeface(typeface_roboto_bold);

@@ -170,7 +170,7 @@ public class ScanFragment extends Fragment {
         handler = new Handler();
         driverId = Integer.toString( Users.getInstance().getActiveDriver().getid() );
         bags = Workflow.getInstance().getBags();
-        dialog_builder = new AlertDialog.Builder(getActivity());
+        //dialog_builder = new AlertDialog.Builder(getActivity());
 
         // FIXME: Set sizes correctly. Maybe only check if screen size differs from size in spec.
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -291,6 +291,7 @@ public class ScanFragment extends Fragment {
     {
         // ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_DELIVERY,2,null);
         ((ScanActivityInterface)getActivity()).scanFragmentDone(DriverHomeActivity.START_DELIVERY,2,null);
+        //getFragmentManager().popBackStack();
         //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
         //Intent intent = new Intent( Paperless.getContext() , TabViewDeliveriesFragment.class);
         //startActivity(intent);

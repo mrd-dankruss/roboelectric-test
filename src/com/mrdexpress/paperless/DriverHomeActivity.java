@@ -14,15 +14,15 @@ import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
 import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
 
-public class DriverHomeActivity extends Activity implements ScanFragment.ScanActivityInterface, DriverHomeFragment.DriverHomeFragmentInterface
+public class DriverHomeActivity extends Activity implements ScanFragment.ScanActivityInterface, DriverHomeFragment.DriverHomeFragmentInterface, ViewDeliveriesFragment.ViewDeliveriesFragmentInterface
 {
     public final static int START_DELIVERY= 1;
     public final static int START_SCAN= 2;
     public final static int MANUAL_BARCODE= 3;
 	
-	private Fragment fragment;
+	/*private Fragment fragment;
     private Fragment scanFragment;
-    private Fragment viewDeliveriesFragment;
+    private Fragment viewDeliveriesFragment;*/
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -32,22 +32,24 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
 
         setContentView(R.layout.activity_home);
 
-        FragmentManager fm = getFragmentManager();
-        Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
-        if (fragment == null)
-        {
-            if( existingFragment != null && ((Object)existingFragment).getClass() == DriverHomeFragment.class)
-                fragment = existingFragment;
-            else
-                fragment = new DriverHomeFragment();
-        }
-        //fragment.setArguments( savedInstanceState);
-        fm.beginTransaction().replace(R.id.activity_home_container, fragment).commit();
+        showMenu();
 	}
 
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    private void showMenu(){
+        FragmentManager fm = getFragmentManager();
+        Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
+
+        //if( existingFragment != null && ((Object)existingFragment).getClass() == DriverHomeFragment.class)
+        //    fragment = existingFragment;
+        //else
+        Fragment fragment = new DriverHomeFragment();
+        //fragment.setArguments( savedInstanceState);
+        fm.beginTransaction().replace(R.id.activity_home_container, fragment).commit();
     }
 
     @Override
@@ -56,15 +58,13 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
 
         FragmentManager fm = getFragmentManager();
         Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
-        if (viewDeliveriesFragment == null)
-        {
-            if( existingFragment != null && ((Object)existingFragment).getClass() == ViewDeliveriesFragment.class)
-                viewDeliveriesFragment = existingFragment;
-            else
-                viewDeliveriesFragment = new ViewDeliveriesFragment();
-            //fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).addToBackStack(null).commit();
-            fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
-        }
+
+        //if (existingFragment != null && ((Object) existingFragment).getClass() == ViewDeliveriesFragment.class)
+        //    viewDeliveriesFragment = existingFragment;
+        //else
+        Fragment  viewDeliveriesFragment = new ViewDeliveriesFragment();
+        fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
+            //fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
     }
 
     @Override
@@ -72,11 +72,18 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
         FragmentManager fm = getFragmentManager();
         Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
 
-        if( existingFragment != null && ((Object)existingFragment).getClass() == ScanFragment.class)
-            scanFragment = existingFragment;
-        else
-            scanFragment = new ScanFragment();
-        //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).addToBackStack(null).commit();
+        //if( existingFragment != null && ((Object)existingFragment).getClass() == ScanFragment.class)
+        //    scanFragment = existingFragment;
+        //else
+        Fragment scanFragment = new ScanFragment();
         fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
+        //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
+    }
+
+    @Override
+    public void viewDeliveriesDone() {
+        showMenu();
+        //FragmentManager fm = getFragmentManager();
+        //Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
     }
 }

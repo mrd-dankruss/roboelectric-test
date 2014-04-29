@@ -31,6 +31,14 @@ public class DriverHomeFragment extends Fragment {
         prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
         initViewHolder(inflater, container, savedInstanceState); // Inflate ViewHolder static instance
 
+        holder.button_milkrun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((DriverHomeFragmentInterface)getActivity()).startScan();
+                //new RetrieveBagsTask().execute();
+            }
+        });
+
         return rootView;
     }
 
@@ -64,15 +72,6 @@ public class DriverHomeFragment extends Fragment {
             holder.button_milkrun.setTypeface(typeface_robotoBold);
             holder.button_training_run.setTypeface(typeface_robotoBold);
             holder.button_training_run.setVisibility(View.GONE);
-
-            holder.button_milkrun.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                ((DriverHomeFragmentInterface)getActivity()).startScan();
-                 //getActivity().onBackPressed();
-                 //new RetrieveBagsTask().execute();
-                }
-            });
 
             // Store the holder with the view.
             rootView.setTag(holder);

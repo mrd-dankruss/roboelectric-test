@@ -1,23 +1,15 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.app.DialogFragment;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.*;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
@@ -39,19 +31,13 @@ import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.widget.Toaster;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.Workflow;
-import net.minidev.json.JSONArray;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,11 +45,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapActivity extends Activity implements OnMapClickListener, LocationListener,
-		android.location.LocationListener, OnQueryTextListener
+public class MapDialogFragment extends DialogFragment implements OnMapClickListener, LocationListener, android.location.LocationListener, OnQueryTextListener
 {
 
-	private final String TAG = "MapActivity";
+	private final String TAG = "MapDialogFragment";
 	static final int STREET_LEVEL_ZOOM = 14;
 	
 	private ViewHolder holder;
@@ -86,20 +71,36 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	
 	LocationClient locationClient;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_map);
+    public MapDialogFragment(CallBackFunction _callback) {
+        callback = _callback;
+    }
 
-		//API_KEY = getResources().getString(R.string.key_googlemaps_places);
+    private static CallBackFunction callback;
+
+    public static MapDialogFragment newInstance(final CallBackFunction callback)
+    {
+        MapDialogFragment f = new MapDialogFragment( callback);
+        return f;
+    }
+
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        initViewHolder(inflater, container);
+
+        return root_view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //API_KEY = getResources().getString(R.string.key_googlemaps_places);
 		API_KEY = getResources().getString(R.string.key_googlemaps_api_debug);
 		
 		// Change actionbar title
-		setTitle(R.string.title_actionbar_map);
-
-		// Inflate views
-		initViewHolder();
+        getActivity().setTitle(R.string.title_actionbar_map);
 
 		/*
 		 * The NullPointerException happens if Google Play services is not installed on device
@@ -108,7 +109,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		try
 		{
 			// Try to obtain the map from the SupportMapFragment.
-			map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+			map = ((com.google.android.gms.maps.MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
 			map.setOnMapClickListener(this);
 
 			// Enable traffic
@@ -120,7 +121,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			// Set default zoom
 			map.moveCamera(CameraUpdateFactory.zoomTo(STREET_LEVEL_ZOOM));
 			// Move camera to my location
-			locationClient = new LocationClient(this,
+			locationClient = new LocationClient(getActivity(),
 					new GooglePlayServicesClient.ConnectionCallbacks()
 					{
 						@Override
@@ -160,7 +161,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			
 
 			// Getting LocationManager object from System Service LOCATION_SERVICE
-			location_manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+			location_manager = (LocationManager) getActivity().getSystemService( getActivity().LOCATION_SERVICE);
 			
 			
 			// Get current location
@@ -180,8 +181,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 				}
 			});
 
-			holder.autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this,
-					R.layout.list_map_item));
+			holder.autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.list_map_item));
 
 			holder.autoCompView.setOnItemClickListener(new OnItemClickListener()
 			{
@@ -195,14 +195,14 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
 					holder.autoCompView.setText(list_string.replaceAll("\n", ", "));
 
-					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(holder.autoCompView.getWindowToken(), 0);
 
 					new AddPlaceMarkerTask().execute(list_string, list_reference);
 
 				}
 			});
-
+            setupMapMarkers();
 		}
 		catch (NullPointerException e)
 		{
@@ -210,19 +210,21 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			holder.relativeLayout_toast.setVisibility(View.VISIBLE);
 		}
 
+        if( map == null)
+            return;
+
 		// Search function
 		setupSearchView();
-		setupMapMarkers();
 
         final TextView directions = (TextView) root_view.findViewById( R.id.map_driving_directions);
         directions.setVisibility(View.GONE);
 
         final FrameLayout mapcontainer = (FrameLayout) root_view.findViewById( R.id.map_container);
 
-        final MapFragment mapFragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
+        final com.google.android.gms.maps.MapFragment mapFragment = ((com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.map));
 
         // Setup "Navigate here" button
-		root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
+		root_view = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
 		final Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
 		button_navigate.setOnClickListener(new View.OnClickListener()
 		{
@@ -279,7 +281,14 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
 	}
 
-	/**
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        callback.execute(null);
+    }
+
+    /**
 	 * Retrieve coords of all the driver's bags and place map markers
 	 */
 	private void setupMapMarkers()
@@ -320,7 +329,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
         AsyncTask asyncTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                ServerInterface.getInstance(getApplicationContext()).getGoogleDrivingDirections( API_KEY, myLocation, theDestination, new CallBackFunction() {
+                ServerInterface.getInstance(getActivity().getApplicationContext()).getGoogleDrivingDirections( API_KEY, myLocation, theDestination, new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
                         JSONObject jso = (JSONObject)args;
@@ -392,29 +401,24 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		// holder.search_view.setQueryHint(getString(R.string.text_search_hint));
 	}
 
-	/**
-	 * Display a toast using the custom Toaster class
-	 * 
-	 * @param msg
-	 */
-	private void displayToast(String msg)
-	{
-		Toaster.displayToast(msg, holder.textView_toast, holder.relativeLayout_toast, this);
-	}
-
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.map, menu);
+        getActivity().getMenuInflater().inflate(R.menu.map, menu);
 		return true;
-	}
+	}*/
 
-	public void initViewHolder()
-	{
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.map, menu);
+    }
+
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container){
 		if (root_view == null)
 		{
-			root_view = this.getWindow().getDecorView().findViewById(android.R.id.content);
+            root_view = inflater.inflate(R.layout.activity_map, container, false);
 
 			if (holder == null)
 			{
@@ -422,8 +426,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			}
 
 			// holder.search_view = (SearchView) root_view.findViewById(R.id.searchView_map);
-			holder.autoCompView = (AutoCompleteTextView) root_view
-					.findViewById(R.id.searchView_map);
+			holder.autoCompView = (AutoCompleteTextView) root_view.findViewById(R.id.searchView_map);
 
 			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_map_toast);
 
@@ -432,6 +435,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 			// Store the holder with the view.
 			root_view.setTag(holder);
 
+            setHasOptionsMenu(true);
 		}
 		else
 		{
@@ -451,7 +455,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{
-		MapFragment map_fragment;
+		com.google.android.gms.maps.MapFragment map_fragment;
 		// SearchView search_view;
 		AutoCompleteTextView autoCompView;
 		TextView textView_toast;
@@ -501,7 +505,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 		protected List<Address> doInBackground(String... locationName)
 		{
 			// Creating an instance of Geocoder class
-			Geocoder geocoder = new Geocoder(getBaseContext());
+			Geocoder geocoder = new Geocoder(getActivity().getBaseContext());
 			List<Address> addresses = null;
 
 			try
@@ -522,7 +526,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 
 			if (addresses == null || addresses.size() == 0)
 			{
-				Toast.makeText(getBaseContext(), "No Location found", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity().getBaseContext(), "No Location found", Toast.LENGTH_SHORT).show();
 			}
 
 			// Clears all the existing markers on the map
@@ -569,7 +573,7 @@ public class MapActivity extends Activity implements OnMapClickListener, Locatio
 	{
 		// TODO Auto-generated method stub
 
-		hideSoftKeyboard(this);
+		hideSoftKeyboard(getActivity());
 		return false;
 	}
 

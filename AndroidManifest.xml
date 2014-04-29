@@ -115,7 +115,7 @@
                     android:value="com.mrdexpress.paperless.MainActivity" />
         </activity>
         <activity
-            android:name="com.mrdexpress.paperless.MapActivity"
+            android:name=".MapDialogFragment"
             android:label="@string/title_activity_map"
             android:parentActivityName=".fragments.ViewDeliveriesFragment"
             android:screenOrientation="portrait" >

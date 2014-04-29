@@ -33,6 +33,10 @@ public class ViewDeliveriesFragment extends Fragment implements TabListener{
 	private TabsPagerAdapter mPagerAdapter;
 	private static final int NUM_PAGES = 4;
 
+    public interface ViewDeliveriesFragmentInterface{
+        public void viewDeliveriesDone();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Paperless.getInstance().setMainActivity(this.getActivity());
@@ -45,6 +49,24 @@ public class ViewDeliveriesFragment extends Fragment implements TabListener{
         super.onCreateView(inflater, container, savedInstanceState);
         initViewHolder(inflater, container);
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        //holder.actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_STANDARD);
+        //holder.actionBar.removeAllTabs();
+        //holder.actionBar.hide();
+       // holder.mPager.setAdapter(null);
+
+        ((ViewDeliveriesFragmentInterface)getActivity()).viewDeliveriesDone();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -63,6 +85,7 @@ public class ViewDeliveriesFragment extends Fragment implements TabListener{
         holder.actionBar.setHomeButtonEnabled(false);
         holder.actionBar.setDisplayHomeAsUpEnabled(false);
         holder.actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        holder.actionBar.show();
 
         // Adding Tabs
         for (String tab_name : tabs)
@@ -103,6 +126,7 @@ public class ViewDeliveriesFragment extends Fragment implements TabListener{
             Users.getInstance().setMilkrunactive(true);
         }
 
+        holder.mPager.setCurrentItem(0);
     }
 
 	@Override

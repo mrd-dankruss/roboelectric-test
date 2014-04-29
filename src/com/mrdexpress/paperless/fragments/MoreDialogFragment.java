@@ -2,10 +2,8 @@ package com.mrdexpress.paperless.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +11,10 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import com.mrdexpress.paperless.*;
-import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.General;
-import com.mrdexpress.paperless.helper.VariableManager;
-import com.mrdexpress.paperless.net.ServerInterface;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class MoreDialogFragment extends DialogFragment
 {
@@ -133,11 +126,12 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(getActivity(), MapActivity.class);
-
-				startActivity(intent);
-
-				dismiss();
+                MapDialogFragment.newInstance(new CallBackFunction() {
+                    @Override
+                    public boolean execute(Object args) {
+                        return false;
+                    }
+                }).show(getActivity().getFragmentManager(), getTag());
 			}
 		});
 
@@ -146,10 +140,16 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
+                ReportDelayDialogFragment.newInstance(new CallBackFunction() {
+                    @Override
+                    public boolean execute(Object args) {
+                        return false;
+                    }
+                }).show(getActivity().getFragmentManager(), getTag());
+				/*Intent intent = new Intent(getActivity(), ReportDelayActivity.class);
                 General.getInstance().setActivebagid(bagid);
 				startActivity(intent);
-				dismiss();
+				dismiss();*/
 			}
 		});
 
