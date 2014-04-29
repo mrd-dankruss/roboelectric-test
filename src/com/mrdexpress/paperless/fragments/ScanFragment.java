@@ -67,6 +67,10 @@ public class ScanFragment extends Fragment {
     AlertDialog.Builder dialog_builder;
     Intent scan_intent;
 
+    public interface ScanActivityInterface{
+        public void scanFragmentDone( int requestCode, int resultCode, Object data);
+    }
+
     public void UpDateBagsForAdapter(String added_id) {
         UpdateBagsCounter();
     }
@@ -285,8 +289,8 @@ public class ScanFragment extends Fragment {
 
     private void startDelivery()
     {
-        ServerInterface.getInstance().startTrip();
-        ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_DELIVERY,2,null);
+        // ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_DELIVERY,2,null);
+        ((ScanActivityInterface)getActivity()).scanFragmentDone(DriverHomeActivity.START_DELIVERY,2,null);
         //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
         //Intent intent = new Intent( Paperless.getContext() , TabViewDeliveriesFragment.class);
         //startActivity(intent);

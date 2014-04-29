@@ -12,8 +12,9 @@ import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
 import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
+import com.mrdexpress.paperless.net.ServerInterface;
 
-public class DriverHomeActivity extends Activity implements FragmentResultInterface
+public class DriverHomeActivity extends Activity implements ScanFragment.ScanActivityInterface, DriverHomeFragment.DriverHomeFragmentInterface
 {
     public final static int START_DELIVERY= 1;
     public final static int START_SCAN= 2;
@@ -50,33 +51,32 @@ public class DriverHomeActivity extends Activity implements FragmentResultInterf
     }
 
     @Override
-    public boolean onFragmentResult(int requestCode, int resultCode, Intent data) {
+    public void scanFragmentDone(int requestCode, int resultCode, Object data) {
+        ServerInterface.getInstance().startTrip();
+
+        FragmentManager fm = getFragmentManager();
+        Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
+        if (viewDeliveriesFragment == null)
+        {
+            if( existingFragment != null && ((Object)existingFragment).getClass() == ViewDeliveriesFragment.class)
+                viewDeliveriesFragment = existingFragment;
+            else
+                viewDeliveriesFragment = new ViewDeliveriesFragment();
+            //fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).addToBackStack(null).commit();
+            fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
+        }
+    }
+
+    @Override
+    public void startScan() {
         FragmentManager fm = getFragmentManager();
         Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
 
-        switch( requestCode)
-        {
-            case START_SCAN:
-                if (scanFragment == null)
-                {
-                    if( existingFragment != null && ((Object)existingFragment).getClass() == ScanFragment.class)
-                        scanFragment = existingFragment;
-                    else
-                        scanFragment = new ScanFragment();
-                    fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).addToBackStack(null).commit();
-                }
-            break;
-            case START_DELIVERY:
-                if (viewDeliveriesFragment == null)
-                {
-                    if( existingFragment != null && ((Object)existingFragment).getClass() == ViewDeliveriesFragment.class)
-                        viewDeliveriesFragment = existingFragment;
-                    else
-                        viewDeliveriesFragment = new ViewDeliveriesFragment();
-                    fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).addToBackStack(null).commit();
-                }
-            break;
-        }
-        return false;
+        if( existingFragment != null && ((Object)existingFragment).getClass() == ScanFragment.class)
+            scanFragment = existingFragment;
+        else
+            scanFragment = new ScanFragment();
+        //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).addToBackStack(null).commit();
+        fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
     }
 }

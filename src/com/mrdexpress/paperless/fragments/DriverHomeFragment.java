@@ -22,6 +22,10 @@ public class DriverHomeFragment extends Fragment {
     private View rootView;
     private SharedPreferences prefs;
 
+    public interface DriverHomeFragmentInterface{
+        public void startScan();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         prefs = getActivity().getSharedPreferences(VariableManager.PREF, Context.MODE_PRIVATE);
@@ -64,8 +68,9 @@ public class DriverHomeFragment extends Fragment {
             holder.button_milkrun.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_SCAN,1,null);
-                    //new RetrieveBagsTask().execute();
+                ((DriverHomeFragmentInterface)getActivity()).startScan();
+                 //getActivity().onBackPressed();
+                 //new RetrieveBagsTask().execute();
                 }
             });
 
