@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.DbHandler;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
@@ -92,7 +93,7 @@ public class SmsMessageFragment extends Fragment
 		@Override
 		protected void onPreExecute()
 		{
-			this.dialog.setMessage("Sending SMS");
+			this.dialog.setMessage("Sending Message");
 			this.dialog.show();
 		}
 
@@ -129,16 +130,18 @@ public class SmsMessageFragment extends Fragment
 
 			if (result.equals("true"))
 			{
-				custom_toast.setText("Success");
-				custom_toast.setSuccess(true);
+                Device.getInstance().displaySuccess("Message send successfully");
+                //custom_toast.setText("Message send successfully");
+				//custom_toast.setSuccess(true);
 			}
 			else
 			{
-				custom_toast.setText(VariableManager.TEXT_NET_ERROR);
-				custom_toast.setSuccess(false);
+                Device.getInstance().displayFailed("Message not send successfully");
+				//custom_toast.setText(VariableManager.TEXT_NET_ERROR);
+				//custom_toast.setSuccess(false);
 			}
 
-			custom_toast.show();
+			//custom_toast.show();
 
 			getActivity().finish();
 		}

@@ -192,5 +192,6 @@
     <string name="manager_assign_bag_invalid">The bag cannot be assigned to you, please contact MRD support.</string>
     <string name="manager_assign_bag_invalid_scan">The barcode does not belong to a MRD bag.</string>
     <string name="driver_select_name">Type the first letter of your name</string><string name="start_scanning">Start Scanning</string>
+    <string name="mrdlogosmall">MRD</string>
 
 </resources>

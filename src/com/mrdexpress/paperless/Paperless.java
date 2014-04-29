@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 import com.mrdexpress.paperless.db.Device;
 import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,7 +38,7 @@ public class Paperless extends Application {
     @Override
     public void onCreate() {
         instance = this;
-        ottobus = new Bus();
+        ottobus = new Bus(ThreadEnforcer.ANY);
         gcmbus = new Bus();
         super.onCreate();
     }

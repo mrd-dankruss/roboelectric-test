@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -22,18 +22,21 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.google.zxing.client.android.Intents;
-import com.mrdexpress.paperless.*;
+import com.mrdexpress.paperless.DriverHomeActivity;
+import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
+import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.FragmentCallBackFunction;
-import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.Workflow;
+import com.squareup.otto.Subscribe;
 
 import java.util.Date;
 import java.util.List;
@@ -75,36 +78,16 @@ public class ScanFragment extends Fragment {
         UpdateBagsCounter();
     }
 
-    /*@Override
-    public void onBackPressed()
-    {
-        // code here to show dialog
-        //super.onBackPressed();  // optional depending on your needs
-        DialogInterface.OnClickListener dialogClickListener2 = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked
-                        ((FragmentResultInterface)getActivity()).onFragmentResult(1,2,null);
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
-                        break;
-                }
-            }
-        };
-        if (Workflow.getInstance().getBagsScanned(true).size() > 0)
-            dialog_builder.setMessage("You will need to scan all bags again if you cancel the current delivery run").setNegativeButton("No", dialogClickListener2).setPositiveButton("Yes", dialogClickListener2).setTitle("Cancel delivery run for " + Users.getInstance().getActiveDriver().getFullName() ).show();
-        else
-            getActivity().onBackPressed();
-    } */
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Paperless.getInstance().setMainActivity(this.getActivity());
+        Paperless.getInstance().ottobus.register(this);
         super.onCreate(savedInstanceState);
+    }
+
+    @Subscribe
+    public void mytestevent(String event){
+        Log.e("MRD-EX" , event);
     }
 
     @Override
@@ -290,7 +273,7 @@ public class ScanFragment extends Fragment {
     private void startDelivery()
     {
         // ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_DELIVERY,2,null);
-        ((ScanActivityInterface)getActivity()).scanFragmentDone(DriverHomeActivity.START_DELIVERY,2,null);
+        ((ScanActivityInterface)getActivity()).scanFragmentDone(DriverHomeActivity.START_DELIVERY, 2, null);
         //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
         //Intent intent = new Intent( Paperless.getContext() , TabViewDeliveriesFragment.class);
         //startActivity(intent);

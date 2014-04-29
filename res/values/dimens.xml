@@ -55,6 +55,7 @@
     <color name="gradient_center">#000099</color>
     <color name="colour_green_scan">#009724</color>
     <color name="gradient_start">#000011</color>
+    <color name="color_red">#CC0000</color>
     <color name="delivery_details_title_line_vertical_color">#999999</color>
     <color name="gradient_end">#00FF00</color>
     <color name="colour_darkgrey">#d2d2d2</color>

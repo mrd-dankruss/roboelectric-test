@@ -9,10 +9,12 @@ import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.Toast;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.ObjectSerializer;
 import com.mrdexpress.paperless.net.NetworkStatus;
+import com.mrdexpress.paperless.widget.CustomToast;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -224,12 +226,22 @@ public class Device {
             .setTextSize(15)
             .build();
 
-    public void displayMessage(String message , Style st , Activity act){
+    public void displayMessage(final String message , final String st , final Activity act){
         try {
             if (null != act){
-                Crouton.makeText(act , message , st ).show();
+                act.runOnUiThread(new Runnable() {
+                    public void run() {
+                        CustomToast ct = new CustomToast(Paperless.getContext());
+                        ct.setStyle(st).setText(message).show();
+                    }
+                });
             } else {
-                Crouton.makeText(Paperless.getInstance().getActivity() , message , st ).show();
+                Paperless.getInstance().getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        CustomToast ct = new CustomToast(Paperless.getContext());
+                        ct.setStyle(st).setText(message).show();
+                    }
+                });
             }
         } catch (Exception e){
             Log.e("MRD-EX" , e.getMessage());
@@ -238,7 +250,11 @@ public class Device {
     }
 
     public void displayInfo(String message , Activity act){
-        displayMessage(message , infom , act);
+        displayMessage(message, CustomToast.STYLE_INFO , act);
+    }
+
+    public void displayInfo(String message , Context act){
+        Toast.makeText(act , message , Toast.LENGTH_LONG).show();
     }
 
     public void displayInfo(String message){
@@ -246,7 +262,7 @@ public class Device {
     }
 
     public void displaySuccess(String message , Activity act){
-        displayMessage(message , successm , act);
+        displayMessage(message , CustomToast.STYLE_SUCCESS , act);
     }
 
     public void displaySuccess(String message){
@@ -254,7 +270,7 @@ public class Device {
     }
 
     public void displayFailed(String message , Activity act){
-        displayMessage(message , failedm , act);
+        displayMessage(message , CustomToast.STYLE_FAILED , act);
     }
 
     public void displayFailed(String message){
