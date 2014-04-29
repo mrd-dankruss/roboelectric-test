@@ -55,7 +55,6 @@ public class ReportDelayDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
         return dialog;
     }
 
@@ -63,7 +62,6 @@ public class ReportDelayDialogFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         super.onCreateView(inflater, container, savedInstanceState);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
-
         return rootView;
     }
 
@@ -71,15 +69,6 @@ public class ReportDelayDialogFragment extends DialogFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Fragment: Home Begin
-        /*FragmentManager fm = getFragmentManager();
-        fragment = fm.findFragmentById(R.id.activity_report_delay_container);
-        if (fragment == null)
-        {
-            fragment = new ReportDelayListFragment();
-            fm.beginTransaction().add(R.id.activity_report_delay_container, fragment).commit();
-        }*/
-        //adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity()).getMilkrunDelayReasons(), false);
         adapter = new GenericDialogListAdapter(getActivity(), Workflow.getInstance().getMilkrunDelayReasons(), false);
 
         if ((adapter != null) & (holder.list != null))
@@ -104,9 +93,26 @@ public class ReportDelayDialogFragment extends DialogFragment
 
                     // String delay_id = (String) getListView().getItemAtPosition(position);
 
-                    DelayDialog editNameDialog = DelayDialog.newInstance(delay_id);
-                    editNameDialog.setTargetFragment( getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
-                    editNameDialog.show(fm, "reportDelayFragment");
+                    DelayDialog.newInstance(delay_id, new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            Intent i = (Intent)args;
+                            ((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(i.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
+
+                            delay_id = i.getStringExtra(VariableManager.EXTRA_DELAY_ID);
+
+                            // holder.report_button.setVisibility(View.VISIBLE);
+                            holder.report_button.setBackgroundResource(R.drawable.button_custom);
+                            holder.list.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            holder.report_button.setEnabled(true);
+
+                            return false;
+                        }
+                    }).show(fm, getTag());
+                    //editNameDialog.setTargetFragment( getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
+                    //editNameDialog.setTargetFragment(  getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
+                    //editNameDialog.show(fm, "reportDelayFragment");
                 }
             }
         });
@@ -135,20 +141,6 @@ public class ReportDelayDialogFragment extends DialogFragment
     public void onResume()
     {
         super.onResume();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        ((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(data.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
-
-        delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
-
-        // holder.report_button.setVisibility(View.VISIBLE);
-        holder.report_button.setBackgroundResource(R.drawable.button_custom);
-        holder.list.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        holder.report_button.setEnabled(true);
     }
 
     private class ReportDelayTask extends AsyncTask<String, Void, String>
@@ -201,7 +193,8 @@ public class ReportDelayDialogFragment extends DialogFragment
             custom_toast.setSuccess(true);
             custom_toast.show();
 
-            getActivity().finish();
+            dismiss();
+            //getActivity().finish();
         }
     }
 

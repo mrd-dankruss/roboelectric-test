@@ -20,7 +20,6 @@ import com.mrdexpress.paperless.workflow.Workflow;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import net.minidev.json.JSONObject;
-import net.simonvt.messagebar.MessageBar;
 
 import java.util.ArrayList;
 
