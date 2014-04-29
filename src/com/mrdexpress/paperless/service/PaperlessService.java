@@ -20,6 +20,7 @@ import com.mrdexpress.paperless.workflow.Workflow;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import net.minidev.json.JSONObject;
+import net.simonvt.messagebar.MessageBar;
 
 import java.util.ArrayList;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 
 public class PaperlessService extends Service{
     public static Thread ajaxthread;
-    public static Integer AJAX_TIMER = 300000;
+    public static Integer AJAX_TIMER = 90000;
     public static Integer LOCATION_TIMER = 30000;
     public static Location oldloc = null;
     public LocationListener ls = new LocationListener() {
@@ -134,7 +135,6 @@ public class PaperlessService extends Service{
     public void onStart(Intent intent, int startId) {
         Device.getInstance().displayInfo("Paperless Service Started");
         Log.d("MRD-EX", "onStart");
-        Paperless.getInstance().ottobus.post(new String("TEST"));
     }
 
     @Override

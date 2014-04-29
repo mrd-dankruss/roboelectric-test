@@ -82,6 +82,7 @@ public class DriverHomeFragment extends Fragment {
             if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup)) {
                 ((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
             } else {
+
             }
         }
     }

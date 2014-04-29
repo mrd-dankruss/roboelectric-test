@@ -96,13 +96,9 @@ public class LoginActivity extends Activity implements LoginInterface {
         NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
 
         checkConnected();
-
-        Paperless.getInstance().gcmbus.register(this);
     }
 
-    @Subscribe public void mytestevent(String event){
-        Log.e("MRD-EX" , event);
-    }
+
     @Subscribe public void mygcm(Bundle extra){
         if (!extra.isEmpty()){
             String test123 = extra.getString("data");
@@ -213,7 +209,7 @@ public class LoginActivity extends Activity implements LoginInterface {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
 
-        Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_SHORT).show();
+        Device.getInstance().displayInfo("Checking for updates");
 
         String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
         ac.ajax(updateURL , String.class , new AjaxCallback<String>(){

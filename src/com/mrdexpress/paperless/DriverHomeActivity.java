@@ -1,23 +1,21 @@
 package com.mrdexpress.paperless;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.app.Fragment;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.os.Bundle;
+import android.util.Log;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
-import com.mrdexpress.paperless.interfaces.FragmentResultInterface;
 import com.mrdexpress.paperless.net.ServerInterface;
+import com.squareup.otto.Subscribe;
 
 public class DriverHomeActivity extends Activity implements ScanFragment.ScanActivityInterface, DriverHomeFragment.DriverHomeFragmentInterface, ViewDeliveriesFragment.ViewDeliveriesFragmentInterface
 {
     public final static int START_DELIVERY= 1;
-    public final static int START_SCAN= 2;
+    public final static int START_SCAN = 2;
     public final static int MANUAL_BARCODE= 3;
 	
 	/*private Fragment fragment;
@@ -33,7 +31,14 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
         setContentView(R.layout.activity_home);
 
         showMenu();
+        Paperless.getInstance().ottobus.register(this);
 	}
+
+    @Subscribe
+    public void mytestevent(String event){
+        Log.e("MRD-EX", event);
+        Device.getInstance().displayInfo(event , this);
+    }
 
     @Override
     protected void onResume() {
@@ -50,6 +55,11 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
         Fragment fragment = new DriverHomeFragment();
         //fragment.setArguments( savedInstanceState);
         fm.beginTransaction().replace(R.id.activity_home_container, fragment).commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Do Here what ever you want do on back press;
     }
 
     @Override

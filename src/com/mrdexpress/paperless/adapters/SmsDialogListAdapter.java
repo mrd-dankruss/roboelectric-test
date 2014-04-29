@@ -39,7 +39,9 @@ public class SmsDialogListAdapter extends BaseAdapter
 		TextView mainText = (TextView) rowView.findViewById(R.id.reportDelay_textView_mainText);
 		TextView subText = (TextView) rowView.findViewById(R.id.reportDelay_textView_subText);
 
-		mainText.setText(values.get(position).getMainText());
+		mainText.setText("Send Message To : " + values.get(position).getMainText());
+        //subText.setText("Send Message To : ");
+        //subText.setVisibility(View.VISIBLE);
 
 		if ((values.get(position).getThirdText().length() > 0) && (isDialog == false))
 		{
