@@ -118,7 +118,13 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
             @Override
             public void onClick(View v)
             {
-                DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID());
+                DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID(), new CallBackFunction() {
+                    @Override
+                    public boolean execute(Object args) {
+                        callback.execute( args);
+                        return false;
+                    }
+                });
                 newFragment.show(getFragmentManager(), "dialog");
             }
         });

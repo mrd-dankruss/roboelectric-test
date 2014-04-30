@@ -15,6 +15,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
+import com.mrdexpress.paperless.ui.ViewHolder;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
+	public View getView(int position, View rowView, ViewGroup parent)
 	{
 		Typeface typeface_roboto_regular = Typeface.createFromAsset(activity.getAssets(),
 				FontHelper.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
@@ -51,14 +52,14 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_ITALIC));
 
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.row_completed_deliveries, parent, false);
+        if( rowView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(R.layout.row_completed_deliveries, parent, false);
+        }
 
-		text_address = (TextView) rowView.findViewById(R.id.text_completed_deliveries_address);
-		text_bag_ids = (TextView) rowView.findViewById(R.id.text_completed_deliveries_bags);
-		text_failed_time = (TextView) rowView
-				.findViewById(R.id.text_completed_deliveries_failed_time);
+		text_address = ViewHolder.get(rowView, R.id.text_completed_deliveries_address);
+		text_bag_ids = ViewHolder.get( rowView, R.id.text_completed_deliveries_bags);
+		text_failed_time = ViewHolder.get( rowView, R.id.text_completed_deliveries_failed_time);
 
 		text_address.setTypeface(typeface_roboto_regular);
 		text_bag_ids.setTypeface(typeface_roboto_bold);

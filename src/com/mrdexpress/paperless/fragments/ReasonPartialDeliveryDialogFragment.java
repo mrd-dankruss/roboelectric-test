@@ -1,12 +1,15 @@
 package com.mrdexpress.paperless.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -20,15 +23,16 @@ import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.ReasonPartialDeliveryItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
 
-public class ReasonPartialDeliveryFragment extends Fragment {
+public class ReasonPartialDeliveryDialogFragment extends DialogFragment {
 
-    private final String TAG = "ReasonPartialDeliveryFragment";
+    private final String TAG = "ReasonPartialDeliveryDialogFragment";
     private ViewHolder holder;
     private View rootView;
     private ExpandableListAdapter listAdapter;
@@ -36,10 +40,29 @@ public class ReasonPartialDeliveryFragment extends Fragment {
     private boolean button_enabled = false;
     private ArrayList<PartialDeliveryObject> partial_deliveries = new ArrayList<PartialDeliveryObject>();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public ReasonPartialDeliveryDialogFragment( CallBackFunction _callback) {
+        callback = _callback;
+    }
 
+    private static CallBackFunction callback;
+
+    public static ReasonPartialDeliveryDialogFragment newInstance(final CallBackFunction callback)
+    {
+        ReasonPartialDeliveryDialogFragment f = new ReasonPartialDeliveryDialogFragment( callback);
+        return f;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        super.onCreateView(inflater, container, savedInstanceState);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Perform API call
         holder.button_continue.setOnClickListener(new OnClickListener() {
@@ -57,14 +80,17 @@ public class ReasonPartialDeliveryFragment extends Fragment {
                             }
                         }
                     }
-                    getActivity().setResult(Activity.RESULT_OK);
+
+                    callback.execute(true);
+                    /*getActivity().setResult(Activity.RESULT_OK);
 
                     CustomToast toast = new CustomToast(getActivity());
                     toast.setSuccess(true);
                     toast.setText("Partial delivery logged.");
                     toast.show();
 
-                    getActivity().finish();
+                    getActivity().finish();*/
+                    dismiss();
                 }
             }
         });
@@ -129,7 +155,12 @@ public class ReasonPartialDeliveryFragment extends Fragment {
             holder.list.expandGroup(i);
         }
 
-        return rootView;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        return dialog;
     }
 
     private boolean allTicked() {
@@ -187,13 +218,6 @@ public class ReasonPartialDeliveryFragment extends Fragment {
         }
     }
 
-    // Creates static instances of resources.
-    // Increases performance by only finding and inflating resources only once.
-    static class ViewHolder {
-        ExpandableListView list;
-        Button button_continue;
-    }
-
     private void prepareListData() {
         data = new ArrayList<ArrayList<ReasonPartialDeliveryItem>>();
 
@@ -223,5 +247,12 @@ public class ReasonPartialDeliveryFragment extends Fragment {
             status_id = statusid;
             extra = "";
         }
+    }
+
+    // Creates static instances of resources.
+    // Increases performance by only finding and inflating resources only once.
+    static class ViewHolder {
+        ExpandableListView list;
+        Button button_continue;
     }
 }

@@ -32,19 +32,25 @@ public class UpdateStatusDialog extends DialogFragment
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
 	private ArrayList<DialogDataObject> temp;
 
-	/**
+    private CallBackFunction callback;
+
+    public UpdateStatusDialog(int bag_id, CallBackFunction _callback) {
+        bagid = bag_id;
+        callback = _callback;
+    }
+
+    /**
 	 * Create a new instance of MyDialogFragment, providing "num"
 	 * as an argument.
 	 */
-	public static UpdateStatusDialog newInstance(int bag_id)
+	public static UpdateStatusDialog newInstance(int bag_id, CallBackFunction _callback)
 	{
-		UpdateStatusDialog f = new UpdateStatusDialog();
+		UpdateStatusDialog f = new UpdateStatusDialog( bag_id, _callback);
 
 		// Supply num input as an argument.
 		// Bundle args = new Bundle();
 		// args.putInt("num", bag_id);
 		// f.setArguments(args);
-		bagid = bag_id;
 
 		return f;
 	}
