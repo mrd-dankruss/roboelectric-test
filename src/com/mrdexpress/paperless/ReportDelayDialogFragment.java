@@ -58,6 +58,7 @@ public class ReportDelayDialogFragment extends DialogFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         super.onCreateView(inflater, container, savedInstanceState);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
         return rootView;
     }
@@ -218,11 +219,11 @@ public class ReportDelayDialogFragment extends DialogFragment
                 holder = new ViewHolder();
             }
 
-            TextView bartitle = (TextView)rootView.findViewById(R.id.deliveriesLabel);
+            TextView bartitle = (TextView)rootView.findViewById(R.id.delayReasons_actiondeliveriesLabel);
             bartitle.setText("Report Delay");
 
             holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-            holder.report_button = (Button) rootView.findViewById(R.id.button_submit_action);
+            holder.report_button = (Button) rootView.findViewById(R.id.delayReasons_button_submit_action);
             holder.closeDialogButton = (ImageButton) rootView.findViewById(R.id.button_report_delay_closeButton);
             holder.report_button.setText(getResources().getString(R.string.delivery_more_reportDelay));
 
