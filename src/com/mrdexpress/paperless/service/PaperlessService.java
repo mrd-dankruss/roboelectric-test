@@ -9,18 +9,13 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
-import com.mrdexpress.paperless.LoginActivity;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.net.Ajax;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import net.minidev.json.JSONObject;
-import net.simonvt.messagebar.MessageBar;
 
 import java.util.ArrayList;
 
