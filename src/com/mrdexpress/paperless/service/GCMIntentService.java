@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
+import com.mrdexpress.paperless.fragments.DeliveryHandoverDialogFragment;
 import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,8 +70,8 @@ public class GCMIntentService extends IntentService
                     }
 
                     intent = new Intent(BROADCAST_ACTION);
-                    intent.putExtra(DeliveryHandoverFragment.WAYBILL_BARCODE, barcode);
-                    intent.putExtra(DeliveryHandoverFragment.WAYBILL_SCANNED, unix);
+                    intent.putExtra(DeliveryHandoverDialogFragment.WAYBILL_BARCODE, barcode);
+                    intent.putExtra(DeliveryHandoverDialogFragment.WAYBILL_SCANNED, unix);
                     sendBroadcast(intent);
                     Workflow.getInstance().setWaybillScanned( barcode, unix);
                     //DbHandler.getInstance(getApplicationContext()).setWaybillScanned(cons_no, bool_scanned);

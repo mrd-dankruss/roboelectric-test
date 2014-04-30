@@ -4,31 +4,30 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.Activity;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.mrdexpress.paperless.datatype.ComLogObject;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.DbHandler;
 import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class DeliveryDetailsActivity extends Activity implements SetNextDeliveryListener
+public class DeliveryDetailsDialogFragment extends DialogFragment implements SetNextDeliveryListener
 {
 
 	private ViewHolder holder;
@@ -39,30 +38,51 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
     private int position;
 	Intent intent;
 
+    public DeliveryDetailsDialogFragment(CallBackFunction _callback) {
+        callback = _callback;
+    }
+
+    private static CallBackFunction callback;
+
+    public static DeliveryDetailsDialogFragment newInstance(final CallBackFunction callback)
+    {
+        DeliveryDetailsDialogFragment d = new DeliveryDetailsDialogFragment(callback);
+        return d;
+    }
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragment_delivery_details);
-		initViewHolder();
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		intent = getIntent();
-		position = intent.getIntExtra("ACTIVE_BAG_POSITION", -1);
-        BagID = intent.getIntExtra("ACTIVE_BAG_ID", -1);
-        //Workflow.getInstance().currentBagID = BagID;
-        JSONObject jso =  Workflow.getInstance().getBag( BagID);
-        bag = new Bag(jso);
 	}
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        super.onCreateView(inflater, container, savedInstanceState);
 
-		holder.text_delivery_number.setText("#" + (position + 1));
-		holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
-		holder.text_delivery_addressee.setText("Addressee: " + bag.getDestination());
-		holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        initViewHolder(inflater, container); // Inflate ViewHolder static instance
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Bundle bundle = getArguments();
+        //getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        position = bundle.getInt("ACTIVE_BAG_POSITION", -1);
+        BagID = bundle.getInt("ACTIVE_BAG_ID", -1);
+
+        JSONObject jso =  Workflow.getInstance().getBag( BagID);
+        bag = new Bag(jso);
+
+        holder.text_delivery_number.setText("#" + (position + 1));
+        holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
+        holder.text_delivery_addressee.setText("Addressee: " + bag.getDestination());
+        holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
         StringBuilder bagtext = new StringBuilder();
         waybills = Workflow.getInstance().getBagParcelsAsObjects( bag.getBagID());
 
@@ -79,10 +99,10 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
 
         String comlog_text = "";
 
-		for (int i = 0; i < coms.size(); i++)
-		{
-			comlog_text = comlog_text + coms.get(i).getDatetime().substring(0 , 19) + " : "+ coms.get(i).getLogevent() + "\n";
-		}
+        for (int i = 0; i < coms.size(); i++)
+        {
+            comlog_text = comlog_text + coms.get(i).getDatetime().substring(0 , 19) + " : "+ coms.get(i).getLogevent() + "\n";
+        }
         if (comlog_text.isEmpty()){
             holder.text_delivery_communication_log.setVisibility(View.GONE);
             holder.text_delivery_communication_title.setVisibility(View.GONE);
@@ -91,27 +111,35 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
             holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
             holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
         }
-		// TODO:Set image here one day when app is extended.
-		holder.button_update_status.setOnClickListener(new View.OnClickListener()
-		{
+        // TODO:Set image here one day when app is extended.
+        holder.button_update_status.setOnClickListener(new View.OnClickListener()
+        {
 
-			@Override
-			public void onClick(View v)
-			{
-				DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID());
-				newFragment.show(getFragmentManager(), "dialog");
-			}
-		});
+            @Override
+            public void onClick(View v)
+            {
+                DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID(), new CallBackFunction() {
+                    @Override
+                    public boolean execute(Object args) {
+                        //callback.execute( args);
+                        dismiss();
+                        callback.execute(true);
+                        return false;
+                    }
+                });
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
 
         //holder.button_more.setText("More Options");
 
-		holder.button_more.setOnClickListener(new View.OnClickListener()
-		{
+        holder.button_more.setOnClickListener(new View.OnClickListener()
+        {
 
-			@Override
-			public void onClick(View v)
-			{
-				boolean isNextBag = bag.getBagID() == MiscHelper.getNextDeliveryId(DeliveryDetailsActivity.this);
+            @Override
+            public void onClick(View v)
+            {
+                boolean isNextBag = bag.getBagID() == MiscHelper.getNextDeliveryId( getActivity());
                 int curbagid = Workflow.getInstance().currentBagID;
 
                 if (bag.getBagID() == curbagid){
@@ -121,8 +149,15 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
                     DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagID());
                     newFragment.show(getFragmentManager(), "dialog");
                 }
-			}
-		});
+            }
+        });
+    }
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
 	}
 
 	@Override
@@ -130,34 +165,37 @@ public class DeliveryDetailsActivity extends Activity implements SetNextDelivery
 	{
 		if (is_successful)
 		{
-			CustomToast custom_toast = new CustomToast(this);
+			CustomToast custom_toast = new CustomToast(getActivity());
 			custom_toast.setSuccess(true);
 			custom_toast.setText("Successfully changed next delivery.");
 			custom_toast.show();
 			Workflow.getInstance().currentBagID = bagId;
-			MiscHelper.setNextDeliveryId(bagId, this);
-			finish();
+			MiscHelper.setNextDeliveryId(bagId, getActivity());
+
+            callback.execute( true);
+
+            dismiss();
 		}
 
 	}
 
-	public void initViewHolder()
-	{
+    public void initViewHolder(LayoutInflater inflater, ViewGroup container)
+    {
 
-		if (rootView == null)
-		{
-
-			rootView = this.getWindow().getDecorView().findViewById(android.R.id.content);
+        if (rootView == null)
+        {
+            //rootView = inflater.inflate(R.layout.activity_report_delay, container, false);
+            rootView = inflater.inflate(R.layout.fragment_delivery_details, container, false);
 
 			if (holder == null)
 			{
 				holder = new ViewHolder();
 			}
 
-			Typeface typeface_roboto_bold = Typeface.createFromAsset(getAssets(), FontHelper
+			Typeface typeface_roboto_bold = Typeface.createFromAsset(getActivity().getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_BOLD));
-			Typeface typeface_roboto_regular = Typeface.createFromAsset(getAssets(), FontHelper
+			Typeface typeface_roboto_regular = Typeface.createFromAsset(getActivity().getAssets(), FontHelper
 					.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 							FontHelper.STYLE_REGULAR));
 

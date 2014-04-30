@@ -1,5 +1,8 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,24 +17,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.*;
 import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.service.GCMIntentService;
+import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
 import java.util.*;
 
-public class DeliveryHandoverFragment extends Fragment {
+public class DeliveryHandoverDialogFragment extends DialogFragment {
     public static String WAYBILL_BARCODE = "com.mrdexpress.waybill_barcode";
     public static String WAYBILL_SCANNED = "com.mrdexpress.waybill_scanned";
-    private final String TAG = "DeliveryHandoverFragment";
+    private final String TAG = "DeliveryHandoverDialogFragment";
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -43,14 +48,40 @@ public class DeliveryHandoverFragment extends Fragment {
     };
     ArrayList<DeliveryHandoverDataObject> list;
     int bagid;
-    private ViewHolder holder;
     private View rootView;
+    private MyViewHolder holder;
     private IncompleteScanDialog dialog;
     private DeliveryHandoverAdapter listAdapter;
 
+    public DeliveryHandoverDialogFragment( CallBackFunction _callback) {
+        callback = _callback;
+    }
+
+    private static CallBackFunction callback;
+
+    public static DeliveryHandoverDialogFragment newInstance(final CallBackFunction callback)
+    {
+        DeliveryHandoverDialogFragment f = new DeliveryHandoverDialogFragment( callback);
+        return f;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        return dialog;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         bagid = Workflow.getInstance().currentBagID;
 
@@ -58,7 +89,7 @@ public class DeliveryHandoverFragment extends Fragment {
 
         list = Workflow.getInstance().getBagParcelsAsObjects(bagid);
 
-        listAdapter = new DeliveryHandoverAdapter(list);
+        listAdapter = new DeliveryHandoverAdapter(list, getActivity());
 
         listAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -95,9 +126,13 @@ public class DeliveryHandoverFragment extends Fragment {
                         toast.setSuccess(true);
                         toast.setText("Delivery completed successfully.");
                         toast.show();
+
+                        callback.execute(true);
+                        dismiss();
+                        /*
                         getActivity().finish();
                         Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragment.class);
-                        startActivity(intent);
+                        startActivity(intent);*/
 
                     } else {
 
@@ -117,13 +152,32 @@ public class DeliveryHandoverFragment extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 dialog.dismiss();
-                                Intent intent = new Intent(getActivity(), ReasonPartialDeliveryActivity.class);
-                                Bundle b = new Bundle();
 
                                 Workflow.getInstance().doormat.put(VariableManager.UNSCANNED_PARCELS, getUnscannedParcels(list));
                                 Workflow.getInstance().doormat.put("scannedparcels", getScannedParcels(list));
 
-                                getActivity().startActivityForResult(intent, VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);
+                                ReasonPartialDeliveryDialogFragment logReasons = ReasonPartialDeliveryDialogFragment.newInstance( new CallBackFunction() {
+                                    @Override
+                                    public boolean execute(Object args) {
+                                        Workflow.getInstance().setDeliveryStatus(Workflow.getInstance().currentBagID, Bag.STATUS_PARTIAL, "");
+                                        CustomToast toast = new CustomToast(getActivity());
+                                        toast.setSuccess(true);
+                                        toast.setText("Partial delivery logged");
+                                        toast.show();
+
+                                        callback.execute(true);
+                                        dismiss();
+
+                                        return false;
+                                    }
+                                });
+                                logReasons.show( getFragmentManager(), getTag());
+
+                                /*Intent intent = new Intent(getActivity(), ReasonPartialDeliveryActivity.class);
+                                Bundle b = new Bundle();
+
+
+                                getActivity().startActivityForResult(intent, VariableManager.ACTIVITY_REQUEST_CODE_PARTIAL_DELIVERY);*/
                             }
                         });
 
@@ -140,8 +194,6 @@ public class DeliveryHandoverFragment extends Fragment {
                 }
             }
         });
-
-        return rootView;
     }
 
     @Override
@@ -245,20 +297,21 @@ public class DeliveryHandoverFragment extends Fragment {
 
     public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
         if (rootView == null) {
+
             rootView = inflater.inflate(R.layout.fragment_delivery_handover, null, false);
 
             if (holder == null) {
-                holder = new ViewHolder();
+                holder = new MyViewHolder();
             }
 
-            holder.list = (ListView) rootView.findViewById(R.id.deliveryHandover_listView_scannedParcels);
-            holder.button = (Button) rootView.findViewById(R.id.button_delivery_handover_complete);
-            holder.parcelsScanned = (TextView) rootView.findViewById(R.id.deliveryHandover_textView_ParcelsScanned);
+            holder.list = ViewHolder.get(rootView, R.id.deliveryHandover_listView_scannedParcels);
+            holder.button = ViewHolder.get(rootView,R.id.button_delivery_handover_complete);
+            holder.parcelsScanned = ViewHolder.get(rootView, R.id.deliveryHandover_textView_ParcelsScanned);
 
             // Store the holder with the view.
             rootView.setTag(holder);
         } else {
-            holder = (ViewHolder) rootView.getTag();
+            holder = (MyViewHolder) rootView.getTag();
 
             if ((rootView.getParent() != null) && (rootView.getParent() instanceof ViewGroup)) {
                 ((ViewGroup) rootView.getParent()).removeAllViewsInLayout();
@@ -269,7 +322,7 @@ public class DeliveryHandoverFragment extends Fragment {
 
     // Creates static instances of resources.
     // Increases performance by only finding and inflating resources only once.
-    static class ViewHolder {
+    static class MyViewHolder {
         ListView list;
         Button button;
         TextView parcelsScanned;
@@ -277,22 +330,27 @@ public class DeliveryHandoverFragment extends Fragment {
 
     private class DeliveryHandoverAdapter extends BaseAdapter {
 
+        private final Context context;
         List<DeliveryHandoverDataObject> parcelList;
 
-        public DeliveryHandoverAdapter(ArrayList<DeliveryHandoverDataObject> objects) {
+        public DeliveryHandoverAdapter(ArrayList<DeliveryHandoverDataObject> objects, Activity activity) {
             super();
+            context = activity.getApplicationContext();
             parcelList = objects;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View rowView, ViewGroup parent) {
             final int thisPosition = position;
 
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View rowView = inflater.inflate(R.layout.row_delivery_handover, parent, false);
-            TextView parcelTitle = (TextView) rowView.findViewById(R.id.row_delivery_parcel);
-            TextView waybillTile = (TextView) rowView.findViewById(R.id.row_delivery_waybill);
-            ImageView hasScannedParcel = (ImageView) rowView.findViewById(R.id.row_delivery_handover_image);
+            if( rowView == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                rowView = inflater.inflate(R.layout.row_delivery_handover, parent, false);
+            }
+
+            TextView parcelTitle = ViewHolder.get(rowView, R.id.row_delivery_parcel);
+            TextView waybillTile = ViewHolder.get(rowView, R.id.row_delivery_waybill);
+            ImageView hasScannedParcel = ViewHolder.get(rowView, R.id.row_delivery_handover_image);
 
             DeliveryHandoverDataObject dhdo = parcelList.get(thisPosition);
             waybillTile.setText(dhdo.getMDX() + " (" + dhdo.getXof() + ")");

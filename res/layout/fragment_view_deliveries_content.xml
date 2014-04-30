@@ -5,52 +5,9 @@
     android:layout_height="match_parent" >
 
     <ListView
-        android:id="@+id/fragment_viewDeliveries_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+            android:id="@+id/fragment_viewDeliveries_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
     </ListView>
-
-    <LinearLayout
-        android:id="@+id/fragment_viewDeliveries_linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/text_todo_deliveries_complete_1"
-            android:textColor="@color/text_grey"
-            android:textSize="27sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="@string/text_todo_deliveries_complete_2"
-            android:textColor="@color/text_grey"
-            android:textSize="21sp" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/button_generic_report"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/margin_button_NS"
-        android:layout_marginLeft="@dimen/margin_button_WE"
-        android:layout_marginRight="@dimen/margin_button_WE"
-        android:layout_marginTop="@dimen/margin_button_NS"
-        android:text="@string/delivery_button1"
-        android:background="@drawable/button_custom"
-        android:paddingBottom="@dimen/button_padding_topbottom"
-        android:paddingTop="@dimen/button_padding_topbottom"
-        android:textSize="@dimen/font_size_button"
-        android:visibility="gone" android:textStyle="bold" android:textColor="@color/black"/>
 
 </RelativeLayout>

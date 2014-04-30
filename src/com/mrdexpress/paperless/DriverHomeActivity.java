@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.ScanFragment;
@@ -27,7 +28,6 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
 	{
 		super.onCreate(savedInstanceState);
         Paperless.getInstance().setMainActivity(this);
-
         setContentView(R.layout.activity_home);
 
         showMenu();

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MyDialog"
+    android:orientation="vertical"
+    android:layout_margin="20dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <LinearLayout
-            android:id="@+id/deliveriesHeaderBar"
+            android:id="@+id/delayReasonsHeaderBar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="0dp"
@@ -15,7 +19,7 @@
             android:padding="0dp" >
 
         <TextView
-                android:id="@+id/deliveriesLabel"
+                android:id="@+id/delayReasons_actiondeliveriesLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -47,32 +51,27 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/fragment_viewDeliveries_container"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="70dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
-
     <Button
-        android:id="@+id/button_submit_action"
+        android:id="@+id/delayReasons_button_submit_action"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/margin_button_NS"
-        android:layout_marginLeft="@dimen/margin_button_WE"
-        android:layout_marginRight="@dimen/margin_button_WE"
-        android:layout_marginTop="@dimen/margin_button_NS"
+        android:layout_margin="20dp"
         android:text="@string/delivery_button1"
         android:background="@drawable/button_custom"
-        android:paddingBottom="@dimen/button_padding_topbottom"
-        android:paddingTop="@dimen/button_padding_topbottom"
         android:textSize="@dimen/font_size_button"
         android:visibility="visible"
         android:textStyle="bold"
         android:enabled="false"
         android:textColor="@color/black"/>
+
+    <ListView
+            android:id="@+id/fragment_viewDeliveries_container"
+            android:layout_above="@id/delayReasons_button_submit_action"
+            android:layout_below="@id/delayReasonsHeaderBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+    </ListView>
 
 </RelativeLayout>

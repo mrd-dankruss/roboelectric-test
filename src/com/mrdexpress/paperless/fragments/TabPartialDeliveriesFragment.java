@@ -23,8 +23,10 @@ public class TabPartialDeliveriesFragment extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
+
+        adapter = new CompletedDeliveriesListAdapter(getActivity(), Bag.STATUS_PARTIAL);
+        holder.list.setAdapter(adapter);
 
 		return rootView;
 	}
@@ -36,8 +38,8 @@ public class TabPartialDeliveriesFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_PARTIAL));
-		holder.list.setAdapter(adapter);
+
+        adapter.notifyDataSetChanged();
 
 		/*holder.button_completed.setOnClickListener(new View.OnClickListener()
 		{

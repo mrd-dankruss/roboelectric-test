@@ -1,5 +1,8 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -11,14 +14,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import com.mrdexpress.paperless.DeliveryDetailsActivity;
+import com.mrdexpress.paperless.DeliveryDetailsDialogFragment;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.General;
-import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.MiscHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
 
@@ -38,64 +40,56 @@ public class TabViewDeliveriesFragment extends Fragment
 		return rootView;
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.Fragment#onResume()
-	 */
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        adapter = new ViewDeliveriesListAdapter(getActivity(), Bag.STATUS_TODO);
+        holder.list.setAdapter(adapter);
+        //if(DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
+        if( adapter.getCount() == 0)
+        {
+            DriverReturnDialogFragment.newInstance( new CallBackFunction() {
+                @Override
+                public boolean execute(Object args) {
+                    Intent intent = MiscHelper.getGoHomeIntent(getActivity());
+                    ServerInterface.getInstance().endTrip();
+                    startActivity(intent);
+                    return false;
+                }
+            }).show(getFragmentManager(), getTag());
+        }
+
+        holder.list.setOnItemClickListener(new OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+            {
+                DialogFragment deliveryDetails = DeliveryDetailsDialogFragment.newInstance( new CallBackFunction() {
+                    @Override
+                    public boolean execute(Object args) {
+                        adapter.notifyDataSetChanged();
+                        return false;
+                    }
+                });
+                Bundle bundle = new Bundle();
+                Integer bagid = ((Bag)holder.list.getItemAtPosition(position)).getBagID();
+                bundle.putInt("ACTIVE_BAG_ID", bagid);
+                bundle.putInt("ACTIVE_BAG_POSITION", position);
+                if (position == 0)
+                    Workflow.getInstance().currentBagID = bagid;
+                General.getInstance().setActivebagid(bagid);
+                deliveryDetails.setArguments( bundle);
+
+                deliveryDetails.show( getFragmentManager(), getTag());
+            }
+        });
+    }
+
 	@Override
 	public void onResume()
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
-
-        adapter = new ViewDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_TODO));
- 		if (adapter.getCount() == 0)
-		{
-			holder.button.setVisibility(View.VISIBLE);
-			holder.button.setEnabled(true);
-		}
-		else
-		{
-			holder.button.setVisibility(View.GONE);
-			holder.button.setEnabled(false);
-		}
-
-		//if(DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
-        if( adapter.getCount() == 0)
-		{
-			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(View.GONE);
-			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.VISIBLE);
-		}
-		else
-		{
-			rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility( View.VISIBLE);
-			rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.GONE);
-		}
-
-		holder.list.setAdapter(adapter);
-        try {
-            //adapter.getItem(0);
-        }catch(Exception e){
-
-        }
-
-
-		holder.list.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
-			{
-				// Go to View Deliveries screen
-				Intent intent = new Intent(getActivity(), DeliveryDetailsActivity.class);
-                Integer bagid = ((Bag)holder.list.getItemAtPosition(position)).getBagID();
-                intent.putExtra("ACTIVE_BAG_ID", bagid);
-                intent.putExtra("ACTIVE_BAG_POSITION", position);
-                if (position == 0) Workflow.getInstance().currentBagID = bagid;
-                General.getInstance().setActivebagid(bagid);
-                startActivity(intent);
-			}
-		});
-		
-		
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -112,7 +106,8 @@ public class TabViewDeliveriesFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-			
+
+            /*
 			holder.button = (Button) rootView.findViewById(R.id.button_generic_report);
 			//holder.button.setText(this.getResources().getString(R.string.button_ok));
             holder.button.setText("End delivery run");
@@ -129,7 +124,7 @@ public class TabViewDeliveriesFragment extends Fragment
 	                startActivity(intent);
 				}
 			});
-
+            */
 			// Store the holder with the view.
 			rootView.setTag(holder);
 		}
@@ -152,6 +147,5 @@ public class TabViewDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
-		Button button;
 	}
 }

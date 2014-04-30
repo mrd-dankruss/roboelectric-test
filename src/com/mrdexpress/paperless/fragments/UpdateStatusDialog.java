@@ -14,10 +14,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.ReasonForFailedHandoverActivity;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.helper.FontHelper;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
@@ -29,19 +32,25 @@ public class UpdateStatusDialog extends DialogFragment
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
 	private ArrayList<DialogDataObject> temp;
 
-	/**
+    private CallBackFunction callback;
+
+    public UpdateStatusDialog(int bag_id, CallBackFunction _callback) {
+        bagid = bag_id;
+        callback = _callback;
+    }
+
+    /**
 	 * Create a new instance of MyDialogFragment, providing "num"
 	 * as an argument.
 	 */
-	public static UpdateStatusDialog newInstance(int bag_id)
+	public static UpdateStatusDialog newInstance(int bag_id, CallBackFunction _callback)
 	{
-		UpdateStatusDialog f = new UpdateStatusDialog();
+		UpdateStatusDialog f = new UpdateStatusDialog( bag_id, _callback);
 
 		// Supply num input as an argument.
 		// Bundle args = new Bundle();
 		// args.putInt("num", bag_id);
 		// f.setArguments(args);
-		bagid = bag_id;
 
 		return f;
 	}
@@ -72,8 +81,7 @@ public class UpdateStatusDialog extends DialogFragment
 		
 		title.setTypeface(typeface_roboto_bold);
 
-		ImageButton closeDialogButton = (ImageButton) v
-				.findViewById(R.id.button_trafficDelay_closeButton);
+		ImageButton closeDialogButton = (ImageButton) v.findViewById(R.id.button_trafficDelay_closeButton);
 
 		closeDialogButton.setOnClickListener(new View.OnClickListener()
 		{
@@ -94,21 +102,36 @@ public class UpdateStatusDialog extends DialogFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				// Successful
+                Workflow.getInstance().currentBagID = bagid;
+
 				if (position == 0)
 				{
-					Intent intent = new Intent(getActivity(), DeliveryHandoverFragmentActivity.class);
-                    Workflow.getInstance().currentBagID = bagid;
-					startActivity(intent);
-					dismiss();
-				}
-				// Failed
+                    DeliveryHandoverDialogFragment.newInstance( new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            if( (Boolean)args == true) {
+                            }
+                            callback.execute( args);
+                            dismiss();
+                            return true;
+                        }
+                    }).show(getFragmentManager(), getTag());
+                }
+
 				if (position == 1)
 				{
-					Intent intent = new Intent(getActivity(), ReasonForFailedHandoverActivity.class);
-                    Workflow.getInstance().currentBagID = bagid;
-					startActivity(intent);
-					dismiss();
+                    (ReasonForFailedHandoverFragment.newInstance( new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            if( args != null) {
+                                Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, (String)args);
+                                Device.getInstance().displaySuccess("Delivery set as failed", getActivity());
+                            }
+                            callback.execute( args);
+                            dismiss();
+                            return false;
+                        }
+                    })).show( getFragmentManager(), getTag());
 				}
 			}
 		});

@@ -25,8 +25,11 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 	{
 		super.onCreate(icicle);
 		// List<List<String>> values = new ArrayList<List<String>>();
+        adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), Bag.STATUS_UNSUCCESSFUL);
+        setListAdapter(adapter);
 
-		// use your own layout
+
+        // use your own layout
 		// ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), values);
 		/*
 		ViewDeliveriesListAdapter adapter = new ViewDeliveriesListAdapter(getActivity(), DbHandler
@@ -44,10 +47,8 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 	@Override
 	public void onResume()
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
-        adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus( Bag.STATUS_UNSUCCESSFUL));
-		setListAdapter(adapter);
+        adapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -63,8 +64,7 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_unsuccessful_deliveries_content, null,
-					false);
+			rootView = inflater.inflate(R.layout.fragment_unsuccessful_deliveries_content, null, false);
 
 			if (holder == null)
 			{

@@ -216,7 +216,6 @@ public class SmsListFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-			rootView.findViewById(R.id.button_generic_report).setVisibility(View.GONE); // no purpose on sms-list screen
 
 			// Store the holder with the view.
 			rootView.setTag(holder);

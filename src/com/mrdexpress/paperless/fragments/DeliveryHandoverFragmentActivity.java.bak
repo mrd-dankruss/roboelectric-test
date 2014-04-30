@@ -8,8 +8,6 @@ import android.app.FragmentManager;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.fragments.DeliveryHandoverFragment;
-import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 
@@ -29,7 +27,7 @@ public class DeliveryHandoverFragmentActivity extends Activity
 		fragment = fm.findFragmentById(R.id.activity_handover_container);
 		if (fragment == null)
 		{
-			fragment = new DeliveryHandoverFragment();
+			fragment = new DeliveryHandoverDialogFragment();
 			fm.beginTransaction().add(R.id.activity_handover_container, fragment).commit();
 		}
 		// Fragment: Home End

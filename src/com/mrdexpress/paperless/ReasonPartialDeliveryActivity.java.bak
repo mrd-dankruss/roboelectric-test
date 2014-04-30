@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.Activity;
 import android.app.FragmentManager;
-import com.mrdexpress.paperless.fragments.ReasonPartialDeliveryFragment;
+import com.mrdexpress.paperless.fragments.ReasonPartialDeliveryDialogFragment;
 
 public class ReasonPartialDeliveryActivity extends Activity
 {
@@ -22,7 +22,7 @@ public class ReasonPartialDeliveryActivity extends Activity
 		fragment = fm.findFragmentById(R.id.activity_reason_partial_delivery_container);
 		if (fragment == null)
 		{
-			fragment = new ReasonPartialDeliveryFragment();
+			fragment = new ReasonPartialDeliveryDialogFragment();
             fragment.setArguments( savedInstanceState);
 			fm.beginTransaction().add(R.id.activity_reason_partial_delivery_container, fragment).commit();
 		}

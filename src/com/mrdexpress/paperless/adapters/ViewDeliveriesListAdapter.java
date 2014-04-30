@@ -15,6 +15,9 @@ import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.ui.ViewHolder;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.List;
 
@@ -23,12 +26,13 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final Activity activity;
 	private final Context context;
-	List<Bag> values;
+	private List<Bag> values;
 	private ImageView deliveryType, companyLogo;
 	private TextView deliveryNumber, titleDetail, address, id;
 	private Button updateStatus, more;
 	private LinearLayout buttonsHolder;
 	private int bag_id;
+    private String status;
 
 	public enum DeliveryType
 	{
@@ -40,26 +44,32 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		FNB, TAKEALOT, NONE, MRD
 	}
 
-	public ViewDeliveriesListAdapter(Activity activity, List<Bag> values)
+	public ViewDeliveriesListAdapter(Activity activity, String _status)
 	{
 		super();
+        this.status = _status;
 		this.activity = activity;
 		this.context = activity.getApplicationContext();
-		this.values = values;
+        notifyDataSetChanged();
 	}
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
+    @Override
+    public void notifyDataSetChanged() {
+        values = Workflow.getInstance().getBagsByStatus(status);
+        super.notifyDataSetChanged();
+    }
+
+    @Override
+	public View getView(int position, View rowView, ViewGroup parent)
 	{
-
-		View rowView;
-
 		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(), FontHelper
 				.getFontString(FontHelper.FONT_ROBOTO, FontHelper.FONT_TYPE_TTF,
 						FontHelper.STYLE_BOLD));
 
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if( rowView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(R.layout.row_deliveries, parent, false);
+        }
 
 		// TODO: Uncomment for food deliveries
 		// FIXME: Move all row related items inside if or else blocks
@@ -71,32 +81,30 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			rowView = inflater.inflate(R.layout.row_deliveries, parent, false);
 		}
 		*/
-		rowView = inflater.inflate(R.layout.row_deliveries, parent, false);
 
 		// Reference each view item and set required fonts
-		deliveryType = (ImageView) rowView.findViewById(R.id.deliveries_imageView_deliveryType);
+		deliveryType = ViewHolder.get( rowView, R.id.deliveries_imageView_deliveryType);
 
-		deliveryNumber = (TextView) rowView.findViewById(R.id.deliveries_textView_deliveryNumber);
+		deliveryNumber = ViewHolder.get( rowView, R.id.deliveries_textView_deliveryNumber);
 		deliveryNumber.setTypeface(typeface_roboto_bold);
 
-		titleDetail = (TextView) rowView.findViewById(R.id.deliveries_textView_titleDetail);
+		titleDetail = ViewHolder.get( rowView, R.id.deliveries_textView_titleDetail);
 		titleDetail.setTypeface(typeface_roboto_bold);
 
-		companyLogo = (ImageView) rowView.findViewById(R.id.deliveries_imageView_companyLogo);
+		companyLogo = ViewHolder.get( rowView, R.id.deliveries_imageView_companyLogo);
 
-		address = (TextView) rowView.findViewById(R.id.deliveries_textView_address);
+		address = ViewHolder.get( rowView, R.id.deliveries_textView_address);
 		// address.setTypeface(typeface_robotoLight);
 
-		id = (TextView) rowView.findViewById(R.id.deliveries_textView_id);
+		id = (TextView) ViewHolder.get( rowView, R.id.deliveries_textView_id);
 		// id.setTypeface(typeface_robotoRegular);
 
-		buttonsHolder = (LinearLayout) rowView
-				.findViewById(R.id.deliveries_linearLayout_buttonsHolder);
+		buttonsHolder = ViewHolder.get( rowView, R.id.deliveries_linearLayout_buttonsHolder);
 
-		updateStatus = (Button) rowView.findViewById(R.id.deliveries_button_updateStatus);
+		updateStatus = ViewHolder.get( rowView, R.id.deliveries_button_updateStatus);
 		updateStatus.setTypeface(typeface_roboto_bold);
 
-		more = (Button) rowView.findViewById(R.id.deliveries_button_more);
+		more = ViewHolder.get( rowView, R.id.deliveries_button_more);
 		more.setTypeface(typeface_roboto_bold);
         //more.setText("More Options");
 		
@@ -154,7 +162,13 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = UpdateStatusDialog.newInstance(bag_id);
+					DialogFragment newFragment = UpdateStatusDialog.newInstance(bag_id, new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            notifyDataSetChanged();
+                            return true;
+                        }
+                    });
 					newFragment.show(activity.getFragmentManager(), "dialog");
 				}
 			});
@@ -270,5 +284,4 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	{
 		return position;
 	}
-
 }
