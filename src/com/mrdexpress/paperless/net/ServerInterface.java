@@ -1,7 +1,5 @@
 package com.mrdexpress.paperless.net;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -10,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
@@ -22,8 +19,6 @@ import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -109,24 +104,7 @@ public class ServerInterface {
         return server_interface;
     }
 
-    public static void displayToast(final String message) {
-        UIHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Log.e(TAG, "Test: " + message);
-                //Crouton.makeText(Paperless.getActivity() , "HANNO TEST" , Device.getInstance().infom).show();
-                //Toast.makeText(Paperless.getContext(), message, Toast.LENGTH_SHORT).show();
-
-            }
-        });
-    }
-
-    /**
-     *
-     * @param status
-     * @param bagid
-     * @param reason
-     */
+    /** POST **/
     public void setDeliveryStatus(String status , String bagid , String reason){
         String url = API_URL + "v1/workflow/updatestatus?" + Device.getInstance().getTokenIMEIUrl();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -139,7 +117,7 @@ public class ServerInterface {
                     try{
                         if (json != null){
                             //Logic here
-
+                            Device.getInstance().displayInfo("Delivery Status Set");
                         }else{
                             Device.getInstance().addDeviceLog("Null JSON at setDeliveryStatus" , status.getMessage());
                             Log.e("MRD-EX" , "EMPTY JSON");
@@ -156,12 +134,7 @@ public class ServerInterface {
         }
     }
 
-    /**
-     *
-     * @param status
-     * @param bagid
-     * @param reason
-     */
+    /** POST **/
     public void setParcelDeliveryStatus(String status , String bagid , String reason){
         String url = API_URL + "v1/workflow/updateparcelstatus?" + Device.getInstance().getTokenIMEIUrl();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -176,6 +149,7 @@ public class ServerInterface {
                     try{
                         if (json != null){
                             //Logic here
+                            Device.getInstance().displayInfo("Delivery Status Set");
 
                         }else{
                             Device.getInstance().addDeviceLog("Null JSON at setParcelDeliveryStatus" , status.getMessage());
@@ -194,10 +168,7 @@ public class ServerInterface {
     }
 
 
-    /**
-     *
-     * @param bagid
-     */
+    /** POST **/
     public void setBagScanned(String bagid){
         String url = API_URL + "v1/workflow/scanbagtodriver?" + Device.getInstance().getTokenIMEIUrl() + "&driverID=" + Users.getInstance().getActiveDriver().getStringid();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -207,16 +178,17 @@ public class ServerInterface {
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
                 public void callback(String url, JSONObject json, AjaxStatus status) {
-                    String callstatus = null;
                     try{
                         if (json != null){
                             //Logic here
-
+                            Device.getInstance().displayInfo("Bag Scanned");
                         }else{
                             Log.e("MRD-EX" , "EMPTY JSON");
+                            Device.getInstance().addDeviceLog("Exception at setBagScanned" , status.getMessage());
                         }
                     }catch(Exception e){
                         Log.e("MRD-EX" , e.getMessage());
+                        Device.getInstance().addDeviceLog("Exception at setBagScanned" , status.getMessage());
                     }
                 }
             });
@@ -234,20 +206,24 @@ public class ServerInterface {
 
     public void getUsers( final CallBackFunction callback) {
         String url = getUsersURL();
-        //Device.getInstance().addDeviceLog("testing");
-        //Device.getInstance().saveArrayList("hb" , Device.getInstance().devicelogs);
-        //Object test = Device.getInstance().getArrayList("hb");
-
         aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
             @Override
             public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
-            String Token = null;
-            if (jObject.has("response"))
-            {
-                Users.getInstance().setUsers(jObject.toString());
-            }
-            if( callback != null)
-                callback.execute( null);
+                try{
+                    if (jObject != null){
+                        if (jObject.has("response"))
+                        {
+                            Users.getInstance().setUsers(jObject.toString());
+                        }
+                        if( callback != null)
+                            callback.execute( null);
+                    }
+                }
+                catch(Exception e)
+                {
+                    Log.e("MRD-EX" , "EMPTY JSON");
+                    Device.getInstance().addDeviceLog("Exception at getUsers" , status.getMessage());
+                }
             }
         });
     }
@@ -258,7 +234,6 @@ public class ServerInterface {
     public String getTokenUrl(){
         return API_URL + "v1/auth/auth?imei=" + Device.getInstance().getIMEI();
     }
-
     public String requestToken( final CallBackFunction callback) {
         String url = getTokenUrl();
         aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
@@ -280,6 +255,7 @@ public class ServerInterface {
                 }
                 catch(Exception e){
                     Token = null;
+                    Device.getInstance().addDeviceLog("Exception at requestToken" , e.getMessage());
                 }
                 if( callback != null)
                     callback.execute( Token);
@@ -299,62 +275,36 @@ public class ServerInterface {
     public void registerDeviceGCM(String gcm_id) {
         String url = API_URL + "v1/push/register?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + Device.getInstance().getToken() + "&gcmID="
                 + gcm_id;
+        if (Device.getInstance().isConnected()){
+            aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+                String Token = null;
+                @Override
+                public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                    String status = null;
+                    try {
+                        status = jObject.getJSONObject("response").getString("push");
 
-        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
-            String Token = null;
-            @Override
-            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
-                String status = null;
-                try {
-                    status = jObject.getJSONObject("response").getString("push");
-
+                    }
+                    catch (JSONException e) {
+                        Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
+                        Device.getInstance().addDeviceLog("Exception at registerDeviceGCM" , e.getMessage());
+                    }
+                    Device.getInstance().setGCMID(status);
                 }
-                catch (JSONException e) {
-                    Log.e("MRD-EX" , "FIX THIS : " + e.getMessage());
-                }
-                Device.getInstance().setGCMID(status);
-            }
-        });
+            });
+        } else {
+            Ajax.getInstance().addQueue(url);
+        }
     }
 
-    /**
-     * Makes API call to update driver PIN.
+    /** Update Driver Pin
+     *
+     * @param id
+     * @param new_pin
+     * @param source
+     * @param func
+     * @return
      */
-    public String updatePIN(String id, String new_pin, String imei) {
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken=" + token
-                + "&driverPIN=" + PinManager.toMD5(new_pin) + "&imei=" + imei;
-
-        String response = postData(url);
-
-        String status = "";
-
-        try {
-            JSONObject jObject = new JSONObject(response);
-            if (jObject.has("response")) {
-                status = jObject.getJSONObject("response").getJSONObject("auth")
-                        .getString("status");
-            } else if (jObject.has("error")) {
-                status = stripErrorCode(jObject.toString());
-            }
-
-        } catch (JSONException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("JSONException: driver?id");
-            }
-            return "";
-            // Oops
-        }
-
-        if (VariableManager.DEBUG) {
-            Log.d(TAG, "token: " + status);
-        }
-        return status;
-    }
-
     public String updatePIN(String id, String new_pin, String source , CallBackFunction func) {
         String url = API_URL + "v1/auth/driver?driverID=" + id + "&mrdToken=" + Device.getInstance().getToken()
                 + "&driverPIN=" + new_pin + "&imei=" + Device.getInstance().getIMEI() + "&source=" + source;
@@ -378,42 +328,6 @@ public class ServerInterface {
         }
 
         return status;
-    }
-
-    /**
-     * Retrieves list of drivers from server. Used to populate the list at
-     * login.
-     * switching it over to AJAX
-     */
-    public void getDrivers(Context context) {
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/driver/drivers?imei=" + Device.getInstance().getIMEI() + "&mrdToken=" + token;
-        final AQuery aq = new AQuery(Paperless.getContext());
-        aq.ajax( url  , JSONObject.class , new AjaxCallback<JSONObject>() {
-            @Override
-            public void callback(String url, JSONObject json, AjaxStatus status) {
-                if(json != null){
-                    //successful ajax call, show status code and json content
-                    Workflow.getInstance().setDriversFromJSON( json.toString() );
-                }
-            }
-        });
-    }
-
-    /**
-     * Downloads list of managers from API
-     *
-     * @param context
-     */
-    public void getManagers(Context context) {
-        TelephonyManager mngr = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        String imei_id = mngr.getDeviceId();
-        String token = prefs.getString(VariableManager.PREF_TOKEN, "");
-        String url = API_URL + "v1/driver/managers?imei=" + imei_id + "&mrdToken=" + token;
-        String response = getInputStreamFromUrl(url);
-
-        Workflow.getInstance().setManagersFromJSON(response);
     }
 
     /**
@@ -482,9 +396,6 @@ public class ServerInterface {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("JSONException: auth/manager");
-            }
         }
 
         if (VariableManager.DEBUG) {
@@ -511,9 +422,7 @@ public class ServerInterface {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("Exception: workflow/get-milkrun-workflow");
-            }
+
         }
     }
 
@@ -921,9 +830,7 @@ public class ServerInterface {
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG, "Connection timeout");
             Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("SocketTimeoutException");
-            }
+
             return "";
         } catch (IOException e) {
             StringWriter sw = new StringWriter();
@@ -1117,9 +1024,7 @@ public class ServerInterface {
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw));
                     Log.e(TAG, sw.toString());
-                    if (VariableManager.DEBUG) {
-                        displayToast("JSONException: bags/bag");
-                    }
+
                 }
 
             }
@@ -1160,9 +1065,7 @@ public class ServerInterface {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG, sw.toString());
-            if (VariableManager.DEBUG) {
-                displayToast("JSONException: driver?id");
-            }
+
             return "";
             // Oops
         }

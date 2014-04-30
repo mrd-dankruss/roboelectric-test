@@ -15,8 +15,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.ObjectSerializer;
 import com.mrdexpress.paperless.net.NetworkStatus;
 import com.mrdexpress.paperless.widget.CustomToast;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -202,29 +201,7 @@ public class Device {
         }
     }
 
-    public Style successm = new Style.Builder()
-            .setBackgroundColorValue(Color.GREEN)
-            .setGravity(Gravity.CENTER)
-            .setTextColorValue(Color.BLACK)
-            .setHeight(50)
-            .setTextSize(15)
-            .build();
 
-    public Style failedm = new Style.Builder()
-            .setBackgroundColorValue(Color.RED)
-            .setGravity(Gravity.CENTER)
-            .setTextColorValue(Color.BLACK)
-            .setHeight(50)
-            .setTextSize(15)
-            .build();
-
-    public Style infom = new Style.Builder()
-            .setBackgroundColorValue(Paperless.getInstance().getResources().getColor(R.color.colour_yellow))
-            .setGravity(Gravity.CENTER)
-            .setTextColorValue(Color.BLACK)
-            .setHeight(50)
-            .setTextSize(15)
-            .build();
 
     public void displayMessage(final String message , final String st , final Activity act){
         try {
