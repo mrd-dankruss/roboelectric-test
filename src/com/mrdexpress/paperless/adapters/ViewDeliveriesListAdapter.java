@@ -17,6 +17,7 @@ import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.ui.ViewHolder;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.List;
 
@@ -25,12 +26,13 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final Activity activity;
 	private final Context context;
-	List<Bag> values;
+	private List<Bag> values;
 	private ImageView deliveryType, companyLogo;
 	private TextView deliveryNumber, titleDetail, address, id;
 	private Button updateStatus, more;
 	private LinearLayout buttonsHolder;
 	private int bag_id;
+    private String status;
 
 	public enum DeliveryType
 	{
@@ -42,15 +44,22 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		FNB, TAKEALOT, NONE, MRD
 	}
 
-	public ViewDeliveriesListAdapter(Activity activity, List<Bag> values)
+	public ViewDeliveriesListAdapter(Activity activity, String _status)
 	{
 		super();
+        this.status = _status;
 		this.activity = activity;
 		this.context = activity.getApplicationContext();
-		this.values = values;
+        notifyDataSetChanged();
 	}
 
-	@Override
+    @Override
+    public void notifyDataSetChanged() {
+        values = Workflow.getInstance().getBagsByStatus(status);
+        super.notifyDataSetChanged();
+    }
+
+    @Override
 	public View getView(int position, View rowView, ViewGroup parent)
 	{
 		Typeface typeface_roboto_bold = Typeface.createFromAsset(activity.getAssets(), FontHelper

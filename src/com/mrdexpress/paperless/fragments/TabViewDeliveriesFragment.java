@@ -1,5 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -43,37 +44,21 @@ public class TabViewDeliveriesFragment extends Fragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new ViewDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus(Bag.STATUS_TODO));
-        if (adapter.getCount() == 0)
-        {
-            holder.button.setVisibility(View.VISIBLE);
-            holder.button.setEnabled(true);
-        }
-        else
-        {
-            holder.button.setVisibility(View.GONE);
-            holder.button.setEnabled(false);
-        }
-
+        adapter = new ViewDeliveriesListAdapter(getActivity(), Bag.STATUS_TODO);
+        holder.list.setAdapter(adapter);
         //if(DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
         if( adapter.getCount() == 0)
         {
-            rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility(View.GONE);
-            rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.VISIBLE);
+            DriverReturnDialogFragment.newInstance( new CallBackFunction() {
+                @Override
+                public boolean execute(Object args) {
+                    Intent intent = MiscHelper.getGoHomeIntent(getActivity());
+                    ServerInterface.getInstance().endTrip();
+                    startActivity(intent);
+                    return false;
+                }
+            }).show(getFragmentManager(), getTag());
         }
-        else
-        {
-            rootView.findViewById(R.id.fragment_viewDeliveries_container).setVisibility( View.VISIBLE);
-            rootView.findViewById(R.id.fragment_viewDeliveries_linearLayout).setVisibility(	View.GONE);
-        }
-
-        holder.list.setAdapter(adapter);
-        try {
-            //adapter.getItem(0);
-        }catch(Exception e){
-
-        }
-
 
         holder.list.setOnItemClickListener(new OnItemClickListener()
         {
@@ -83,6 +68,7 @@ public class TabViewDeliveriesFragment extends Fragment
                 DialogFragment deliveryDetails = DeliveryDetailsDialogFragment.newInstance( new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
+                        adapter.notifyDataSetChanged();
                         return false;
                     }
                 });
@@ -120,7 +106,8 @@ public class TabViewDeliveriesFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-			
+
+            /*
 			holder.button = (Button) rootView.findViewById(R.id.button_generic_report);
 			//holder.button.setText(this.getResources().getString(R.string.button_ok));
             holder.button.setText("End delivery run");
@@ -137,7 +124,7 @@ public class TabViewDeliveriesFragment extends Fragment
 	                startActivity(intent);
 				}
 			});
-
+            */
 			// Store the holder with the view.
 			rootView.setTag(holder);
 		}
@@ -160,6 +147,5 @@ public class TabViewDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
-		Button button;
 	}
 }

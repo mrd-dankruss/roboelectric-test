@@ -121,7 +121,9 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
                 DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID(), new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
-                        callback.execute( args);
+                        //callback.execute( args);
+                        dismiss();
+                        callback.execute(true);
                         return false;
                     }
                 });

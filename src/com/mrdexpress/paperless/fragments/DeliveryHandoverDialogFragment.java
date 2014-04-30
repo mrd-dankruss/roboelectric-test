@@ -128,7 +128,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
                         toast.show();
 
                         callback.execute(true);
-
+                        dismiss();
                         /*
                         getActivity().finish();
                         Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragment.class);
@@ -159,13 +159,14 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
                                 ReasonPartialDeliveryDialogFragment logReasons = ReasonPartialDeliveryDialogFragment.newInstance( new CallBackFunction() {
                                     @Override
                                     public boolean execute(Object args) {
+                                        Workflow.getInstance().setDeliveryStatus(Workflow.getInstance().currentBagID, Bag.STATUS_PARTIAL, "");
                                         CustomToast toast = new CustomToast(getActivity());
                                         toast.setSuccess(true);
                                         toast.setText("Partial delivery logged");
                                         toast.show();
-                                        dismiss();
 
                                         callback.execute(true);
+                                        dismiss();
 
                                         return false;
                                     }

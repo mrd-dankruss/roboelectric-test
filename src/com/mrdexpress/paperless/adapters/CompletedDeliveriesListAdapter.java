@@ -16,6 +16,7 @@ import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.ui.ViewHolder;
+import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
 
@@ -24,18 +25,26 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final Activity activity;
 	private final Context context;
-	ArrayList<Bag> values;
+	private ArrayList<Bag> values;
+    private String status;
 	private String bag_id;
 
 	private TextView text_address, text_bag_ids, text_failed_time;
 
-	public CompletedDeliveriesListAdapter(Activity activity, ArrayList<Bag> values)
+	public CompletedDeliveriesListAdapter(Activity activity, String _status)
 	{
 		super();
 		this.activity = activity;
 		this.context = activity.getApplicationContext();
-		this.values = values;
+		this.status = _status;
+        notifyDataSetChanged();
 	}
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        this.values = Workflow.getInstance().getBagsByStatus(status);
+    }
 
 	@Override
 	public View getView(int position, View rowView, ViewGroup parent)

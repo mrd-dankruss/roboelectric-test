@@ -88,7 +88,7 @@ public class MoreDialogFragment extends DialogFragment
 		View setAsNextDeliveryDivider = (View) v.findViewById(R.id.seperator_deliveriesMore_nextDelivery);
 		Button viewMapButton = (Button) v.findViewById(R.id.button_deliveriesMore_viewMap);
 		Button reportDelayButton = (Button) v.findViewById(R.id.button_deliveriesMore_reportDelay);
-		Button callButton = (Button) v.findViewById(R.id.button_deliveriesMore_call);
+		final Button callButton = (Button) v.findViewById(R.id.button_deliveriesMore_call);
 		Button messageButton = (Button) v.findViewById(R.id.button_deliveriesMore_message);
 
 		if (isExtendedDialaog == true)
@@ -117,7 +117,7 @@ public class MoreDialogFragment extends DialogFragment
                 custom_toast.show();
                 Workflow.getInstance().setNextStop( bagid);
 				dismiss();
-                getActivity().finish();
+                //getActivity().finish();
 			}
 		});
 

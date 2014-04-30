@@ -110,9 +110,8 @@ public class UpdateStatusDialog extends DialogFragment
                         @Override
                         public boolean execute(Object args) {
                             if( (Boolean)args == true) {
-                                Workflow.getInstance().setDeliveryStatus(Workflow.getInstance().currentBagID, Bag.STATUS_PARTIAL, "");
-                                Device.getInstance().displaySuccess("Delivery Logged.", getActivity());
                             }
+                            callback.execute( args);
                             dismiss();
                             return true;
                         }
@@ -128,6 +127,7 @@ public class UpdateStatusDialog extends DialogFragment
                                 Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, (String)args);
                                 Device.getInstance().displaySuccess("Delivery set as failed", getActivity());
                             }
+                            callback.execute( args);
                             dismiss();
                             return false;
                         }

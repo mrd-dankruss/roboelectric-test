@@ -101,7 +101,6 @@ public class CallListFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
@@ -126,6 +125,5 @@ public class CallListFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
-		Button report_button;
 	}
 }

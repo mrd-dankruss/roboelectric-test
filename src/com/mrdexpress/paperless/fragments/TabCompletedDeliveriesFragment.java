@@ -25,6 +25,9 @@ public class TabCompletedDeliveriesFragment extends Fragment
 
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
+        adapter = new CompletedDeliveriesListAdapter(getActivity(), Bag.STATUS_COMPLETED);
+        holder.list.setAdapter(adapter);
+
 		return rootView;
 	}
 
@@ -37,10 +40,6 @@ public class TabCompletedDeliveriesFragment extends Fragment
 		super.onResume();
 		//adapter = new CompletedDeliveriesListAdapter(getActivity(), DbHandler.getInstance(
 		//		getActivity()).getBagsByStatus(driverid, Bag.STATUS_COMPLETED));
-
-        adapter = new CompletedDeliveriesListAdapter(getActivity(), Workflow.getInstance().getBagsByStatus( Bag.STATUS_COMPLETED));
-
-		holder.list.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
 
@@ -107,8 +106,7 @@ public class TabCompletedDeliveriesFragment extends Fragment
 				holder = new ViewHolder();
 			}
 
-			holder.list = (ListView) rootView
-					.findViewById(R.id.fragment_successful_deliveries_container);
+			holder.list = (ListView) rootView.findViewById(R.id.fragment_successful_deliveries_container);
 			/*holder.button_completed = (Button) rootView
 					.findViewById(R.id.fragment_successful_deliveries_completed_button);
 			holder.button_partial = (Button) rootView
