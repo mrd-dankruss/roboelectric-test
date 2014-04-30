@@ -9,10 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.General;
@@ -55,7 +52,6 @@ public class ReportDelayDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
         return dialog;
     }
 
@@ -63,7 +59,6 @@ public class ReportDelayDialogFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         super.onCreateView(inflater, container, savedInstanceState);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
-
         return rootView;
     }
 
@@ -71,21 +66,21 @@ public class ReportDelayDialogFragment extends DialogFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Fragment: Home Begin
-        /*FragmentManager fm = getFragmentManager();
-        fragment = fm.findFragmentById(R.id.activity_report_delay_container);
-        if (fragment == null)
-        {
-            fragment = new ReportDelayListFragment();
-            fm.beginTransaction().add(R.id.activity_report_delay_container, fragment).commit();
-        }*/
-        //adapter = new GenericDialogListAdapter(getActivity(), DbHandler.getInstance(getActivity()).getMilkrunDelayReasons(), false);
         adapter = new GenericDialogListAdapter(getActivity(), Workflow.getInstance().getMilkrunDelayReasons(), false);
 
         if ((adapter != null) & (holder.list != null))
         {
             holder.list.setAdapter(adapter);
         }
+
+        holder.closeDialogButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dismiss();
+            }
+        });
 
         holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -104,9 +99,26 @@ public class ReportDelayDialogFragment extends DialogFragment
 
                     // String delay_id = (String) getListView().getItemAtPosition(position);
 
-                    DelayDialog editNameDialog = DelayDialog.newInstance(delay_id);
-                    editNameDialog.setTargetFragment( getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
-                    editNameDialog.show(fm, "reportDelayFragment");
+                    DelayDialog.newInstance(delay_id, new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            Intent i = (Intent)args;
+                            ((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(i.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
+
+                            delay_id = i.getStringExtra(VariableManager.EXTRA_DELAY_ID);
+
+                            //holder.report_button.setVisibility(View.VISIBLE);
+                            holder.report_button.setBackgroundResource(R.drawable.button_custom);
+                            holder.list.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            holder.report_button.setEnabled(true);
+
+                            return false;
+                        }
+                    }).show(fm, getTag());
+                    //editNameDialog.setTargetFragment( getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
+                    //editNameDialog.setTargetFragment(  getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
+                    //editNameDialog.show(fm, "reportDelayFragment");
                 }
             }
         });
@@ -128,27 +140,14 @@ public class ReportDelayDialogFragment extends DialogFragment
                 }
             }
         });
-        holder.report_button.setVisibility(View.VISIBLE);
+        //holder.report_button.setVisibility(View.INVISIBLE);
+        holder.report_button.setBackgroundResource(R.drawable.button_custom_grey);
         holder.report_button.setEnabled(false);
     }
 
     public void onResume()
     {
         super.onResume();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        ((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(data.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
-
-        delay_id = data.getStringExtra(VariableManager.EXTRA_DELAY_ID);
-
-        // holder.report_button.setVisibility(View.VISIBLE);
-        holder.report_button.setBackgroundResource(R.drawable.button_custom);
-        holder.list.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        holder.report_button.setEnabled(true);
     }
 
     private class ReportDelayTask extends AsyncTask<String, Void, String>
@@ -201,7 +200,8 @@ public class ReportDelayDialogFragment extends DialogFragment
             custom_toast.setSuccess(true);
             custom_toast.show();
 
-            getActivity().finish();
+            dismiss();
+            //getActivity().finish();
         }
     }
 
@@ -211,15 +211,19 @@ public class ReportDelayDialogFragment extends DialogFragment
         if (rootView == null)
         {
             //rootView = inflater.inflate(R.layout.activity_report_delay, container, false);
-            rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, container, false);
+            rootView = inflater.inflate(R.layout.fragment_report_delay_content, container, false);
 
             if (holder == null)
             {
                 holder = new ViewHolder();
             }
 
+            TextView bartitle = (TextView)rootView.findViewById(R.id.deliveriesLabel);
+            bartitle.setText("Report Delay");
+
             holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-            holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+            holder.report_button = (Button) rootView.findViewById(R.id.button_submit_action);
+            holder.closeDialogButton = (ImageButton) rootView.findViewById(R.id.button_report_delay_closeButton);
             holder.report_button.setText(getResources().getString(R.string.delivery_more_reportDelay));
 
             // Store the holder with the view.
@@ -246,6 +250,7 @@ public class ReportDelayDialogFragment extends DialogFragment
     {
         ListView list;
         Button report_button;
+        ImageButton closeDialogButton;
     }
 
 }

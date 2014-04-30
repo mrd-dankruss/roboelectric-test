@@ -100,7 +100,7 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 		API_KEY = getResources().getString(R.string.key_googlemaps_api_debug);
 		
 		// Change actionbar title
-        getActivity().setTitle(R.string.title_actionbar_map);
+        //getActivity().setTitle(R.string.title_actionbar_map);
 
 		/*
 		 * The NullPointerException happens if Google Play services is not installed on device
@@ -110,7 +110,13 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 		{
 			// Try to obtain the map from the SupportMapFragment.
 			map = ((com.google.android.gms.maps.MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
-			map.setOnMapClickListener(this);
+            if( map == null){
+                holder.relativeLayout_toast.setVisibility(View.VISIBLE);
+                return;
+            }
+
+
+            map.setOnMapClickListener(this);
 
 			// Enable traffic
 			map.setTrafficEnabled(false);
@@ -209,9 +215,6 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 			// displayToast(getString(R.string.text_play_services));
 			holder.relativeLayout_toast.setVisibility(View.VISIBLE);
 		}
-
-        if( map == null)
-            return;
 
 		// Search function
 		setupSearchView();

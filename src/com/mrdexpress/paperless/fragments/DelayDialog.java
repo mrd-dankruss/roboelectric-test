@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 public class DelayDialog extends DialogFragment
@@ -26,7 +28,14 @@ public class DelayDialog extends DialogFragment
 //	private ArrayList<DialogDataObject> durations;
 
 	// ID of delay reason passed from previous screen
-	private static String delay_id;
+	private String delay_id;
+    private CallBackFunction callback;
+
+    public DelayDialog(String delay_reason_id, CallBackFunction callback){
+        this.callback = callback;
+        this.delay_id = delay_reason_id;
+    }
+
 
 	/**
 	 * Create a new instance of MyDialogFragment, providing "num"
@@ -35,16 +44,14 @@ public class DelayDialog extends DialogFragment
 	 * @param delay_reason_id
 	 *            ID of delay reason passed from calling activity.
 	 */
-	public static DelayDialog newInstance(String delay_reason_id)
+	public static DelayDialog newInstance(String delay_reason_id, CallBackFunction callback)
 	{
-		DelayDialog f = new DelayDialog();
+		DelayDialog f = new DelayDialog( delay_reason_id, callback);
 
 		/*// Supply num input as an argument.
 		Bundle args = new Bundle();
 		args.putInt("num", num);
 		f.setArguments(args);*/
-
-		delay_id = delay_reason_id;
 
 		return f;
 	}
@@ -70,8 +77,7 @@ public class DelayDialog extends DialogFragment
 
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-		ImageButton closeDialogButton = (ImageButton) v
-				.findViewById(R.id.button_trafficDelay_closeButton);
+		ImageButton closeDialogButton = (ImageButton) v.findViewById(R.id.button_trafficDelay_closeButton);
 
 		closeDialogButton.setOnClickListener(new View.OnClickListener()
 		{
@@ -96,14 +102,13 @@ public class DelayDialog extends DialogFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-				getActivity().getIntent().putExtra(DIALOG_TIME_STRING,
-						((DialogDataObject) adapter.getItem(position)).getMainText());
-				// getActivity().getIntent().putExtra(DIALOG_TIME_STRING, "string we hardcode");
-				getActivity().getIntent().putExtra(DIALOG_ITEM_POS, position);
-				getActivity().getIntent().putExtra(VariableManager.EXTRA_DELAY_ID, delay_id);
+                Intent i = new Intent();
 
-				getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK,
-						getActivity().getIntent());
+				i.putExtra(DIALOG_TIME_STRING,	((DialogDataObject) adapter.getItem(position)).getMainText());
+				// getActivity().getIntent().putExtra(DIALOG_TIME_STRING, "string we hardcode");
+				i.putExtra(DIALOG_ITEM_POS, position);
+				i.putExtra(VariableManager.EXTRA_DELAY_ID, delay_id);
+                callback.execute(i);
 				dismiss();
 			}
 		});
