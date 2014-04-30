@@ -9,7 +9,7 @@
         android:id="@+id/transfer_data_sub_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/image_bottomgrey_shadow_block"
+
         android:gravity="center"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
