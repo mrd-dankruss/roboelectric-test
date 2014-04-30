@@ -1,5 +1,6 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.DialogFragment;
@@ -8,22 +9,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.Window;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import com.google.android.gms.plus.model.people.Person;
 import com.mrdexpress.paperless.*;
 import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
 
-public class ReasonForFailedHandoverFragment extends Fragment
+public class ReasonForFailedHandoverFragment extends DialogFragment
 {
 
 	private final String TAG = "ReportDelayActivity";
@@ -37,58 +38,82 @@ public class ReasonForFailedHandoverFragment extends Fragment
 	ArrayList<DialogDataObject> values;
 	private int parentItemPosition;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
+    public ReasonForFailedHandoverFragment( CallBackFunction _callback) {
+        callback = _callback;
+    }
 
-		initViewHolder(inflater, container); // Inflate ViewHolder static instance
+    private static CallBackFunction callback;
 
-		return rootView;
-	}
+    public static ReasonForFailedHandoverFragment newInstance(final CallBackFunction callback)
+    {
+        ReasonForFailedHandoverFragment f = new ReasonForFailedHandoverFragment( callback);
+        return f;
+    }
 
-	public void onResume()
-	{
-		super.onResume();
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        return dialog;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        super.onCreateView(inflater, container, savedInstanceState);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        initViewHolder(inflater, container); // Inflate ViewHolder static instance
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         values = Workflow.getInstance().getFailedHandoverReasons();
 
-		adapter = new ReasonForFailedHandoverListAdapter(getActivity(), values, false);
-		holder.list.setAdapter(adapter);
+        adapter = new ReasonForFailedHandoverListAdapter(getActivity(), values, false);
+        holder.list.setAdapter(adapter);
 
-		holder.list.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
-			{
-				parentItemPosition = position;// (Integer) getListAdapter().getItem(position);
+        holder.list.setOnItemClickListener(new OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+            {
+                parentItemPosition = position;// (Integer) getListAdapter().getItem(position);
 
-				if (holder.list.getItemAtPosition(position) != null)
-				{
-					Log.d("Reason", "ListItem: " + position);
-					setTick(position);
-					delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getSubText();
-					delay_reason = ((DialogDataObject) holder.list.getItemAtPosition(position)).getMainText();
-				}
-			}
-		});
+                if (holder.list.getItemAtPosition(position) != null)
+                {
+                    Log.d("Reason", "ListItem: " + position);
+                    setTick(position);
+                    delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getSubText();
+                    delay_reason = ((DialogDataObject) holder.list.getItemAtPosition(position)).getMainText();
+                }
+            }
+        });
 
-		holder.report_button.setOnClickListener(new View.OnClickListener()
-		{
+        holder.report_button.setOnClickListener(new View.OnClickListener()
+        {
 
-			@Override
-			public void onClick(View v)
-			{
-                // FAILED DELIVERY LOGGING
-                Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, delay_reason);
-                CustomToast toast = new CustomToast(getActivity());
-                toast.setSuccess(false);
-                toast.setText("Delivery failed.");
-                toast.show();
-                getActivity().finish();
-                Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragment.class);
-                startActivity(intent);
-			}
-		});
+            @Override
+            public void onClick(View v)
+            {
+                callback.execute(delay_reason);
+                dismiss();
+            }
+        });
+
+        holder.closeDialogButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                callback.execute(null);
+                dismiss();
+            }
+        });
+    }
+
+	public void onResume(){
+		super.onResume();
 	}
 
 	private void setTick(int position)
@@ -114,16 +139,23 @@ public class ReasonForFailedHandoverFragment extends Fragment
 		if (rootView == null)
 		{
 
-			rootView = inflater.inflate(R.layout.fragment_view_deliveries_content, null, false);
+			rootView = inflater.inflate(R.layout.fragment_report_delay_content, null, false);
 
 			if (holder == null)
 			{
 				holder = new ViewHolder();
 			}
 
-			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
-			holder.report_button = (Button) rootView.findViewById(R.id.button_generic_report);
+            holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
+
+            TextView bartitle = (TextView)rootView.findViewById(R.id.delayReasons_actiondeliveriesLabel);
+            bartitle.setText("Failed delivery");
+
+            holder.report_button = (Button) rootView.findViewById(R.id.delayReasons_button_submit_action);
+            holder.closeDialogButton = (ImageButton) rootView.findViewById(R.id.button_report_delay_closeButton);
+            holder.report_button.setText("Report");
             holder.report_button.setEnabled(false);
+
             //holder.report_button.setBackgroundColor(Color.GRAY);
             holder.report_button.setVisibility( View.VISIBLE );
 
@@ -151,6 +183,7 @@ public class ReasonForFailedHandoverFragment extends Fragment
 	{
 		ListView list;
 		Button report_button;
+        ImageButton closeDialogButton;
 	}
 
 }

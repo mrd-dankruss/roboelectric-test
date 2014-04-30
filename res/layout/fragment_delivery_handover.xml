@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_grey"
@@ -24,8 +24,10 @@
 
     <ListView
         android:id="@+id/deliveryHandover_listView_scannedParcels"
+        android:layout_above="@+id/deliveryHandover_textView_ParcelsScanned"
+        android:layout_below="@+id/deliveryHandover_textView_subTitle"
         android:layout_width="match_parent"
-        android:layout_height="290dp"
+        android:layout_height="match_parent"
         android:layout_marginBottom="3dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
@@ -33,20 +35,15 @@
 
     <TextView
             android:layout_width="match_parent"
+            android:layout_above="@+id/button_delivery_handover_complete"
             android:layout_height="20dp"
             android:text="Parcels Scanned"
-            android:layout_alignRight="@+id/scan_image" android:layout_alignLeft="@+id/scan_image"
-            android:gravity="center" android:id="@+id/deliveryHandover_textView_ParcelsScanned"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/textView_grey"
-        android:orientation="vertical"
-        android:paddingTop="8dp" >
+            android:gravity="center"
+            android:id="@+id/deliveryHandover_textView_ParcelsScanned"/>
 
         <Button
             android:id="@+id/button_delivery_handover_complete"
+            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -54,7 +51,5 @@
             android:text="@string/button_delivery_handover_complete"
             android:textColor="@color/black"
             android:textSize="20sp" />
-    </LinearLayout>
 
-
-</LinearLayout>
+</RelativeLayout>

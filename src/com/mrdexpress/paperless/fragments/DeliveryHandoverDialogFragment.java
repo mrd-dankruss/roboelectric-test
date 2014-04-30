@@ -1,5 +1,7 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.ReasonPartialDeliveryActivity;
@@ -21,6 +24,7 @@ import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.service.GCMIntentService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
@@ -28,10 +32,10 @@ import net.minidev.json.JSONObject;
 
 import java.util.*;
 
-public class DeliveryHandoverFragment extends Fragment {
+public class DeliveryHandoverDialogFragment extends DialogFragment {
     public static String WAYBILL_BARCODE = "com.mrdexpress.waybill_barcode";
     public static String WAYBILL_SCANNED = "com.mrdexpress.waybill_scanned";
-    private final String TAG = "DeliveryHandoverFragment";
+    private final String TAG = "DeliveryHandoverDialogFragment";
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -48,9 +52,35 @@ public class DeliveryHandoverFragment extends Fragment {
     private IncompleteScanDialog dialog;
     private DeliveryHandoverAdapter listAdapter;
 
+    public DeliveryHandoverDialogFragment( CallBackFunction _callback) {
+        callback = _callback;
+    }
+
+    private static CallBackFunction callback;
+
+    public static DeliveryHandoverDialogFragment newInstance(final CallBackFunction callback)
+    {
+        DeliveryHandoverDialogFragment f = new DeliveryHandoverDialogFragment( callback);
+        return f;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        return dialog;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         bagid = Workflow.getInstance().currentBagID;
 
@@ -140,8 +170,6 @@ public class DeliveryHandoverFragment extends Fragment {
                 }
             }
         });
-
-        return rootView;
     }
 
     @Override
@@ -245,6 +273,7 @@ public class DeliveryHandoverFragment extends Fragment {
 
     public void initViewHolder(LayoutInflater inflater, ViewGroup container) {
         if (rootView == null) {
+
             rootView = inflater.inflate(R.layout.fragment_delivery_handover, null, false);
 
             if (holder == null) {

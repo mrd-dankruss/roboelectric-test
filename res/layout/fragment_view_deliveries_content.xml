@@ -4,12 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ListView
-        android:id="@+id/fragment_viewDeliveries_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
-
     <LinearLayout
         android:id="@+id/fragment_viewDeliveries_linearLayout"
         android:layout_width="match_parent"
@@ -35,6 +29,14 @@
             android:textColor="@color/text_grey"
             android:textSize="21sp" />
     </LinearLayout>
+
+    <ListView
+            android:layout_below="@+id/fragment_viewDeliveries_linearLayout"
+            android:layout_above="@+id/button_generic_report"
+            android:id="@+id/fragment_viewDeliveries_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+    </ListView>
 
     <Button
         android:id="@+id/button_generic_report"
