@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.R;
 
 public class CustomToast

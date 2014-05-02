@@ -1,6 +1,5 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.app.DialogFragment;
@@ -18,24 +17,25 @@ import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.dialogfragments.DeliveryHandoverDialogFragment;
+import com.mrdexpress.paperless.dialogfragments.ReasonForFailedHandoverFragment;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
-import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
 
 public class UpdateStatusDialog extends DialogFragment
 {
-	private static int bagid;
+	private static String stopids;
 	public static String DIALOG_TIME_STRING = "DIALOG_TIME_STRING";
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
 	private ArrayList<DialogDataObject> temp;
 
     private CallBackFunction callback;
 
-    public UpdateStatusDialog(int bag_id, CallBackFunction _callback) {
-        bagid = bag_id;
+    public UpdateStatusDialog(String _stopids, CallBackFunction _callback) {
+        stopids = _stopids;
         callback = _callback;
     }
 
@@ -43,9 +43,9 @@ public class UpdateStatusDialog extends DialogFragment
 	 * Create a new instance of MyDialogFragment, providing "num"
 	 * as an argument.
 	 */
-	public static UpdateStatusDialog newInstance(int bag_id, CallBackFunction _callback)
+	public static UpdateStatusDialog newInstance(String _stopids, CallBackFunction _callback)
 	{
-		UpdateStatusDialog f = new UpdateStatusDialog( bag_id, _callback);
+		UpdateStatusDialog f = new UpdateStatusDialog( _stopids, _callback);
 
 		// Supply num input as an argument.
 		// Bundle args = new Bundle();
@@ -102,16 +102,16 @@ public class UpdateStatusDialog extends DialogFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
 			{
-                Workflow.getInstance().currentBagID = bagid;
+                Workflow.getInstance().currentBagID = stopids;
 
 				if (position == 0)
 				{
-                    DeliveryHandoverDialogFragment.newInstance( new CallBackFunction() {
+                    DeliveryHandoverDialogFragment.newInstance(new CallBackFunction() {
                         @Override
                         public boolean execute(Object args) {
-                            if( (Boolean)args == true) {
+                            if ((Boolean) args == true) {
                             }
-                            callback.execute( args);
+                            callback.execute(args);
                             dismiss();
                             return true;
                         }
@@ -120,14 +120,14 @@ public class UpdateStatusDialog extends DialogFragment
 
 				if (position == 1)
 				{
-                    (ReasonForFailedHandoverFragment.newInstance( new CallBackFunction() {
+                    (ReasonForFailedHandoverFragment.newInstance(new CallBackFunction() {
                         @Override
                         public boolean execute(Object args) {
-                            if( args != null) {
-                                Workflow.getInstance().setDeliveryStatus( Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, (String)args);
+                            if (args != null) {
+                                Workflow.getInstance().setDeliveryStatus(Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, (String) args);
                                 Device.getInstance().displaySuccess("Delivery set as failed", getActivity());
                             }
-                            callback.execute( args);
+                            callback.execute(args);
                             dismiss();
                             return false;
                         }

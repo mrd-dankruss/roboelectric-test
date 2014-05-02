@@ -1,4 +1,4 @@
-package com.mrdexpress.paperless;
+package com.mrdexpress.paperless.dialogfragments;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -12,16 +12,18 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.General;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment.SetNextDeliveryListener;
+import com.mrdexpress.paperless.dialogfragments.MoreDialogFragment.SetNextDeliveryListener;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.widget.CustomToast;
+import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
@@ -32,8 +34,8 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
 
 	private ViewHolder holder;
 	private View rootView;
-	private Bag bag;
-    private int BagID;
+	private StopItem stop;
+    private String stopids;
     private ArrayList<DeliveryHandoverDataObject> waybills;
     private int position;
 	Intent intent;
@@ -74,19 +76,20 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
         //getActionBar().setDisplayHomeAsUpEnabled(true);
 
         position = bundle.getInt("ACTIVE_BAG_POSITION", -1);
-        BagID = bundle.getInt("ACTIVE_BAG_ID", -1);
+        stopids = bundle.getString("STOP_IDS", "{}");
 
-        JSONObject jso =  Workflow.getInstance().getBag( BagID);
-        bag = new Bag(jso);
+        JSONObject jso =  Workflow.getInstance().getTripStop( stopids);
+        stop = new StopItem( new ObservableJSONObject( jso));
 
-        holder.text_delivery_number.setText("#" + (position + 1));
+        holder.text_delivery_number.setText("#" + stop.getTripOrder());
         holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
-        holder.text_delivery_addressee.setText("Addressee: " + bag.getDestination());
-        holder.text_delivery_address.setText(MiscHelper.getBagFormattedAddress(bag));
-        StringBuilder bagtext = new StringBuilder();
-        waybills = Workflow.getInstance().getBagParcelsAsObjects( bag.getBagID());
+        holder.text_delivery_addressee.setText("Addressee: " + stop.getDestinationDesc());
+        holder.text_delivery_address.setText(stop.getAddress());
 
-        bagtext.append("Parcel(s) to be delivered for :  " + bag.getBarcode() + "<br />");
+        StringBuilder bagtext = new StringBuilder();
+        waybills = Workflow.getInstance().getStopParcelsAsObjects( stop.getIDs());
+
+        bagtext.append("Parcel(s) to be delivered to :  " + stop.getDestinationDesc() + "<br />");
         int teller = 1;
         while (waybills.size() > 0){
             DeliveryHandoverDataObject temp = waybills.remove(0);
@@ -95,7 +98,8 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
 
-        ArrayList<General.Communications> coms = General.getInstance().getComLogFromBagId(bag.getBagID());
+        // TODO: wire back in
+        /*ArrayList<General.Communications> coms = General.getInstance().getComLogFromBagId(bag.getBagID());
 
         String comlog_text = "";
 
@@ -110,7 +114,7 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
             holder.text_delivery_communication_log.setText(comlog_text);
             holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
             holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
-        }
+        }*/
         // TODO:Set image here one day when app is extended.
         holder.button_update_status.setOnClickListener(new View.OnClickListener()
         {
@@ -118,7 +122,7 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
             @Override
             public void onClick(View v)
             {
-                DialogFragment newFragment = UpdateStatusDialog.newInstance(bag.getBagID(), new CallBackFunction() {
+                DialogFragment newFragment = UpdateStatusDialog.newInstance( stop.getIDs(), new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
                         //callback.execute( args);
@@ -139,14 +143,29 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
             @Override
             public void onClick(View v)
             {
-                boolean isNextBag = bag.getBagID() == MiscHelper.getNextDeliveryId( getActivity());
-                int curbagid = Workflow.getInstance().currentBagID;
+                //boolean isNextBag = bag.getBagID() == MiscHelper.getNextDeliveryId( getActivity());
+                boolean isNextBag = stop.getTripOrder() == 1;
+                String curbagid = Workflow.getInstance().currentBagID;
 
-                if (bag.getBagID() == curbagid){
-                    DialogFragment newFragment = MoreDialogFragment.newInstance(false,bag.getBagID());
+                if (stop.getIDs() == curbagid){
+                    DialogFragment newFragment = MoreDialogFragment.newInstance(false, stop.getIDs(), new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            callback.execute(true);
+                            dismiss();
+                            return false;
+                        }
+                    });
                     newFragment.show(getFragmentManager(), "dialog");
                 } else {
-                    DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	bag.getBagID());
+                    DialogFragment newFragment = MoreDialogFragment.newInstance(!isNextBag,	stop.getIDs(), new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            callback.execute(true);
+                            dismiss();
+                            return false;
+                        }
+                    });
                     newFragment.show(getFragmentManager(), "dialog");
                 }
             }
@@ -161,7 +180,7 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
 	}
 
 	@Override
-	public void onSetNextDelivery(boolean is_successful, int bagId)
+	public void onSetNextDelivery(boolean is_successful, String stopids)
 	{
 		if (is_successful)
 		{
@@ -169,8 +188,8 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
 			custom_toast.setSuccess(true);
 			custom_toast.setText("Successfully changed next delivery.");
 			custom_toast.show();
-			Workflow.getInstance().currentBagID = bagId;
-			MiscHelper.setNextDeliveryId(bagId, getActivity());
+			Workflow.getInstance().currentBagID = stopids;
+			MiscHelper.setNextDeliveryId(stopids, getActivity());
 
             callback.execute( true);
 
@@ -238,8 +257,7 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
 			}
 		}
 	}
-
-	// Creates static instances of resources.
+    // Creates static instances of resources.
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{

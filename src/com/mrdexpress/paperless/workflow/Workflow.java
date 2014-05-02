@@ -3,7 +3,7 @@ package com.mrdexpress.paperless.workflow;
 import android.content.Context;
 import android.util.Log;
 import com.jayway.jsonpath.*;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.StopItem;
@@ -32,7 +32,7 @@ public class Workflow extends Observable
     private ReadContext drivers;
     private ReadContext managers;
 
-    public int currentBagID;
+    public String currentBagID;
 
     public HashMap<String,Object> doormat;
 
@@ -214,6 +214,7 @@ public class Workflow extends Observable
         @Override
         public int compare(StopItem lhs, StopItem rhs) {
             if( lhs.getTripOrder() > rhs.getTripOrder()) return 1;
+            if( lhs.getTripOrder() < rhs.getTripOrder()) return -1;
             return 0;
         }
     }
@@ -228,9 +229,45 @@ public class Workflow extends Observable
         }
     }
 
-    public void setNextStop( int bagid)
+    public List<StopItem> getStopsByStatus( String status)
     {
-        JSONObject stop = getStopForBagId( bagid);
+        List<StopItem> retstops = new ArrayList<StopItem>();
+
+        try{
+            List<JSONObject> stops = workflow.read("$.response.workflow.workflow.tripstops[?]",
+                    Filter.filter(Criteria.where("status.status").eq(status)));
+                    //Filter.filter(Criteria.where("status").eq(status).and("payload").eq("bag")));
+
+            for( int i=0; i < stops.size(); i++)
+            {
+                /*JSONArray tripstopdata = JSONObjectHelper.getJSONArrayDef(stops.get(i), "tripstopdata", new JSONArray());
+                for (int j = 0; j < tripstopdata.size(); j++) {
+                    if (JSONObjectHelper.getStringDef((JSONObject) tripstopdata.get(j), "payload", "").equals("bag")) {
+                        if (JSONObjectHelper.getStringDef((JSONObject) tripstopdata.get(j), "status", Bag.STATUS_TODO).equals(status)) {
+                            retstops.add(new StopItem(new ObservableJSONObject((JSONObject) stops.get(i))));
+                            break;
+                        }
+                    }
+                }*/
+                retstops.add(new StopItem(new ObservableJSONObject((JSONObject) stops.get(i))));
+            }
+            Collections.sort( retstops, new StopComparator());
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return retstops;
+    }
+
+    public void setNextStop( String stopids)
+    {
+        JSONObject stop = getTripStop(stopids);
         if( stop != null)
         {
             List<JSONObject> stops = workflow.read("$.response.workflow.workflow.tripstops[*]");
@@ -249,7 +286,7 @@ public class Workflow extends Observable
             }
 
             //Collections.sort( stops, new StopJSONObjectComparator());
-            currentBagID = bagid;
+            currentBagID = stopids;
         }
     }
 
@@ -279,6 +316,25 @@ public class Workflow extends Observable
         try
         {
             bags = workflow.read("$.response.workflow.workflow.tripstops[*].tripstopdata[?(@.payload eq 'bag')]");
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+        return bags;
+    }
+
+    public List<JSONArray> getBagsForStopAsJSONArray( String stopids)
+    {
+        List<JSONArray> bags = null;
+        try
+        {
+            bags = workflow.read("$.response.workflow.workflow.tripstops[?].tripstopdata[?]",
+                    Filter.filter(Criteria.where("id").eq(stopids)), Filter.filter(Criteria.where("payload").eq("bag")));
         }
         catch( PathNotFoundException e)
         {
@@ -406,6 +462,37 @@ public class Workflow extends Observable
         return parcels;
     }
 
+    public ArrayList<DeliveryHandoverDataObject> getStopParcelsAsObjects( String stopids)
+    {
+        ArrayList<DeliveryHandoverDataObject> parcels = new ArrayList<DeliveryHandoverDataObject>();
+
+        JSONObject stop = getTripStop( stopids);
+
+        if( stop instanceof JSONObject)
+        {
+            JSONArray tsd = JSONObjectHelper.getJSONArrayDef( stop, "tripstopdata", new JSONArray());
+            for( int n=0; n < tsd.size(); n++){
+                JSONObject jso = JSONObjectHelper.getJSONObjectDef( (JSONObject)tsd.get(n), "flowdata", null);
+                if( jso != null)
+                {
+                    JSONArray ja = (JSONArray)jso.get("parcels");
+
+                    if( ja instanceof JSONArray)
+                    {
+                        for( int i=0; i < ja.size(); i++)
+                        {
+                            ObservableJSONObject bagparcel = new ObservableJSONObject( (JSONObject)ja.get(i));
+                            DeliveryHandoverDataObject parcel = new DeliveryHandoverDataObject( bagparcel);
+                            parcels.add( parcel);
+                        }
+                    }
+                }
+            }
+        }
+
+        return parcels;
+    }
+
 	public ArrayList<Bag> getBags()
 	{
         ArrayList<Bag> bags = new ArrayList<Bag>();
@@ -463,6 +550,26 @@ public class Workflow extends Observable
                 }
             }
 
+        }
+        catch(Exception e)
+        {
+            //Log.e("MRD-EX" , e.getMessage());
+        }
+        return stop;
+    }
+
+    public JSONObject getTripStop( String stopids ){
+        JSONObject stop = null;
+        try
+        {
+            JSONArray stops = workflow.read("$.response.workflow.workflow.tripstops[*]");
+            for(int i = 0; i < stops.size(); i++){
+                JSONObject p = (JSONObject)stops.get(i);
+                if( JSONObjectHelper.getStringDef(p,"id","").equals(stopids)) {
+                    stop = p;
+                    break;
+                }
+            }
         }
         catch(Exception e)
         {
@@ -613,25 +720,26 @@ public class Workflow extends Observable
         ServerInterface.getInstance().setBagScanned(barcode);
     }
 
-    public void setDeliveryStatus( int bagid, String status, String reason)
+    public void setDeliveryStatus( String stopids, String status, String reason)
     {
-        JSONObject bag = getBag(bagid);
-        if( bag != null)
+        //JSONObject bag = getBag(bagid);
+        JSONObject stop = getTripStop( stopids);
+        if( stop != null)
         {
-            JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( bag, "status", new JSONObject());
+            JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( stop, "status", new JSONObject());
             jsostatus.put("status", status);
             jsostatus.put("reason", reason);
             jsostatus.put("date" , Paperless.getFormattedDate() + " " + Paperless.getFormattedTime());
-            bag.put("status", jsostatus);
+            stop.put("status", jsostatus);
 
             if ( status.equals(Bag.STATUS_COMPLETED) ){
 
                 //100% complete bag was delivered
-                ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
-                ServerInterface.getInstance().endStop( ((JSONObject)Workflow.getInstance().getStopForBagId(bagid)).get("id").toString() , Users.getInstance().getActiveDriver().getStringid() );
+                ServerInterface.getInstance().setDeliveryStatus(status , stopids , reason);
+                ServerInterface.getInstance().endStop( stopids, Users.getInstance().getActiveDriver().getStringid() );
 
             } else if (status.equals(Bag.STATUS_PARTIAL) ){
-                ServerInterface.getInstance().setDeliveryStatus(status , Integer.toString(bagid) , reason);
+                ServerInterface.getInstance().setDeliveryStatus(status , stopids, reason);
             }
 
         }
@@ -673,9 +781,10 @@ public class Workflow extends Observable
         return bags;
     }
 
-    public HashMap<String, String> getBagCoords( int bagid)
+    public HashMap<String, String> getStopCoords( String stopids)
     {
-        JSONObject jsostop = getStopForBagId( bagid);
+        //JSONObject jsostop = getStopForBagId( bagid);
+        JSONObject jsostop = getTripStop( stopids);
         StopItem stop = new StopItem( new ObservableJSONObject( jsostop));
         HashMap<String, String> bag = new HashMap<String, String>();
         bag.put(VariableManager.EXTRA_BAG_LAT, Float.toString( JSONObjectHelper.getFloatDef( stop.getCoOrds(), "lat", 0)));
@@ -683,9 +792,9 @@ public class Workflow extends Observable
         return bag;
     }
 
-    public ArrayList<DialogDataObject> getContactsFromBagId(int bagid)
+    public ArrayList<DialogDataObject> getContactsForStop(String stopids)
     {
-        JSONObject trip_stop = getStopForBagId(bagid);
+        JSONObject trip_stop = getTripStop( stopids);
         JSONObject contacts = (JSONObject) trip_stop.get("contacts");
         ArrayList<org.json.JSONObject> contactslist = new ArrayList<org.json.JSONObject>();
         ArrayList<DialogDataObject> clist = new ArrayList<DialogDataObject>();
@@ -708,6 +817,8 @@ public class Workflow extends Observable
         }
         return clist;
     }
+
+
 
     /////////////////////////////////////////
     // DRIVERS

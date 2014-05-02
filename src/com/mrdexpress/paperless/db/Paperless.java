@@ -1,10 +1,9 @@
-package com.mrdexpress.paperless;
+package com.mrdexpress.paperless.db;
 
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-import com.mrdexpress.paperless.db.Device;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 

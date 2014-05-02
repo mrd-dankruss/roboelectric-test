@@ -56,17 +56,17 @@ private final String TAG = "LocationBroadcastReceiver";
 		// Put here YOUR code.
 		SharedPreferences prefs = mContext.getSharedPreferences(VariableManager.PREF,
 				Context.MODE_PRIVATE);
-		int stop_id = prefs.getInt(VariableManager.PREF_CURRENT_STOPID, -1);
-        Workflow.getInstance().getStopForBagId(Workflow.getInstance().currentBagID);
+		//String stop_id = prefs.getInt(VariableManager.PREF_CURRENT_STOPID, -1);
+        String stop_id = Workflow.getInstance().currentBagID;
 		long time = System.currentTimeMillis() / 1000;
 
 		
-		if (stop_id != -1)
+		if (stop_id != "")
 		{
 			location = getLocation();
-			new PostDriverPosition().execute( Integer.toString(stop_id), String.valueOf(location.getAccuracy()),
+			new PostDriverPosition().execute( stop_id, String.valueOf(location.getAccuracy()),
 					String.valueOf(location.getLatitude()),
-					String.valueOf(location.getLongitude()), Integer.toString(stop_id), String.valueOf(time));
+					String.valueOf(location.getLongitude()), stop_id, String.valueOf(time));
 
 		}
 		else

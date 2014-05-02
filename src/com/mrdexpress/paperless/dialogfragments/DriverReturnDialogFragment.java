@@ -1,25 +1,14 @@
-package com.mrdexpress.paperless.fragments;
+package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
 import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
-import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.helper.MiscHelper;
-import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
-import com.mrdexpress.paperless.net.ServerInterface;
-import com.mrdexpress.paperless.workflow.Workflow;
 
 /**
  * Created by gary on 2014-04-30.

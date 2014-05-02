@@ -4,7 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by gary on 2014/04/01.
@@ -28,9 +31,10 @@ public class StopItem implements Parcelable
         return 0;
     }
 
-    public int getID()
+    public String getIDs()
     {
-        return JSONObjectHelper.getIntDef(data.get(), "id", -1);
+        // stops is an array, eg: "{164,163}"
+        return JSONObjectHelper.getStringDef(data.get(), "id", "{}");
     }
 
     public void setTripOrder( int triporder)
@@ -61,6 +65,27 @@ public class StopItem implements Parcelable
     public JSONObject getCoOrds()
     {
         return JSONObjectHelper.getJSONObjectDef(data.get(), "coords", null);
+    }
+
+    public String getReason()
+    {
+        JSONObject thestatus = data.getJSONObject("status");
+        return JSONObjectHelper.getStringDef(thestatus, "reason", "");
+        //return status;
+    }
+
+    public String getReasonDate()
+    {
+        JSONObject thestatus = data.getJSONObject("status");
+        return JSONObjectHelper.getStringDef(thestatus, "date", "");
+        //return status;
+    }
+
+    public String getStatus()
+    {
+        JSONObject thestatus = data.getJSONObject("status");
+        return JSONObjectHelper.getStringDef(thestatus, "status", "");
+        //return status;
     }
 
     @Override

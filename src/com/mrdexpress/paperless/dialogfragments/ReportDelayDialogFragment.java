@@ -1,4 +1,4 @@
-package com.mrdexpress.paperless;
+package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.*;
 import android.content.Intent;
@@ -10,12 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.*;
+import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.DelayDialog;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;

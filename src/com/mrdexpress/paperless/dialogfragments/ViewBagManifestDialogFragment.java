@@ -1,4 +1,4 @@
-package com.mrdexpress.paperless.fragments;
+package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
+import com.mrdexpress.paperless.fragments.EnterBarcodeFragment;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.FragmentCallBackFunction;
 import com.mrdexpress.paperless.workflow.Workflow;

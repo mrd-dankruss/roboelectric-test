@@ -23,8 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
-import com.mrdexpress.paperless.Paperless;
-import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.Paperless;
 
 /**
  * This {@code WakefulBroadcastReceiver} takes care of creating and managing a

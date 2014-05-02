@@ -1,12 +1,10 @@
 package com.mrdexpress.paperless.net;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.db.Device;
 import org.json.JSONObject;
 

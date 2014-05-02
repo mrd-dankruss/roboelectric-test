@@ -27,7 +27,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import com.mrdexpress.paperless.adapters.PlacesAutoCompleteAdapter;
 import com.mrdexpress.paperless.datatype.MapPlacesItem;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
+import com.mrdexpress.paperless.dialogfragments.MoreDialogFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -316,7 +316,9 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 			}
 		}
 
-        HashMap<String, String> dest = Workflow.getInstance().getBagCoords( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID));
+        //HashMap<String, String> dest = Workflow.getInstance().getBagCoords( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID));
+        Bundle bundle = getArguments();
+        HashMap<String, String> dest = Workflow.getInstance().getStopCoords( bundle.getString("stopids"));
         double lat = Double.parseDouble(dest.get(VariableManager.EXTRA_BAG_LAT));
         double lon = Double.parseDouble(dest.get(VariableManager.EXTRA_BAG_LON));
         destLocation = new LatLng(lon, lat);

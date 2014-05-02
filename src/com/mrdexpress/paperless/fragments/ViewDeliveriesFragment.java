@@ -5,11 +5,9 @@ import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.*;
@@ -17,11 +15,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
 import com.mrdexpress.paperless.db.Users;
-import com.mrdexpress.paperless.fragments.ChangeUserDialog;
 import com.mrdexpress.paperless.widget.CustomToast;
 
 public class ViewDeliveriesFragment extends Fragment implements TabListener{

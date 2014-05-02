@@ -27,6 +27,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -41,7 +42,6 @@ import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.CheckConnectivity;
 import com.squareup.otto.Subscribe;
-import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import javax.xml.xpath.XPath;

@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.mrdexpress.paperless.fragments.DeliveryHandoverDialogFragment;
+import com.mrdexpress.paperless.dialogfragments.DeliveryHandoverDialogFragment;
 import com.mrdexpress.paperless.workflow.Workflow;
 import org.json.JSONException;
 import org.json.JSONObject;

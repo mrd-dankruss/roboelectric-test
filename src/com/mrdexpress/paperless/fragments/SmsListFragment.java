@@ -53,9 +53,9 @@ public class SmsListFragment extends Fragment
 
 		// SharedPreferences prefs = getActivity().getSharedPreferences(VariableManager.PREF,
 		// Context.MODE_PRIVATE);
-		final String bag_id = General.getInstance().getActivebagid();
-        int bagid = Integer.parseInt(bag_id);
-		adapter = new SmsDialogListAdapter(getActivity(), Workflow.getInstance().getContactsFromBagId(bagid), false);
+		final String stop_id = General.getInstance().getActivebagid();
+        //int bagid = Integer.parseInt(bag_id);
+		adapter = new SmsDialogListAdapter(getActivity(), Workflow.getInstance().getContactsForStop(stop_id), false);
 
 		holder.list.setAdapter(adapter);
 
@@ -70,7 +70,7 @@ public class SmsListFragment extends Fragment
 				SmsMessageFragment fragment_sms = SmsMessageFragment.newInstance(
 						dataObject.getMainText(),
 						dataObject.getSubText(),
-						bag_id);
+						stop_id);
 				FragmentManager fm = getFragmentManager();
 				FragmentTransaction ft = fm.beginTransaction();
 				ft.replace(R.id.activity_sms_container, fragment_sms);

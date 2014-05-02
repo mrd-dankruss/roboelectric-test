@@ -3,15 +3,14 @@ package com.mrdexpress.paperless.adapters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.app.Activity;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
@@ -19,13 +18,14 @@ import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CompletedDeliveriesListAdapter extends BaseAdapter
 {
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final Activity activity;
 	private final Context context;
-	private ArrayList<Bag> values;
+    private List<StopItem> values;
     private String status;
 	private String bag_id;
 
@@ -43,7 +43,7 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        this.values = Workflow.getInstance().getBagsByStatus(status);
+        this.values = Workflow.getInstance().getStopsByStatus(status);
     }
 
 	@Override
@@ -74,11 +74,11 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 		text_bag_ids.setTypeface(typeface_roboto_bold);
 		text_failed_time.setTypeface(typeface_roboto_italic);
 
-		text_address.setText(values.get(position).getDestinationAddress());
-		text_bag_ids.setText(values.get(position).getBarcode());
-        text_address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
-        Bag bag = values.get(position);
-        text_failed_time.setText("Delivered on : " + bag.getReasonDate());
+        StopItem stop = values.get(position);
+
+		text_address.setText( stop.getAddress());
+		text_bag_ids.setText( stop.getDestinationDesc());
+        text_failed_time.setText("Delivered on : " + stop.getReasonDate());
 
 		return rowView;
 	}

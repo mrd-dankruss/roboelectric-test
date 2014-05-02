@@ -1,10 +1,8 @@
-package com.mrdexpress.paperless.fragments;
+package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +10,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import com.google.android.gms.plus.model.people.Person;
 import com.mrdexpress.paperless.*;
 import com.mrdexpress.paperless.adapters.ReasonForFailedHandoverListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
-import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
-import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;

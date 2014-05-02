@@ -1,24 +1,23 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
-import com.mrdexpress.paperless.DeliveryDetailsDialogFragment;
+import com.mrdexpress.paperless.datatype.StopItem;
+import com.mrdexpress.paperless.dialogfragments.DeliveryDetailsDialogFragment;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ViewDeliveriesListAdapter;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.General;
+import com.mrdexpress.paperless.dialogfragments.DriverReturnDialogFragment;
 import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -45,27 +44,33 @@ public class TabViewDeliveriesFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         adapter = new ViewDeliveriesListAdapter(getActivity(), Bag.STATUS_TODO);
+        adapter.registerDataSetObserver( new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if( adapter.getCount() == 0)
+                {
+                    DriverReturnDialogFragment.newInstance(new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            Intent intent = MiscHelper.getGoHomeIntent(getActivity());
+                            ServerInterface.getInstance().endTrip();
+                            startActivity(intent);
+                            return false;
+                        }
+                    }).show(getFragmentManager(), getTag());
+                }
+            }
+        });
         holder.list.setAdapter(adapter);
         //if(DbHandler.getInstance(getActivity()).getBagsByStatus(driverid, Bag.STATUS_TODO).size() == 0)
-        if( adapter.getCount() == 0)
-        {
-            DriverReturnDialogFragment.newInstance( new CallBackFunction() {
-                @Override
-                public boolean execute(Object args) {
-                    Intent intent = MiscHelper.getGoHomeIntent(getActivity());
-                    ServerInterface.getInstance().endTrip();
-                    startActivity(intent);
-                    return false;
-                }
-            }).show(getFragmentManager(), getTag());
-        }
 
         holder.list.setOnItemClickListener(new OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
             {
-                DialogFragment deliveryDetails = DeliveryDetailsDialogFragment.newInstance( new CallBackFunction() {
+                final DialogFragment deliveryDetails = DeliveryDetailsDialogFragment.newInstance( new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
                         adapter.notifyDataSetChanged();
@@ -73,12 +78,12 @@ public class TabViewDeliveriesFragment extends Fragment
                     }
                 });
                 Bundle bundle = new Bundle();
-                Integer bagid = ((Bag)holder.list.getItemAtPosition(position)).getBagID();
-                bundle.putInt("ACTIVE_BAG_ID", bagid);
+                String stopids = ((StopItem)holder.list.getItemAtPosition(position)).getIDs();
+                bundle.putString("STOP_IDS", stopids);
                 bundle.putInt("ACTIVE_BAG_POSITION", position);
                 if (position == 0)
-                    Workflow.getInstance().currentBagID = bagid;
-                General.getInstance().setActivebagid(bagid);
+                    Workflow.getInstance().currentBagID = stopids;
+                General.getInstance().setActivebagid(stopids);
                 deliveryDetails.setArguments( bundle);
 
                 deliveryDetails.show( getFragmentManager(), getTag());

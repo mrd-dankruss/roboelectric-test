@@ -24,10 +24,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Users;
+import com.mrdexpress.paperless.dialogfragments.ViewBagManifestDialogFragment;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
@@ -87,7 +88,7 @@ public class ScanFragment extends Fragment {
 
     @Subscribe
     public void mytestevent(String event){
-        Log.e("MRD-EX" , event);
+        Log.e("MRD-EX", event);
     }
 
     @Override
@@ -274,7 +275,7 @@ public class ScanFragment extends Fragment {
     {
         // ((FragmentResultInterface)getActivity()).onFragmentResult(DriverHomeActivity.START_DELIVERY,2,null);
 
-        ((ScanActivityInterface)getActivity()).scanFragmentDone(DriverHomeActivity.START_DELIVERY,2,null);
+        ((ScanActivityInterface)getActivity()).scanFragmentDone(DriverHomeActivity.START_DELIVERY, 2, null);
         //getFragmentManager().popBackStack();
         //getActivity().getFragmentManager().beginTransaction().remove(this).commit();
         //Intent intent = new Intent( Paperless.getContext() , TabViewDeliveriesFragment.class);
@@ -630,6 +631,7 @@ public class ScanFragment extends Fragment {
             holder.button_start_milkrun = (Button) root_view.findViewById(R.id.scan_button_start_milkrun);
 
             holder.button_start_scanning = (Button) root_view.findViewById(R.id.button_start_scanning);
+            holder.button_start_scanning.setVisibility( View.GONE);
 
             holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_scan_toast);
 

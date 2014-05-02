@@ -80,10 +80,21 @@
             android:background="@color/seperator_grey" />
 
         <TextView
+                android:id="@+id/deliveries_textView_addressee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="14dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="5dp"
+                android:text="MrD Brackenfell"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_size_delivery_details_address" />
+
+        <TextView
             android:id="@+id/deliveries_textView_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lines="4"
             android:paddingLeft="14dp"
             android:paddingRight="8dp"
             android:text="@string/delivery_address"

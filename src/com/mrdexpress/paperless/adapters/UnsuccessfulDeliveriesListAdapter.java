@@ -10,7 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.datatype.StopItem;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -19,13 +20,14 @@ import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
 {
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final Activity activity;
 	private final Context context;
-	private ArrayList<Bag> values;
+    private List<StopItem> values;
 	private String bag_id;
     private String status;
 
@@ -43,7 +45,7 @@ public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        this.values = Workflow.getInstance().getBagsByStatus(status);
+        this.values = Workflow.getInstance().getStopsByStatus(status);
     }
 
     @Override
@@ -73,16 +75,16 @@ public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
 		text_failed_time.setTypeface(typeface_roboto_regular);
 		text_failed_reason.setTypeface(typeface_roboto_regular);
 
-		text_address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
-		text_bag_ids.setText(values.get(position).getBarcode());
+        StopItem stop = values.get(position);
 
-        Bag bag = values.get(position);
+		text_address.setText( stop.getAddress());
+		text_bag_ids.setText( stop.getDestinationDesc());
 
-        String status = "<b>Status</b> : " + Paperless.capitalize(bag.getStatus()) + "<br />";
-        String reason = "<b>Reason</b> : " + Paperless.capitalize(bag.getReason());
-        text_failed_time.setText("Failed delivery on : " + bag.getReasonDate());
+        String status = "<b>Status</b> : " + Paperless.capitalize(stop.getStatus()) + "<br />";
+        String reason = "<b>Reason</b> : " + Paperless.capitalize(stop.getReason());
+        text_failed_time.setText("Failed delivery on : " + stop.getReasonDate());
 
-        text_failed_reason.setText(Html.fromHtml(status+reason));
+        text_failed_reason.setText(Html.fromHtml(status + reason));
 
 		return rowView;
 	}

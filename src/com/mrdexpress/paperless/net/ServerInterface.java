@@ -6,18 +6,16 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.maps.model.LatLng;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.db.*;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
-import com.mrdexpress.paperless.security.PinManager;
 import com.mrdexpress.paperless.workflow.Workflow;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -105,11 +103,11 @@ public class ServerInterface {
     }
 
     /** POST **/
-    public void setDeliveryStatus(String status , String bagid , String reason){
+    public void setDeliveryStatus(String status , String stopids , String reason){
         String url = API_URL + "v1/workflow/updatestatus?" + Device.getInstance().getTokenIMEIUrl();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("status", status);
-        params.put("bagid", bagid);
+        params.put("bagid", stopids);
         params.put("reason", reason);
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
@@ -458,9 +456,9 @@ public class ServerInterface {
         }
     }
 
-    public void endStop(String stopid , String driverid){
+    public void endStop(String stopids , String driverid){
         String token = Device.getInstance().getToken();
-        String url = API_URL + "v1/milkruns/end-stop?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid() + "&stopID=" + stopid;
+        String url = API_URL + "v1/milkruns/end-stop?mrdToken=" + token + "&driverID=" + Users.getInstance().getActiveDriver().getid() + "&stopID=" + stopids;
         AQuery ac = new AQuery(context);
         if (Device.getInstance().isConnected()){
             ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {

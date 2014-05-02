@@ -1,26 +1,22 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.db.DbHandler;
-import com.mrdexpress.paperless.helper.VariableManager;
+import com.mrdexpress.paperless.dialogfragments.MoreDialogFragment;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 import java.util.Calendar;
@@ -36,12 +32,12 @@ public class CallListFragment extends Fragment
 	DialogFragment newFragment;
 	TextView subText;
 	private int parentItemPosition;
-    int bagid;
+    String stopids;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-        bagid = (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID);
+        stopids = (String)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID);
 
 		initViewHolder(inflater, container); // Inflate ViewHolder static instance
 
@@ -52,7 +48,7 @@ public class CallListFragment extends Fragment
 	{
 		super.onResume();
 
-		adapter = new GenericDialogListAdapter( getActivity(),Workflow.getInstance().getContactsFromBagId(bagid) , false);
+		adapter = new GenericDialogListAdapter( getActivity(),Workflow.getInstance().getContactsForStop(stopids) , false);
 
 		holder.list.setAdapter(adapter);
 
@@ -70,12 +66,13 @@ public class CallListFragment extends Fragment
 							+ ((DialogDataObject) adapter.getItem(position)).getMainText() + "("
 							+ ((DialogDataObject) adapter.getItem(position)).getSubText() + ")";
 
-					DbHandler.getInstance(getActivity())
+                    // TODO: re-wire
+					/*DbHandler.getInstance(getActivity())
 							.addComLog(
 									datetime,
 									note,
 									"SMS",
-                                    Integer.toString( bagid));
+                                    Integer.toString( bagid));*/
 					
 					Intent intent = new Intent(Intent.ACTION_CALL);
 

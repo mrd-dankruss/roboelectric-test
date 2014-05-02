@@ -9,7 +9,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.datatype.StopItem;
+import com.mrdexpress.paperless.db.Paperless;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.net.Ajax;
@@ -18,6 +19,7 @@ import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by hannobean on 2014/04/01.
@@ -33,16 +35,16 @@ public class PaperlessService extends Service{
         public void onLocationChanged(Location location)
         {
             int bagid;
-            ArrayList<Bag> bags = Workflow.getInstance().getBagsByStatus(Bag.STATUS_TODO);
+            List<StopItem> bags = Workflow.getInstance().getStopsByStatus(Bag.STATUS_TODO);
             if (bags.size() > 0){
-                bagid = Workflow.getInstance().currentBagID;
+                /*bagid = Workflow.getInstance().currentBagID;
                 if (bagid > 0){
                     //bag is set
                 }else{
                     //use first bag
                     bagid = -1; //bags.get(0).getBagID();
-                }
-                JSONObject activestop = Workflow.getInstance().getStopForBagId( bagid );
+                } */
+                JSONObject activestop = null;// Workflow.getInstance().getStopForBagId( bagid );
                 if (activestop != null){
                     //Update API with current location
                     if (oldloc == null){

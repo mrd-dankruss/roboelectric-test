@@ -10,8 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.fragments.MoreDialogFragment;
+import com.mrdexpress.paperless.dialogfragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.helper.MiscHelper;
@@ -26,9 +27,9 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 	private final String TAG = "ViewDeliveriesListAdapter";
 	private final Activity activity;
 	private final Context context;
-	private List<Bag> values;
+	private List<StopItem> values;
 	private ImageView deliveryType, companyLogo;
-	private TextView deliveryNumber, titleDetail, address, id;
+	private TextView deliveryNumber, titleDetail, address, id, addressee;
 	private Button updateStatus, more;
 	private LinearLayout buttonsHolder;
 	private int bag_id;
@@ -55,7 +56,8 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
     @Override
     public void notifyDataSetChanged() {
-        values = Workflow.getInstance().getBagsByStatus(status);
+        //values = Workflow.getInstance().getBagsByStatus(status);
+        values = Workflow.getInstance().getStopsByStatus(status);
         super.notifyDataSetChanged();
     }
 
@@ -84,50 +86,53 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 
 		// Reference each view item and set required fonts
 		deliveryType = ViewHolder.get( rowView, R.id.deliveries_imageView_deliveryType);
-
 		deliveryNumber = ViewHolder.get( rowView, R.id.deliveries_textView_deliveryNumber);
 		deliveryNumber.setTypeface(typeface_roboto_bold);
-
 		titleDetail = ViewHolder.get( rowView, R.id.deliveries_textView_titleDetail);
 		titleDetail.setTypeface(typeface_roboto_bold);
-
 		companyLogo = ViewHolder.get( rowView, R.id.deliveries_imageView_companyLogo);
-
 		address = ViewHolder.get( rowView, R.id.deliveries_textView_address);
+        addressee = ViewHolder.get( rowView, R.id.deliveries_textView_addressee);
 		// address.setTypeface(typeface_robotoLight);
-
 		id = (TextView) ViewHolder.get( rowView, R.id.deliveries_textView_id);
 		// id.setTypeface(typeface_robotoRegular);
-
 		buttonsHolder = ViewHolder.get( rowView, R.id.deliveries_linearLayout_buttonsHolder);
-
 		updateStatus = ViewHolder.get( rowView, R.id.deliveries_button_updateStatus);
 		updateStatus.setTypeface(typeface_roboto_bold);
 
 		more = ViewHolder.get( rowView, R.id.deliveries_button_more);
 		more.setTypeface(typeface_roboto_bold);
-        //more.setText("More Options");
-		
 		// Icon
 		// Only doing Milkruns for now so hardcode
 		deliveryType.setImageResource(this.getDeliveryTypeIcon(DeliveryType.DELIVERY));
 		
 		// Leading zero
-		if (position < 10)
+		/*if (position < 10)
 		{
 			deliveryNumber.setText("#0" + (position + 1));
 		}
 		else
 		{
 			deliveryNumber.setText("#" + (position + 1));
-		}
+		}*/
+        StopItem stop = values.get(position);
+
+        deliveryNumber.setText("#" + stop.getTripOrder());
 		
 		// Address
-		address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
+		//address.setText(MiscHelper.getBagFormattedAddress(values.get(position)));
+        addressee.setText(stop.getDestinationDesc());
 
-		// ID
-		id.setText(values.get(position).getBarcode() + " ("	+ values.get(position).getNumberItems() + " items)");
-		
+        address.setText(stop.getAddress());
+
+        List bags = Workflow.getInstance().getBagsForStopAsJSONArray( stop.getIDs());
+        String bagtext = bags.size() + " Bag" + (bags.size()==1?"":"s");
+
+        List parcels = Workflow.getInstance().getStopParcelsAsObjects( stop.getIDs());
+        bagtext = bagtext + " containing " + parcels.size() + " Parcel" + (parcels.size()==1?"":"s");
+
+        id.setText( bagtext);
+
 		// Company logo
 		// Only doing MrD for now so hardcode
 		// int companyLogoID = getCompanyIcon(Company.valueOf(values.get(position).get(1)));
@@ -137,7 +142,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 			companyLogo.setImageResource(companyLogoID);
 		}
 		
-		Bag bag = values.get(position);
+		/*Bag bag = values.get(position);
 		boolean isNextBag = false;
 		int nextBagId = MiscHelper.getNextDeliveryId(activity);
 		if( nextBagId != -1)
@@ -147,14 +152,17 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 		else
 		{
 			isNextBag = (position == 0);
-		}
+		} */
+
+        boolean isNextBag = false;
+        isNextBag = (position == 0);
 		
 		// Delivery type
 		titleDetail.setText(getTitle(DeliveryType.DELIVERY, isNextBag));
 		
 		if (isNextBag)
 		{
-			final int bag_id = bag.getBagID();
+			final String stop_ids = stop.getIDs(); //bag.getBagID();
 
 			updateStatus.setOnClickListener(new View.OnClickListener()
 			{
@@ -162,7 +170,7 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = UpdateStatusDialog.newInstance(bag_id, new CallBackFunction() {
+					DialogFragment newFragment = UpdateStatusDialog.newInstance(stop_ids, new CallBackFunction() {
                         @Override
                         public boolean execute(Object args) {
                             notifyDataSetChanged();
@@ -179,7 +187,13 @@ public class ViewDeliveriesListAdapter extends BaseAdapter
 				@Override
 				public void onClick(View v)
 				{
-					DialogFragment newFragment = MoreDialogFragment.newInstance(false, bag_id);
+					DialogFragment newFragment = MoreDialogFragment.newInstance(false, stop_ids, new CallBackFunction() {
+                        @Override
+                        public boolean execute(Object args) {
+                            notifyDataSetChanged();
+                            return false;
+                        }
+                    });
 					newFragment.show(activity.getFragmentManager(), "dialog");
 				}
 			});

@@ -38,9 +38,9 @@ public class General {
     public void setActivebagid(String bagid){
         activebagid = bagid;
     }
-    public void setActivebagid(Integer bagid){
+   /*public void setActivebagid(Integer bagid){
         activebagid = Integer.toString(bagid);
-    }
+    }*/
     public String getActivebagid(){
         return activebagid;
     }

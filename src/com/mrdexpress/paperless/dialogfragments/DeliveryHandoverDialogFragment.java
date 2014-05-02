@@ -1,4 +1,4 @@
-package com.mrdexpress.paperless.fragments;
+package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -11,7 +11,6 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,7 @@ import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
-import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.service.GCMIntentService;
@@ -47,7 +46,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
         }
     };
     ArrayList<DeliveryHandoverDataObject> list;
-    int bagid;
+    String stopids;
     private View rootView;
     private MyViewHolder holder;
     private IncompleteScanDialog dialog;
@@ -83,11 +82,12 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bagid = Workflow.getInstance().currentBagID;
+        stopids = Workflow.getInstance().currentBagID;
 
         //list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
 
-        list = Workflow.getInstance().getBagParcelsAsObjects(bagid);
+        //list = Workflow.getInstance().getBagParcelsAsObjects(bagid);
+        list = Workflow.getInstance().getStopParcelsAsObjects(stopids);
 
         listAdapter = new DeliveryHandoverAdapter(list, getActivity());
 
@@ -121,7 +121,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
                 if (list != null) {
                     if (allParcelsScanned()) {
                         //All parcels delivered
-                        Workflow.getInstance().setDeliveryStatus(bagid, Bag.STATUS_COMPLETED, "");
+                        Workflow.getInstance().setDeliveryStatus(stopids, Bag.STATUS_COMPLETED, "");
                         CustomToast toast = new CustomToast(getActivity());
                         toast.setSuccess(true);
                         toast.setText("Delivery completed successfully.");
