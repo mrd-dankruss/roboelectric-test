@@ -35,7 +35,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/image_bottomgrey_shadow_block" >
+         >
 
         <Button
             android:id="@+id/button_map_navigate_here"

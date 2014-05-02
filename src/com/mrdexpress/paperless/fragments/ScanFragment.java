@@ -21,7 +21,7 @@ import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import com.google.zxing.client.android.Intents;
+//import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
 import com.mrdexpress.paperless.db.Paperless;
@@ -166,10 +166,10 @@ public class ScanFragment extends Fragment {
         int height = (int) (size.y - (size.y * 0.1));
 
         Intent intent = getActivity().getIntent();
-        intent.setAction(Intents.Scan.ACTION);
-        intent.putExtra(Intents.Scan.WIDTH, width);
-        intent.putExtra(Intents.Scan.HEIGHT, height);
-        scan_intent = new Intent("com.google.zxing.client.android.SCAN");
+        //intent.setAction(Intents.Scan.ACTION);
+        //intent.putExtra(Intents.Scan.WIDTH, width);
+        //intent.putExtra(Intents.Scan.HEIGHT, height);
+        //scan_intent = new Intent("com.google.zxing.client.android.SCAN");
 
         try{
             getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
