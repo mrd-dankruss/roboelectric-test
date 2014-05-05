@@ -11,7 +11,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.maps.model.LatLng;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.*;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
@@ -520,6 +520,9 @@ public class ServerInterface {
     public void postDelay(String bagid, String note, String delayid) {
         String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + Users.getInstance().getActiveDriver().getStringid()
                 + "&mrdToken=" + Device.getInstance().getToken() + "&delayid=" + delayid;
+        int a = Workflow.getInstance().getTripID();
+        Object b = Workflow.getInstance().getStopForBagId( Integer.parseInt(bagid) );
+
         AQuery ac = new AQuery(context);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("delayid", delayid);

@@ -15,7 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
 import com.mrdexpress.paperless.db.Users;

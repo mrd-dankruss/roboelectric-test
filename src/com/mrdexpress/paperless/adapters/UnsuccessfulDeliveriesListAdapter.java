@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.mrdexpress.paperless.datatype.StopItem;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;

@@ -6,7 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 
 import java.util.List;

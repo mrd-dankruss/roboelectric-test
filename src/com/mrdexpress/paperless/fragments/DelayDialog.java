@@ -1,9 +1,8 @@
 package com.mrdexpress.paperless.fragments;
 
-import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +21,10 @@ import com.mrdexpress.paperless.workflow.Workflow;
 
 public class DelayDialog extends DialogFragment
 {
-	private int mNum;
 	public static String DIALOG_TIME_STRING = "DIALOG_TIME_STRING";
 	public static String DIALOG_ITEM_POS = "DIALOG_ITEM_POS";
+	private int mNum;
 //	private ArrayList<DialogDataObject> durations;
-
 	// ID of delay reason passed from previous screen
 	private String delay_id;
     private CallBackFunction callback;
@@ -105,7 +103,6 @@ public class DelayDialog extends DialogFragment
                 Intent i = new Intent();
 
 				i.putExtra(DIALOG_TIME_STRING,	((DialogDataObject) adapter.getItem(position)).getMainText());
-				// getActivity().getIntent().putExtra(DIALOG_TIME_STRING, "string we hardcode");
 				i.putExtra(DIALOG_ITEM_POS, position);
 				i.putExtra(VariableManager.EXTRA_DELAY_ID, delay_id);
                 callback.execute(i);
