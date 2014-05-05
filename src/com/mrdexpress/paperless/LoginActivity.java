@@ -3,7 +3,10 @@ package com.mrdexpress.paperless;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.*;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Typeface;
@@ -27,7 +30,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -55,28 +57,40 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoginActivity extends Activity implements LoginInterface {
-    private ViewHolder holder;
-    private View root_view;
-    private LoginActivity globalthis = this;
-    private final String TAG = "LoginActivity";
-    private ArrayList<Users.UserData> person_item_list;
-    private Users.UserData selected_user;
-
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
+    static final int ACTIVITY_CHECK_CONNECTIVITY = 1001001;
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-    private String SENDER_ID = "426772637351";
-    static final int ACTIVITY_CHECK_CONNECTIVITY = 1001001;
-    private GoogleCloudMessaging gcm;
-    private String regid;
-    AtomicInteger msgId = new AtomicInteger();
-    Context context;
-    private boolean is_registration_successful;
+    private final String TAG = "LoginActivity";
     public ProgressDialog dialog_main;
     public ProgressDialog dialog_progress;
     public Dialog dialog_file;
+    AtomicInteger msgId = new AtomicInteger();
+    Context context;
+    private ViewHolder holder;
+    private View root_view;
+    private LoginActivity globalthis = this;
+    private ArrayList<Users.UserData> person_item_list;
+    private Users.UserData selected_user;
+    private String SENDER_ID = "426772637351";
+    private GoogleCloudMessaging gcm;
+    private String regid;
+    private boolean is_registration_successful;
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +111,6 @@ public class LoginActivity extends Activity implements LoginInterface {
 
         checkConnected();
     }
-
 
     @Subscribe public void mygcm(Bundle extra){
         if (!extra.isEmpty()){
@@ -313,7 +326,7 @@ public class LoginActivity extends Activity implements LoginInterface {
         //NetworkStatus.getInstance().register(context);
         super.onResume();
     }
-
+ 
     /**
      * Trigger Login Action
      */
@@ -336,8 +349,6 @@ public class LoginActivity extends Activity implements LoginInterface {
             startActivity(intent);
         }
     }
- 
-
 
     /**
      * Check PIN's validity (data validation)
@@ -354,7 +365,6 @@ public class LoginActivity extends Activity implements LoginInterface {
             return false;
         }
     }
-
 
     /**
      * Display a toast using the custom Toaster class
@@ -429,20 +439,6 @@ public class LoginActivity extends Activity implements LoginInterface {
     }
 
     /**
-     * @return Application's version code from the {@code PackageManager}.
-     */
-    private static int getAppVersion(Context context) {
-        try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (NameNotFoundException e) {
-            // should never happen
-            throw new RuntimeException("Could not get package name: " + e);
-        }
-    }
-
-    /**
      * Registers the application with GCM servers asynchronously.
      * <p/>
      * Stores the registration ID and the app versionCode in the application's shared preferences.
@@ -496,73 +492,6 @@ public class LoginActivity extends Activity implements LoginInterface {
         is_registration_successful = true;
         int appVersion = getAppVersion(context);
         Device.getInstance().setAppVersion(appVersion);
-    }
-
-
-    private class UpdateApp extends AsyncTask<Void, Void, Void> {
-        String path = "/sdcard/paperless-mrd.apk";
-        boolean mustInstall = false;
-
-
-        /** progress dialog to show user that the backup is processing. */
-        /**
-         * application context.
-         */
-        @Override
-        protected void onPreExecute() {
-            Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_LONG).show();
-            try {
-                // delete the original file
-                new File(path).delete();
-            }
-            catch (Exception e) {
-                Log.e("MRD-EX", e.getMessage());
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... urls) {
-
-        final PackageInfo pInfo;
-            try {
-                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                double versionCode = 0;
-                String url = "";
-                XPath xpath = XPathFactory.newInstance().newXPath();
-                try {
-                    String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
-                    versionCode = (Double)xpath.evaluate("/update/versionCode", new InputSource( updateURL), XPathConstants.NUMBER);
-                    url = (String)xpath.evaluate("/update/url", new InputSource( updateURL), XPathConstants.STRING);
-
-                    if (versionCode > pInfo.versionCode) {
-                        try {
-                            Toast.makeText(getBaseContext() , "Downloading an update , please be patient" , Toast.LENGTH_LONG).show();
-                            downloadAPK( url , path) ;
-
-                        }catch(Exception e){
-                            Log.e("MRD-EX" , e.getMessage());
-                        }
-                        mustInstall = true;
-                    }
-                } catch (XPathExpressionException e) {
-                    e.printStackTrace();
-                }
-            } catch (NameNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void nothing) {
-            if (mustInstall) {
-                Intent i = new Intent();
-                i.setAction(Intent.ACTION_VIEW);
-                i.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
-                startActivity(i);
-            }
-        }
     }
 
     private void downloadAPK( String Url , String path) {
@@ -658,5 +587,71 @@ public class LoginActivity extends Activity implements LoginInterface {
         Button button_login;
         AutoCompleteTextView text_name;
         EditText text_password;
+    }
+
+    private class UpdateApp extends AsyncTask<Void, Void, Void> {
+        String path = "/sdcard/paperless-mrd.apk";
+        boolean mustInstall = false;
+
+
+        /** progress dialog to show user that the backup is processing. */
+        /**
+         * application context.
+         */
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(getBaseContext() , "Checking for updates" , Toast.LENGTH_LONG).show();
+            try {
+                // delete the original file
+                new File(path).delete();
+            }
+            catch (Exception e) {
+                Log.e("MRD-EX", e.getMessage());
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... urls) {
+
+        final PackageInfo pInfo;
+            try {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                double versionCode = 0;
+                String url = "";
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                try {
+                    String updateURL = "http://www.mrdexpress.com/updates/Paperless/UpdateDescriptor.xml";
+                    versionCode = (Double)xpath.evaluate("/update/versionCode", new InputSource( updateURL), XPathConstants.NUMBER);
+                    url = (String)xpath.evaluate("/update/url", new InputSource( updateURL), XPathConstants.STRING);
+
+                    if (versionCode > pInfo.versionCode) {
+                        try {
+                            Toast.makeText(getBaseContext() , "Downloading an update , please be patient" , Toast.LENGTH_LONG).show();
+                            downloadAPK( url , path) ;
+
+                        }catch(Exception e){
+                            Log.e("MRD-EX" , e.getMessage());
+                        }
+                        mustInstall = true;
+                    }
+                } catch (XPathExpressionException e) {
+                    e.printStackTrace();
+                }
+            } catch (NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void nothing) {
+            if (mustInstall) {
+                Intent i = new Intent();
+                i.setAction(Intent.ACTION_VIEW);
+                i.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
+                startActivity(i);
+            }
+        }
     }
 }

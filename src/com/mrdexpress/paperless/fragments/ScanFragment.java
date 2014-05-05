@@ -21,7 +21,6 @@ import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-//import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
 import com.mrdexpress.paperless.Paperless;
@@ -42,38 +41,46 @@ import com.squareup.otto.Subscribe;
 import java.util.Date;
 import java.util.List;
 
+//import com.google.zxing.client.android.Intents;
+
 public class ScanFragment extends Fragment {
 
-    private ViewHolder holder;
-    private View root_view;
-
-    private static final String TAG = "ScanFragment";
-
-    private IncompleteScanDialog dialog;
-    private ChangeUserDialog dialog_change_user;
-    private NotAssignedToUserDialog dialog_not_assigned;
-
+    public static final int RESULT_MANUAL_ENTRY = 2002;
     static final int REQUEST_MANUAL_BARCODE = 1;
     static final int RESULT_MANAGER_AUTH = 2;
     static final int RESULT_INCOMPLETE_SCAN_AUTH = 3;
     static final int RESULT_LOGIN_ACTIVITY_INCOMPLETE_SCAN = 4;
     static final int RESULT_LOGIN_ACTIVITY_UNAUTH_BARCODE = 5;
-    public static final int RESULT_MANUAL_ENTRY = 2002;
-    private Intent intent_manual_barcode;
-    private String user_name;
-
-    private String last_scanned_barcode;
-
+    private static final String TAG = "ScanFragment";
     List<Bag> bags;
     String driverId;
     BarcodeListAdapter adapter;
     Handler handler;
     AlertDialog.Builder dialog_builder;
     Intent scan_intent;
+    DialogInterface.OnClickListener dialog1ClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    startNotAssignedActivity();
+                    break;
 
-    public interface ScanActivityInterface{
-        public void scanFragmentDone( int requestCode, int resultCode, Object data);
-    }
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+    private ViewHolder holder;
+    private View root_view;
+    private IncompleteScanDialog dialog;
+    private ChangeUserDialog dialog_change_user;
+    private NotAssignedToUserDialog dialog_not_assigned;
+    private Intent intent_manual_barcode;
+    private String user_name;
+    private String last_scanned_barcode;
 
     public void UpDateBagsForAdapter(String added_id) {
         UpdateBagsCounter();
@@ -441,23 +448,6 @@ public class ScanFragment extends Fragment {
         }
     }
 
-
-    DialogInterface.OnClickListener dialog1ClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which){
-                case DialogInterface.BUTTON_POSITIVE:
-                    //Yes button clicked
-                    startNotAssignedActivity();
-                    break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    //No button clicked
-                    break;
-            }
-        }
-    };
-
     void onBarcodeMatchFail() {
         //dialog_not_assigned = new NotAssignedToUserDialog(ScanFragment.this);
         //dialog_not_assigned.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -466,7 +456,6 @@ public class ScanFragment extends Fragment {
         AlertDialog.Builder dialog1 = new AlertDialog.Builder(this.getActivity());
         dialog1.setMessage("Manager authorisation required.").setNegativeButton("No" , dialog1ClickListener).setPositiveButton("Yes" , dialog1ClickListener ).setTitle("Do you want to take ownership of this bag ?").show();
     }
-
 
     public void onBarcodeClick(View v) {
         //Intent intent = new Intent("com.google.zxing.client.android.SCAN");
@@ -537,10 +526,10 @@ public class ScanFragment extends Fragment {
             handler.postDelayed(decodeCallback, 10);
         }
     }
+
     public void handleDecode(String barcodeString){
         this.handleDecode(barcodeString , true);
     }
-
 
     @Override
     public void onResume() {
@@ -580,7 +569,6 @@ public class ScanFragment extends Fragment {
         // Set all consignments' scanned state to false
         // DbHandler.getInstance(getApplicationContext()).setScannedAll(false);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -646,19 +634,6 @@ public class ScanFragment extends Fragment {
 
     }
 
-    /**
-     * Creates static instances of resources. Increases performance by only
-     * finding and inflating resources only once.
-     */
-    static class ViewHolder {
-        ListView list;
-        Button button_start_milkrun;
-        TextView textView_toast;
-        RelativeLayout relativeLayout_toast;
-        TextView textview_scanstatus;
-        Button button_start_scanning;
-    }
-
     private void startNotAssignedActivity() {
         // Start manager authorization activity
         // TODO: wire this back in
@@ -672,6 +647,40 @@ public class ScanFragment extends Fragment {
         // Start manager authorization activity
         Intent intent = new Intent(this.getActivity().getApplicationContext(), ManagerAuthIncompleteScanActivity.class);
         startActivityForResult(intent, RESULT_INCOMPLETE_SCAN_AUTH);
+    }
+
+    public void UpdateBagsCounter() {
+        try {
+            holder.textview_scanstatus.setText("BAG" + (Workflow.getInstance().getBagBarcodesScanned().size() == 1 ? "" : "S") + " (" + Workflow.getInstance().getBagBarcodesScanned().size() + " / " + bags.size() + " SCANNED)");
+        } catch (Exception e) {
+            Log.e("MRDEX:", e.toString());
+        }
+
+        if (Workflow.getInstance().getBagBarcodesScanned().size() == 0) {
+            holder.button_start_milkrun.setEnabled(false);
+            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
+        } else {
+            holder.button_start_milkrun.setEnabled(true);
+            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
+        }
+
+    }
+
+    public interface ScanActivityInterface{
+        public void scanFragmentDone( int requestCode, int resultCode, Object data);
+    }
+
+    /**
+     * Creates static instances of resources. Increases performance by only
+     * finding and inflating resources only once.
+     */
+    static class ViewHolder {
+        ListView list;
+        Button button_start_milkrun;
+        TextView textView_toast;
+        RelativeLayout relativeLayout_toast;
+        TextView textview_scanstatus;
+        Button button_start_scanning;
     }
 
     private class AddBagToDriver extends AsyncTask<Void, Void, Void> {
@@ -719,25 +728,6 @@ public class ScanFragment extends Fragment {
             }
         }
     }
-
-
-    public void UpdateBagsCounter() {
-        try {
-            holder.textview_scanstatus.setText("BAG" + (Workflow.getInstance().getBagBarcodesScanned().size() == 1 ? "" : "S") + " (" + Workflow.getInstance().getBagBarcodesScanned().size() + " / " + bags.size() + " SCANNED)");
-        } catch (Exception e) {
-            Log.e("MRDEX:", e.toString());
-        }
-
-        if (Workflow.getInstance().getBagBarcodesScanned().size() == 0) {
-            holder.button_start_milkrun.setEnabled(false);
-            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom_grey);
-        } else {
-            holder.button_start_milkrun.setEnabled(true);
-            holder.button_start_milkrun.setBackgroundResource(R.drawable.button_custom);
-        }
-
-    }
-
 
     class BarcodeListAdapter extends ArrayAdapter<Bag> {
         public BarcodeListAdapter(Context context) {
