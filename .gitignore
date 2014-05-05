@@ -53,3 +53,5 @@ Icon
 /.idea/copyright
 /.idea/libraries
 .idea
+/build.gradle
+/project.properties
