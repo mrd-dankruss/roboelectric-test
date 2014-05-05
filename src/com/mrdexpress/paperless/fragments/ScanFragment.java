@@ -24,7 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 //import com.google.zxing.client.android.Intents;
 import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Users;

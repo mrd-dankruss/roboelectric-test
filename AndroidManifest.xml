@@ -255,6 +255,7 @@
         </activity>
 
         <!--  <barcode> -->
+        <!--
         <activity
                 android:name="com.google.zxing.client.android.CaptureActivity"
                 android:configChanges="orientation|keyboardHidden"
@@ -270,6 +271,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        -->
 
         <activity android:name=".workflow.CheckConnectivity"/>
         <!--  </barcode> -->
@@ -294,7 +296,7 @@
         <service android:name=".service.LocationService" />
         <service android:enabled="true" android:name=".service.PaperlessService" />
 
-        <receiver  android:process=":remote" android:name=".service.LocationBroadcastReceiver"></receiver>
+        <receiver  android:process=":remote" android:name=".service.LocationBroadcastReceiver" />
 
     </application>
 

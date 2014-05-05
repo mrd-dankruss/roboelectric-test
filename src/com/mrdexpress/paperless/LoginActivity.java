@@ -27,7 +27,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
 import com.mrdexpress.paperless.helper.FontHelper;

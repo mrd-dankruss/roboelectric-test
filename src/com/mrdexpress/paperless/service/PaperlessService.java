@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import com.mrdexpress.paperless.datatype.StopItem;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.net.Ajax;

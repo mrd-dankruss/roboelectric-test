@@ -3,7 +3,7 @@ package com.mrdexpress.paperless.workflow;
 import android.content.Context;
 import android.util.Log;
 import com.jayway.jsonpath.*;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
 import com.mrdexpress.paperless.datatype.StopItem;

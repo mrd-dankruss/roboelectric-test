@@ -6,7 +6,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
 import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.db.Paperless;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
