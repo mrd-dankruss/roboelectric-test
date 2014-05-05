@@ -1,8 +1,8 @@
 package com.mrdexpress.paperless.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.app.Activity;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,16 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
-import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.workflow.Workflow;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
