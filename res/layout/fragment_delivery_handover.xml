@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_grey"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:layout_margin="0dp"
+    android:padding="0dp"
+        >
 
     <TextView
         android:id="@+id/deliveryHandover_textView_subTitle"

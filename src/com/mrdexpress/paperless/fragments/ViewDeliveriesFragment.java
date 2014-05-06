@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.TabsPagerAdapter;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.widget.CustomToast;
 
@@ -116,13 +117,9 @@ public class ViewDeliveriesFragment extends Fragment implements TabListener{
         });
 
         if (!Users.getInstance().getMilkrunactive()){
-            CustomToast toast = new CustomToast(getActivity());
-            toast.setSuccess(true);
-            toast.setText("Delivery run started.");
-            toast.show();
+            Device.getInstance().displayInfo("Delivery run started." , getActivity());
             Users.getInstance().setMilkrunactive(true);
         }
-
         holder.mPager.setCurrentItem(0);
     }
 
@@ -194,7 +191,6 @@ public class ViewDeliveriesFragment extends Fragment implements TabListener{
         dialog_change_user.show();
 
         // LayoutInflater factory = LayoutInflater.from(ScanFragment.this);
-
         final ImageButton button_close = (ImageButton) dialog_change_user.findViewById(R.id.button_change_user_closeButton);
         final Button button_cancel = (Button) dialog_change_user.findViewById(R.id.button_change_user_cancel);
         final Button button_ok = (Button) dialog_change_user.findViewById(R.id.button_change_user_ok);

@@ -83,13 +83,13 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
 
         holder.text_delivery_number.setText("#" + stop.getTripOrder());
         holder.text_delivery_title.setText("MILKRUN DELIVERY"); // TODO: Change
-        holder.text_delivery_addressee.setText("Addressee: " + stop.getDestinationDesc());
+        holder.text_delivery_addressee.setText(stop.getDestinationDesc());
         holder.text_delivery_address.setText(stop.getAddress());
 
         StringBuilder bagtext = new StringBuilder();
         waybills = Workflow.getInstance().getStopParcelsAsObjects( stop.getIDs());
 
-        bagtext.append("Parcel(s) to be delivered to :  " + stop.getDestinationDesc() + "<br />");
+        bagtext.append("Parcel(s) to be delivered : <br />");
         int teller = 1;
         while (waybills.size() > 0){
             DeliveryHandoverDataObject temp = waybills.remove(0);
