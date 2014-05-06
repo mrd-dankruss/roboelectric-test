@@ -229,6 +229,31 @@ public class Workflow extends Observable
         }
     }
 
+    public List<StopItem> getStops()
+    {
+        List<StopItem> retstops = new ArrayList<StopItem>();
+
+        try{
+            List<JSONObject> stops = workflow.read("$.response.workflow.workflow.tripstops[*]");
+
+            for( int i=0; i < stops.size(); i++)
+            {
+                retstops.add(new StopItem(new ObservableJSONObject((JSONObject) stops.get(i))));
+            }
+            Collections.sort( retstops, new StopComparator());
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return retstops;
+    }
+
     public List<StopItem> getStopsByStatus( String status)
     {
         List<StopItem> retstops = new ArrayList<StopItem>();
@@ -236,19 +261,9 @@ public class Workflow extends Observable
         try{
             List<JSONObject> stops = workflow.read("$.response.workflow.workflow.tripstops[?]",
                     Filter.filter(Criteria.where("status.status").eq(status)));
-                    //Filter.filter(Criteria.where("status").eq(status).and("payload").eq("bag")));
 
             for( int i=0; i < stops.size(); i++)
             {
-                /*JSONArray tripstopdata = JSONObjectHelper.getJSONArrayDef(stops.get(i), "tripstopdata", new JSONArray());
-                for (int j = 0; j < tripstopdata.size(); j++) {
-                    if (JSONObjectHelper.getStringDef((JSONObject) tripstopdata.get(j), "payload", "").equals("bag")) {
-                        if (JSONObjectHelper.getStringDef((JSONObject) tripstopdata.get(j), "status", Bag.STATUS_TODO).equals(status)) {
-                            retstops.add(new StopItem(new ObservableJSONObject((JSONObject) stops.get(i))));
-                            break;
-                        }
-                    }
-                }*/
                 retstops.add(new StopItem(new ObservableJSONObject((JSONObject) stops.get(i))));
             }
             Collections.sort( retstops, new StopComparator());
@@ -491,6 +506,34 @@ public class Workflow extends Observable
         }
 
         return parcels;
+    }
+
+    public ArrayList<Bag> getBagsForStop( String stopids)
+    {
+        ArrayList<Bag> bags = new ArrayList<Bag>();
+
+        try
+        {
+            JSONArray rawbags = workflow.read("$.response.workflow.workflow.tripstops[?].tripstopdata[?]",
+                    Filter.filter(Criteria.where("id").eq(stopids)), Filter.filter(Criteria.where("payload").eq("bag")));
+
+            for( int i=0; i < rawbags.size(); i++)
+            {
+                Bag bag = new Bag( (JSONObject)rawbags.get(i));
+                bag.setScanned(1);
+                bags.add(bag);
+            }
+        }
+        catch( PathNotFoundException e)
+        {
+            Log.e("workflow", e.toString());
+        }
+        catch( Exception e)
+        {
+            Log.e("gary", e.toString());
+        }
+
+        return bags;
     }
 
 	public ArrayList<Bag> getBags()

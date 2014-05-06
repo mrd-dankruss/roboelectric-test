@@ -25,6 +25,7 @@ import com.mrdexpress.paperless.DriverHomeActivity;
 import com.mrdexpress.paperless.ManagerAuthIncompleteScanActivity;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.dialogfragments.ViewBagManifestDialogFragment;

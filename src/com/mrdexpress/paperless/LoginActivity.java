@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -29,6 +30,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
+import com.mrdexpress.paperless.datatype.ParcelableList;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
@@ -54,6 +56,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoginActivity extends Activity implements LoginInterface {

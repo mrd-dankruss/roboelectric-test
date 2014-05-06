@@ -9,11 +9,12 @@ import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.ScanFragment;
+import com.mrdexpress.paperless.fragments.StopsFragment;
 import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
 import com.mrdexpress.paperless.net.ServerInterface;
 import com.squareup.otto.Subscribe;
 
-public class DriverHomeActivity extends Activity implements ScanFragment.ScanActivityInterface, DriverHomeFragment.DriverHomeFragmentInterface, ViewDeliveriesFragment.ViewDeliveriesFragmentInterface
+public class DriverHomeActivity extends Activity implements StopsFragment.StopActivityInterface, DriverHomeFragment.DriverHomeFragmentInterface, ViewDeliveriesFragment.ViewDeliveriesFragmentInterface
 {
     public final static int START_DELIVERY= 1;
     public final static int START_SCAN = 2;
@@ -63,7 +64,29 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
     }
 
     @Override
-    public void scanFragmentDone(int requestCode, int resultCode, Object data) {
+    public void startScan() {
+        FragmentManager fm = getFragmentManager();
+        Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
+
+        //if( existingFragment != null && ((Object)existingFragment).getClass() == ScanFragment.class)
+        //    scanFragment = existingFragment;
+        //else
+        //Fragment scanFragment = new ScanFragment();
+        //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
+        Fragment stopFragment = new StopsFragment();
+        fm.beginTransaction().replace(R.id.activity_home_container, stopFragment).commit();
+        //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
+    }
+
+    @Override
+    public void viewDeliveriesDone() {
+        showMenu();
+        //FragmentManager fm = getFragmentManager();
+        //Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
+    }
+
+    @Override
+    public void stopFragmentDone(int requestCode, int resultCode, Object data) {
         ServerInterface.getInstance().startTrip();
 
         FragmentManager fm = getFragmentManager();
@@ -74,26 +97,5 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
         //else
         Fragment  viewDeliveriesFragment = new ViewDeliveriesFragment();
         fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
-            //fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
-    }
-
-    @Override
-    public void startScan() {
-        FragmentManager fm = getFragmentManager();
-        Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
-
-        //if( existingFragment != null && ((Object)existingFragment).getClass() == ScanFragment.class)
-        //    scanFragment = existingFragment;
-        //else
-        Fragment scanFragment = new ScanFragment();
-        fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
-        //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
-    }
-
-    @Override
-    public void viewDeliveriesDone() {
-        showMenu();
-        //FragmentManager fm = getFragmentManager();
-        //Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
     }
 }

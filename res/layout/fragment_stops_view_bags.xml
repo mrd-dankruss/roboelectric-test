@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scan_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_background"
+    android:orientation="vertical" >
+
+    <LinearLayout
+            android:id="@+id/stop_bags_list_header"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:background="@drawable/ab_solid_mrdstyle"
+            android:padding="0dp" >
+
+        <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingLeft="12dp"
+                android:text="More Options"
+                android:textColor="@color/black"
+                android:textSize="26sp" /> -->
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:gravity="right" >
+
+            <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/seperator_grey" />
+
+            <ImageButton
+                    android:id="@+id/stop_bag_list_closeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:background="@null"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:src="@drawable/icon_cancel_unselected" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/stop_bag_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:background="@color/colour_white"
+        android:layout_below="@+id/stop_bags_list_header">
+    </ListView>
+
+
+</RelativeLayout>
