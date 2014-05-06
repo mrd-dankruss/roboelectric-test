@@ -11,6 +11,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import com.mrdexpress.paperless.*;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.widget.CustomToast;
@@ -119,7 +120,7 @@ public class MoreDialogFragment extends DialogFragment
                 });
                 Bundle bundle = new Bundle();
                 bundle.putString("stopids", stopids);
-                map.setArguments( bundle);
+                map.setArguments(bundle);
                 map.show(getActivity().getFragmentManager(), getTag());
 			}
 		});
@@ -157,10 +158,12 @@ public class MoreDialogFragment extends DialogFragment
                 }
                 else
                 {*/
-                    CustomToast custom_toast = new CustomToast(getActivity());
+                    /*CustomToast custom_toast = new CustomToast(getActivity());
                     custom_toast.setSuccess(false);
                     custom_toast.setText("No contact numbers available. Report issue your manager.");
                     custom_toast.show();
+                    */
+                Device.getInstance().displayFailed("No contact numbers available. Report issue to your manager." , getActivity());
                 // }
 			}
 		});
@@ -179,10 +182,7 @@ public class MoreDialogFragment extends DialogFragment
                 }
                 else
                 {*/
-                    CustomToast custom_toast = new CustomToast(getActivity());
-                    custom_toast.setSuccess(false);
-                    custom_toast.setText("No contact numbers available. Report issue your manager.");
-                    custom_toast.show();
+                Device.getInstance().displayFailed("No contact numbers available. Report issue to your manager." , getActivity());
                 // }
 			}
 		});

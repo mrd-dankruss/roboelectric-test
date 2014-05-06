@@ -62,7 +62,7 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		String item = getListAdapter().getItem(position).toString();
+		//String item = getListAdapter().getItem(position).toString();
         final DialogFragment deliveryDetails = DeliveryDetailsDialogFragment.newInstance(new CallBackFunction() {
             @Override
             public boolean execute(Object args) {

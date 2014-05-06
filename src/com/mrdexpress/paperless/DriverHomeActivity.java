@@ -53,6 +53,7 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
         //    fragment = existingFragment;
         //else
         Fragment fragment = new DriverHomeFragment();
+        //this.setTitle("Deliveries");
         //fragment.setArguments( savedInstanceState);
         fm.beginTransaction().replace(R.id.activity_home_container, fragment).commit();
     }
@@ -73,6 +74,7 @@ public class DriverHomeActivity extends Activity implements ScanFragment.ScanAct
         //    viewDeliveriesFragment = existingFragment;
         //else
         Fragment  viewDeliveriesFragment = new ViewDeliveriesFragment();
+        this.setTitle("Deliveries");
         fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
             //fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
     }
