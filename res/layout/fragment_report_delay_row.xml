@@ -8,10 +8,12 @@
     <TextView
         android:id="@+id/reportDelay_textView_mainText"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:layout_weight="1"
         android:gravity="left|center_vertical"
         android:paddingLeft="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:text="Traffic"
         android:textColor="@color/reportDelay_mainText"
         android:textSize="@dimen/font_size_dialog_content" />

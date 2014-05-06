@@ -1,16 +1,22 @@
 package com.mrdexpress.paperless.fragments;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.Toast;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.UnsuccessfulDeliveriesListAdapter;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.General;
+import com.mrdexpress.paperless.dialogfragments.DeliveryDetailsDialogFragment;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.workflow.Workflow;
 
 public class TabUnsuccessfulDeliveriesFragment extends ListFragment
@@ -27,6 +33,8 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 		// List<List<String>> values = new ArrayList<List<String>>();
         adapter = new UnsuccessfulDeliveriesListAdapter(getActivity(), Bag.STATUS_UNSUCCESSFUL);
         setListAdapter(adapter);
+
+
 
 
         // use your own layout
@@ -54,8 +62,24 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		String item = getListAdapter().getItem(position).toString();
-		Toast.makeText(getActivity(), item + " selected", Toast.LENGTH_LONG).show();
+		//String item = getListAdapter().getItem(position).toString();
+        final DialogFragment deliveryDetails = DeliveryDetailsDialogFragment.newInstance(new CallBackFunction() {
+            @Override
+            public boolean execute(Object args) {
+                adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+        Bundle bundle = new Bundle();
+        String stopids = ((StopItem) getListAdapter().getItem(position)).getIDs();
+        bundle.putString("STOP_IDS", stopids);
+        bundle.putInt("ACTIVE_BAG_POSITION", position);
+        if (position == 0)
+            Workflow.getInstance().currentBagID = stopids;
+        General.getInstance().setActivebagid(stopids);
+        deliveryDetails.setArguments(bundle);
+        deliveryDetails.show(getFragmentManager(), getTag());
 	}
 
 	public void initViewHolder(LayoutInflater inflater, ViewGroup container)
@@ -75,6 +99,7 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 
 			// Store the holder with the view.
 			rootView.setTag(holder);
+            holder.list = (ListView) rootView.findViewById(R.id.fragment_unsuccessful_deliveries_container);
 
 		}
 		else
@@ -88,14 +113,16 @@ public class TabUnsuccessfulDeliveriesFragment extends ListFragment
 			else
 			{
 			}
+            holder.list = (ListView) rootView.findViewById(R.id.fragment_unsuccessful_deliveries_container);
 		}
 	}
 
-	// Creates static instances of resources.
+	// Creaic instances of resources.
 	// Increases performance by only finding and inflating resources only once.
 	static class ViewHolder
 	{
 		TabHost mTabHost;
+        ListView list;
 	}
 
 }

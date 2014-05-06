@@ -49,7 +49,7 @@ public class ViewBagManifestDialogFragment extends DialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Dialog dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }

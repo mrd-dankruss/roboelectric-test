@@ -2,6 +2,7 @@ package com.mrdexpress.paperless.datatype;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import net.minidev.json.JSONArray;
@@ -49,7 +50,7 @@ public class StopItem implements Parcelable
 
     public String getAddress()
     {
-        return JSONObjectHelper.getStringDef( data.get(), "address", "!");
+        return Device.getInstance().properCase(JSONObjectHelper.getStringDef( data.get(), "address", "!"));
     }
 
     public JSONObject getDestination()
@@ -59,7 +60,7 @@ public class StopItem implements Parcelable
 
     public String getDestinationDesc()
     {
-        return JSONObjectHelper.getStringDef(getDestination(), "desc", "!");
+        return Device.getInstance().properCase(JSONObjectHelper.getStringDef(getDestination(), "desc", "!"));
     }
 
     public JSONObject getCoOrds()

@@ -54,6 +54,7 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         //    fragment = existingFragment;
         //else
         Fragment fragment = new DriverHomeFragment();
+        //this.setTitle("Deliveries");
         //fragment.setArguments( savedInstanceState);
         fm.beginTransaction().replace(R.id.activity_home_container, fragment).commit();
     }
@@ -91,6 +92,7 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
 
         FragmentManager fm = getFragmentManager();
         Fragment existingFragment = fm.findFragmentById(R.id.activity_home_container);
+        this.setTitle("Deliveries");
 
         //if (existingFragment != null && ((Object) existingFragment).getClass() == ViewDeliveriesFragment.class)
         //    viewDeliveriesFragment = existingFragment;

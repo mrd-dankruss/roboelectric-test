@@ -125,7 +125,7 @@ public class UpdateStatusDialog extends DialogFragment
                         public boolean execute(Object args) {
                             if (args != null) {
                                 Workflow.getInstance().setDeliveryStatus(Workflow.getInstance().currentBagID, Bag.STATUS_UNSUCCESSFUL, (String) args);
-                                Device.getInstance().displaySuccess("Delivery set as failed", getActivity());
+                                Device.getInstance().displayInfo("Delivery set as failed", getActivity());
                             }
                             callback.execute(args);
                             dismiss();

@@ -94,4 +94,9 @@
         <item name="android:paddingRight">24dip</item>
     </style>
 
+    <style name="Dialog_No_Border">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowBackground">@color/colour_white</item>
+    </style>
+
 </resources>

@@ -61,13 +61,17 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
     public static DeliveryHandoverDialogFragment newInstance(final CallBackFunction callback)
     {
         DeliveryHandoverDialogFragment f = new DeliveryHandoverDialogFragment( callback);
+
+
         return f;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        return dialog;
+        Dialog m_dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
+        return m_dialog;
+
     }
 
     @Override
@@ -84,9 +88,6 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
 
         stopids = Workflow.getInstance().currentBagID;
 
-        //list = DbHandler.getInstance(getActivity()).getWaybillsForHandover(bagid);
-
-        //list = Workflow.getInstance().getBagParcelsAsObjects(bagid);
         list = Workflow.getInstance().getStopParcelsAsObjects(stopids);
 
         listAdapter = new DeliveryHandoverAdapter(list, getActivity());
@@ -129,10 +130,6 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
 
                         callback.execute(true);
                         dismiss();
-                        /*
-                        getActivity().finish();
-                        Intent intent = new Intent(getActivity().getApplicationContext() , ViewDeliveriesFragment.class);
-                        startActivity(intent);*/
 
                     } else {
 
@@ -326,6 +323,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
         ListView list;
         Button button;
         TextView parcelsScanned;
+        ImageView largeicon;
     }
 
     private class DeliveryHandoverAdapter extends BaseAdapter {
@@ -351,11 +349,15 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             TextView parcelTitle = ViewHolder.get(rowView, R.id.row_delivery_parcel);
             TextView waybillTile = ViewHolder.get(rowView, R.id.row_delivery_waybill);
             ImageView hasScannedParcel = ViewHolder.get(rowView, R.id.row_delivery_handover_image);
+            ImageView largeparcel = ViewHolder.get(rowView , R.id.large_parcel_image);
 
             DeliveryHandoverDataObject dhdo = parcelList.get(thisPosition);
             waybillTile.setText(dhdo.getMDX() + " (" + dhdo.getXof() + ")");
             parcelTitle.setText(dhdo.getBarcode());
 
+            if (dhdo.getLarge().equals("Y")){
+                largeparcel.setVisibility(View.VISIBLE);
+            }
             if (dhdo.isParcelScanned() == true) {
                 parcelTitle.setTextColor(getResources().getColor(R.color.green_tick));
                 hasScannedParcel.setVisibility(View.VISIBLE);

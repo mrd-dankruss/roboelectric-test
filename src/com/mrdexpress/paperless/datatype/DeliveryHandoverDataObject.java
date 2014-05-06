@@ -69,7 +69,13 @@ public class DeliveryHandoverDataObject implements Parcelable
 
     public String getXof()
     {
-        return JSONObjectHelper.getStringDef( data.get(), "xof", "");     }
+        return JSONObjectHelper.getStringDef( data.get(), "xof", "");
+    }
+
+    public String getLarge()
+    {
+        return JSONObjectHelper.getStringDef( data.get(), "parcel", "");
+    }
 
 	/**
 	 * @param barcode
