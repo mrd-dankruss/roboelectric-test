@@ -3,7 +3,6 @@ package com.mrdexpress.paperless.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.jayway.jsonpath.internal.JsonReader;
-import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import com.mrdexpress.paperless.workflow.Workflow;

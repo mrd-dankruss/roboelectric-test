@@ -1,6 +1,9 @@
 package com.mrdexpress.paperless.dialogfragments;
 
-import android.app.*;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -134,10 +137,11 @@ public class ReportDelayDialogFragment extends DialogFragment
                 // Only perform action if there is a selection made
                 if (delay_id != null)
                 {
-                    //String driverid = Users.getInstance().getActiveDriver().getStringid();
-                    new ReportDelayTask().execute( Integer.toString( (Integer)Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID)), Integer.toString( Users.getInstance().getActiveDriver().getid()), delay_id);
-                    //String bagid = General.getInstance().activebagid;
-                    //new ReportDelayTask().execute(bagid, driverid,VariableManager.delay_id);
+                    try{
+                        new ReportDelayTask().execute( Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID).toString() , Integer.toString( Users.getInstance().getActiveDriver().getid()), delay_id);
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                    }
                 }
             }
         });
@@ -181,7 +185,11 @@ public class ReportDelayDialogFragment extends DialogFragment
                     .getMainText() + "";
 
             General.getInstance().AddComLog( new General.Communications(todate , note , "N") , General.getInstance().getActivebagid());
-            ServerInterface.getInstance(getActivity()).postDelay(args[0], note , args[2]);
+            try{
+                ServerInterface.getInstance().postDelay(args[0], note , args[2]);
+            }catch(Exception e){
+                Log.e("MRD-EX" , e.getMessage());
+            }
             return "success";
         }
 

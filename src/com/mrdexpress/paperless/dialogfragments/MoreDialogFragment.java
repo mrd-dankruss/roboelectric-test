@@ -18,9 +18,9 @@ import com.mrdexpress.paperless.workflow.Workflow;
 
 public class MoreDialogFragment extends DialogFragment
 {
-	private final String TAG = "MoreDialogFragment";
 	public static String EXTENDED_DIALOG = "EXTENDED_DIALOG";
     public static String MORE_BAGID = "more_bagid";
+	private final String TAG = "MoreDialogFragment";
 	private boolean isExtendedDialaog;
 	private String stopids;
     private CallBackFunction callback;
@@ -31,10 +31,6 @@ public class MoreDialogFragment extends DialogFragment
         this.callback = callback;
         this.stopids = stopids;
         Workflow.getInstance().doormat.put( MORE_BAGID, stopids);
-    }
-
-    public interface SetNextDeliveryListener {
-        void onSetNextDelivery(boolean is_successful, String stopids);
     }
 
 	public static MoreDialogFragment newInstance(boolean isExtendedDialog, String _stopids, CallBackFunction _callback)
@@ -52,7 +48,7 @@ public class MoreDialogFragment extends DialogFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		activity = getActivity();
 	}
 
@@ -133,6 +129,7 @@ public class MoreDialogFragment extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
+                General.activebagid = stopids;
                 ReportDelayDialogFragment.newInstance(new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
@@ -192,4 +189,8 @@ public class MoreDialogFragment extends DialogFragment
 
 		return v;
 	}
+
+    public interface SetNextDeliveryListener {
+        void onSetNextDelivery(boolean is_successful, String stopids);
+    }
 }
