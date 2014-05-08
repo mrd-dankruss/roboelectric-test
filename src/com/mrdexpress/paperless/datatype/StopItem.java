@@ -60,7 +60,7 @@ public class StopItem implements Parcelable
 
     public String getDestinationDesc()
     {
-        return Device.getInstance().properCase(JSONObjectHelper.getStringDef(getDestination(), "desc", "!"));
+        return (JSONObjectHelper.getStringDef(getDestination(), "desc", "!"));
     }
 
     public JSONObject getCoOrds()

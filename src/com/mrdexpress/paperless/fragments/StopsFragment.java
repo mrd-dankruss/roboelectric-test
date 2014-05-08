@@ -112,7 +112,8 @@ public class StopsFragment extends Fragment {
 
                     StopItem stop = (StopItem) holder.list.getItemAtPosition(position);
                     if (stop != null) {
-                        DialogFragment newFragment = StopItemMenuDialogFragment.newInstance( stop, new CallBackFunction() {
+                        Paperless.getInstance().startViewStopDetailsFragment(stop , position , getActivity());
+                        /*DialogFragment newFragment = StopItemMenuDialogFragment.newInstance( stop, new CallBackFunction() {
                             @Override
                             public boolean execute(Object args) {
                                 if( (Boolean)args == true)
@@ -121,6 +122,7 @@ public class StopsFragment extends Fragment {
                             }
                         });
                         newFragment.show( getActivity().getFragmentManager(), "menudialog");
+                        */
                     }
                 }
             }

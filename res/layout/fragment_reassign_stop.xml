@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/background_grey"
+    android:orientation="vertical"
+    android:padding="0dp"
+    android:layout_margin="@dimen/activity_horizontal_margin"
+    >
+    <TextView
+            android:id="@+id/textView_reassignstop_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:padding="5dp"
+            android:text="Please select the driver that you are going to re-assign the hub to."
+            android:textSize="@dimen/font_size_dialog_content" />
+
+    <AutoCompleteTextView
+            android:id="@+id/text_reassigned_choose_driver"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:paddingBottom="@dimen/button_padding_topbottom"
+            android:paddingTop="@dimen/button_padding_topbottom"
+            android:hint="@string/driver_select_name"
+            android:background="@color/main_activity_grey"
+            android:textColor="@color/text_grey"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:singleLine="true"
+            android:textSize="@dimen/font_size_text_field"
+            android:enabled="true"
+            android:maxLines="1"
+        android:layout_below="@+id/textView_reassignstop_heading"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="47dp" />
+
+    <Button
+        android:id="@+id/button_reassign_manager_auth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_reassigned_choose_driver"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@drawable/manager_button"
+        android:text="Re-assign Hub"
+        android:textStyle="bold" />
+
+</RelativeLayout>

@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.mrdexpress.paperless.R;
@@ -48,6 +49,8 @@ public class LoginFragment extends Dialog
         setContentView(R.layout.fragment_login_screen);
 
         initViewHolder();
+
+        //this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         person_item_list = Users.getInstance().managersList;
 

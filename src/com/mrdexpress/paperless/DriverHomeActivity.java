@@ -3,12 +3,12 @@ package com.mrdexpress.paperless;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import com.mrdexpress.paperless.channels.EventBus;
 import com.mrdexpress.paperless.db.Device;
-import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
-import com.mrdexpress.paperless.fragments.ScanFragment;
 import com.mrdexpress.paperless.fragments.StopsFragment;
 import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -19,10 +19,7 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
     public final static int START_DELIVERY= 1;
     public final static int START_SCAN = 2;
     public final static int MANUAL_BARCODE= 3;
-	
-	/*private Fragment fragment;
-    private Fragment scanFragment;
-    private Fragment viewDeliveriesFragment;*/
+    public static Boolean EXTRA_STARTSCAN = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -31,7 +28,25 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         Paperless.getInstance().setMainActivity(this);
         setContentView(R.layout.activity_home);
 
-        showMenu();
+        /*try{
+            if (savedInstanceState.containsKey("start_scan")){
+                EXTRA_STARTSCAN = savedInstanceState.getBoolean("start_scan" , false);
+            }
+        } catch(Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+        }*/
+
+        Bundle b = getIntent().getExtras();
+        if (b != null){
+            if (b.containsKey("start_scan")){
+                if (b.getBoolean("start_scan")){
+                    startScan();
+                }
+            }
+        } else {
+            showMenu();
+        }
+
         Paperless.getInstance().ottobus.register(this);
 	}
 
@@ -39,6 +54,16 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
     public void mytestevent(String event){
         Log.e("MRD-EX", event);
         Device.getInstance().displayInfo(event , this);
+    }
+
+    @Subscribe
+    public void eventbus(EventBus.ManagerBackToDriverHome em){
+        //getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        Intent intent = new Intent(this, DriverHomeActivity.class);
+        Bundle b = new Bundle();
+        b.putBoolean("start_scan", true);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     @Override
@@ -75,6 +100,7 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         //Fragment scanFragment = new ScanFragment();
         //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
         Fragment stopFragment = new StopsFragment();
+        setTitle("Delivery Run Preperation");
         fm.beginTransaction().replace(R.id.activity_home_container, stopFragment).commit();
         //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
     }

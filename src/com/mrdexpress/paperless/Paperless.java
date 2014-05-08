@@ -2,9 +2,17 @@ package com.mrdexpress.paperless;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.General;
+import com.mrdexpress.paperless.dialogfragments.DeliveryDetailsDialogFragment;
+import com.mrdexpress.paperless.dialogfragments.ViewStopDeliveryDetailsFragment;
+import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.workflow.Workflow;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -79,5 +87,25 @@ public class Paperless extends Application {
     public static void handleException(Exception e){
         Device.getInstance().addDeviceLog("Exception setDeliveryStatus" , e.getMessage());
         Log.e("MRD-EX", e.getMessage());
+    }
+
+    public void startViewStopDetailsFragment(StopItem stop , int position , final Activity act){
+        final DialogFragment deliveryDetails = ViewStopDeliveryDetailsFragment.newInstance(new CallBackFunction() {
+            @Override
+            public boolean execute(Object args) {
+                //adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+        Bundle bundle = new Bundle();
+        String stopids = stop.getIDs();
+        bundle.putString("STOP_IDS", stopids);
+        bundle.putInt("ACTIVE_BAG_POSITION", position);
+        if (position == 0)
+            Workflow.getInstance().currentBagID = stopids;
+        General.getInstance().setActivebagid(stopids);
+        deliveryDetails.setArguments(bundle);
+        deliveryDetails.show( act.getFragmentManager(), deliveryDetails.getTag() );
     }
 }
