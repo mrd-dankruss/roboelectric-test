@@ -20,6 +20,7 @@ import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
 import com.mrdexpress.paperless.channels.EventBus;
 import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.helper.FontHelper;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
@@ -49,14 +50,6 @@ public class ReAssignStopFragment extends DialogFragment {
             Log.e("MRD-EX", e.getMessage());
         }
     }
-
-    /*
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
-        return dialog;
-    }
-    */
 
     public static ReAssignStopFragment newInstance(final FragmentCallBackFunction callback)
     {
@@ -109,6 +102,7 @@ public class ReAssignStopFragment extends DialogFragment {
                 @Override
                 public boolean execute(Object args) {
                     Users.UserData db = selected_user;
+                    General.getInstance().setReassigndriverid( selected_user.getStringid() );
                     Paperless.getInstance().ottobus.post(new EventBus.ManagerBackToDriverHome());
                     return false;
                 }

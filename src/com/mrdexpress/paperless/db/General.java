@@ -15,6 +15,7 @@ public class General {
     private static General _instance = null;
     public static LinkedHashMap<String , ArrayList<Communications>> comlog = new LinkedHashMap<String, ArrayList<Communications>>();
     public static String activebagid = null;
+    public static String reassigndriverid = null;
 
     public static General getInstance() {
         if (_instance == null) {
@@ -38,6 +39,9 @@ public class General {
     public void setActivebagid(String bagid){
         activebagid = bagid;
     }
+    public void setReassigndriverid(String id){ reassigndriverid = id; }
+    public String getReassigndriverid(){ return reassigndriverid; }
+
    /*public void setActivebagid(Integer bagid){
         activebagid = Integer.toString(bagid);
     }*/

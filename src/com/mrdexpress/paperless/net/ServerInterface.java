@@ -165,6 +165,34 @@ public class ServerInterface {
         }
     }
 
+    public void reassignStop(String stop , String driverid){
+        String url = API_URL + "v1/workflow/reassignstop?" + Device.getInstance().getTokenIMEIUrl();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("imei" , Device.getInstance().getIMEI());
+        params.put("driverID" , driverid);
+        params.put("stopID" , stop);
+        params.put("olddriverID" , Users.getInstance().getActiveDriver().getStringid());
+        if (Device.getInstance().isConnected()){
+            aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    try{
+                        if (json != null){
+                            //Logic here
+                        }else{
+                            Log.e("MRD-EX" , "EMPTY JSON");
+                            Device.getInstance().addDeviceLog("Exception at reassignStop" , status.getMessage());
+                        }
+                    }catch(Exception e){
+                        Log.e("MRD-EX" , e.getMessage());
+                        Device.getInstance().addDeviceLog("Exception at reassignStop" , status.getMessage());
+                    }
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(params , url);
+        }
+    }
+
 
     /** POST **/
     public void setBagScanned(String bagid){
@@ -179,7 +207,7 @@ public class ServerInterface {
                     try{
                         if (json != null){
                             //Logic here
-                            Device.getInstance().displayInfo("Bag Scanned");
+                            //Device.getInstance().displayInfo("Bag Scanned");
                         }else{
                             Log.e("MRD-EX" , "EMPTY JSON");
                             Device.getInstance().addDeviceLog("Exception at setBagScanned" , status.getMessage());

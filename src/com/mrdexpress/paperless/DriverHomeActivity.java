@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import com.mrdexpress.paperless.channels.EventBus;
 import com.mrdexpress.paperless.db.Device;
+import com.mrdexpress.paperless.db.General;
+import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.DriverHomeFragment;
 import com.mrdexpress.paperless.fragments.StopsFragment;
 import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
@@ -59,6 +61,9 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
     @Subscribe
     public void eventbus(EventBus.ManagerBackToDriverHome em){
         //getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        String stopid = General.getInstance().getActivebagid();
+        String driverid = General.getInstance().getReassigndriverid();
+        ServerInterface.getInstance().reassignStop(stopid , driverid);
         Intent intent = new Intent(this, DriverHomeActivity.class);
         Bundle b = new Bundle();
         b.putBoolean("start_scan", true);

@@ -5,6 +5,18 @@ package com.mrdexpress.paperless.channels;
  */
 public class EventBus {
     public static class ManagerBackToDriverHome {
+        public static String stopids;
+        public static String driverid;
 
+        public ManagerBackToDriverHome(){
+
+        }
+        public ManagerBackToDriverHome(String stopid){
+            stopids = stopid;
+        }
+        public ManagerBackToDriverHome(String stopid , String did){
+            stopids = stopid;
+            driverid = did;
+        }
     }
 }
