@@ -30,14 +30,6 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         Paperless.getInstance().setMainActivity(this);
         setContentView(R.layout.activity_home);
 
-        /*try{
-            if (savedInstanceState.containsKey("start_scan")){
-                EXTRA_STARTSCAN = savedInstanceState.getBoolean("start_scan" , false);
-            }
-        } catch(Exception e){
-            Log.e("MRD-EX" , e.getMessage());
-        }*/
-
         Bundle b = getIntent().getExtras();
         if (b != null){
             if (b.containsKey("start_scan")){
@@ -48,19 +40,12 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         } else {
             showMenu();
         }
-
-        Paperless.getInstance().ottobus.register(this);
+        //Paperless.getInstance().ottobus.unregister(this);
+        Paperless.getInstance().ottobus.register( DriverHomeActivity.this );
 	}
 
     @Subscribe
-    public void mytestevent(String event){
-        Log.e("MRD-EX", event);
-        Device.getInstance().displayInfo(event , this);
-    }
-
-    @Subscribe
     public void eventbus(EventBus.ManagerBackToDriverHome em){
-        //getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         String stopid = General.getInstance().getActivebagid();
         String driverid = General.getInstance().getReassigndriverid();
         ServerInterface.getInstance().reassignStop(stopid , driverid);
@@ -68,7 +53,13 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         Bundle b = new Bundle();
         b.putBoolean("start_scan", true);
         intent.putExtras(b);
+        this.finish();
         startActivity(intent);
+    }
+
+    @Subscribe
+    public void refreshwflow( EventBus.refreshWorkflow rw){
+        startScan();
     }
 
     @Override
@@ -130,5 +121,15 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         //else
         Fragment  viewDeliveriesFragment = new ViewDeliveriesFragment();
         fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            Paperless.getInstance().ottobus.unregister( DriverHomeActivity.this );
+        }catch (Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+        }
     }
 }

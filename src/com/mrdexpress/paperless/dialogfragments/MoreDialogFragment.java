@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.DialogFragment;
@@ -52,6 +53,12 @@ public class MoreDialogFragment extends DialogFragment
 
 		activity = getActivity();
 	}
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
+        return dialog;
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

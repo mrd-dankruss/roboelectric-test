@@ -9,7 +9,6 @@ import android.util.Log;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.General;
-import com.mrdexpress.paperless.dialogfragments.DeliveryDetailsDialogFragment;
 import com.mrdexpress.paperless.dialogfragments.ViewStopDeliveryDetailsFragment;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.workflow.Workflow;

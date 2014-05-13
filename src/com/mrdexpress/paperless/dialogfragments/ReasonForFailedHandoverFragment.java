@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless.dialogfragments;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.util.Log;
@@ -122,8 +123,9 @@ public class ReasonForFailedHandoverFragment extends DialogFragment
 				values.get(i).setThirdText("false");
 			}
 		}
-
+        //values.get(position)
         holder.report_button.setEnabled(true);
+        holder.report_button.setBackgroundColor(R.drawable.button_custom);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -150,7 +152,7 @@ public class ReasonForFailedHandoverFragment extends DialogFragment
             holder.report_button.setText("Report");
             holder.report_button.setEnabled(false);
 
-            //holder.report_button.setBackgroundColor(Color.GRAY);
+            holder.report_button.setBackgroundColor(Color.GRAY);
             holder.report_button.setVisibility( View.VISIBLE );
 
 			// Store the holder with the view.

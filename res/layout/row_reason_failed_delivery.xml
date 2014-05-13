@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_list_greytick"
-            android:paddingTop="7dp"
+            android:paddingTop="10dp"
             android:visibility="gone" />
     </LinearLayout>
 

@@ -19,4 +19,8 @@ public class EventBus {
             driverid = did;
         }
     }
+
+    public static class refreshWorkflow {
+
+    }
 }

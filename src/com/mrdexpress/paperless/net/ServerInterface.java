@@ -12,6 +12,7 @@ import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.maps.model.LatLng;
 import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.channels.EventBus;
 import com.mrdexpress.paperless.db.*;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
@@ -166,12 +167,43 @@ public class ServerInterface {
     }
 
     public void reassignStop(String stop , String driverid){
-        String url = API_URL + "v1/workflow/reassignstop?" + Device.getInstance().getTokenIMEIUrl();
-        Map<String, Object> params = new HashMap<String, Object>();
+        stop = stop.replace("{" , "").replace("}" , "").toString();
+        String url = API_URL + "v1/workflow/reassignstop?" + Device.getInstance().getTokenIMEIUrl() +
+                "&driverID=" + driverid +
+                "&stopID=" + stop +
+                "&olddriverID=" + Users.getInstance().getActiveDriver().getStringid();
+        try{
+            //String response = getInputStreamFromUrl(url);
+        }
+        catch(Exception e){
+            //Log.e("MRD-EX" , e.getMessage());
+        }
+
+        /*Map<String, Object> params = new HashMap<String, Object>();
         params.put("imei" , Device.getInstance().getIMEI());
         params.put("driverID" , driverid);
         params.put("stopID" , stop);
-        params.put("olddriverID" , Users.getInstance().getActiveDriver().getStringid());
+        params.put("olddriverID" , Users.getInstance().getActiveDriver().getStringid());*/
+        aq.ajax(url , JSONObject.class , new AjaxCallback<JSONObject>(){
+            @Override
+            public void callback(String url, JSONObject jObject, AjaxStatus ajaxstatus) {
+                try{
+                    if (jObject != null){
+                        if (jObject.has("response"))
+                        {
+                            Paperless.getInstance().ottobus.post(new EventBus.refreshWorkflow());
+                            //Users.getInstance().setUsers(jObject.toString());
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    Log.e("MRD-EX" , "EMPTY JSON");
+                    Device.getInstance().addDeviceLog("Exception at getUsers" , status.getMessage());
+                }
+            }
+        });
+        /*
         if (Device.getInstance().isConnected()){
             aq.ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
                 public void callback(String url, JSONObject json, AjaxStatus status) {
@@ -190,7 +222,7 @@ public class ServerInterface {
             });
         } else {
             Ajax.getInstance().addQueue(params , url);
-        }
+        }*/
     }
 
 

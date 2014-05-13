@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -112,6 +113,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 // for debugging only, to simulate a GCM call
                 list.get(position).setParcelScanned((int) new Date().getTime() / 1000);
+
             }
         });
 
@@ -360,6 +362,8 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             }
             if (dhdo.isParcelScanned() == true) {
                 parcelTitle.setTextColor(getResources().getColor(R.color.green_tick));
+                waybillTile.setTypeface(null , Typeface.BOLD);
+                parcelTitle.setTypeface(null , Typeface.BOLD);
                 hasScannedParcel.setVisibility(View.VISIBLE);
             } else {
                 hasScannedParcel.setVisibility(View.GONE);
