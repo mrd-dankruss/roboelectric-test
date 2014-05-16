@@ -46,8 +46,8 @@ public class GCMBroadcastReceiver extends WakefulBroadcastReceiver
 				GCMIntentService.class.getName());
 		// Start the service, keeping the device awake while it is launching.
         //Device.getInstance().displayInfo(intent.getExtras().getString("data"));
-        Paperless.getInstance().gcmbus.post(new Bundle(intent.getExtras()));
-		//startWakefulService(context, (intent.setComponent(comp)));
+        //Paperless.getInstance().gcmbus.post(new Bundle(intent.getExtras()));
+		startWakefulService(context, (intent.setComponent(comp)));
 		setResultCode(Activity.RESULT_OK);
 
     }

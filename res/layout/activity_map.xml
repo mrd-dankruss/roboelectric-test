@@ -21,13 +21,17 @@
             android:layout_above="@id/map_bottom_panel"
             android:layout_height="match_parent"
             android:layout_width="match_parent">
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
         <TextView
-                android:text="123"
+                android:text="Driving Directiond"
                 android:padding="10dp"
                 android:id="@+id/map_driving_directions"
                 android:background="@color/white"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+        </ScrollView>
     </FrameLayout>
 
     <FrameLayout
@@ -54,6 +58,7 @@
             android:layout_height="@dimen/height_pin"
             android:background="@color/colour_white"
             android:ems="10"
+            android:visibility="gone"
             android:drawableLeft="@android:drawable/ic_menu_search"
             android:textColor="@color/grey" >
 

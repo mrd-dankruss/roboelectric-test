@@ -55,6 +55,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
     private IncompleteScanDialog dialog;
     private DeliveryHandoverAdapter listAdapter;
 
+
     public DeliveryHandoverDialogFragment( CallBackFunction _callback) {
         callback = _callback;
     }

@@ -1,6 +1,7 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Color;
@@ -86,10 +87,27 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
         initViewHolder(inflater, container);
-
         return root_view;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        //Dialog dialog = super.onCreateDialog(savedInstanceState);
+        //return dialog;
+
+        //Dialog dialog;// = super.onCreateDialog(savedInstanceState);
+        try {
+            Dialog dialog = new Dialog(getActivity(), R.style.Dialog_No_Border);
+            Log.e("MRD-EX" , "ffffff");
+           dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+           return dialog;
+        }catch(Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+            Dialog dialog = super.onCreateDialog(savedInstanceState);
+            return dialog;
+        }
     }
 
     @Override
@@ -227,30 +245,30 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
         final com.google.android.gms.maps.MapFragment mapFragment = ((com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.map));
 
         // Setup "Navigate here" button
-		root_view = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
-		final Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
-		button_navigate.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View v)
-			{
+		// root_view = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
 
-                if( button_navigate.getText().equals("Driving Directions"))
-                {
-                    mapcontainer.setVisibility(View.GONE);
-                    mapFragment.getView().setVisibility(View.GONE);
-                    directions.setText(Html.fromHtml(drivingDirections));
-                    directions.setVisibility(View.VISIBLE);
-                    directions.requestFocus();
-                    button_navigate.setText("Show Map");
-                }
-                else
-                {
-                    directions.setVisibility( View.GONE);
-                    mapFragment.getView().setVisibility(View.VISIBLE);
-                    mapcontainer.setVisibility(View.VISIBLE);
-                    button_navigate.setText("Driving Directions");
-                }
-				// Only if marker has been selected
+		final Button button_navigate = (Button) root_view.findViewById(R.id.button_map_navigate_here);
+        try {
+
+
+            holder.drive_here.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+
+                    if (button_navigate.getText().equals("Driving Directions")) {
+                        mapcontainer.setVisibility(View.GONE);
+                        mapFragment.getView().setVisibility(View.GONE);
+                        directions.setText(Html.fromHtml(drivingDirections));
+                        directions.setVisibility(View.VISIBLE);
+                        directions.requestFocus();
+                        button_navigate.setText("Show Map");
+                    } else {
+                        directions.setVisibility(View.GONE);
+                        mapFragment.getView().setVisibility(View.VISIBLE);
+                        mapcontainer.setVisibility(View.VISIBLE);
+                        button_navigate.setText("Driving Directions");
+                    }
+
+                    // Only if marker has been selected
 				/*if (selected_marker_lat_long != null)
 				{
 					// Get selected marker coords
@@ -277,16 +295,24 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 					{
 						startActivity(mapIntent);
 					}
-				} */
+				}*/
 
-			}
-		});
+                }
+            });
+        }catch(Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+        }
 
 	}
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        MapFragment f = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        if (f != null)
+            getFragmentManager().beginTransaction().remove(f).commit();
 
         callback.execute(null);
     }
@@ -414,6 +440,14 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 		return true;
 	}*/
 
+    /*
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
+        return dialog;
+    }
+    */
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -423,7 +457,11 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
     public void initViewHolder(LayoutInflater inflater, ViewGroup container){
 		if (root_view == null)
 		{
-            root_view = inflater.inflate(R.layout.activity_map, container, false);
+            try {
+                root_view = inflater.inflate(R.layout.activity_map, container, false);
+            }catch(Exception e){
+                Log.e("MRD-EX" , e.getMessage());
+            }
 
 			if (holder == null)
 			{
@@ -436,6 +474,8 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 			holder.textView_toast = (TextView) root_view.findViewById(R.id.textView_map_toast);
 
 			holder.relativeLayout_toast = (RelativeLayout) root_view.findViewById(R.id.toast_map);
+
+            holder.drive_here = (Button) root_view.findViewById(R.id.button_map_navigate_here);
 
 			// Store the holder with the view.
 			root_view.setTag(holder);
@@ -465,6 +505,7 @@ public class MapDialogFragment extends DialogFragment implements OnMapClickListe
 		AutoCompleteTextView autoCompView;
 		TextView textView_toast;
 		RelativeLayout relativeLayout_toast;
+        Button drive_here;
 	}
 
 	@Override

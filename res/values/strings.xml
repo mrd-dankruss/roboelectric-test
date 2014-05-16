@@ -27,11 +27,11 @@
     <string name="button_start_new_milkrun">Start new delivery run</string>
     <string name="button_start_milkrun">Start delivery run</string>
     <string name="button_start_trainingrun">Start training run</string>
-    <string name="button_update_status">Next</string>
+    <string name="button_update_status">Next Step</string>
     <string name="button_more">More</string>
     <string name="button_login">Login</string>
     <string name="button_complete_collection">Complete Collection</string>
-    <string name="button_continue">Next</string>
+    <string name="button_continue">Next Step</string>
     <string name="button_navigate_here">Navigate here</string>
     <string name="button_create">Create</string>
     <string name="button_change_driver">Change driver</string>
@@ -50,7 +50,7 @@
     <string name="trafficDelay_1hour">1 hour</string>
     <string name="button_report_delay">Report</string>
     <string name="button_send_sms">Send</string>
-    <string name="button_delivery_handover_complete">Next</string>
+    <string name="button_delivery_handover_complete">Next Step</string>
     <string name="button_transfer_data">Cancel</string>
     <string name="button_not_assigned_continue">Continue</string>
     <string name="button_not_assigned_cancel">Cancel</string>
@@ -168,7 +168,7 @@
     <string name="delivery_title">Your Next Delivery</string>
     <string name="delivery_address">Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526</string>
     <string name="delivery_orderNo">00025420254 (6 items)</string>
-    <string name="delivery_button1">Next</string>
+    <string name="delivery_button1">Next Step</string>
     <string name="delivery_button2">More</string>
     <string name="delivery_detail_addressee">Addressee: Mr D Somerset West\nTel nr: 083 857 4738</string>
     <string name="delivery_detail_communicationTitle">Communication Log</string>
