@@ -29,6 +29,7 @@ import com.mrdexpress.paperless.service.GCMIntentService;
 import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.*;
@@ -48,6 +49,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
     };
     ArrayList<DeliveryHandoverDataObject> list;
     String stopids;
+    ArrayList<Bag> bags;
     private View rootView;
     private MyViewHolder holder;
     private IncompleteScanDialog dialog;
@@ -89,6 +91,10 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
 
         stopids = Workflow.getInstance().currentBagID;
 
+        //List<JSONArray> bags = Workflow.getInstance().getBagsForStopAsJSONArray(stopids);
+        bags = Workflow.getInstance().getBagsForStop(stopids);
+
+
         list = Workflow.getInstance().getStopParcelsAsObjects(stopids);
 
         listAdapter = new DeliveryHandoverAdapter(list, getActivity());
@@ -112,7 +118,13 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 // for debugging only, to simulate a GCM call
-                list.get(position).setParcelScanned((int) new Date().getTime() / 1000);
+                if (list.get(position).isParcelScanned()){
+                    list.get(position).unscanParcel();
+                    list.get(position).data.forceNotifyAllObservers();
+                } else {
+                    list.get(position).setParcelScanned((int) new Date().getTime() / 1000);
+                }
+
 
             }
         });
@@ -352,10 +364,19 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             TextView waybillTile = ViewHolder.get(rowView, R.id.row_delivery_waybill);
             ImageView hasScannedParcel = ViewHolder.get(rowView, R.id.row_delivery_handover_image);
             ImageView largeparcel = ViewHolder.get(rowView , R.id.large_parcel_image);
+            TextView hubnameview = ViewHolder.get(rowView , R.id.textViewHubNameForDelivery);
 
             DeliveryHandoverDataObject dhdo = parcelList.get(thisPosition);
             waybillTile.setText(dhdo.getMDX() + " (" + dhdo.getXof() + ")");
             parcelTitle.setText(dhdo.getBarcode());
+
+            String hubname = dhdo.getHubCode();
+            if (!hubname.isEmpty()){
+                hubnameview.setText(hubname.toUpperCase());
+                hubnameview.setTextColor(getResources().getColor(R.color.black));
+            } else {
+                hubnameview.setVisibility(View.GONE);
+            }
 
             if (dhdo.getLarge().equals("Y")){
                 largeparcel.setVisibility(View.VISIBLE);
@@ -367,6 +388,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
                 hasScannedParcel.setVisibility(View.VISIBLE);
             } else {
                 hasScannedParcel.setVisibility(View.GONE);
+                parcelTitle.setTextColor(getResources().getColor(R.color.colour_lightgrey));
             }
 
             if (parcelList.get(thisPosition).data.countObservers() == 0) {

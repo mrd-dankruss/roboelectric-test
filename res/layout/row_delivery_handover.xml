@@ -56,4 +56,13 @@
             android:visibility="visible" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter Branch Here"
+        android:id="@+id/textViewHubNameForDelivery"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/large_parcel_image"
+        android:paddingLeft="5dp"/>
+
 </RelativeLayout>

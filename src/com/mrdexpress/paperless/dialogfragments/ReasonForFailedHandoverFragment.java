@@ -125,7 +125,8 @@ public class ReasonForFailedHandoverFragment extends DialogFragment
 		}
         //values.get(position)
         holder.report_button.setEnabled(true);
-        holder.report_button.setBackgroundColor(R.drawable.button_custom);
+        // //setBackgroundColor(getResources().getColor(R.color.colour_yellow));
+        holder.report_button.setBackgroundColor(Color.YELLOW);
 		adapter.notifyDataSetChanged();
 	}
 

@@ -2,9 +2,16 @@ package com.mrdexpress.paperless.datatype;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
+import com.mrdexpress.paperless.workflow.Workflow;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeliveryHandoverDataObject implements Parcelable
 {
@@ -40,6 +47,37 @@ public class DeliveryHandoverDataObject implements Parcelable
 		//parcelScanned = newScannedStatus;
 	}
 
+    public Bag getFlowDataFromParcel(ArrayList<Bag> bags){
+        int Pid = JSONObjectHelper.getIntDef(data.get(), "id", -1);
+        if (Pid > 0){
+            for (int i = 0; i < bags.size(); i++){
+                Bag bg = bags.get(i);
+                JSONObject jso = Workflow.getInstance().getTripStopByBag(bg.getBagID());
+                List<JSONArray> jsb = Workflow.getInstance().getBagParcelsOnly(bg.getBagID());
+                if (jsb.size() > 0){
+                    JSONArray jsr = jsb.get(0);
+                    for(int j = 0; j < jsr.size(); j++){
+                        JSONObject obj = (JSONObject)jsr.get(j);
+                        if (null != obj && obj.containsKey("id")){
+                            String Pid2 = obj.get("id").toString();
+                            if (Integer.toString(Pid).equals(Pid2)){
+                                Log.e("MRD" , "Huzzah");
+                                return bg;
+                            }
+                        }
+                    }
+                }
+                Log.e("MRD-EX", "aaaa");
+            }
+        }
+        return null;
+    }
+
+    public void unscanParcel(){
+        if( data.get().containsKey("scannedtime"))
+            data.get().remove("scannedtime");
+    }
+
 	/**
 	 * @return the barcode
 	 */
@@ -47,6 +85,14 @@ public class DeliveryHandoverDataObject implements Parcelable
 	{
         return JSONObjectHelper.getStringDef(data.get(), "barcode", "");
 	}
+
+    public String getHubName(){
+        return JSONObjectHelper.getStringDef(data.get(), "hubname", "");
+    }
+
+    public String getHubCode(){
+        return JSONObjectHelper.getStringDef(data.get(), "hubcode", "");
+    }
 
     public String getVolumetrics()
     {

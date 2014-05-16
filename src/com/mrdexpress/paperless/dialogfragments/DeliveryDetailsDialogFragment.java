@@ -91,9 +91,21 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
 
         bagtext.append("Parcel(s) to be delivered : <br />");
         int teller = 1;
+        String prevhub = "";
         while (waybills.size() > 0){
             DeliveryHandoverDataObject temp = waybills.remove(0);
-            bagtext.append("<b>" + teller + ". " + temp.getBarcode() + "</b><<br />");
+            if (!temp.getHubName().equals(prevhub)){
+                prevhub = temp.getHubName();
+                bagtext.append("<br /><b><u>" + temp.getHubName() + "</u></b><br />");
+            }
+            String largep = "";
+            if (temp.getLarge().equals("Y")){
+                largep = "( Large )";
+            } else {
+                largep = "";
+            }
+
+            bagtext.append("<b>" + teller + ". " + temp.getBarcode() + largep + "</b><<br />");
             teller += 1;
         }
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
