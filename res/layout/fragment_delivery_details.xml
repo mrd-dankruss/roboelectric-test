@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+<ScrollView
+    android:id="@+id/delivery_details_scrollview"
+    android:layout_width="fill_parent"
+    android:layout_alignParentTop="true"
+    android:layout_above="@+id/deliveryDetails_linearLayout_buttonsHolder"
+    android:layout_height="wrap_content">
     <LinearLayout
-                  style="@drawable/deliveries_background"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_margin="4dp"
-                  android:background="@color/background_grey">
-
+          style="@drawable/deliveries_background"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="0dp">
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:background="@drawable/deliveries_background"
                 android:orientation="vertical">
 
             <LinearLayout
@@ -116,38 +119,39 @@
                     android:paddingTop="2dp"
                     android:text="@string/delivery_detail_communicationLog"/>
 
-            <LinearLayout
-                    android:id="@+id/deliveryDetails_linearLayout_buttonsHolder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingTop="15dp">
-
-                <Button
-                        android:id="@+id/deliveryDetails_button_updateStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/delivery_button1"
-                        android:textSize="@dimen/font_size_button"
-                        android:textColor="@color/black"
-                        android:background="@drawable/button_custom"
-                        android:layout_margin="7dp"/>
-
-                <Button
-                        android:id="@+id/deliveryDetails_button_more"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/delivery_button2"
-                        android:textSize="@dimen/font_size_button"
-                        android:textColor="@color/black"
-                        android:layout_margin="7dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:background="@drawable/button_custom_grey"/>
-            </LinearLayout>
         </LinearLayout>
-
-
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:background="@color/colour_darkgrey"
+        android:id="@+id/deliveryDetails_linearLayout_buttonsHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="4dp">
+
+        <Button
+                android:id="@+id/deliveryDetails_button_updateStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/delivery_button1"
+                android:textSize="@dimen/font_size_button"
+                android:textColor="@color/black"
+                android:background="@drawable/button_custom"
+                android:layout_margin="7dp"/>
+
+        <Button
+                android:id="@+id/deliveryDetails_button_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delivery_button2"
+                android:textSize="@dimen/font_size_button"
+                android:textColor="@color/black"
+                android:layout_margin="7dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/button_custom_grey"/>
+    </LinearLayout>
+</RelativeLayout>
