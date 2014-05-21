@@ -16,6 +16,7 @@ import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.GenericDialogListAdapter;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.DelayDialog;
@@ -25,6 +26,7 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -101,25 +103,37 @@ public class ReportDelayDialogFragment extends DialogFragment
                     // String delay_id = c.getString(c.getColumnIndex(DbHandler.C_DELAYS_ID));
                     delay_id = ((DialogDataObject) holder.list.getItemAtPosition(position)).getThirdText();
 
-                    // String delay_id = (String) getListView().getItemAtPosition(position);
+                    ArrayList<DialogDataObject> delay_reasons = Workflow.getInstance().getMilkrunDelayDurations( delay_id);
 
-                    DelayDialog.newInstance(delay_id, new CallBackFunction() {
-                        @Override
-                        public boolean execute(Object args) {
-                            Intent i = (Intent)args;
-                            ((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(i.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
+                    Device.getInstance().setDelay_id(delay_id);
 
-                            delay_id = i.getStringExtra(VariableManager.EXTRA_DELAY_ID);
+                    if (delay_reasons.size() > 0) {
+                        DelayDialog.newInstance(delay_id, new CallBackFunction() {
+                            @Override
+                            public boolean execute(Object args) {
+                                Intent i = (Intent) args;
+                                ((DialogDataObject) adapter.getItem(parentItemPosition)).setSubText(i.getStringExtra(DelayDialog.DIALOG_TIME_STRING));
 
-                            //holder.report_button.setVisibility(View.VISIBLE);
-                            holder.report_button.setBackgroundResource(R.drawable.button_custom);
-                            holder.list.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            holder.report_button.setEnabled(true);
+                                delay_id = i.getStringExtra(VariableManager.EXTRA_DELAY_ID);
 
-                            return false;
-                        }
-                    }).show(fm, getTag());
+                                Device.getInstance().setDelay_id(delay_id);
+
+                                //holder.report_button.setVisibility(View.VISIBLE);
+                                holder.report_button.setBackgroundResource(R.drawable.button_custom);
+                                holder.list.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                                holder.report_button.setEnabled(true);
+
+                                return false;
+                            }
+                        }).show(fm, getTag());
+                    } else {
+                        holder.report_button.setBackgroundResource(R.drawable.button_custom);
+                        Device.getInstance().setDelay_id(delay_id);
+                        holder.list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        holder.report_button.setEnabled(true);
+                    }
                     //editNameDialog.setTargetFragment( getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
                     //editNameDialog.setTargetFragment(  getFragmentManager().findFragmentById( R.id.activity_report_delay_container), 1);
                     //editNameDialog.show(fm, "reportDelayFragment");

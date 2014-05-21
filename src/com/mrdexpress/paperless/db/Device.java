@@ -32,6 +32,7 @@ public class Device {
     private String GCMGOOGLEID = null;
     private Integer AppVersion = null;
     private long QueryTimeOut = 10000;//10 seconds
+    private String delay_id = null;
 
     public static Device getInstance() {
         if (_instance == null) {
@@ -147,6 +148,10 @@ public class Device {
     public void setGCMGOOGLEID(String id){
         this.GCMGOOGLEID = id;
     }
+
+    public void setDelay_id(String delay) { this.delay_id = delay;}
+
+    public String getDelay_id() { return this.delay_id; }
 
     public void setIMEI(){
         TelephonyManager m = (TelephonyManager) Paperless.getContext()
