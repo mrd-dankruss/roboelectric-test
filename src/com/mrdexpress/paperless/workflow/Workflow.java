@@ -310,9 +310,10 @@ public class Workflow extends Observable
         Integer id = -1;
         try
         {
-            JSONObject jso = workflow.read("$.response.workflow.workflow.id");
+            Object jso = workflow.read("$.response.workflow.workflow.id");
             if( jso != null)
-                id = JSONObjectHelper.getIntDef( jso, "id", -1);
+                //id = JSONObjectHelper.getIntDef( jso, "id", -1);
+                id = Integer.parseInt(jso.toString());
         }
         catch( PathNotFoundException e)
         {

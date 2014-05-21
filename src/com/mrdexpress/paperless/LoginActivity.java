@@ -58,6 +58,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.joshdholtz.sentry.*;
 
 public class LoginActivity extends Activity implements LoginInterface {
     public static final String EXTRA_MESSAGE = "message";
@@ -111,6 +112,13 @@ public class LoginActivity extends Activity implements LoginInterface {
 
         NetworkStatus.getInstance().register(context);
         NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
+
+
+        try {
+            Sentry.init(this, "http://sentry.mrd.com" , "http://a9cccfb727724cbfac581faaef481f24:9aff69cf57594ec4b73fb8971ab3d558@sentry.mrd.com/7");
+        }catch(Exception e){
+            Log.e("MRD-EX" , e.getMessage());
+        }
 
         checkConnected();
     }

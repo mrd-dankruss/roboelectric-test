@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.dialogfragments.DeliveryDetailsDialogFragment;
 import com.mrdexpress.paperless.R;
@@ -50,6 +53,22 @@ public class TabViewDeliveriesFragment extends Fragment
                 super.onChanged();
                 if( adapter.getCount() == 0)
                 {
+                    holder.list.setVisibility(View.GONE);
+                    StringBuilder text = new StringBuilder();
+                    text.append("<br /><center><h1>Return to dispatch</h1></center>");
+                    holder.return_home_text.setText(Html.fromHtml(text.toString()));
+                    holder.return_home_text.setVisibility(View.VISIBLE);
+                    holder.return_home_button.setVisibility(View.VISIBLE);
+                    holder.return_home_button.setText("I've arrived at Dispatch");
+                    holder.return_home_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = MiscHelper.getGoHomeIntent(getActivity());
+                            ServerInterface.getInstance().endTrip();
+                            startActivity(intent);
+                        }
+                    });
+                    /*
                     DriverReturnDialogFragment.newInstance(new CallBackFunction() {
                         @Override
                         public boolean execute(Object args) {
@@ -59,6 +78,8 @@ public class TabViewDeliveriesFragment extends Fragment
                             return false;
                         }
                     }).show(getFragmentManager(), getTag());
+                    */
+
                 }
             }
         });
@@ -85,10 +106,12 @@ public class TabViewDeliveriesFragment extends Fragment
                     Workflow.getInstance().currentBagID = stopids;
                 General.getInstance().setActivebagid(stopids);
                 deliveryDetails.setArguments( bundle);
-
                 deliveryDetails.show( getFragmentManager(), getTag());
             }
         });
+
+
+
     }
 
 	@Override
@@ -111,6 +134,10 @@ public class TabViewDeliveriesFragment extends Fragment
 			}
 
 			holder.list = (ListView) rootView.findViewById(R.id.fragment_viewDeliveries_container);
+
+            holder.return_home_text = (TextView) rootView.findViewById(R.id.textView_return_to_base);
+
+            holder.return_home_button = (Button) rootView.findViewById(R.id.button_return_to_base);
 
             /*
 			holder.button = (Button) rootView.findViewById(R.id.button_generic_report);
@@ -152,5 +179,7 @@ public class TabViewDeliveriesFragment extends Fragment
 	static class ViewHolder
 	{
 		ListView list;
+        TextView return_home_text;
+        Button return_home_button;
 	}
 }

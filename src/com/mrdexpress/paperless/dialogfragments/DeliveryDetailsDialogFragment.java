@@ -28,6 +28,7 @@ import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
+import com.joshdholtz.sentry.*;
 
 import java.util.ArrayList;
 
@@ -126,22 +127,26 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
         holder.text_delivery_bad_id.setText(Html.fromHtml(bagtext.toString()));
 
         // TODO: wire back in
-        /*ArrayList<General.Communications> coms = General.getInstance().getComLogFromBagId(bag.getBagID());
+        ArrayList<General.Communications> coms = null; //General.getInstance().getComLogFromBagId(bag.getBagID());
 
         String comlog_text = "";
 
-        for (int i = 0; i < coms.size(); i++)
-        {
-            comlog_text = comlog_text + coms.get(i).getDatetime().substring(0 , 19) + " : "+ coms.get(i).getLogevent() + "\n";
+        try {
+            for (int i = 0; i < coms.size(); i++) {
+                comlog_text = comlog_text + coms.get(i).getDatetime().substring(0, 19) + " : " + coms.get(i).getLogevent() + "\n";
+            }
+            if (comlog_text.isEmpty()) {
+                holder.text_delivery_communication_log.setVisibility(View.GONE);
+                holder.text_delivery_communication_title.setVisibility(View.GONE);
+            } else {
+                holder.text_delivery_communication_log.setText(comlog_text);
+                holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
+                holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
+            }
+        }catch(Exception e){
+            Sentry.captureException(e);
         }
-        if (comlog_text.isEmpty()){
-            holder.text_delivery_communication_log.setVisibility(View.GONE);
-            holder.text_delivery_communication_title.setVisibility(View.GONE);
-        } else {
-            holder.text_delivery_communication_log.setText(comlog_text);
-            holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
-            holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
-        }*/
+
         // TODO:Set image here one day when app is extended.
         holder.button_update_status.setOnClickListener(new View.OnClickListener()
         {
