@@ -22,6 +22,7 @@ import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
@@ -119,11 +120,17 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 // for debugging only, to simulate a GCM call
-                if (list.get(position).isParcelScanned()){
-                    list.get(position).unscanParcel();
-                    list.get(position).data.forceNotifyAllObservers();
+                String howscanned = Workflow.getInstance().getParcelExtra(list.get(position).getBarcode() , "scannedby");
+                if (howscanned.isEmpty() || howscanned.equals("driver")) {
+                    Workflow.getInstance().setParcelExtra(list.get(position).getBarcode() , "scannedby" , "driver");
+                    if (list.get(position).isParcelScanned()) {
+                        list.get(position).unscanParcel();
+                        list.get(position).data.forceNotifyAllObservers();
+                    } else {
+                        list.get(position).setParcelScanned((int) new Date().getTime() / 1000);
+                    }
                 } else {
-                    list.get(position).setParcelScanned((int) new Date().getTime() / 1000);
+                    Device.getInstance().displayInfo("You cannot unscan this parcel.");
                 }
 
 
@@ -302,7 +309,7 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
                     list.get(i).setParcelScanned(timestamp);
                 }
             }
-
+            Workflow.getInstance().setParcelExtra(parcel_id , "scannedby" , "GCM");
             listAdapter.notifyDataSetChanged();
         }
     }

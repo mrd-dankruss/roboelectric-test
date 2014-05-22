@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.workflow;
 import android.content.Context;
 import android.util.Log;
 import com.jayway.jsonpath.*;
+import com.joshdholtz.sentry.Sentry;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.DialogDataObject;
@@ -802,6 +803,33 @@ public class Workflow extends Observable
             // TODO: propogate this to the server - Hook into this Logic
             ServerInterface.getInstance().setParcelDeliveryStatus(status, Integer.toString(parcelid), reason);
         }
+    }
+
+    public void setParcelExtra(String parcelbarcode , String key , String value){
+        JSONObject parcel = getParcelByParcelBarcode(parcelbarcode);
+        if( parcel != null)
+        {
+            //JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( parcel, "status", new JSONObject());
+            //jsostatus.put("status", status);
+            //jsostatus.put("reason", reason);
+            parcel.put(key, value);
+            // TODO: propogate this to the server - Hook into this Logic
+            //ServerInterface.getInstance().setParcelDeliveryStatus(status, Integer.toString(parcelid), reason);
+        }
+    }
+    public String getParcelExtra(String parcelbarcode , String key){
+        JSONObject parcel = getParcelByParcelBarcode(parcelbarcode);
+        String ret = "";
+        if( parcel != null)
+        {
+            try{
+                Object obj = parcel.get(key);
+                ret = obj.toString();
+            }catch(Throwable t){
+                Sentry.captureException(t);
+            }
+        }
+        return ret;
     }
 
     public ArrayList<HashMap<String, String>> getBagsCoords()

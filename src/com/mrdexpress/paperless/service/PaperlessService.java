@@ -9,8 +9,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import com.mrdexpress.paperless.datatype.StopItem;
+import com.joshdholtz.sentry.Sentry;
 import com.mrdexpress.paperless.Paperless;
+import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.net.Ajax;
@@ -18,7 +19,6 @@ import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
 import net.minidev.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -107,6 +107,15 @@ public class PaperlessService extends Service{
 
     @Override
     public void onCreate() {
+
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
+                //Sentry.captureException(paramThrowable);
+                Paperless.getInstance().handleException((Exception)paramThrowable);
+            }
+        });
+
         locationManager = (LocationManager) Paperless.getContext().getSystemService(Context.LOCATION_SERVICE);
         //Queue Thread
         ajaxthread = new Thread(new Runnable(){

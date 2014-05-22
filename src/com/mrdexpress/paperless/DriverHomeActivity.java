@@ -1,8 +1,10 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -80,10 +82,7 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         fm.beginTransaction().replace(R.id.activity_home_container, fragment).commit();
     }
 
-    @Override
-    public void onBackPressed() {
-        // Do Here what ever you want do on back press;
-    }
+
 
     @Override
     public void startScan() {
@@ -99,6 +98,31 @@ public class DriverHomeActivity extends Activity implements StopsFragment.StopAc
         setTitle("Delivery Run Preperation");
         fm.beginTransaction().replace(R.id.activity_home_container, stopFragment).commit();
         //fm.beginTransaction().replace(R.id.activity_home_container, scanFragment).commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        finish();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+
+                        break;
+                }
+            }
+        };
+
+        // Do Here what ever you want do on back press;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to logout?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     @Override

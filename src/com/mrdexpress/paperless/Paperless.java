@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import com.joshdholtz.sentry.Sentry;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.General;
@@ -84,9 +85,14 @@ public class Paperless extends Application {
     public void setMainActivity(Activity act){ mainActivity = act;}
 
     public static void handleException(Exception e){
+        Sentry.SentryEventBuilder sv = new Sentry.SentryEventBuilder();
+        sv.setException(e);
+        sv.setLevel(Sentry.SentryEventBuilder.SentryEventLevel.ERROR);
+        Sentry.captureEvent(sv);
         Device.getInstance().addDeviceLog("Exception setDeliveryStatus" , e.getMessage());
         Log.e("MRD-EX", e.getMessage());
     }
+
 
     public void startViewStopDetailsFragment(StopItem stop , int position , final Activity act){
         final DialogFragment deliveryDetails = ViewStopDeliveryDetailsFragment.newInstance(new CallBackFunction() {
