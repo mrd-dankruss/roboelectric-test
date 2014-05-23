@@ -147,6 +147,7 @@ public class MoreDialogFragment extends DialogFragment
                 ReportDelayDialogFragment.newInstance(new CallBackFunction() {
                     @Override
                     public boolean execute(Object args) {
+                        dismiss();
                         return false;
                     }
                 }).show(getActivity().getFragmentManager(), getTag());

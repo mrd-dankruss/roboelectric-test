@@ -79,9 +79,10 @@ public class UnsuccessfulDeliveriesListAdapter extends BaseAdapter
 
         String status = "<b>Status</b> : " + Paperless.capitalize(stop.getStatus()) + "<br />";
         String reason = "<b>Reason</b> : " + Paperless.capitalize(stop.getReason());
+        String command = "<br /><br /><b>(" + "Tap on this delivery to do the handover again." + ")</b>";
         text_failed_time.setText("Failed delivery on : " + stop.getReasonDate());
 
-        text_failed_reason.setText(Html.fromHtml(status + reason));
+        text_failed_reason.setText(Html.fromHtml(status + reason + command));
 
 		return rowView;
 	}

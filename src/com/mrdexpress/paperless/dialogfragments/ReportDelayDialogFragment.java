@@ -1,9 +1,6 @@
 package com.mrdexpress.paperless.dialogfragments;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.ProgressDialog;
+import android.app.*;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +17,7 @@ import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.DelayDialog;
+import com.mrdexpress.paperless.fragments.ViewDeliveriesFragment;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.net.ServerInterface;
@@ -37,6 +35,7 @@ public class ReportDelayDialogFragment extends DialogFragment
     private View rootView;
     private GenericDialogListAdapter adapter;
     private String delay_id;
+    private Dialog diag = null;
 
     DialogFragment newFragment;
     TextView subText;
@@ -57,6 +56,7 @@ public class ReportDelayDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
+        diag = dialog;
         return dialog;
     }
 
@@ -153,6 +153,7 @@ public class ReportDelayDialogFragment extends DialogFragment
                 {
                     try{
                         new ReportDelayTask().execute( Workflow.getInstance().doormat.get(MoreDialogFragment.MORE_BAGID).toString() , Integer.toString( Users.getInstance().getActiveDriver().getid()), delay_id);
+                        callback.execute(true);
                     }catch(Exception e){
                         Log.e("MRD-EX" , e.getMessage());
                     }
@@ -218,13 +219,14 @@ public class ReportDelayDialogFragment extends DialogFragment
             Log.i(TAG, result);
             delay_id = null;
 
-            CustomToast custom_toast = new CustomToast(getActivity());
-            custom_toast.setText("Delay Logged");
-            custom_toast.setSuccess(true);
-            custom_toast.show();
+            Device.getInstance().displayInfo("Delay Logged");
 
-            dismiss();
-            //getActivity().finish();
+            diag.dismiss();
+            getDialog().getWindow().closeAllPanels();
+
+            /*FragmentManager fm = getFragmentManager();
+            Fragment viewDeliveriesFragment = new ViewDeliveriesFragment();
+            fm.beginTransaction().replace(R.id.activity_home_container, viewDeliveriesFragment).commit();*/
         }
     }
 
