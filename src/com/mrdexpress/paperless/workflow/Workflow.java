@@ -801,7 +801,7 @@ public class Workflow extends Observable
             jsostatus.put("reason", reason);
             parcel.put("status", jsostatus);
             // TODO: propogate this to the server - Hook into this Logic
-            ServerInterface.getInstance().setParcelDeliveryStatus(status, Integer.toString(parcelid), reason);
+            //ServerInterface.getInstance().setParcelDeliveryStatus(status, Integer.toString(parcelid), reason);
         }
     }
 

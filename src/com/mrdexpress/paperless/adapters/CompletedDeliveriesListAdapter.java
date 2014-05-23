@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.adapters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.app.Activity;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.mrdexpress.paperless.R;
+import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.helper.FontHelper;
@@ -71,13 +73,25 @@ public class CompletedDeliveriesListAdapter extends BaseAdapter
 		text_failed_time = ViewHolder.get( rowView, R.id.text_completed_deliveries_failed_time);
 
 		text_address.setTypeface(typeface_roboto_regular);
-		text_bag_ids.setTypeface(typeface_roboto_bold);
+		//text_bag_ids.setTypeface(typeface_roboto_bold);
 		text_failed_time.setTypeface(typeface_roboto_italic);
 
         StopItem stop = values.get(position);
 
-		text_address.setText( stop.getAddress());
-		text_bag_ids.setText( stop.getDestinationDesc());
+        ArrayList<DeliveryHandoverDataObject> hlist = Workflow.getInstance().getStopParcelsAsObjects(stop.getIDs());
+
+		text_address.setText(stop.getAddress());
+        StringBuilder str = new StringBuilder();
+        str.append("<b>" + stop.getDestinationDesc() + "</b>");
+        str.append("<br /><br />");
+        if (hlist.size() > 0){
+            str.append("Parcels : <br />");
+            for(int i = 0; i < hlist.size(); i++){
+                DeliveryHandoverDataObject dobj = hlist.get(i);
+                str.append(dobj.getBarcode() + "<i>(" + dobj.getStatusOfDelivery() + ")</i><br />");
+            }
+        }
+		text_bag_ids.setText(Html.fromHtml(str.toString()));
         text_failed_time.setText("Delivered on : " + stop.getReasonDate());
 
 		return rowView;

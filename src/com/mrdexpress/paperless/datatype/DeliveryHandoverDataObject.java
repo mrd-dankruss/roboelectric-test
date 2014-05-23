@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.datatype;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.workflow.JSONObjectHelper;
 import com.mrdexpress.paperless.workflow.ObservableJSONObject;
@@ -46,6 +47,24 @@ public class DeliveryHandoverDataObject implements Parcelable
         data.setInt("scannedtime", newScannedTime);
 		//parcelScanned = newScannedStatus;
 	}
+
+    public String getStatusOfDelivery(){
+        String ret = "";
+        try {
+            //JSONObject jso = data.getJSONObject("status");
+            JSONObject jsostatus = JSONObjectHelper.getJSONObjectDef( data.get() , "status", new JSONObject());
+            String status = jsostatus.get("status").toString();
+            String reason = jsostatus.get("reason").toString();
+            if (status.equals("incomplete")){
+                ret = "Delivered";
+            } else {
+                ret = "Not delivered due to " + reason;
+            }
+        }catch(Exception e){
+            Paperless.getInstance().handleException(e);
+        }
+        return ret;
+    }
 
     public Bag getFlowDataFromParcel(ArrayList<Bag> bags){
         int Pid = JSONObjectHelper.getIntDef(data.get(), "id", -1);

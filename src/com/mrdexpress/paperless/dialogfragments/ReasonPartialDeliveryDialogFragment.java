@@ -3,6 +3,7 @@ package com.mrdexpress.paperless.dialogfragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,6 +15,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.adapters.ExpandableListAdapter;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
@@ -73,7 +75,7 @@ public class ReasonPartialDeliveryDialogFragment extends DialogFragment {
                             if (reasons.get(r).isSelected()) {
                                 ReasonPartialDeliveryItem temp = reasons.get(r);
                                 ServerInterface.getInstance().setDeliveryStatus(Bag.STATUS_PARTIAL , temp.getWaybill_id() , "Parcel " + temp.getGroupName() + " could not be delivered during the delivery run (Reason: " + reasons.get(r).getReasonTitle() + " )");
-                                //Workflow.getInstance().setParcelDeliveryStatus(reasons.get(r).parcelid, reasons.get(r).getReasonID(), reasons.get(r).getReasonTitle());
+                                Workflow.getInstance().setParcelDeliveryStatus(reasons.get(r).parcelid, reasons.get(r).getReasonID(), reasons.get(r).getReasonTitle());
                             }
                         }
                     }
@@ -156,8 +158,15 @@ public class ReasonPartialDeliveryDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        return dialog;
+        try {
+            Dialog dialog = new Dialog(getActivity(), R.style.Dialog_No_Border);
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            return dialog;
+        }catch(Exception e){
+            Paperless.getInstance().handleException(e);
+            Dialog dialog = super.onCreateDialog(savedInstanceState);
+            return dialog;
+        }
     }
 
     private boolean allTicked() {

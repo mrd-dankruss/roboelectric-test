@@ -26,6 +26,7 @@ import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.StopItem;
 import com.mrdexpress.paperless.db.Bag;
+import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.dialogfragments.StopItemMenuDialogFragment;
 import com.mrdexpress.paperless.dialogfragments.ViewBagManifestDialogFragment;
@@ -159,7 +160,12 @@ public class StopsFragment extends Fragment {
         holder.button_start_milkrun.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDelivery();
+                if (holder.list.getCount() > 0){
+                    startDelivery();
+                } else {
+                    Device.getInstance().displayInfo("No deliveries assigned to you yet");
+                }
+
             }
         });
 

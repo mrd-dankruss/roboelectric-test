@@ -118,7 +118,7 @@ public class ServerInterface {
                     try{
                         if (json != null){
                             //Logic here
-                            Device.getInstance().displayInfo("Delivery Status Set");
+                            //Device.getInstance().displayInfo("Delivery Status Set");
                         }else{
                             Device.getInstance().addDeviceLog("Null JSON at setDeliveryStatus" , status.getMessage());
                             Log.e("MRD-EX" , "EMPTY JSON");
