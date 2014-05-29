@@ -1,7 +1,6 @@
 package com.mrdexpress.paperless;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcel;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -30,8 +28,8 @@ import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.joshdholtz.sentry.Sentry;
 import com.mrdexpress.paperless.adapters.UserAutoCompleteAdapter;
-import com.mrdexpress.paperless.datatype.ParcelableList;
 import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.db.Users;
 import com.mrdexpress.paperless.fragments.UnauthorizedUseDialog;
@@ -46,6 +44,7 @@ import com.mrdexpress.paperless.service.LocationService;
 import com.mrdexpress.paperless.service.PaperlessService;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.CheckConnectivity;
+import com.newrelic.agent.android.NewRelic;
 import com.squareup.otto.Subscribe;
 import org.xml.sax.InputSource;
 
@@ -57,9 +56,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import com.joshdholtz.sentry.*;
 
 public class LoginActivity extends Activity implements LoginInterface {
     public static final String EXTRA_MESSAGE = "message";
@@ -104,9 +101,7 @@ public class LoginActivity extends Activity implements LoginInterface {
         context = getApplicationContext();
         Paperless.getInstance().setMainActivity(this);
         initViewHolder();
-
         setTitle(R.string.title_actionbar_mainmenu);
-
         dialog_main = new ProgressDialog( this );
         dialog_progress = new ProgressDialog(this);
         dialog_file = new Dialog(this);
@@ -114,9 +109,11 @@ public class LoginActivity extends Activity implements LoginInterface {
         NetworkStatus.getInstance().register(context);
         NetworkStatus.getInstance().AddAndEnableWifiNetwork("MRDELIVERY","3EWruHam", 1, true);
 
-
         try {
             Sentry.init(this, "http://sentry.mrd.com" , "http://a9cccfb727724cbfac581faaef481f24:9aff69cf57594ec4b73fb8971ab3d558@sentry.mrd.com/7");
+            NewRelic.withApplicationToken(
+                    "AA4d854ccff1f761599da60431523034cab321a5b5"
+            ).start(this.getApplication());
         }catch(Exception e){
             Log.e("MRD-EX" , e.getMessage());
         }
@@ -128,8 +125,6 @@ public class LoginActivity extends Activity implements LoginInterface {
         if (!extra.isEmpty()){
             String test123 = extra.getString("data");
             Device.getInstance().displayInfo(test123);
-            //Toast.makeText(getApplicationContext() , extra.getString("data") , Toast.LENGTH_LONG);
-
         }
     }
 
@@ -164,7 +159,6 @@ public class LoginActivity extends Activity implements LoginInterface {
             });
         } else {
             startActivityForResult(new Intent(this, CheckConnectivity.class), ACTIVITY_CHECK_CONNECTIVITY);
-            //displayToast("Device is offline");
         }
     }
 
@@ -310,10 +304,6 @@ public class LoginActivity extends Activity implements LoginInterface {
         }
     }
 
-    public void showD(){
-
-    }
-
     private void loginUser(Users.Type type) {
         dialog_main.setMessage("Logging you in " + Users.getInstance().getActiveDriver().getFullName() + " please be patient");
         dialog_main.show();
@@ -361,33 +351,6 @@ public class LoginActivity extends Activity implements LoginInterface {
             startActivity(intent);
         }
     }
-
-    /*
-    @Override
-    public void onBackPressed() {
-
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        finish();
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
-
-                        break;
-                }
-            }
-        };
-
-        // Do Here what ever you want do on back press;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to logout?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-    }
-    */
 
     /**
      * Check PIN's validity (data validation)

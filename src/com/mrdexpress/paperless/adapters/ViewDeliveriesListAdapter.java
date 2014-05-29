@@ -1,9 +1,9 @@
 package com.mrdexpress.paperless.adapters;
 
+import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.app.DialogFragment;
-import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +11,9 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.StopItem;
-import com.mrdexpress.paperless.db.Bag;
 import com.mrdexpress.paperless.dialogfragments.MoreDialogFragment;
 import com.mrdexpress.paperless.fragments.UpdateStatusDialog;
 import com.mrdexpress.paperless.helper.FontHelper;
-import com.mrdexpress.paperless.helper.MiscHelper;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.workflow.Workflow;

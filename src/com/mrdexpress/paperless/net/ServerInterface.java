@@ -18,6 +18,7 @@ import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.interfaces.LoginInterface;
 import com.mrdexpress.paperless.workflow.Workflow;
+import com.newrelic.com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -53,7 +54,6 @@ public class ServerInterface {
 
     private final static String TAG = "ServerInterface";
     //private static final String API_URL = "http://www.mrdexpress.com/api/";
-
     private static final String API_URL = "http://uat.mrdexpress.com/api/";
     public static Handler UIHandler = new Handler(Looper.getMainLooper());
     private static ServerInterface server_interface;
@@ -476,6 +476,12 @@ public class ServerInterface {
         String url = API_URL + "v1/workflow/get-milkrun-workflow?mrdToken=" + token+ "&driverID=" + Users.getInstance().getActiveDriver().getid();
         try {
             String response = getInputStreamFromUrl(url);
+            try{
+                //Parse the POJO of workflow
+                Paperless.getInstance().setWflow(response);
+            } catch(Exception e){
+                Paperless.handleException(e);
+            }
             Workflow.getInstance().setWorkflowFromJSON(response);
             this.loadComLog();
         } catch (Exception e) {
@@ -583,7 +589,28 @@ public class ServerInterface {
         String url = API_URL + "v1/milkruns/delays?bagid=" + bagid + "&driverid=" + Users.getInstance().getActiveDriver().getStringid()
                 + "&mrdToken=" + Device.getInstance().getToken() + "&delayid=" + delayid;
         int a = Workflow.getInstance().getTripID();
-        Object b = Workflow.getInstance().getStopForBagId( Integer.parseInt(bagid) );
+        //Object b = Workflow.getInstance().getStopForBagId( Integer.parseInt(bagid) );
+
+        String newid = bagid.replaceAll("\\}","");
+        newid = newid.replaceAll("\\{", "");
+
+        //net.minidev.json.JSONObject js = Workflow.getInstance().getTripStop(newid);
+        net.minidev.json.JSONObject js2 = Workflow.getInstance().getTripStop(bagid);
+        if (js2.containsKey("comlog")){
+            try{
+                ArrayList<String> arlist = (ArrayList<String>)js2.get("comlog");
+                arlist.add("Delay Logged " + note);
+                js2.put("comlog" , arlist);
+            }catch(Exception e){
+                Paperless.getInstance().handleException(e);
+            }
+        } else {
+            ArrayList<String> arlist = new ArrayList<String>();
+            arlist.add("Delay Logged " + note);
+            js2.put("comlog" , arlist);
+        }
+
+
 
         AQuery ac = new AQuery(context);
         Map<String, Object> params = new HashMap<String, Object>();

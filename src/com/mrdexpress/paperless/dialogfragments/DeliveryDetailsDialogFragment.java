@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.datatype.StopItem;
@@ -129,9 +130,26 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
         // TODO: wire back in
         ArrayList<General.Communications> coms = null; //General.getInstance().getComLogFromBagId(bag.getBagID());
 
+        holder.text_delivery_communication_log.setVisibility(View.GONE);
+        holder.text_delivery_communication_title.setVisibility(View.GONE);
         String comlog_text = "";
-
         try {
+            if (Workflow.getInstance().getTripStop(stop.getIDs()).containsKey("comlog")){
+                ArrayList<String> arlist = (ArrayList<String>)Workflow.getInstance().getTripStop(stop.getIDs()).get("comlog");
+                for (int i = 0; i < arlist.size(); i++) {
+                    comlog_text = comlog_text + arlist.get(i) + "\n";
+                }
+                holder.text_delivery_communication_log.setText(comlog_text);
+                holder.text_delivery_communication_log.setVisibility(View.VISIBLE);
+                holder.text_delivery_communication_title.setVisibility(View.VISIBLE);
+            }
+        }catch(Exception e){
+            Paperless.getInstance().handleException(e);
+        }
+
+
+
+        /*try {
             for (int i = 0; i < coms.size(); i++) {
                 comlog_text = comlog_text + coms.get(i).getDatetime().substring(0, 19) + " : " + coms.get(i).getLogevent() + "\n";
             }
@@ -145,7 +163,7 @@ public class DeliveryDetailsDialogFragment extends DialogFragment implements Set
             }
         }catch(Exception e){
             Sentry.captureException(e);
-        }
+        }*/
 
         // TODO:Set image here one day when app is extended.
         holder.button_update_status.setOnClickListener(new View.OnClickListener()

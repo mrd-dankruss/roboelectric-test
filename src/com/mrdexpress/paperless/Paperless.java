@@ -13,6 +13,7 @@ import com.mrdexpress.paperless.db.General;
 import com.mrdexpress.paperless.dialogfragments.ViewStopDeliveryDetailsFragment;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
 import com.mrdexpress.paperless.workflow.Workflow;
+import com.newrelic.com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -29,6 +30,7 @@ public class Paperless extends Application {
     private static Activity mainActivity;
     public Bus ottobus;
     public Bus gcmbus;
+    public com.mrdexpress.paperless.POJO.Workflow wflow = null;
 
     public static Paperless getInstance() {
         return instance;
@@ -80,6 +82,11 @@ public class Paperless extends Application {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat spl = new SimpleDateFormat("HH:mm:ss a");
         return spl.format(c.getTime());
+    }
+
+    public void setWflow(String json){
+        Gson gson = new Gson();
+        this.wflow = gson.fromJson(json , com.mrdexpress.paperless.POJO.Workflow.class);
     }
 
     public void setMainActivity(Activity act){ mainActivity = act;}

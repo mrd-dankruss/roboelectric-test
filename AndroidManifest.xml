@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.mrdexpress.paperless"
-          android:versionCode="5"
-          android:versionName="0.0.5" >
+          android:versionCode="6"
+          android:versionName="0.0.6" >
 
     <uses-sdk
             android:minSdkVersion="15"
@@ -219,16 +219,7 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.mrdexpress.paperless.ViewDeliveriesFragmentActivity" />
         </activity>
-        <activity
-                android:name="com.mrdexpress.paperless.ReasonPartialDeliveryActivity"
-                android:label="@string/title_reason_partial_deliveries"
-                android:launchMode="singleTop"
-                android:parentActivityName=".fragments.DeliveryHandoverFragmentActivity"
-                android:screenOrientation="portrait" >
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.mrdexpress.paperless.DeliveryHandoverFragmentActivity" />
-        </activity>
+
         <activity
                 android:name="com.mrdexpress.paperless.DriverHomeActivity"
                 android:label="@string/title_actionbar_home"
