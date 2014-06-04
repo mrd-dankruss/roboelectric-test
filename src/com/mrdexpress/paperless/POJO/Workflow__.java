@@ -11,7 +11,11 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.mrdexpress.paperless.Paperless;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.json.JSONArray;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -139,5 +143,37 @@ public class Workflow__ {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
+
+    public Tripstop findTripStopById(final String id){
+        return (Tripstop) CollectionUtils.find(this.tripstops , new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                String jsonid = ((Tripstop) object).getId();
+                try{
+                    jsonid = jsonid.replace("}" , "").replace("{" , "");
+                    String[] str = jsonid.split(",");
+                    for(int i = 0 ; i < str.length ; i++ ){
+                        if (str[i].equals(id)){
+                            return true;
+                        }
+                    }
+                }catch(Exception e){
+                    Paperless.getInstance().handleException(e);
+                }
+                return (( Tripstop) object).getId().equals(id);
+            }
+        });
+    }
+
+    public Tripstop findTripStopByIdRaw(final String id){
+        return (Tripstop) CollectionUtils.find(this.tripstops , new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return (( Tripstop) object).getId().equals(id);
+            }
+        });
+    }
+
+
 
 }

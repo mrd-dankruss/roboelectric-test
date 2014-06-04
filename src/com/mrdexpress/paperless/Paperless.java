@@ -87,6 +87,8 @@ public class Paperless extends Application {
     public void setWflow(String json){
         Gson gson = new Gson();
         this.wflow = gson.fromJson(json , com.mrdexpress.paperless.POJO.Workflow.class);
+        this.wflow.getResponse().getWorkflow().getDelays();
+        gson.toString();
     }
 
     public void setMainActivity(Activity act){ mainActivity = act;}
