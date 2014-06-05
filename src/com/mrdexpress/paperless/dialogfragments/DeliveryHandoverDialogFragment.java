@@ -19,6 +19,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.*;
+import com.mrdexpress.paperless.POJO.Tripstop;
+import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.R;
 import com.mrdexpress.paperless.datatype.DeliveryHandoverDataObject;
 import com.mrdexpress.paperless.db.Bag;
@@ -26,12 +28,16 @@ import com.mrdexpress.paperless.db.Device;
 import com.mrdexpress.paperless.fragments.IncompleteScanDialog;
 import com.mrdexpress.paperless.helper.VariableManager;
 import com.mrdexpress.paperless.interfaces.CallBackFunction;
+import com.mrdexpress.paperless.net.ServerInterface;
 import com.mrdexpress.paperless.service.GCMIntentService;
 import com.mrdexpress.paperless.ui.ViewHolder;
 import com.mrdexpress.paperless.widget.CustomToast;
 import com.mrdexpress.paperless.workflow.Workflow;
+import com.squareup.otto.Subscribe;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 
 import java.util.*;
 
@@ -71,10 +77,19 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
         return f;
     }
 
+    @Subscribe
+    public void mygcm(Bundle extra){
+        if (!extra.isEmpty()){
+            String test123 = extra.getString("data");
+            //Device.getInstance().displayInfo(test123);
+        }
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         Dialog m_dialog = new Dialog(getActivity() , R.style.Dialog_No_Border);
+        Paperless.getInstance().gcmbus.register(this);
         return m_dialog;
 
     }
@@ -83,7 +98,6 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         initViewHolder(inflater, container); // Inflate ViewHolder static instance
-
         return rootView;
     }
 
@@ -95,7 +109,6 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
 
         //List<JSONArray> bags = Workflow.getInstance().getBagsForStopAsJSONArray(stopids);
         bags = Workflow.getInstance().getBagsForStop(stopids);
-
 
         list = Workflow.getInstance().getStopParcelsAsObjects(stopids);
 
@@ -213,6 +226,37 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
                 }
             }
         });
+
+
+        CallBackFunction cb = new CallBackFunction() {
+            @Override
+            public boolean execute(Object args) {
+                try{
+                    org.json.JSONObject jso = (org.json.JSONObject)args;
+                    if (jso.has("response")){
+                        org.json.JSONArray ar = jso.getJSONArray("response");
+                        for(int j = 0; j < ar.length(); j++){
+                            String barcode = ((org.json.JSONObject)ar.get(j)).getString("barcode");
+                            int pos = listAdapter.getItemWithBarcode(barcode);
+                            list.get(pos).setParcelScanned((int) new Date().getTime() / 1000);
+                            Workflow.getInstance().setParcelExtra(barcode , "scannedby" , "GCM");
+                        }
+                    }
+
+                }catch(Exception e){
+                    Paperless.getInstance().handleException(e);
+                }
+                return false;
+            }
+        };
+
+        Tripstop tp = Paperless.getInstance().wflow.getResponse().getWorkflow().getWorkflow().findTripStopByIdRaw(stopids);
+        List<String> bgs = tp.getBagIds();
+
+        for(int i = 0; i < bgs.size(); i++){
+            ServerInterface.getInstance().checkscanBag(bgs.get(i) , cb);
+        }
+
     }
 
     @Override
@@ -357,6 +401,20 @@ public class DeliveryHandoverDialogFragment extends DialogFragment {
             super();
             context = activity.getApplicationContext();
             parcelList = objects;
+        }
+
+        public int getItemWithBarcode(String barcode){
+            DeliveryHandoverDataObject temp = findDHOfromBarcode(barcode);
+            return parcelList.indexOf(temp);
+        }
+
+        public DeliveryHandoverDataObject findDHOfromBarcode(final String barcode){
+            return (DeliveryHandoverDataObject) CollectionUtils.find(parcelList, new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    return ((DeliveryHandoverDataObject) object).getBarcode().equals(barcode);
+                }
+            });
         }
 
         @Override

@@ -11,6 +11,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.maps.model.LatLng;
+import com.mrdexpress.paperless.POJO.Tripstop;
 import com.mrdexpress.paperless.Paperless;
 import com.mrdexpress.paperless.channels.EventBus;
 import com.mrdexpress.paperless.db.*;
@@ -479,6 +480,8 @@ public class ServerInterface {
             try{
                 //Parse the POJO of workflow
                 Paperless.getInstance().setWflow(response);
+                Tripstop a = Paperless.getInstance().wflow.getResponse().getWorkflow().getWorkflow().findTripStopById("203");
+                response.toString();
             } catch(Exception e){
                 Paperless.handleException(e);
             }
@@ -489,6 +492,21 @@ public class ServerInterface {
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG, sw.toString());
 
+        }
+    }
+
+    public void checkscanBag(String bagid , final CallBackFunction cb){
+        String url = API_URL + "v1/milkruns/checkscan?bagid=" + bagid;
+        AQuery ac = new AQuery(context);
+        if (Device.getInstance().isConnected()){
+            ac.ajax(url, JSONObject.class, new AjaxCallback<JSONObject>() {
+                @Override
+                public void callback(String url, JSONObject json, AjaxStatus status) {
+                    cb.execute(json);
+                }
+            });
+        } else {
+            Ajax.getInstance().addQueue(url);
         }
     }
 

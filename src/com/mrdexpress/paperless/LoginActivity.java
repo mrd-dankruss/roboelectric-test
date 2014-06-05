@@ -111,9 +111,9 @@ public class LoginActivity extends Activity implements LoginInterface {
 
         try {
             Sentry.init(this, "http://sentry.mrd.com" , "http://a9cccfb727724cbfac581faaef481f24:9aff69cf57594ec4b73fb8971ab3d558@sentry.mrd.com/7");
-            NewRelic.withApplicationToken(
-                    "AA4d854ccff1f761599da60431523034cab321a5b5"
-            ).start(this.getApplication());
+            //NewRelic.withApplicationToken(
+            //        "AA4d854ccff1f761599da60431523034cab321a5b5"
+            //).start(this.getApplication());
         }catch(Exception e){
             Log.e("MRD-EX" , e.getMessage());
         }

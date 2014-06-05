@@ -787,7 +787,6 @@ public class Workflow extends Observable
             } else if (status.equals(Bag.STATUS_PARTIAL) ){
                 ServerInterface.getInstance().setDeliveryStatus(status , stopids, reason);
             }
-
         }
     }
 

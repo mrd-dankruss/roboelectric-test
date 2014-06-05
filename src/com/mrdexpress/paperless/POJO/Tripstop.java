@@ -205,4 +205,16 @@ public class Tripstop {
         this.additionalProperties.put(name, value);
     }
 
+
+    /* Custom Methods */
+    public List<String> getBagIds(){
+        ArrayList<String> bags = new ArrayList<String>();
+        for(int i = 0; i < this.tripstopdata.size(); i++){
+            Tripstopdatum tsp = this.tripstopdata.get(i);
+            if (tsp.getPayload().equals("bag")){
+                bags.add(Integer.toString(tsp.getPayloadid()));
+            }
+        }
+        return bags;
+    }
 }
