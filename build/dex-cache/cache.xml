@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/espresso-1.1-83a42586e099abb4cd8eb8d28a4673e4b5bc24e3.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/espresso-1.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="63ed5070788f787832823e88e1f6fc18ac52385f"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/testrunner-1.1-aece7c95426d601e1a298ffb04483e32fd62a5ab.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/testrunner-1.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="cd8c224664b066cdb48e063af2005b92e48ffb63"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/testrunner-runtime-1.1-4e6bce179d1fa1f98848de977b281f64cc71fc73.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/testrunner-runtime-1.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7d3d32311677991fe16fd6e14ff57069583f39a5"/>
+
+</pre-dex-items>
