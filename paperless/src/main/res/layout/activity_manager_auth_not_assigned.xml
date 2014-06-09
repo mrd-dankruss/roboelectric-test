@@ -1,0 +1,69 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_background"
+    tools:context=".ManagerAuthNotAssignedActivity" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/activity_horizontal_margin" >
+
+        <TextView
+            android:id="@+id/text_not_assigned_activity_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Jim Davids"
+            android:textSize="@dimen/font_size_dialog_title" />
+
+        <TextView
+            android:id="@+id/textView_not_assigned_activity_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/text_not_assigned_activity_name"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/text_manAuth_heading"
+            android:textSize="@dimen/font_size_dialog_content" />
+
+        <EditText
+            android:id="@+id/editText_not_assigned_activity_pin"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_pin"
+            android:layout_below="@+id/textView_not_assigned_activity_heading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@color/colour_white"
+            android:ems="10"
+            android:inputType="numberPassword"
+            android:paddingLeft="@dimen/margin_pin_left"
+            android:hint="@string/text_create_pin_enter" />
+        
+        <Button
+            android:id="@+id/button_not_assigned_activity_continue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editText_not_assigned_activity_pin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@drawable/button_custom"
+            android:text="@string/button_continue"
+            android:textStyle="bold" />
+
+        
+
+        <Button
+            android:id="@+id/button_not_assigned_activity_change"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/button_custom_grey"
+            android:text="@string/button_change_manager"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+</RelativeLayout>

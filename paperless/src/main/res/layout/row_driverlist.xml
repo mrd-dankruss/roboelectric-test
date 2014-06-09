@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textView_row_driverlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/margin_row_NS"
+        android:layout_marginLeft="@dimen/margin_row_W"
+        android:layout_marginTop="@dimen/margin_row_NS"
+        android:text="TextView"
+        android:textColor="@color/colour_row_text"
+        android:textSize="@dimen/text_row" />
+
+</RelativeLayout>

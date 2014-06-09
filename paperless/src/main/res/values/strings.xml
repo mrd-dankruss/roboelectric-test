@@ -1,8 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">paperless</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">MrD Paperless App</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Actionbar titles -->
+    <string name="title_actionbar_mainmenu">Login</string>
+    <string name="title_actionbar_home">Home</string>
+    <string name="title_actionbar_driverlist_select_name">Please select your name</string>
+    <string name="title_actionbar_signature">Processing Collection</string>
+    <string name="title_actionbar_create_pin">Create Pin</string>
+    <string name="title_actionbar_enter_pin">Enter Pin</string>
+    <string name="title_actionbar_map">Map</string>
+    <string name="title_actionbar_select_manager">Select manager</string>
+    <string name="title_actionbar_manifest">Bag details</string>
+    <string name="title_actionbar_manager_auth">Manager authorization required</string>
+    <string name="title_actionbar_manager_auth_not_assigned">Manager authorization required</string>
+    <string name="title_actionbar_delivery_details">Delivery Details</string>
+    <string name="title_actionbar_transfer_data">Transferring delivery data</string>
+    <string name="title_actionbar_failed_delivery">Reason for failed delivery</string>
+    <string name="title_actionbar_enter_barcode">Enter barcode</string>
+    <string name="title_actionbar_change_driver">Change Driver</string>
+
+    <!-- Button texts -->
+    <string name="button_auth_new_delivery_run">Authorise new delivery run</string>
+    <string name="button_start_new_milkrun">Start new delivery run</string>
+    <string name="button_start_milkrun">Start delivery run</string>
+    <string name="button_start_trainingrun">Start training run</string>
+    <string name="button_update_status">Next Step</string>
+    <string name="button_more">More</string>
+    <string name="button_login">Login</string>
+    <string name="button_complete_collection">Complete Collection</string>
+    <string name="button_continue">Next Step</string>
+    <string name="button_navigate_here">Navigate here</string>
+    <string name="button_create">Create</string>
+    <string name="button_change_driver">Change driver</string>
+    <string name="button_change_manager">Change Manager</string>
+    <string name="button_incomplete_scan_scan">Scan them</string>
+    <string name="button_incomplete_scan_continue">Log partial delivery</string>
+    <string name="delivery_more_setAsNextDelivery">Set as next delivery</string>
+    <string name="delivery_more_viewMap">View Map</string>
+    <string name="delivery_more_reportDelay">Report Delay</string>
+    <string name="delivery_more_call">Call</string>
+    <string name="delivery_more_message">Message</string>
+    <string name="trafficDelay_5min">5 min</string>
+    <string name="trafficDelay_10min">10 min</string>
+    <string name="trafficDelay_20min">20 min</string>
+    <string name="trafficDelay_30min">30 min</string>
+    <string name="trafficDelay_1hour">1 hour</string>
+    <string name="button_report_delay">Report</string>
+    <string name="button_send_sms">Send</string>
+    <string name="button_delivery_handover_complete">Next Step</string>
+    <string name="button_transfer_data">Cancel</string>
+    <string name="button_not_assigned_continue">Continue</string>
+    <string name="button_not_assigned_cancel">Cancel</string>
+    <string name="button_photo_retake">Retake Photo</string>
+    <string name="button_photo_continue">Complete Delivery</string>
+    <string name="button_photo_take_id_photo">Take ID Photo</string>
+    <string name="button_logout">Logout</string>
+
+    <!-- Screen titles -->
+    <string name="title_your_next_delivery">YOUR NEXT DELIVERY</string>
+    <string name="title_exchange">EXCHANGE</string>
+    <string name="title_more">More</string>
+    <string name="title_view_map">View Map</string>
+    <string name="title_search">Search</string>
+    <string name="title_message">Message</string>
+    <string name="title_your_consignments">YOUR BAGS</string>
+    <string name="title_next_delivery_food">YOUR NEXT FOOD DELIVERY</string>
+    <string name="title_deliveries">Deliveries</string>
+    <string name="title_signature">COLLECT PROOF OF COLLECTION</string>
+    <string name="title_scan_consignments">Scan Bags</string>
+    <string name="title_reason_partial_deliveries">Log partial delivery</string>
+    <string name="title_set_as_next_delivery">Set as next delivery</string>
+    <string name="title_return">RETURN</string>
+    <string name="title_report_delay">Report delay</string>
+    <string name="title_call">Phone</string>
+    <string name="title_sms">Send Message</string>
+    <string name="trafficDelay_title">Traffic</string>
+    <string name="title_updateStatusDialog">Send Message</string>
+    <string name="title_deliveryHandover">Delivery Handover</string>
+    <string name="title_transfer_data_subTitle">Connected to Dispatch Wireless network</string>
+    <string name="title_geofence_enter">Arrived at destination!</string>
+    <string name="title_dialog_handover">Choose next step</string>
+    <string name="title_dialog_over_delivery">Over-delivery</string>
+    <string name="title_dialog_no_deliveries">No deliveries</string>
+    <string name="title_food_delivery_title">Order list</string>
+
+    <!-- Tab titles -->
+    <string name="tab_completed">DONE</string>
+    <string name="tab_todo">TO DO</string>
+    <string name="tab_partial">PARTIAL</string>
+    <string name="tab_unsuccessful">FAILED</string>
+
+    <!-- Texts -->
+    <string name="text_reason_partial_delivery_heading">Please select a reason for each parcel that could not be delivered:</string>
+    <string name="text_food_delivery">FOOD DELIVERY</string>
+    <string name="text_addressee">Addressee</string>
+    <string name="text_tel_no">Tel nr</string>
+    <string name="text_scheduled_for">Scheduled for</string>
+    <string name="text_packages_to_be_delivered">Package(s) to be delivered</string>
+    <string name="text_step">STEP</string>
+    <string name="text_of">OF</string>
+    <string name="text_create_pin_mismatch">PIN codes do not match. Please try again.</string>
+    <string name="text_create_pin_enter">Tap here to enter your 4-digit PIN</string>
+    <string name="text_craete_pin_confirm">Tap here to confirm your PIN</string>
+    <string name="text_create_pin_toast_too_short">PIN has to be 4 digits. Please try again</string>
+    <string name="text_create_pin">Please enter 4 digit PIN for yourself.</string>
+    <string name="text_enter_pin_incorrect">Incorrect PIN. Please try again.</string>
+    <string name="text_enter_pin_invalid">Invalid PIN. Please try again.</string>
+    <string name="text_search_hint">Search</string>
+    <string name="text_consignment">Bag</string>
+    <string name="text_destination_branch">Destination branch:</string>
+    <string name="text_scan_successful">Scan successful</string>
+    <string name="text_play_services">Google Play services required</string>
+    <string name="text_net_error">Connection error</string>
+    <string name="text_scan_next">Scanned successfully - scan next item.</string>
+    <string name="text_incomplete_scan_message">You have not scanned all of your bags!</string>
+    <string name="text_incomplete_scan_title">Warning!</string>
+    <string name="text_manAuth_heading">The following bags have not been scanned:</string>
+    <string name="text_manAuth_enter_pin">Please enter your PIN to authorize:</string>
+    <string name="app_label">MrD</string>
+    <string name="text_todo_deliveries_complete_1">All deliveries completed!</string>
+    <string name="text_todo_deliveries_complete_2">Please return to branch</string>
+    <string name="text_transfer_data_uploading">Uploading data to server</string>
+    <string name="text_process_handover_successful">Handover parcels to branch</string>
+    <string name="text_process_handover_failed">Could not deliver to branch</string>
+    <string name="text_not_assigned_message">This bag has not been assigned to you!</string>
+    <string name="text_unauthorised">Authorisation Failed, Please Try Again.</string>
+    <string name="text_unauthorised_use">Unauthorized device. The app will now close.</string>
+    <string name="text_over_delivery">Parcel 0000234576 is not assigned to this branch.</string>
+    <string name="text_no_deliveries">You do not have any deliveries assigned to you at this moment</string>
+    <string name="text_consignment_already_scanned">This bag has already been scanned!</string>
+    <string name="text_cod_delivery">This is a COD delivery</string>
+    <string name="text_trainingrun_call">Pretending to make phonecall</string>
+
+    <!-- Abbreviations -->
+    <string name="TAL">TAKEALOT</string>
+    <string name="title_activity_driver_list">DriverListActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_signature">SignatureActivity</string>
+    <string name="title_activity_create_pin">CreatePinActivity</string>
+    <string name="title_activity_manager_list">ManagerListActivity</string>
+    <string name="title_activity_enter_pin">EnterPinActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_scan_list">ScanListActivity</string>
+
+    <!-- Google Maps API keys -->
+    <string name="key_googlemaps_api_debug">AIzaSyCka7pp77hl15DlkR1CK4nigvt1SNrfCBM</string>
+    <string name="key_googlemaps_api_release">AIzaSyB7Rp0ex2YM7kywAWNxlBO30k0GlyZtQ4s</string>
+    <string name="key_googlemaps_places">AIzaSyAYfjkc0UaKJyyBQ-uX-gHskhuuqcsgnFQ</string>
+    <string name="title_activity_view_bag_manifest">ViewBagManifestActivity</string>
+
+    <!-- Manifest -->
+    <string name="text_manifest_waybill">Waybill:</string>
+    <string name="text_manifest_number">X of:</string>
+    <string name="text_manifest_number_of">of</string>
+    <string name="text_manifest_volumetrics">Volumetrics:</string>
+    <string name="text_manifest">Manifest</string>
+    <string name="title_activity_manager_auth_incomplete_scan">ManagerAuthIncompleteScanActivity</string>
+
+    <!-- Content Descriptors -->
+    <string name="contentDesc_imageView_deliveryType">Delivery Type Image</string>
+
+    <!-- Filler Strings (To be removed) -->
+    <string name="delivery_no">#01</string>
+    <string name="delivery_title">Your Next Delivery</string>
+    <string name="delivery_address">Mr D Brackenfell\n12 Goede Hoop Ave,\nBrackenfell\n7526</string>
+    <string name="delivery_orderNo">00025420254 (6 items)</string>
+    <string name="delivery_button1">Next Step</string>
+    <string name="delivery_button2">More</string>
+    <string name="delivery_detail_addressee">Addressee: Mr D Somerset West\nTel nr: 083 857 4738</string>
+    <string name="delivery_detail_communicationTitle">Communication Log</string>
+    <string name="delivery_detail_communicationLog">SMS sent at 15/08/2013 at 15:13\nRunning 5 minutes late</string>
+    <string name="delivery_handover_subtitle">Wait for branch manager to scan parcels.</string>
+
+    <!-- TextView Hints -->
+    <string name="text_hint_mainmenu_enter_name">Enter Name</string>
+    <string name="text_hint_mainmenu_enter_manager_name">Enter Manager Name</string>
+    <string name="text_hint_login_manager">Select Manager</string>
+    <string name="text_hint_mainmenu_enter_password">Tap here to enter your 4-digit PIN</string>
+    <string name="text_hint_enter_barcode">Tap here to enter the barcode</string>
+
+    <!-- SCAN Screen -->
+    <string name="scan_statusbar">Bags Remaining</string><string name="test_scan_status">Bags Remaining</string>
+
+    <!-- Exception Management -->
+    <string name="manager_login_wrong_password">Password is wrong , please try again.</string>
+    <string name="manager_assign_bag_invalid">The bag cannot be assigned to you, please contact MRD support.</string>
+    <string name="manager_assign_bag_invalid_scan">The barcode does not belong to a MRD bag.</string>
+    <string name="driver_select_name">Type the first letter of your name</string>
+    <string name="start_scanning">Start Scanning</string>
+    <string name="mrdlogosmall">MRD</string>
+    <string name="reassign_stop_heading">Please select driver that you are going to re-assign the hub to</string>
 
 </resources>

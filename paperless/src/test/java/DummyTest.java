@@ -12,6 +12,6 @@ import static org.junit.Assert.assertTrue;
 public class DummyTest {
     @Test
     public void testSomething() {
-        assertFalse(false);
+        assertTrue(true);
     }
 }

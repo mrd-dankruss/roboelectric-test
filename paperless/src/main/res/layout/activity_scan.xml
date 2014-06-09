@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scan_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_background"
+    android:orientation="vertical" >
+
+    <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/start_scanning"
+            android:id="@+id/button_start_scanning"
+            android:background="@drawable/button_custom" android:textSize="@dimen/font_size_button"
+            android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+            android:layout_margin="@dimen/default_button_margin"/>
+
+    <FrameLayout
+        android:id="@+id/framelayout_scan_bottomframe"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+         >
+
+        <Button
+            android:id="@+id/scan_button_start_milkrun"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_button_margin"
+            android:background="@drawable/button_custom"
+            android:text="@string/button_start_milkrun"
+            android:textSize="@dimen/font_size_button" />
+    </FrameLayout>
+   
+
+    <RelativeLayout
+        android:id="@+id/toast_scan"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/toast_green"
+        android:paddingBottom="@dimen/margin_standard"
+        android:paddingTop="@dimen/margin_standard"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/textView_scan_toast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_standard"
+            android:layout_marginRight="@dimen/margin_standard"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="@string/text_scan_successful"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+    
+    <TextView
+        	android:id="@+id/activity_scan_textView_scanStatusBar"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="@string/test_scan_status"
+            android:layout_above="@+id/framelayout_scan_bottomframe"
+            android:gravity="center"
+            android:background="@color/white" android:layout_centerHorizontal="true"/>
+    
+    <ListView
+        android:id="@+id/scan_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/activity_scan_textView_scanStatusBar"
+        android:layout_alignParentLeft="true"
+        android:background="@color/colour_white" android:layout_below="@+id/button_start_scanning">
+    </ListView>
+
+
+</RelativeLayout>
