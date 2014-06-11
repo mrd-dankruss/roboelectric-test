@@ -1,6 +1,107 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <!-- Margins -->
+    <dimen name="default_button_margin">8dp</dimen>
+    <dimen name="margin_scan_image_WE">2.67dp</dimen>
+    <dimen name="margin_scan_image_NS">6.67dp</dimen>
+    <dimen name="margin_button_NS">16dp</dimen>
+    <dimen name="margin_standard">14dp</dimen>
+    <dimen name="margin_button_WE">13.33dp</dimen>
+    <dimen name="margin_mainmenu_button_gap">15dp</dimen>
+    <dimen name="margin_mainmenu_bottom">97dp</dimen>
+    <dimen name="margin_text_WE">10dp</dimen>
+    <dimen name="margin_text_NS">16dp</dimen>
+    <dimen name="margin_delivery_details_WE">4dp</dimen>
+    <dimen name="margin_delivery_details_NS">4dp</dimen>
+    <dimen name="margin_delivery_details_panel">15dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="margin_manifest_panel_W">14dip</dimen>
+    <dimen name="margin_manifest_panel_NS">8dip</dimen>
+    <dimen name="font_tab">10dp</dimen>
+    <dimen name="tabbar_height">60dp</dimen>
+    <dimen name="scanner_width">200dip</dimen>
+    <dimen name="scanner_height">180dip</dimen>
+    <dimen name="button_padding_topbottom">10dp</dimen>
+    <dimen name="signature_block_gap">167dp</dimen>
 
-    </resources>
+    <!-- Delivery details -->
+    <dimen name="margin_delivery_details_icon_W">14dp</dimen>
+    <dimen name="margin_delivery_details_icon_N">10dp</dimen>
+    <dimen name="margin_delivery_details_icon_E">10dp</dimen>
+    <dimen name="margin_delivery_details_line_WE">7dp</dimen>
+    <dimen name="margin_delivery_details_text_N">15dp</dimen>
+    <dimen name="margin_delivery_details_text_body_N">12dp</dimen>
+    <dimen name="margin_delivery_details_text_body_S">22dp</dimen>
+    <dimen name="margin_delivery_details_button_gap">7dp</dimen>
+
+    <!-- Paddings -->
+    <dimen name="mainmenu_padding_logo_top">42dp</dimen>
+    <dimen name="mainmenu_padding_logo_bottom">47dp</dimen>
+    <dimen name="mainmenu_padding_logo_side">69dp</dimen>
+    <dimen name="delivery_details_title_line_vertical_space">8dp</dimen>
+    <dimen name="delivery_details_title_line_vertical_length">15dp</dimen>
+    <dimen name="delivery_details_title_line_vertical_thickness">1dp</dimen>
+    <dimen name="delivery_details_title_line_horizontal_space">8dp</dimen>
+    <dimen name="delivery_details_title_line_horizontal_length">15dp</dimen>
+    <dimen name="delivery_details_title_line_horizontal_thickness">1dp</dimen>
+
+    <!-- Colours -->
+    <color name="colour_yellow">#f9dd0a</color>
+    <color name="colour_text_darkgrey">#2e2e2e</color>
+    <color name="colour_text_darkergrey">#3d3d3d</color>
+    <color name="colour_text_lightgrey">#777777</color>
+    <color name="colour_transparent">#00000000</color>
+    <color name="gradient_center">#000099</color>
+    <color name="colour_green_scan">#009724</color>
+    <color name="gradient_start">#000011</color>
+    <color name="color_red">#CC0000</color>
+    <color name="delivery_details_title_line_vertical_color">#999999</color>
+    <color name="gradient_end">#00FF00</color>
+    <color name="colour_darkgrey">#d2d2d2</color>
+    <color name="colour_button_shadow">#948809</color>
+    <color name="delivery_details_title_line_horizontal_color">#999999</color>
+    <color name="colour_button">#f6da0a</color>
+    <color name="colour_background">#e9e9e9</color>
+    <color name="colour_white">#FFFFFF</color>
+    <color name="colour_lightgrey">#dbdbdb</color>
+    <color name="colour_button_greyed">#a6a6a6</color>
+
+    <!-- Linewidths -->
+    <dimen name="activity_driverlist_line_thickness">1dp</dimen>
+
+    <!-- Driverlist activity -->
+    <dimen name="driverlist_searchview_height">37dp</dimen>
+    <dimen name="margin_driverlist_searchview_WE">4dp</dimen>
+    <dimen name="margin_driverlist_searchview_NS">9dp</dimen>
+    <dimen name="margin_driverlist_listview_WE">4dp</dimen>
+    <dimen name="text_row">24sp</dimen>
+    <dimen name="margin_row_W">9dp</dimen>
+    <dimen name="margin_row_NS">17dp</dimen>
+    <color name="colour_row_text">#2e2e2e</color>
+    <color name="colour_row_divider">#e5e5e5</color>
+    <color name="colour_line_driverlist_searchview">#a1a1a1</color>
+
+
+    <!-- Enter pin -->
+    <dimen name="margin_pin_text_N">20dp</dimen>
+    <dimen name="margin_toast_NS">9dp</dimen>
+    <dimen name="height_pin">38dp</dimen>
+    <dimen name="margin_pin_left">16dp</dimen>
+
+    <!-- Font sizes -->
+    <dimen name="font_size_manifest_panel">14sp</dimen>
+    <dimen name="font_size_button">18sp</dimen>
+    <dimen name="font_size_text_field">16sp</dimen>
+    <dimen name="font_size_dialog_content">20sp</dimen>
+    <dimen name="font_size_dialog_sub_content">20sp</dimen>
+    <dimen name="font_size_dialog_title">17sp</dimen>
+    <dimen name="font_size_fragment_title">17sp</dimen>
+    <dimen name="font_size_footnote">10sp</dimen>
+    <dimen name="font_size_delivery_details_address">18sp</dimen>
+    <dimen name="font_size_delivery_details_id">20sp</dimen>
+    <dimen name="font_size_food_delivery_detail_title">22sp</dimen>
+    <dimen name="font_size_processing_delivery_title">14sp</dimen>
+    <dimen name="font_size_processing_delivery_amount">30sp</dimen>
+
+</resources>

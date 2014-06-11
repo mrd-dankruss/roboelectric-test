@@ -2,11 +2,83 @@
 <pre-dex-items>
 
     <item
-        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/espresso-1.1-83a42586e099abb4cd8eb8d28a4673e4b5bc24e3.jar"
-        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/espresso-1.1.jar"
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/json-path-0.9.1-5934a871a202607b937497bc2800d7a97774d610.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.jayway.jsonpath/json-path/0.9.1/1a198cf545b2656656fecda5add3ba436e715185/json-path-0.9.1.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="63ed5070788f787832823e88e1f6fc18ac52385f"/>
+        sha1="1a198cf545b2656656fecda5add3ba436e715185"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/jackson-annotations-2.1.4-9ad3a114614edd4cca0f73e086561b0eb3009c89.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.1.4/76b956e45e19e4e081a9c52a68a3c078e3b2cf17/jackson-annotations-2.1.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="76b956e45e19e4e081a9c52a68a3c078e3b2cf17"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/jackson-core-2.1.4-8db1a0b10e23e3539671881cb931f52496ea999f.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.1.4/8896e10f8b07918b60c835b45a05507fa213e84/jackson-core-2.1.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="08896e10f8b07918b60c835b45a05507fa213e84"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/classes-a12275f0c33253f4b39270fa4d4a1eab3aaf0405.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/build/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/javax.annotation-api-1.2-606a2be53e72950bee314c8929c50b7abb3306c2.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/javax.annotation/javax.annotation-api/1.2/479c1e06db31c432330183f5cae684163f186146/javax.annotation-api-1.2.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="479c1e06db31c432330183f5cae684163f186146"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/testrunner-runtime-1.1-4e6bce179d1fa1f98848de977b281f64cc71fc73.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/testrunner-runtime-1.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7d3d32311677991fe16fd6e14ff57069583f39a5"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/validation-api-1.1.0.CR2-2c57cd027944f0db6f27e9b451725c6f60bb0c30.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.CR2/777d153d3785f9a2af379ecd39dde5273c3ae853/validation-api-1.1.0.CR2.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="777d153d3785f9a2af379ecd39dde5273c3ae853"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/jackson-core-asl-1.9.13-6bd982c723e388330c46e955e429d513587a87cd.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/org.codehaus.jackson/jackson-core-asl/1.9.13/3c304d70f42f832e0a86d45bd437f692129299a4/jackson-core-asl-1.9.13.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3c304d70f42f832e0a86d45bd437f692129299a4"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/httpcore-4.3.2-47135115966b3a02bf61210895da2dac847ea0a4.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.3.2/31fbbff1ddbf98f3aa7377c94d33b0447c646b6e/httpcore-4.3.2.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="31fbbff1ddbf98f3aa7377c94d33b0447c646b6e"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/android-query-0.25.9-8a87658cb380b84f0bc716db2e784318358a26d1.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.googlecode.android-query/android-query/0.25.9/fff82e4e1e56b60d6eb1d5487dbd3d3b526b635f/android-query-0.25.9.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="fff82e4e1e56b60d6eb1d5487dbd3d3b526b635f"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/sentry-0.1.4-f81cb0f67ba9836c49edd0c76ef1df647aff3160.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/sentry-0.1.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="557c6e06d61fe00c05ab74dceaabf940bcadeb22"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/jackson-mapper-asl-1.9.13-8ef2a5bf827f03c8d17e91371e32893f9de45d8c.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/org.codehaus.jackson/jackson-mapper-asl/1.9.13/1ee2f2bed0e5dd29d1cb155a166e6f8d50bbddb7/jackson-mapper-asl-1.9.13.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="1ee2f2bed0e5dd29d1cb155a166e6f8d50bbddb7"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/support-v13-13.0.0-f0358a431c6aed4529c6eb7bf745be14f76760e1.jar"
+        jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-v13/13.0.0/support-v13-13.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3cbe273d384ea56fb535c2d8405a9b64c21fcfb3"/>
     <item
         dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/testrunner-1.1-aece7c95426d601e1a298ffb04483e32fd62a5ab.jar"
         jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/testrunner-1.1.jar"
@@ -14,10 +86,82 @@
         revision="19.1.0"
         sha1="cd8c224664b066cdb48e063af2005b92e48ffb63"/>
     <item
-        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/testrunner-runtime-1.1-4e6bce179d1fa1f98848de977b281f64cc71fc73.jar"
-        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/testrunner-runtime-1.1.jar"
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/commons-collections-3.0-8dcc891ff4fff7af4201e92b2259cc712d08c0d3.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/commons-collections/commons-collections/3.0/aa12980fe4eca7331a660bdeed371d024687c68d/commons-collections-3.0.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="7d3d32311677991fe16fd6e14ff57069583f39a5"/>
+        sha1="aa12980fe4eca7331a660bdeed371d024687c68d"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/json-smart-1.2-c39ea8d974579680c4cb5b0c87fca3db6698528d.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/net.minidev/json-smart/1.2/199828b0a7be9626c6eaecb005baddd24bfddc1f/json-smart-1.2.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="199828b0a7be9626c6eaecb005baddd24bfddc1f"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/jackson-databind-2.1.4-27dce8e12beaae393fa6e5b9d63a3e7bf49a52ee.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.1.4/61d1e5aaf474462b0c9bfef8aeb6a7205bd56a90/jackson-databind-2.1.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="61d1e5aaf474462b0c9bfef8aeb6a7205bd56a90"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/espresso-1.1-83a42586e099abb4cd8eb8d28a4673e4b5bc24e3.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/espresso-1.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="63ed5070788f787832823e88e1f6fc18ac52385f"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/classes-aaac5f2b112bf399cad24d46bed11d19037f5361.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/build/exploded-aar/com.google.android.gms/play-services/4.3.23/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7676c0cb230efa6ac41c47867d372ed5913029d4"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/classes-e0de909ceb1dc261a592f80e3265ab8d50e813c8.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/build/exploded-aar/com.google.maps.android/android-maps-utils/0.3.1/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0840d832d8a8c4fde01e623f2817332801e6bb49"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/protocol-1.0.4-c5788242f1b9c07821436f6919bfe8ceebba6684.jar"
+        jar="/Users/dan/AndroidStudioProjects/paperless/paperless/libs/protocol-1.0.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="e1485cfd6a49c64505a40b238610712f636f8810"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/slf4j-api-1.7.7-d3d135b8d25cb64a6399a1966e8ed51884770062.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.7/2b8019b6249bb05d81d3a3094e468753e2b21311/slf4j-api-1.7.7.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="2b8019b6249bb05d81d3a3094e468753e2b21311"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/commons-lang-2.6-a4700a167cd60b82c6ff5e9e5e260621896e9e6d.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/ce1edb914c94ebc388f086c6827e8bdeec71ac2/commons-lang-2.6.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0ce1edb914c94ebc388f086c6827e8bdeec71ac2"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/support-v4-19.1.0-fe930dc68beb1e566675ce71b270d4091c6c249b.jar"
+        jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/otto-1.3.4-786c2785a014fd639435765a40170272267fce2e.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.squareup/otto/1.3.4/4d72fb811c7b3c0e7f412112020d4430f044e510/otto-1.3.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="4d72fb811c7b3c0e7f412112020d4430f044e510"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/android-agent-3.378.0-4ddc7797a50078a80836f5a8f9a6d09ca4c7c7d3.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/com.newrelic.agent.android/android-agent/3.378.0/1ebf0e20081a7f1b9a5c31bfc4e7dba776e0c171/android-agent-3.378.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="1ebf0e20081a7f1b9a5c31bfc4e7dba776e0c171"/>
+    <item
+        dex="/Users/dan/AndroidStudioProjects/paperless/paperless/build/pre-dexed/debug/httpmime-4.3.3-8dfde6bc38eac33bdc6a9562be19d5eba1edce06.jar"
+        jar="/Users/dan/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpmime/4.3.3/e02368d7b56c0c376f227378a4f77de62864d020/httpmime-4.3.3.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="e02368d7b56c0c376f227378a4f77de62864d020"/>
 
 </pre-dex-items>

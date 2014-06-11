@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyDialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:minWidth="300dp"
+    android:background="@color/colour_background"
+    android:orientation="vertical"
+    android:padding="0dp" >
+
+    <LinearLayout
+        android:id="@+id/linear_layout_over_delivery"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:background="@drawable/ab_solid_mrdstyle"
+        android:padding="0dp" >
+
+        <TextView
+            android:id="@+id/text_over_delivery_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="12dp"
+            android:text="Connectivity"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_size_dialog_title" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:gravity="right" >
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/seperator_grey" />
+
+            <ImageButton
+                android:id="@+id/button_over_delivery_closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:background="@null"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:src="@drawable/icon_cancel_unselected" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/text_over_delivery_content_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_grey"
+            android:paddingTop="14dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="10dp"
+            android:text="This device has no internet connection."
+            android:textStyle="bold"
+            android:textSize="@dimen/font_size_dialog_content" />
+        
+        <TextView
+            android:id="@+id/text_over_delivery_content_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_grey"
+            android:paddingLeft="14dp"
+            android:paddingTop="10dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="14dp"
+            android:text="Waiting for a connection to become available"
+            android:textSize="@dimen/font_size_dialog_content" />
+
+
+        <Button
+            android:id="@+id/button_connectivity_retry"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_change_driver"
+            android:text="Retry"
+            android:textSize="@dimen/font_size_button" />
+
+    </LinearLayout>
+
+</LinearLayout>
