@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ViewBagManifestActivity" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colour_darkgrey"
+        android:paddingBottom="@dimen/margin_manifest_panel_NS"
+        android:paddingLeft="@dimen/margin_manifest_panel_W"
+        android:paddingRight="@dimen/margin_manifest_panel_W"
+        android:paddingTop="@dimen/margin_manifest_panel_NS" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView_manifest_consignment_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="@color/colour_text_darkergrey"
+                android:textSize="@dimen/font_size_manifest_panel" />
+
+            <TextView
+                android:id="@+id/textView_manifest_consignment_destination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Destination branch: whatdoes the fox say ringadingding a hatee hatee hatee ho"
+                android:textColor="@color/colour_text_darkergrey"
+                android:textSize="@dimen/font_size_manifest_panel" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/listView_manifest_consignment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/margin_standard"
+        android:layout_marginBottom="65dp"
+        android:headerDividersEnabled="true" >
+
+    </ListView>
+
+    <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+             >
+        <Button
+                android:id="@+id/buttonManifestScanBarcode"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_button_margin"
+                android:background="@drawable/button_custom"
+                android:text="Enter Barcode Manually"
+                android:textSize="@dimen/font_size_button" />
+    </FrameLayout>
+
+</RelativeLayout>

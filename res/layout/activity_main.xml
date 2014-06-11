@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toast_create_pin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_white"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/button_mainmenu_start_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/button_custom"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:text="@string/button_login"
+        android:textSize="@dimen/font_size_button" />
+
+    <EditText
+        android:id="@+id/text_mainmenu_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_mainmenu_start_login"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="24dp"
+        android:ems="10"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:hint="@string/text_hint_mainmenu_enter_password"
+        android:background="@color/main_activity_grey"
+        android:textColor="@color/text_grey"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textSize="@dimen/font_size_text_field"
+        android:singleLine="true"
+        android:inputType="numberPassword" />
+    
+    <AutoCompleteTextView
+        android:id="@+id/text_mainmenu_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/text_mainmenu_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:paddingBottom="@dimen/button_padding_topbottom"
+        android:paddingTop="@dimen/button_padding_topbottom"
+        android:hint="@string/driver_select_name"
+        android:background="@color/main_activity_grey"
+        android:textColor="@color/text_grey"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:singleLine="true"
+        android:textSize="@dimen/font_size_text_field" android:enabled="true" android:maxLines="1">
+
+        <requestFocus />
+    </AutoCompleteTextView>
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/mrd_logo_large"
+            android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp" android:contentDescription="MrD Logo"/>
+
+</RelativeLayout>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scan_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colour_background"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/framelayout_stops_bottomframe"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/scan_button_start_milkrun"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_button_margin"
+            android:background="@drawable/button_custom"
+            android:text="@string/button_start_milkrun"
+            android:textSize="@dimen/font_size_button" />
+    </FrameLayout>
+
+    <ListView
+        android:id="@+id/scan_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/framelayout_stops_bottomframe"
+        android:layout_alignParentLeft="true"
+        android:background="@color/colour_white"
+        android:layout_below="@+id/button_start_scanning">
+    </ListView>
+
+
+</RelativeLayout>

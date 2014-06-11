@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout 
+        android:id="@+id/fragment_successful_deliveries_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp">
+        
+        <!--<Button
+            android:id="@+id/fragment_successful_deliveries_completed_button"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="Completed"
+            android:background="@drawable/partial_tab_white"/>
+        
+        <Button 
+            android:id="@+id/fragment_successful_deliveries_partial_button"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="Partial"
+            android:background="@drawable/partial_tab_grey"/> -->
+        
+    </LinearLayout>
+    
+    <ListView
+        android:id="@+id/fragment_successful_deliveries_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/fragment_successful_deliveries_linear_layout" >
+    </ListView>
+
+</RelativeLayout>

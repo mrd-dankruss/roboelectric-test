@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_margin="5dp"
+              android:orientation="vertical"
+              android:gravity="center"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/text_todo_deliveries_complete_1"
+                android:textColor="@color/text_grey"
+                android:textSize="24sp" />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="@string/text_todo_deliveries_complete_2"
+                android:textColor="@color/text_grey"
+                android:textSize="21sp" />
+    <Button
+            android:id="@+id/return_to_branch_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="24dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/button_custom"
+            android:paddingBottom="@dimen/button_padding_topbottom"
+            android:paddingTop="@dimen/button_padding_topbottom"
+            android:text="End delivery run"
+            android:textSize="@dimen/font_size_button"
+            />
+
+</LinearLayout>

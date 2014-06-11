@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        style="@drawable/deliveries_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@color/background_grey" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:background="@drawable/deliveries_background"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout_manifest_panel"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_delivery_details_icon_W"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="8dp" >
+
+                <ImageView
+                    android:id="@+id/icon_job_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/margin_delivery_details_icon_E"
+                    android:src="@drawable/icon_delivery" />
+
+                <TextView
+                    android:id="@+id/textView_signature_step"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/icon_job_type"
+                    android:paddingTop="4dp"
+                    android:text="STEP 1 of 3"
+                    android:textSize="@dimen/font_size_processing_delivery_title"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/signature_line1"
+                    android:layout_width="@dimen/delivery_details_title_line_vertical_thickness"
+                    android:layout_height="@dimen/delivery_details_title_line_vertical_length"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/delivery_details_title_line_vertical_space"
+                    android:layout_marginRight="@dimen/delivery_details_title_line_vertical_space"
+                    android:layout_toRightOf="@id/textView_signature_step"
+                    android:background="@color/delivery_details_title_line_vertical_color"
+                    android:paddingTop="4dp" />
+
+                <TextView
+                    android:id="@+id/textView_signature_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/signature_line1"
+                    android:paddingTop="4dp"
+                    android:text="COLLECT CASH"
+                    android:textSize="@dimen/font_size_processing_delivery_title"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/imageView_row_scan_tick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/icon_takealot" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/seperator_grey" />
+
+            <TextView
+                android:id="@+id/deliveryDetails_textView_addressee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="14dp"
+                android:paddingRight="8dp"
+                android:text="@string/text_cod_delivery"
+                android:textSize="@dimen/font_size_delivery_details_address" />
+
+            <TextView
+                android:id="@+id/deliveryDetails_textView_addressee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="14dp"
+                android:paddingRight="8dp"
+                android:paddingTop="20dp"
+                android:text="R350.00"
+                android:textSize="@dimen/font_size_processing_delivery_amount"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/deliveryDetails_linearLayout_buttonsHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="15dp" >
+
+                <Button
+                    android:id="@+id/deliveryDetails_button_updateStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="7dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_custom"
+                    android:text="@string/button_continue"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

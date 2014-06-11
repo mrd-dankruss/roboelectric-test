@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical" >
+
+    <TextView
+        android:id="@+id/text_row_food_delivery_details_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:text="Duck in Green Curry Sauce"
+        android:textColor="@color/text_grey"
+        android:textSize="@dimen/font_size_text_field"
+        android:gravity="left|center_vertical" />
+
+    <TextView
+        android:id="@+id/text_row_food_delivery_details_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="12dp"
+        android:text="R95"
+        android:textColor="@color/text_grey"
+        android:textSize="@dimen/font_size_text_field"
+        android:gravity="right|center_vertical"
+        android:layout_gravity="right|center_vertical" />
+    
+</LinearLayout>
